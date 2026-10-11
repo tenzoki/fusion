@@ -1,0 +1,179 @@
+{
+  "$id": "urn:fusion:schema:fusion.review-request/v1",
+  "title": "fusion.review-request/v1",
+  "description": "DRAFT, plan step 12: the reviewer's immutable role input, the profile's input_schema, composed for the review step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 (proposed by request 69) before the attempt's first role call. The reviewer is an independent principal, never the implementer's, bound to the tree it saw and to the criteria and input hashes: Prior's embedded ReviewInput at 167c605 (modules/fusion/workpackage/workpackage.go: brief, tree, base revision, diff, criteria hash, inputs hash, validations), the domain code of the alias binding code-reviewer to reviewer (67.3), and the binding block the review-response echoes. The module's task carries the fields below except project_context and output_contract, which the host adds (67.2). A review is valid only for the tree it saw: a later tree needs a later review. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domain", "brief", "base_revision", "tree", "diff", "validations", "criteria_sha256", "inputs_sha256", "binding", "attempt", "project_context", "output_contract"],
+  "properties": {
+    "domain": {
+      "description": "The reviewer's domain, preserved from the alias binding (67.3: code-reviewer binds code, data-reviewer ontology) and echoed in the response; workflows/repair.v1.json fixes code. both does not arise on Prior, where each alias binds one domain.",
+      "type": "string",
+      "enum": ["code", "ontology"]
+    },
+    "brief": {
+      "description": "The implement step's brief for this attempt, unchanged.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "criteria", "context_paths", "exploration"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "context_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "exploration": {
+          "type": "object",
+          "required": ["answer", "findings", "uncertainties"],
+          "properties": {
+            "answer": { "type": "string" },
+            "findings": { "type": "array" },
+            "uncertainties": { "type": "array" }
+          }
+        }
+      }
+    },
+    "base_revision": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "tree": {
+      "description": "The capture step's tree id: the exact tree under review.",
+      "type": "string",
+      "minLength": 1
+    },
+    "diff": {
+      "description": "The capture step's diff against base_revision, the whole of it.",
+      "type": "string"
+    },
+    "validations": {
+      "description": "The capture step's validations, one per check, as the host ran them.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status", "detail", "tree", "contained", "required"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "description": "passed on success, the one value Prior's workpackage accepts for a required check; any other value is a failure the reviewer reads as such.",
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": { "type": "string" },
+          "tree": {
+            "type": "string",
+            "minLength": 1
+          },
+          "contained": { "type": "boolean" },
+          "required": { "type": "boolean" }
+        }
+      }
+    },
+    "criteria_sha256": {
+      "description": "Host-computed over the brief's criteria, in the host's sha256:<hex> form.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "inputs_sha256": {
+      "description": "Host-computed over the brief's inputs, in the host's sha256:<hex> form.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "binding": {
+      "description": "The four values the review-response echoes verbatim, domain beside them; the host refuses a response whose echo differs. participant is the reviewer's principal as the host granted it; plan_hash the request's task_sha256; input_revisions the base revision and the tree, in that order; policy_version the workflow capability.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["participant", "plan_hash", "input_revisions", "policy_version"],
+      "properties": {
+        "participant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plan_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "input_revisions": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "policy_version": { "const": "fusion.repair.v1" }
+      }
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "project_context": { "$ref": "#/$defs/project_context" },
+    "output_contract": {
+      "description": "Host-added: the parsed object of the profile's result_schema asset, schemas/review-response.v1.json. The host validates the role's answer against that same object.",
+      "$ref": "#/$defs/output_contract"
+    }
+  },
+  "$defs": {
+    "project_context": {
+      "description": "Host-added: the project instruction files the host selected, root AGENTS.md falling back to CLAUDE.md, empty when neither exists. A reference to CLAUDE.md in the role's neutral text means these entries.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instructions"],
+      "properties": {
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "text"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "text": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "output_contract": {
+      "type": "object",
+      "required": ["$id", "type", "required", "properties"],
+      "properties": {
+        "$id": { "type": "string", "minLength": 1 },
+        "type": { "const": "object" },
+        "required": { "type": "array" },
+        "properties": { "type": "object" }
+      }
+    }
+  }
+}

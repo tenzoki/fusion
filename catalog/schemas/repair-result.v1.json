@@ -1,0 +1,306 @@
+{
+  "$id": "urn:fusion:schema:fusion.repair-result/v1",
+  "title": "fusion.repair-result/v1",
+  "description": "DRAFT, plan step 12: the module's answer to a fusion.repair.v1 invocation, the asset Prior would select as EnvelopeSchema the way external_explorer.go at 6080ba76 selects the explorer's; request 69 proposes it. The explorer envelope's two members, extended for a run of several roles. domain.status takes four values: completed, the close step wrote the record and every step before it completed; escalated, the workflow stopped for the user at a named step (a blocked implementer, a revise verdict past revise_bound, an escalate verdict, a refused capture or integration, an audit that did not pass), with what ran so far in result; refused, the invocation or an answer violated its schema or bound; recovery-required, a role stood at accepted or a required audit was missing or invalid, never a fabricated audit or a fresh inference (67.5). Settlement is not acceptance (the 68 clarification): a settled run whose answer was refused stays settled, and a retry needs a newly provisioned run under a new invocation. host_evidence is the module's report of the host's observations, one entry per run read, copied from each role answer, or null when no answer exists; it is not independent evidence, and the host checks every entry against its durable records. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domain", "host_evidence"],
+  "properties": {
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "result", "violations"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["completed", "escalated", "refused", "recovery-required"]
+        },
+        "result": {
+          "description": "On completed and escalated, the record of what ran; otherwise null.",
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/result" }
+          ]
+        },
+        "violations": {
+          "description": "Why the answer is not completed; empty on completed.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "detail"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "detail": { "type": "string" }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "object",
+                "properties": {
+                  "integration": { "type": "object" },
+                  "audit": { "type": "object" },
+                  "closure": { "type": "object" },
+                  "stopped_at": { "type": "null" }
+                }
+              },
+              "violations": { "type": "array", "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "escalated" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "object",
+                "properties": {
+                  "closure": { "type": "null" },
+                  "stopped_at": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["refused", "recovery-required"] } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "result": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "host_evidence": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step", "attempt", "run_id", "principal_id", "observed_at", "role_state"],
+            "properties": {
+              "step": {
+                "description": "The role step the run served: explore, implement, review or audit.",
+                "type": "string",
+                "enum": ["explore", "implement", "review", "audit"]
+              },
+              "attempt": {
+                "description": "The attempt index for implement and review; null for explore and audit.",
+                "type": ["integer", "null"],
+                "minimum": 0
+              },
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "principal_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "observed_at": {
+                "description": "RFC 3339, as the host's role answer serialises its time.",
+                "type": "string",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+              },
+              "role_state": {
+                "type": "string",
+                "enum": ["absent", "accepted", "answered", "settled", "refused"]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "object",
+            "properties": { "status": { "const": "completed" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["domain"]
+      },
+      "then": {
+        "properties": { "host_evidence": { "type": "array" } }
+      }
+    }
+  ],
+  "$defs": {
+    "result": {
+      "description": "What ran: the exploration, every attempt in order, and the integration, audit and closure where reached. Each role answer is the stored one, valid against its result schema, typed loosely here so that this schema restates none of them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exploration", "attempts", "integration", "audit", "closure", "stopped_at"],
+      "properties": {
+        "exploration": {
+          "type": "object",
+          "required": ["answer", "findings", "uncertainties"],
+          "properties": {
+            "answer": { "type": "string" },
+            "findings": { "type": "array" },
+            "uncertainties": { "type": "array" }
+          }
+        },
+        "attempts": {
+          "description": "Attempt i at index i; an attempt that stopped before a step carries null for it.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["attempt", "implementation", "capture", "review"],
+            "properties": {
+              "attempt": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "implementation": {
+                "oneOf": [
+                  { "type": "null" },
+                  {
+                    "type": "object",
+                    "required": ["files_changed", "verification", "result"],
+                    "properties": {
+                      "files_changed": { "type": "array" },
+                      "verification": { "type": "array" },
+                      "result": { "type": "string" }
+                    }
+                  }
+                ]
+              },
+              "capture": {
+                "oneOf": [
+                  { "type": "null" },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["tree", "diff_sha256", "validations"],
+                    "properties": {
+                      "tree": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "diff_sha256": {
+                        "description": "Over the diff's UTF-8 bytes; the diff itself stays in the host's record.",
+                        "type": "string",
+                        "pattern": "^sha256:[0-9a-f]{64}$"
+                      },
+                      "validations": { "type": "array" }
+                    }
+                  }
+                ]
+              },
+              "review": {
+                "oneOf": [
+                  { "type": "null" },
+                  {
+                    "type": "object",
+                    "required": ["decision", "material_objections", "evidence", "findings"],
+                    "properties": {
+                      "decision": { "type": "string" },
+                      "material_objections": { "type": "array" },
+                      "evidence": { "type": "array" },
+                      "findings": { "type": "array" }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "integration": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["commit", "reference", "tree"],
+              "properties": {
+                "commit": {
+                  "type": "string",
+                  "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+                },
+                "reference": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tree": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        },
+        "audit": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["agreements", "discrepancies", "unknowns", "coherence"],
+              "properties": {
+                "agreements": { "type": "array" },
+                "discrepancies": { "type": "array" },
+                "unknowns": { "type": "array" },
+                "coherence": { "type": "object" }
+              }
+            }
+          ]
+        },
+        "closure": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["record", "before", "after", "reconciled"],
+              "properties": {
+                "record": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "before": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "after": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reconciled": { "type": "boolean" }
+              }
+            }
+          ]
+        },
+        "stopped_at": {
+          "description": "On escalated, the step id the workflow stopped at; null on completed.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "string",
+              "enum": ["implement", "capture", "review", "integrate", "audit"]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

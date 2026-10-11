@@ -1,0 +1,100 @@
+{
+  "$id": "urn:fusion:schema:fusion.implementer-result/v1",
+  "title": "fusion.implementer-result/v1",
+  "description": "DRAFT, plan step 12: the code-implementer's domain result, the profile's result_schema and the object the host places in the role input as output_contract. It is the three-field report the role's neutral text mandates (agents/code-implementer.md, Report shape): the files changed, one verification entry per check run in exactly one of three forms, and a result the verification decides. done requires at least one verification entry and every entry of the exit form with exit code 0; any other entry makes the result blocked, and the implement step of workflows/repair.v1.json stops as escalated on blocked. The result is a claim: host.capture.v1 captures the change and runs the checks itself, and a change outside the write scope refuses the attempt whatever this object says. Prior's embedded contract at 167c605 (modules/fusion/roles/roles.go, outcome and summary) is replaced by this one on the ruling that fusion authors the output contract (67.7). No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["files_changed", "verification", "result"],
+  "properties": {
+    "files_changed": {
+      "description": "Every file the implementer modified, as absolute paths under workspace.root of the role input, which is what the neutral text mandates; empty when it changed nothing. The host relates them to write_paths by stripping the root, and host.capture.v1 decides from the tree, not from this list.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "verification": {
+      "description": "One entry per check the implementer ran. exit: it ran and read the code. did-not-finish: it started and never returned a code. none: nothing was run, and detail says why. At least one entry, never left out.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["exit", "did-not-finish", "none"]
+          },
+          "command": {
+            "description": "The exact command, on exit and did-not-finish; absent on none.",
+            "type": "string",
+            "minLength": 1
+          },
+          "exit_code": {
+            "description": "The code read, on exit.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "detail": {
+            "description": "What stopped it (did-not-finish) or why nothing ran (none).",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "exit" } }, "required": ["status"] },
+            "then": {
+              "properties": { "command": { "type": "string" }, "exit_code": { "type": "integer" } },
+              "required": ["command", "exit_code"]
+            }
+          },
+          {
+            "if": { "properties": { "status": { "const": "did-not-finish" } }, "required": ["status"] },
+            "then": {
+              "properties": { "command": { "type": "string" }, "detail": { "type": "string" } },
+              "required": ["command", "detail"]
+            }
+          },
+          {
+            "if": { "properties": { "status": { "const": "none" } }, "required": ["status"] },
+            "then": {
+              "properties": { "detail": { "type": "string" } },
+              "required": ["detail"],
+              "not": { "properties": { "command": { "type": "string" } }, "required": ["command"] }
+            }
+          }
+        ]
+      }
+    },
+    "result": {
+      "description": "done or blocked; the verification entries decide which.",
+      "type": "string",
+      "enum": ["done", "blocked"]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "const": "done" } }, "required": ["result"] },
+      "then": {
+        "properties": {
+          "verification": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": { "const": "exit" },
+                "exit_code": { "const": 0 }
+              },
+              "required": ["status", "exit_code"]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

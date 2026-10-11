@@ -1,0 +1,201 @@
+{
+  "$id": "urn:fusion:schema:fusion.audit-result/v1",
+  "title": "fusion.audit-result/v1",
+  "description": "DRAFT, plan step 12: the state-auditor's domain result, the profile's result_schema and the object the host places in the audit request as output_contract. What it carries is what the role's Prior overlay says it is planned to carry (catalog/profiles/state-auditor/parts/20-prior.md): the values of the Coherence section as fields, what Step 4 lists, and the tracking changes of Step 3, which the role reports and the host applies, since on Prior it writes nothing. agreements, discrepancies, unknowns and limitations are Prior's embedded AuditResult at 167c605 (modules/fusion/integration/closure.go) in the bundle's key form: a discrepancy names its surface, owner and detail; limitations admits only the three scope exclusions Prior's embedded contract admits, and missing required evidence belongs in unknowns, never there. coherence is the three-edge Coherence audit result the role's neutral text returns (agents/state-auditor.md, the Coherence section): the result, one line per edge, and the recommendation that maps from them. report is Step 4: the counts, the key findings and the issues and decisions the role would have filed, one entry each for the host to file. tracking_changes is Step 3: one entry per record whose state or lines should move, naming the record, the change and the evidence; the host applies each as one transition under its own authority or puts it to the user. The audit step of workflows/repair.v1.json passes when agreements is non-empty, discrepancies and unknowns are empty, coherence.audit_result is coherent and the recommendation is none, which is Prior's passed() and fusion's closure gate conjoined; any other result stops for the user as escalated, and the close step never runs. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["agreements", "discrepancies", "unknowns", "limitations", "coherence", "report", "tracking_changes"],
+  "properties": {
+    "agreements": {
+      "description": "Evidence-based agreements between the host's observations, the integration and the workbench record; at least one for a pass.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "discrepancies": {
+      "description": "Where two sources disagree; any entry blocks closure.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["surface", "owner", "detail"],
+        "properties": {
+          "surface": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "unknowns": {
+      "description": "Required evidence the auditor could not resolve; any entry blocks closure.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "limitations": {
+      "description": "Known scope exclusions, retained without certifying their settlement; empty when there are none.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["provider-invoice", "observer-finalization", "final-cost-check"]
+      }
+    },
+    "coherence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["audit_result", "edges", "rebalance_recommendation"],
+      "properties": {
+        "audit_result": {
+          "type": "string",
+          "enum": ["coherent", "review-needed", "directive-partially-met", "bounded-closure-proposed"]
+        },
+        "edges": {
+          "description": "One line per edge, each citing its evidence; a Brief edge may read not evaluable with its reason.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artefact_evidence_base", "artefact_brief", "evidence_base_brief"],
+          "properties": {
+            "artefact_evidence_base": {
+              "type": "string",
+              "minLength": 1
+            },
+            "artefact_brief": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_base_brief": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "rebalance_recommendation": {
+          "type": "string",
+          "enum": ["none", "state brief", "revise artefact", "revise evidence base", "revise brief", "accept Bounded Closure"]
+        }
+      }
+    },
+    "report": {
+      "description": "Step 4 of the role's text. updated counts the records with an entry in tracking_changes, since the role itself updates nothing on Prior.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plans_reviewed", "plans_updated", "issues_reviewed", "issues_updated", "key_findings", "issues", "decisions"],
+      "properties": {
+        "plans_reviewed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "plans_updated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "issues_reviewed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "issues_updated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "key_findings": {
+          "description": "Things marked done that were not, things done but not marked; each citing a file, line or commit.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "issues": {
+          "description": "Defects discovered during the audit, for the host to file, one entry each.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "detail", "evidence", "executor"],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence": {
+                "type": "string",
+                "minLength": 1
+              },
+              "executor": {
+                "type": "string",
+                "enum": ["code-implementer", "data-implementer"]
+              }
+            }
+          }
+        },
+        "decisions": {
+          "description": "Questions rather than defects, for the host to file as decision records, one entry each.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "question", "evidence"],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "question": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "tracking_changes": {
+      "description": "Step 3 of the role's text, as its Prior overlay reads it: one entry per change a record should take, applied by the host or put to the user, never by the role.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["record", "change", "evidence"],
+        "properties": {
+          "record": {
+            "description": "The record's storeless basename, or its control path as the role input named it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "change": {
+            "description": "The state or line the record should take, in the role's own words: a step state, a transition with its disposition, a reconciliation log entry, an Answer located or Superseded by line, or a heading it reports the record under (Misfiled, Answered elsewhere, Implemented on disk).",
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "description": "file:line or commit.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

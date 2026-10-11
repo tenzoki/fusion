@@ -1,0 +1,196 @@
+{
+  "$id": "urn:fusion:schema:fusion.audit-request/v1",
+  "title": "fusion.audit-request/v1",
+  "description": "DRAFT, plan step 12: the state-auditor's immutable role input, the profile's input_schema, composed for the audit step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 (proposed by request 69) before the run's first role call. The auditor is an independent principal, neither the implementer's nor the reviewer's, and audits local completion over the host's own observations: Prior's embedded AuditInput at 167c605 (modules/fusion/integration/closure.go: the integration record, the workbench record and its revision, the runtime snapshot, the proposed outcome), with the three lines the role's text reads off its dispatch as fields, as its Prior overlay says they arrive (catalog/profiles/state-auditor/parts/03-prior.md): domain, the verification protocol; directive, the brief; since, the commit anchor. integration is the integrate step's answer with the checks, validations and the two principals; workbench is what the read-record step read through host.workbench.v1; runtime is the snapshot step's answer, the host's Git and filesystem observations, which the auditor compares and never claims to have taken itself. The module's task carries the fields below except project_context and output_contract, which the host adds (67.2). No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domain", "directive", "since", "integration", "workbench", "workbench_revision", "runtime", "proposed_outcome", "project_context", "output_contract"],
+  "properties": {
+    "domain": {
+      "description": "The verification protocol the role's text selects (its Domain line); a repair audits code.",
+      "type": "string",
+      "enum": ["code", "data"]
+    },
+    "directive": {
+      "description": "The brief, the role's Directive line: in a repair, the request's summary followed by its criteria, one line each. Both Brief edges of the three-edge audit read it; it is never absent here, so neither edge reads not evaluable for want of a brief.",
+      "type": "string",
+      "minLength": 1
+    },
+    "since": {
+      "description": "The role's Since line: the commit the Artefact-Brief walk starts from, the request's base_revision in a repair; the walk ends at integration.commit.",
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "integration": {
+      "description": "The integration record, Prior's integration.Plan at 167c605 in the bundle's key form.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "state", "reference", "base", "tree", "commit", "record_name", "record_revision", "author", "reviewer", "checks", "validations", "correction"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "description": "The accepted reference the integration advanced.",
+          "type": "string",
+          "minLength": 1
+        },
+        "base": {
+          "type": "string",
+          "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "tree": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "record_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "description": "The implementer's principal, as the host granted it.",
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer": {
+          "description": "The reviewer's principal, as the host granted it.",
+          "type": "string",
+          "minLength": 1
+        },
+        "checks": {
+          "description": "The request's checks unchanged, under its bound.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "argv", "required", "baseline_failure"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "argv": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": { "const": true },
+              "baseline_failure": { "const": false }
+            }
+          }
+        },
+        "validations": {
+          "description": "The validations the integration re-ran, one per check.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "status", "detail", "tree", "contained", "required"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1
+              },
+              "detail": { "type": "string" },
+              "tree": {
+                "type": "string",
+                "minLength": 1
+              },
+              "contained": { "type": "boolean" },
+              "required": { "type": "boolean" }
+            }
+          }
+        },
+        "correction": {
+          "description": "Empty when the integration needed none.",
+          "type": "string"
+        }
+      }
+    },
+    "workbench": {
+      "description": "The record the read-record step read, as the codec answers it; its shape is the codec's, not restated here.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "workbench_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime": {
+      "description": "The snapshot step's answer: the host's observations, its shape the host's and stated in request 69.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "proposed_outcome": {
+      "description": "What the close step would write when the audit passes.",
+      "const": "completed"
+    },
+    "project_context": { "$ref": "#/$defs/project_context" },
+    "output_contract": {
+      "description": "Host-added: the parsed object of the profile's result_schema asset, schemas/audit-result.v1.json. The host validates the role's answer against that same object.",
+      "$ref": "#/$defs/output_contract"
+    }
+  },
+  "$defs": {
+    "project_context": {
+      "description": "Host-added: the project instruction files the host selected, root AGENTS.md falling back to CLAUDE.md, empty when neither exists. A reference to CLAUDE.md in the role's neutral text means these entries.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instructions"],
+      "properties": {
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "text"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "text": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "output_contract": {
+      "type": "object",
+      "required": ["$id", "type", "required", "properties"],
+      "properties": {
+        "$id": { "type": "string", "minLength": 1 },
+        "type": { "const": "object" },
+        "required": { "type": "array" },
+        "properties": { "type": "object" }
+      }
+    }
+  }
+}

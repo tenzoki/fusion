@@ -1,0 +1,252 @@
+{
+  "id": "repair",
+  "capability": "fusion.repair.v1",
+  "steps": [
+    {
+      "id": "explore",
+      "role": "explorer",
+      "input_from": {
+        "invocation_schema": "schemas/repair-request.v1.json",
+        "run": "runs.explorer",
+        "compose": "host.role.compose.v1",
+        "compose_status": "proposed by request 69; absent at Prior 6080ba76, where the host composes a role input only once, before the invocation (BuildInvocation); every role step here composes its task from the invocation and the preceding steps' answers",
+        "task": {
+          "question": "task.summary followed by task.criteria, one line each",
+          "path_scope": "task.context_paths",
+          "findings_limit": "task.findings_limit"
+        },
+        "role_input_schema": "schemas/explorer-role-input.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/explorer-result.v1.json",
+        "findings_limit": "task.findings_limit",
+        "then": "workspace"
+      }
+    },
+    {
+      "id": "workspace",
+      "host_service": "host.workspace.v1",
+      "input_from": {
+        "service_status": "proposed by request 69; absent at Prior 6080ba76",
+        "attempt": "i, the current attempt, 0 first; one call per attempt",
+        "run": "runs.attempts[i].code-implementer",
+        "base_revision": "task.base_revision",
+        "write_scope": "task.write_paths"
+      },
+      "completion": {
+        "answer": {
+          "root": "the absolute path of an isolated workspace on the host, detached at base_revision",
+          "base_revision": "task.base_revision"
+        },
+        "bound": "one workspace per attempt, never shared between attempts; writes confined to write_scope; a repeated call for the same run answers the same workspace and creates none",
+        "then": "implement"
+      }
+    },
+    {
+      "id": "implement",
+      "role": "code-implementer",
+      "input_from": {
+        "run": "runs.attempts[i].code-implementer",
+        "compose": "host.role.compose.v1",
+        "compose_status": "proposed by request 69; absent at Prior 6080ba76",
+        "task": {
+          "brief": "task.summary, task.criteria, task.context_paths and the explore step's result",
+          "write_paths": "task.write_paths",
+          "checks": "task.checks",
+          "workspace": "the workspace step's answer for attempt i",
+          "attempt": {
+            "index": "i",
+            "previous_review": "for i > 0 the review-response of attempt i-1, whose decision is revise; null for i = 0"
+          }
+        },
+        "role_input_schema": "schemas/implementer-request.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/implementer-result.v1.json",
+        "on_result": {
+          "done": "capture",
+          "blocked": "stop: escalated"
+        }
+      }
+    },
+    {
+      "id": "capture",
+      "host_service": "host.capture.v1",
+      "input_from": {
+        "service_status": "proposed by request 69; absent at Prior 6080ba76",
+        "run": "runs.attempts[i].code-implementer",
+        "workspace": "the workspace step's answer for attempt i",
+        "checks": "task.checks",
+        "write_scope": "task.write_paths"
+      },
+      "completion": {
+        "answer": {
+          "tree": "the captured tree id",
+          "diff": "the exact diff against base_revision",
+          "validations": "one entry per check: name, status, detail, tree, contained, required"
+        },
+        "bound": "a changed path outside write_scope refuses the attempt (stop: escalated); every check runs in the host's container with no network; the answer is persisted under the run and a repeated call answers the stored one",
+        "then": "review"
+      }
+    },
+    {
+      "id": "review",
+      "role": "reviewer",
+      "input_from": {
+        "run": "runs.attempts[i].reviewer",
+        "compose": "host.role.compose.v1",
+        "compose_status": "proposed by request 69; absent at Prior 6080ba76",
+        "task": {
+          "domain": "code",
+          "brief": "the implement step's brief for attempt i",
+          "base_revision": "task.base_revision",
+          "tree": "the capture step's tree",
+          "diff": "the capture step's diff",
+          "validations": "the capture step's validations",
+          "criteria_sha256": "host-computed over task.criteria",
+          "inputs_sha256": "host-computed over the brief's inputs",
+          "binding": "participant (the reviewer's principal), plan_hash (task_sha256), input_revisions ([base_revision, tree]), policy_version (fusion.repair.v1)",
+          "attempt": "i"
+        },
+        "role_input_schema": "schemas/review-request.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/review-response.v1.json",
+        "binding_echoed": ["participant", "plan_hash", "input_revisions", "policy_version", "domain"],
+        "independent_principal": "host_evidence.principal_id of this run differs from the implement step's for every attempt",
+        "on_decision": {
+          "accept": "integrate",
+          "revise": "workspace for attempt i+1 while i < revise_bound; at i = revise_bound stop: escalated",
+          "escalate": "stop: escalated"
+        }
+      }
+    },
+    {
+      "id": "integrate",
+      "host_service": "host.integrate.v1",
+      "input_from": {
+        "service_status": "proposed by request 69; absent at Prior 6080ba76",
+        "run": "runs.attempts[i].reviewer of the accepted attempt",
+        "tree": "the accepted attempt's capture tree",
+        "review": "the accepted attempt's review-response",
+        "checks": "task.checks",
+        "record": "record"
+      },
+      "completion": {
+        "answer": {
+          "commit": "the integration commit",
+          "reference": "the accepted reference advanced",
+          "tree": "the committed tree, equal to the accepted attempt's"
+        },
+        "bound": "once per workflow run: stage, re-validate every check, re-check the review binding, commit, advance the reference; correction-required on any failure (stop: escalated); recovery observes and never repeats a reference update",
+        "then": "snapshot"
+      }
+    },
+    {
+      "id": "snapshot",
+      "host_service": "host.snapshot.v1",
+      "input_from": {
+        "service_status": "proposed by request 69; absent at Prior 6080ba76",
+        "integration": "the integrate step's answer",
+        "write_scope": "task.write_paths",
+        "runs": "runs.explorer and the accepted attempt's two runs"
+      },
+      "completion": {
+        "answer": "the host's own observations: accepted reference and tree, changed paths against write_scope, blob and file comparison, the named runs' states and receipts",
+        "bound": "read-only; the host observes its Git objects and filesystem itself and states what it did not observe",
+        "then": "read-record"
+      }
+    },
+    {
+      "id": "read-record",
+      "host_service": "host.workbench.v1",
+      "input_from": {
+        "service_status": "proposed by request 69; absent at Prior 6080ba76",
+        "request": "a codec read of record.path",
+        "page": "size stated by the host; a continuation handle until the last page"
+      },
+      "completion": {
+        "answer": {
+          "record": "the record's control data and narrative",
+          "revision": "the workbench revision read"
+        },
+        "bound": "reads come as pages of a stated size with a continuation handle; the codec runs under the host's authority and the module holds no workbench path",
+        "then": "audit"
+      }
+    },
+    {
+      "id": "audit",
+      "role": "state-auditor",
+      "input_from": {
+        "run": "runs.state-auditor",
+        "compose": "host.role.compose.v1",
+        "compose_status": "proposed by request 69; absent at Prior 6080ba76",
+        "task": {
+          "domain": "code",
+          "directive": "task.summary followed by task.criteria, one line each: the brief both Brief edges read",
+          "since": "task.base_revision: the anchor of the commit walk to integration.commit",
+          "integration": "the integrate step's answer with the checks, validations, author and reviewer principals",
+          "workbench": "the read-record step's record",
+          "workbench_revision": "the read-record step's revision",
+          "runtime": "the snapshot step's answer",
+          "proposed_outcome": "completed"
+        },
+        "role_input_schema": "schemas/audit-request.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/audit-result.v1.json",
+        "independent_principal": "host_evidence.principal_id differs from every implement and review run's",
+        "passed": "agreements non-empty, discrepancies empty, unknowns empty, coherence.audit_result coherent, coherence.rebalance_recommendation none",
+        "on_passed": {
+          "true": "close",
+          "false": "stop: escalated"
+        }
+      }
+    },
+    {
+      "id": "close",
+      "host_service": "host.workbench.v1",
+      "input_from": {
+        "service_status": "proposed by request 69; absent at Prior 6080ba76",
+        "gate": "the audit step passed",
+        "request": "the codec transition of record.path: an issue to closed with disposition fixed; a package to done with outcome completed, its evidence the integrate step's commit and the audit run",
+        "refs": "the integrate step's answer and runs.state-auditor"
+      },
+      "completion": {
+        "answer": {
+          "record": "record.path",
+          "before": "the state read",
+          "after": "the state written",
+          "reconciled": "true when the post-image, the host's journal and the commit agree"
+        },
+        "bound": "a write is one codec request the host executes under its authority, answered within the frame or by a handle; once per workflow run; a repeated call answers the stored closure",
+        "envelope_schema": "schemas/repair-result.v1.json",
+        "then": "end: the envelope with status completed; every stop above is the envelope with status escalated and stopped_at naming the step"
+      }
+    }
+  ],
+  "revise_bound": 1,
+  "requires": [
+    "host.role.read.v1",
+    "host.role.run.v1",
+    "host.role.complete.v1",
+    "host.role.compose.v1",
+    "host.workspace.v1",
+    "host.capture.v1",
+    "host.integrate.v1",
+    "host.snapshot.v1",
+    "host.workbench.v1"
+  ]
+}
