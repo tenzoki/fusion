@@ -3943,3 +3943,408 @@ Prior closes: "Fusion can record these ten rulings and continue its bundle imple
 #### What the plan takes from this
 
 Steps 4 to 11 follow the answer, as `### What fusion does with the answer` said they would. The plan's `## Approach` and its first diagram name a vendored `moduleapi/v1`, and its Risks table a `check-vendored.sh`; 67.4 replaces both with the staged build in a Prior checkout. The steps the corrections touch, by question: 67.2 steps 4, 5, 6, 7; 67.4 steps 7, 8, 9; 67.5 steps 4, 7, 9, 13; 67.6 steps 4, 7, 9, 10, 17, 18; 67.7 steps 6, 7; 67.8 steps 8, 10; 67.9 steps 8, 9, 10; 67.10 step 11's dependency. Steps 1 to 3 are done, and no request is open: request 68 is the next one, written once steps 4 to 9 stand and Prior's P67-1 and P67-2 are in a Prior commit.
+
+## Module bundle (request 68, the explorer)
+
+**Written against:** fusion `f87609bf` on `main` (2026-10-11 10:41, "test(adapters): explorer conformance from the extracted bundle against a fake host"), `v13.0.0-24-gf87609bf`, the tree the bundle below was built from, clean outside `fusion-workbench/` at build time (`build.sh` refuses a dirty tree without `FUSION_BUILD_ALLOW_DIRTY`, and the override was not set). Outside `fusion-workbench/` it differs from `v13.0.0` (`468d8e87`) in 146 files: the new `catalog/` and `adapters/prior/` trees and this file; under `codec/` it differs in this file alone (`git diff --stat v13.0.0 f87609bf -- codec`). At `f87609bf` this file is 3 945 lines, `sha256:4a448b5b8a7a19c02bc23864595f13ca241da7620bba90e5e271f43929f72ed2`. Prior was read at `6080ba765b4a34dc282a4eb720043fbe0aa1f3d2` (2026-10-11 06:26, "feat(module): add verified bundle import and lifecycle CLI"), the adapter's `adapters/prior/PRIOR_PIN`, three commits past `da02626`: `8bab88a` (P67-1 and P67-2, 2026-10-10 17:10), `5199cf1` (a `planned` role ships without executable assets, 2026-10-11 04:57) and the pin itself. `moduleapi/v1`, `go.mod` and `go.sum` are byte-identical from `da02626` to the pin (`git diff --stat da02626 6080ba76 -- moduleapi/v1 go.mod go.sum` prints nothing). Every Prior path below is read with `git show 6080ba76:<path>`, never from Prior's working tree; the response document at the pin is 426 lines, 26 605 bytes, `sha256:2c16ba13c4bbe0919dd4cc44515174ebd429d883529f302e809e84a57251c8ca`. **The codec bundle is unmoved:** `codec/dist/fusion-record.js`, 699 011 bytes, `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`.
+
+This is the hand-over P67-3 waits for: the built artefact, both source revisions, the build identity and digest, the schema paths, and the role-input composition and recovery fixture, as Prior's follow-up of 2026-10-10 lists them. **It asks nothing about the codec**, and no line above is edited. It asks for no new CLI command: the operator lifecycle CLI at `6080ba76` is the route for installation, and the library route of 67.6 is the route for the run.
+
+### The hand-over
+
+The absolute hand-over path, as `adapters/prior/build.sh deliver` printed it on 2026-10-11 10:42:
+
+```
+/Users/kai/.local/share/prior/incoming/fusion/13.0.0/cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd/
+```
+
+| File | Bytes | Identity |
+|---|---|---|
+| `fusion-13.0.0.tar` | 12 807 168 | the deterministic, uncompressed tarball; `shasum -a 256` prints `4daebfac8cdabb25be4022231ddfe6731d754ba9051d6ac9d3d320ae0925c49b` |
+| `fusion-13.0.0.tar.sha256` | 84 | the sidecar, one line: `4daebfac8cdabb25be4022231ddfe6731d754ba9051d6ac9d3d320ae0925c49b  fusion-13.0.0.tar` |
+| `handover.json` | 2 403 | quoted in full below |
+
+All three are mode 0444. **The bundle digest is `sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd`**, the BundleIndex digest over the 20 payload files with `manifest_path` `module.json`, `build-identity.json` included. **The tarball's sha256 is `4daebfac8cdabb25be4022231ddfe6731d754ba9051d6ac9d3d320ae0925c49b`.** The two are different hashes of different things (67.8): the first is what `--trust-digest` takes, the second is what the sidecar checks.
+
+**The version is `13.0.0`**, the release the tree stands on (`.claude-plugin/plugin.json` at `f87609bf`). 13.1.0 is proposed for the candidate C of request 70 and arrives with it; this bundle is `fusion` `13.0.0` and activates as such. Module id `fusion` beside the embedded 1.8.0 is 67.3's ruling.
+
+**How it was built and verified.** `build.sh deliver` rendered the catalog (`cd catalog && npm run --silent render -- prior <work>/rendered`), staged the adapter in a disposable clone of Prior at the pin (`stage.sh` printed `prior clone at 6080ba765b4a34dc282a4eb720043fbe0aa1f3d2` and `go version go1.26.0 darwin/arm64`), built the three targets with the commands recorded in `build-identity.json`, assembled the payload and wrote the tarball. It then ran Prior's own `InspectBundle` from the same clone over the payload directory and, after `ExtractBundleArchive`, over the extracted tarball; both reported `{"module_id":"fusion","version":"13.0.0","bundle_digest":"sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd"}`, and the probe printed `verify: ok, 20 files, executable bin/fusion-module, 14 data files`. Only then did it copy the three files to the path above.
+
+**Reproducibility, measured.** A second `build.sh build` from the same tree into a fresh directory printed the same digest, and `cmp` of its tarball, its sidecar, its `handover.json` and its `build-identity.json` against the delivered ones printed nothing. The bundle is reproduced by building at exactly fusion `f87609bf` with Prior at `6080ba76` and `go1.26.0`: the fusion revision enters the payload through `build-identity.json`, which the BundleIndex covers, so a build at any other commit, or a dirty tree (which `build.sh` marks `<sha>+dirty`), yields another digest by construction, never this one.
+
+The 20 entries of the tarball, in its order (`tar -tf`), every one with uid and gid 0, empty names and mtime 0:
+
+```
+bin/darwin-arm64/fusion-module
+bin/fusion-module
+bin/linux-amd64/fusion-module
+bin/linux-arm64/fusion-module
+build-identity.json
+catalog.json
+module.json
+profiles/code-implementer.json
+profiles/code-implementer.md
+profiles/explorer.json
+profiles/explorer.md
+profiles/reviewer.json
+profiles/reviewer.md
+profiles/state-auditor.json
+profiles/state-auditor.md
+schemas/explorer-envelope.v1.json
+schemas/explorer-request.v1.json
+schemas/explorer-result.v1.json
+schemas/explorer-role-input.v1.json
+workflows/explorer.v1.json
+```
+
+`module.json` names `bin/fusion-module`, the `/bin/sh` launcher, as the executable, and 14 data files: every file above except the four under `bin/`, `build-identity.json` and `module.json` itself. The three repair roles ship as `planned` preview assets (text and profile metadata), with no schemas listed for them, as Prior's follow-up of 2026-10-11 asked: nothing in `data` names a file that is not in the payload.
+
+### `build-identity.json`, in full
+
+The payload's own copy, `tar -xOf fusion-13.0.0.tar build-identity.json`. `adapter_sources` inventories the Go sources and the launcher script staged into the clone, test files included; `payload` inventories every other payload file and excludes this file (67.8). The launcher's sha256 under `adapter_sources` (`launcher/fusion-module.sh`) is the sha256 of `bin/fusion-module` under `payload`: the executable digest Prior checks covers the launcher (67.9).
+
+```json
+{
+  "fusion_revision": "f87609bfb493d1dd25c5d5b7df1267cef03fbce1",
+  "prior_revision": "6080ba765b4a34dc282a4eb720043fbe0aa1f3d2",
+  "go_version": "go1.26.0",
+  "adapter_sources": [
+    {
+      "path": "fusionmodule/cmd/fusion-bundle/main.go",
+      "sha256": "b72368ab3e135b7dfee66d13c8e06e32e88f51e947f6527848c755ea2011ef70"
+    },
+    {
+      "path": "fusionmodule/cmd/fusion-module/main.go",
+      "sha256": "587c8ff3b923d61c0008012f58334e5fbe727241757d66140e6dc6b791f4860d"
+    },
+    {
+      "path": "fusionmodule/cmd/fusion-module/main_test.go",
+      "sha256": "1826e6905c583b530e3a4889dcfa686a13e049a9047fd2f8c3c2b6429775bfb2"
+    },
+    {
+      "path": "fusionmodule/conformance/explorer_test.go",
+      "sha256": "1daab804abc916fc787e6ec675bfeb35e28f912811b59181ac746b75d0e57830"
+    },
+    {
+      "path": "fusionmodule/conformance/host_test.go",
+      "sha256": "2a61e745705ede479172c71efd6c9375d7d8f767e67b610af70879b7c6e37f28"
+    },
+    {
+      "path": "fusionmodule/internal/explorer/explorer.go",
+      "sha256": "945581dac83351b19d26ad9b35fb44c123a74aae9a47e5bbc2627373e142ebed"
+    },
+    {
+      "path": "fusionmodule/internal/explorer/explorer_test.go",
+      "sha256": "6261637908aa146a4a8ce5778e245492947295788e5d09670e33e10ab617aff2"
+    },
+    {
+      "path": "fusionmodule/internal/fixture/fixture.go",
+      "sha256": "249bc3bc8f09cbd0c8d8a284301c1aa51ab943444d91eb403d998477f21a729e"
+    },
+    {
+      "path": "fusionmodule/internal/fixture/sha.go",
+      "sha256": "31745707fcf8cb41c207f22f36507ba9b070ac6e273914fc2c2c4963d0dd6e27"
+    },
+    {
+      "path": "fusionmodule/internal/steps/bundle.go",
+      "sha256": "9503e33e22945694fa565b01b3a4caaa75acb1ed7f1daab297ad118c63c31845"
+    },
+    {
+      "path": "fusionmodule/internal/steps/bundle_test.go",
+      "sha256": "cc0ad741ab77c2c2bf5f98f4fa4bdf1a139d8c577839cbadd558831ed56bb9f0"
+    },
+    {
+      "path": "fusionmodule/internal/steps/catalog.go",
+      "sha256": "88a9067eae7d6144f5f7e27bcbc50f2c2fde4f14aa393f96efd5d1c68895b809"
+    },
+    {
+      "path": "fusionmodule/internal/steps/frame.go",
+      "sha256": "7f3784ede7d192b3350420ff434953dc5409fe2754a2117bdcde97b4d379279b"
+    },
+    {
+      "path": "fusionmodule/internal/steps/role.go",
+      "sha256": "c14fde0138e1e48668d0d1a564fe713d6aa861adab90a9277b2d12eafbe540d4"
+    },
+    {
+      "path": "fusionmodule/internal/steps/role_test.go",
+      "sha256": "7c040fc812b8c21d25286658cdf3afa78252ddf15e8ceb5e50e97e1b5ac83fb6"
+    },
+    {
+      "path": "fusionmodule/internal/steps/schema.go",
+      "sha256": "289c43758f0c7288435831436f15feb17f6dd9958723b800b6defdc083e098d2"
+    },
+    {
+      "path": "fusionmodule/internal/steps/schema_test.go",
+      "sha256": "edde9196cec17681a0c7c6cfb7ba889ae8fb6907176f5f7254aad41cd214ca95"
+    },
+    {
+      "path": "fusionmodule/internal/steps/strictjson.go",
+      "sha256": "4b68c9c7024e47b4109d1a6bdfe8f68868b75185a3018921c3520b2fa77fd81c"
+    },
+    {
+      "path": "fusionmodule/internal/steps/strictjson_test.go",
+      "sha256": "78c66f67005f24f53cd36c57770c26bb6c0bc6a51cf5849bc1763786361d59db"
+    },
+    {
+      "path": "launcher/fusion-module.sh",
+      "sha256": "afcc7f8a65ae75d48b23ab49eccb2904a1b1571b75bc81c27f8e8be61174f3f2"
+    }
+  ],
+  "targets": [
+    {
+      "os": "darwin",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/darwin-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "aed3674e01dc1441b092c277779b7c2391eeea43bfe3a11d6109d5157b9e4718"
+    },
+    {
+      "os": "linux",
+      "arch": "amd64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-amd64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "a9db005314c949d6588ec44662ae369c0399284302a45a8355d3be21e8d015a1"
+    },
+    {
+      "os": "linux",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "8b88891aee6b8e908ae5e7b8dedbd9e0877e38cfbb74ad4e8e01dbc356c8c554"
+    }
+  ],
+  "payload": [
+    {
+      "path": "bin/darwin-arm64/fusion-module",
+      "sha256": "aed3674e01dc1441b092c277779b7c2391eeea43bfe3a11d6109d5157b9e4718"
+    },
+    {
+      "path": "bin/fusion-module",
+      "sha256": "afcc7f8a65ae75d48b23ab49eccb2904a1b1571b75bc81c27f8e8be61174f3f2"
+    },
+    {
+      "path": "bin/linux-amd64/fusion-module",
+      "sha256": "a9db005314c949d6588ec44662ae369c0399284302a45a8355d3be21e8d015a1"
+    },
+    {
+      "path": "bin/linux-arm64/fusion-module",
+      "sha256": "8b88891aee6b8e908ae5e7b8dedbd9e0877e38cfbb74ad4e8e01dbc356c8c554"
+    },
+    {
+      "path": "catalog.json",
+      "sha256": "dde99dfe2128b423644040a095bf1fc0e13ac449c0bb146ffbff227f6713c7ca"
+    },
+    {
+      "path": "module.json",
+      "sha256": "dc6b6e225b21e25adffd636a8be6bba09f7f33125d0f604ca68c8e6657bd4903"
+    },
+    {
+      "path": "profiles/code-implementer.json",
+      "sha256": "86c834293afdf70f019ef4d001e963ea48bf838bde397575b402770b2a32159c"
+    },
+    {
+      "path": "profiles/code-implementer.md",
+      "sha256": "41fa199d22ec97fcd0cfdc7816bc003f3928dbe63c63d566cb74912f7b025a3a"
+    },
+    {
+      "path": "profiles/explorer.json",
+      "sha256": "3a692280c9403f6363d5ea26e124150630f6b2deed46124435ac98de386ea068"
+    },
+    {
+      "path": "profiles/explorer.md",
+      "sha256": "51b42e9fb13ca9d6456f630913c6e2afe5767dd9015ad6c12326404604e37e73"
+    },
+    {
+      "path": "profiles/reviewer.json",
+      "sha256": "afc6dedbe48b6be165197ad7353d881fc608bb5e23a30baa7367db292b81e2e1"
+    },
+    {
+      "path": "profiles/reviewer.md",
+      "sha256": "1508410faf5b03ad6b8441314ca23ba8e6e1221e7c78969ad41121ec4c3593ab"
+    },
+    {
+      "path": "profiles/state-auditor.json",
+      "sha256": "512d1d814503269f238478a95cbfadeb71f552836eaca0a7ef7e53d480abf47c"
+    },
+    {
+      "path": "profiles/state-auditor.md",
+      "sha256": "61e7bcf288e5b08272ffa6f89d460832995628cc58a180a59c20481a80c43fb1"
+    },
+    {
+      "path": "schemas/explorer-envelope.v1.json",
+      "sha256": "8af82ac71061d8c7dc2fdd611c270b974966e8c421210abd22d19df4d604497c"
+    },
+    {
+      "path": "schemas/explorer-request.v1.json",
+      "sha256": "4b0920777f9ae86eb3274d7b22863775b8c0883c827e1be4e93bb387125dda18"
+    },
+    {
+      "path": "schemas/explorer-result.v1.json",
+      "sha256": "e2af9a62957acd543ad029a7d2559865773855f63167ee63501807b437f80300"
+    },
+    {
+      "path": "schemas/explorer-role-input.v1.json",
+      "sha256": "d33cbe3dea64861de63d9204195b8976a0b4ee57a9759964268b7290afb33d39"
+    },
+    {
+      "path": "workflows/explorer.v1.json",
+      "sha256": "91141b018a6fc0f053d147274efb2ab83a90f7877a66706956e33c2e7c9f7ad6"
+    }
+  ]
+}
+```
+
+### `handover.json`, in full
+
+Beside the tarball at the hand-over path, outside the payload. `<payload>`, `<out>`, `<work>` and `<fusion-revision>` are placeholders in the recorded commands, so that no local absolute path enters an artefact (67.8).
+
+```json
+{
+  "module_id": "fusion",
+  "version": "13.0.0",
+  "bundle_digest": "sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd",
+  "tarball": "fusion-13.0.0.tar",
+  "tarball_sha256": "4daebfac8cdabb25be4022231ddfe6731d754ba9051d6ac9d3d320ae0925c49b",
+  "fusion_revision": "f87609bfb493d1dd25c5d5b7df1267cef03fbce1",
+  "prior_revision": "6080ba765b4a34dc282a4eb720043fbe0aa1f3d2",
+  "go_version": "go1.26.0",
+  "targets": [
+    {
+      "os": "darwin",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/darwin-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "aed3674e01dc1441b092c277779b7c2391eeea43bfe3a11d6109d5157b9e4718"
+    },
+    {
+      "os": "linux",
+      "arch": "amd64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-amd64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "a9db005314c949d6588ec44662ae369c0399284302a45a8355d3be21e8d015a1"
+    },
+    {
+      "os": "linux",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "8b88891aee6b8e908ae5e7b8dedbd9e0877e38cfbb74ad4e8e01dbc356c8c554"
+    }
+  ],
+  "commands": [
+    "cd catalog && npm run --silent render -- prior <work>/rendered",
+    "adapters/prior/stage.sh run -- adapters/prior/build.sh _staged <out> <work>/rendered <fusion-revision>",
+    "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/darwin-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+    "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-amd64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+    "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module"
+  ]
+}
+```
+
+### The three targets: one started, two built
+
+The conformance run of step 9 started the launcher on **macOS arm64**: `bin/fusion-module` read `/usr/bin/uname -s -m` as `Darwin arm64` and `exec`ed `bin/darwin-arm64/fusion-module` (`aed3674e…`). That is the one target a process of this bundle has ever been. **`linux-amd64` (`a9db0053…`) and `linux-arm64` (`8b88891a…`) are delivered built, not qualified** (67.9): cross-compiled in the same clone with the recorded commands, their handshake and workflow never run. The plan does not wait for their qualification; an answer to 68 that ran on macOS arm64 is complete for this request.
+
+### The schemas, and where Prior reads them
+
+The three paths Prior's follow-up asked for, as the payload declares them:
+
+| Payload path | Declared in | Validates | Prior reads it as |
+|---|---|---|---|
+| `schemas/explorer-request.v1.json` | `workflows/explorer.v1.json`, step `explore`, `input_from.invocation_schema` | the outer workflow invocation `{run_id, role_input, audit_ref?}`, the top-level `audit_ref` optional | `ExternalExplorerConfig.RequestSchema` (`internal/fusionhost/external_explorer.go`), which `BuildInvocation` composes against |
+| `schemas/explorer-role-input.v1.json` | `profiles/explorer.json`, `input_schema` | the composed, frozen role input `{question, path_scope, findings_limit, project_context, output_contract}` | the profile's `input_schema`, through `LoadExternalCatalog` |
+| `schemas/explorer-envelope.v1.json` | `workflows/explorer.v1.json`, step `explore`, `completion.envelope_schema` | the envelope `{domain, host_evidence}` the invocation returns | `ExternalExplorerConfig.EnvelopeSchema` |
+
+The fourth schema, `schemas/explorer-result.v1.json`, is the profile's `result_schema` and the step's `completion.result_schema`: Prior's `modules/fusion/schemas/explorer-result.json` at `167c605`, copied unchanged with its `$id` (67.6). Its parsed object is what the host places in the role input as `output_contract`, and what both sides validate the stored answer against. The outer shape and the separate role-input schema are the ones Prior's follow-up of 2026-10-11 accepted; the module forwards `role_input` byte for byte as `RoleCall.input` on every role call and sends `audit_ref` only as the completion call's `RoleCall.audit_ref`.
+
+### Step 9's result: conformance on macOS arm64, not acceptance
+
+`adapters/prior/fusionmodule/conformance/` starts the bundle the way Prior's host does: each case extracts the tarball of the directory `FUSION_BUNDLE_DIR` names into its own temporary directory, starts `bin/fusion-module` through `os/exec` with exactly `PRIOR_MODULE_IDENTITY` and `PRIOR_MODULE_CONNECTION_SECRET` in its environment, no `PATH`, its working directory the payload, in its own process group, and connects through `moduleapi/v1` `ConnectWithServices` with the fake durable `host.role.{read,run,complete}.v1` handlers of `internal/fixture`, in-memory, with a scripted model. The bundle under test was a second build from the same tree, byte-equal to the delivered tarball (`cmp` printed nothing).
+
+`FUSION_BUNDLE_DIR=<that build> adapters/prior/stage.sh test` exited 0 on 2026-10-11 (clone at `6080ba76`, `go1.26.0 darwin/arm64`): `ok` for `cmd/fusion-module`, `conformance`, `internal/explorer` and `internal/steps`. A verbose run of the conformance package alone (`go test -v -count=1 ./integrationbuild/fusionmodule/conformance/`) ran all eleven cases, each `PASS`, no `SKIP` line:
+
+| Case | What it shows |
+|---|---|
+| `TestHandshakeAdvertisesTheExplorer` | the handshake requiring `fusion.explorer.v1` succeeds and the process writes nothing to stderr in a clean session |
+| `TestValidAnswerCompletesWithTheHostEvidence` | `completed`, the result the stored answer's bytes, `host_evidence` copied field by field from the fake host's `RoleAnswer` with `role_state` `settled`; one model call, one run, one completion, three reads; the role input forwarded unchanged; no `audit_ref` sent when the invocation carried none; every call under the bundle's identity |
+| `TestSchemaInvalidAnswerIsRefusedNotCompleted` | an answer violating the result schema: `refused`, code `result.invalid`, `result` null, `host_evidence` present (see the contract reading below) |
+| `TestFiveFindingsAgainstALimitOfFourAreRefused` | five findings against `findings_limit` 4: `refused`, code `findings.limit`; four against four on a second run: `completed` |
+| `TestKillAfterThePersistedAnswerThenRestartRunsNoModel` | the process killed after the fake host persisted the answer; a fresh process re-invoked with the same operation id and an identical role input completes with zero further model calls and one run in total |
+| `TestSettledIsReusedWithoutARun` | a role seeded `settled` is reused: `completed`, one read, no run, no completion, no model call |
+| `TestAcceptedIsRecoveryRequiredWithNullEvidence` | a role seeded `accepted`: `recovery-required`, code `role.accepted`, `host_evidence` null, one read and nothing else |
+| `TestAnsweredWithoutTheRequiredAuditIsRecoveryRequired` | a role seeded `answered` on a host that requires an audit: `recovery-required`, code `host.recovery-required`, the role left `answered`; a fresh outer operation id carrying the recorded `audit_ref` completes it, the reference sent on the completion call alone, no model call |
+| `TestAFreshOperationIDWithTheSameRunIsAccepted` | a second outer operation id over the same run id: `completed` with the stored answer, one read and no model call |
+| `TestOversizeInputIsRefused` | an input over 1 MiB is refused by the SDK client before a byte reaches the process; an input that fits the frame but whose completion call would not: `refused`, code `frame.oversize`, no host call; the process keeps serving |
+| `TestUnknownCapabilityIsRefused` | a handshake requiring `fusion.other.v1` is rejected with `unsupported-capability`; an unadvertised capability on an open connection is refused by the SDK client; the process keeps serving |
+
+**The composition and recovery fixture** Prior's follow-up of 2026-10-10 asked for is `host_test.go`'s `roleInput` and `invocation` together with the five cases from `TestKillAfterThePersistedAnswerThenRestartRunsNoModel` to `TestAFreshOperationIDWithTheSameRunIsAccepted`. The role input is composed as `PrepareExternalExplorer` composes it at `6080ba76`: the caller's task (`question`, `path_scope`, `findings_limit`, which must not carry `project_context` or `output_contract`) gains the host's `project_context`, an `instructions` array of `{path, sha256, text}` entries (the fixture supplies one, `CLAUDE.md`, its `sha256:` prefixed digest over the supplied UTF-8 bytes), and as `output_contract` the parsed object of the explorer profile's `result_schema` read from the installed payload; the whole is marshalled once and frozen, and the module forwards those bytes on every role call. The outer invocation is `{run_id, role_input, audit_ref?}`, the top-level `audit_ref` present only when the host recorded one.
+
+**This is conformance, not acceptance.** The host is a fake; what Prior's host does with the envelope, above all its checks of the reported `host_evidence` against its durable record, its own validation of the result against `output_contract`, its preflight of the three `requires` entries against the service map, its run provisioning and its admission of the complete model context, is proven only by Prior's run of the delivered bundle. No missing-service case is written, because that preflight is Prior's before the process starts (67.6).
+
+### 68. Does the delivered bundle run a real explorer on Prior's host?
+
+**Closes:** nothing in the codec. On fusion's side, plan step 11 records the answer, and step 12, the repair draft, depends on it. Preferred form: a Prior response document at a Prior commit that names the Prior commit it ran on, the bundle digest it ran, the platform it ran on, both source revisions it installed, and gives each of 68.1 to 68.6 one verdict (as for 67: accepted, corrected with the correction, refused, or deferred naming the Prior item it waits for), with any defect named as such; this is P67-3.
+
+Fusion asks Prior to take these six steps from the hand-over path above, in this order, without a new CLI command:
+
+#### 68.1 Inspect, install under explicit trust, activate
+
+With the operator CLI of `6080ba76` (`cmd/prior/module.go`; `docs/design/prior-installed-module-bundles.md` `## Operator CLI`): `prior module inspect --archive <hand-over path>/fusion-13.0.0.tar`, comparing the reported identity with the stated one, `{fusion, 13.0.0, sha256:cd37dac7…}`; before that, the sidecar's line against `shasum -a 256` of the tarball. Then `prior module install --runtime <runtime> --archive <hand-over path>/fusion-13.0.0.tar --trust-digest sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd`, and `prior module activate --runtime <runtime> --module fusion --version 13.0.0 --digest sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd`. The tarball is uncompressed `tar`, which the import accepts beside `tar.gz`.
+
+**Asked:** Does inspection of the archive report exactly the stated identity, and does activation verify the complete installed payload, the four files under `bin/` with mode 0500 included?
+
+#### 68.2 Resolve the explorer's assets from the installed payload
+
+`LoadExternalCatalog` over the installed, digest-verified payload: the explorer resolves as `support.prior = supported`, its `profiles/explorer.md` (the neutral part, the Prior overlay and the inlined `rules/user-facing-output.md` under its provenance line) and `profiles/explorer.json` (the seven keys) load, its four schemas resolve inside the payload with no network reference; `code-implementer`, `reviewer` and `state-auditor` load as `planned` preview assets and refuse dispatch through their canonical names and the two reviewer aliases (`5199cf1`).
+
+**Asked:** Does the resolver accept this payload as it stands? Which `profiles/<id>.md` bytes did it bind for the explorer (its sha256, expected `51b42e9f…` as `build-identity.json` lists it)?
+
+#### 68.3 Compose the role input
+
+`project_context` supplied by the host as 67.2 rules it (`ReadProjectContext`: `AGENTS.md`, else `CLAUDE.md`, else an empty array, hashes over the supplied bytes), `output_contract` the parsed `schemas/explorer-result.v1.json`, the task one bounded repository question with a path scope and a findings limit of at most four, composed through `BuildInvocation` against `schemas/explorer-request.v1.json` with `RequestSchema` and `EnvelopeSchema` set to the paths of the table above, the role input validated against `schemas/explorer-role-input.v1.json` and frozen.
+
+**Asked:** Does the frozen role input validate against the profile's `input_schema` as delivered? Which project did the context come from, how many `instructions` entries, and their total bytes?
+
+#### 68.4 Provision the run, run the preflight
+
+One host-provisioned run id under the owner's binding, the grant frozen (the explorer's read, list and search subset, no delegation, no workbench write), and the definition's `requires` (`host.role.read.v1`, `host.role.run.v1`, `host.role.complete.v1`) compared with the scoped service map before the process starts.
+
+**Asked:** Did the preflight pass against the service map `RoleService.InstalledModuleRoleHandlers` builds, and did it reject when one of the three was withheld?
+
+#### 68.5 One real explorer, with a real model
+
+`PrepareExternalExplorer` and then `Invoke` with a fresh outer operation id and no `audit_ref`, the process started through the launcher `bin/fusion-module` on the host's platform, the role run by a real model under the host's principal, budget and limits. Expected: an envelope with `domain.status` `completed`, `domain.result` equal to the stored answer, `host_evidence` with `role_state` `settled` and a `principal_id` and `observed_at` the host confirms against its durable record, and Prior's own validation of the result against `output_contract` and the findings limit passing.
+
+**Asked:** The platform the process ran on (`/usr/bin/uname -s -m` on that host) and the binary the launcher selected (expected `bin/darwin-arm64/fusion-module`, `aed3674e…`, on macOS arm64); the envelope's `domain.status` and the four `host_evidence` fields; and the result's `answer` and the number of its findings, or the refusal code and violation if the invocation was refused.
+
+#### 68.6 Restart and re-read
+
+After a host restart, `PrepareExternalExplorer` again with the identical stored binding and run specification (the original deadline and context snapshot, not a re-read of changed project files), then `Invoke` under a fresh outer operation id: the stored answer reused, `completed` again with the same `host_evidence`, zero further model invocations. And the refusal and restart checks P67-3 names, as Prior ran them: fusion expects at least the restart above and one refusal (a withheld service in 68.4, or an answer Prior's host refused on its own validation), and asks Prior to say which ran.
+
+**Asked:** Did the re-read complete with the same evidence and no model call? Which refusal and restart checks ran, and with which outcome?
+
+### One contract reading for Prior to confirm or object to
+
+Found in step 9, and visible in `TestSchemaInvalidAnswerIsRefusedNotCompleted`: the module's step executor completes an `answered` role **before** it validates the stored answer against the result schema and the findings limit (`adapters/prior/fusionmodule/internal/steps/role.go`: on `answered`, call `host.role.complete.v1`, then read again; `internal/explorer/explorer.go`: validation runs only on `settled`). So a schema-invalid or over-limit answer leaves the role **settled on the host** while the workflow invocation is **refused** with `result.invalid` or `findings.limit`, `result` null and `host_evidence` carrying `role_state` `settled`; a second invocation over the same run reads `settled`, reuses the stored answer and refuses it again, with no model call.
+
+Fusion reads this as the contract of 67.5 and 67.6: 67.5 makes `answered` a state that permits completion with a valid host-recorded audit, and names no condition on the answer's content; 67.6 makes `completed` a domain verdict, "a settled role and a schema-valid, bounded domain result", and has Prior validate the result against the same schema on its side. The role's settlement is the host's durable fact about an attempt that ran and answered; the domain verdict over that answer is the module's, kept apart from it. The alternative, validating before completing and leaving a bad answer `answered`, would either have the next invocation complete it anyway (the module cannot refuse an answer on the host's behalf, and `answered` permits completion) or leave the role un-settled with its attempt consumed, which 67.5's recovery rules read as a state needing an audit nobody recorded.
+
+**Asked:** Does Prior agree that a schema-invalid answer settles the role and refuses the invocation, in that order? And on Prior's side, what follows a refused invocation over a settled role: with `revise_bound` 0 the explorer has one attempt, so fusion reads the workflow run as failed for that run id, a retry being a new provisioned run under a new invocation. If Prior reads it otherwise, or wants the completion withheld on a schema-invalid answer, the step executor changes before request 69's repair workflow builds on it.
+
+### What fusion does with the answer
+
+- Plan step 11 records the answer, the Prior commit, the digest and the platform Prior ran. The recorded digest must equal `sha256:cd37dac7f3593b37ded744f969f9b38ad49515b66710fb5e5974647ff6d3b2dd`; an answer naming another digest ran another build and does not close 68.
+- A defect Prior names is filed as an issue in fusion's container before step 11 closes; the answer is then not a "Yes" for this request.
+- An objection to the contract reading above changes step 7's executor and step 9's cases before step 12 drafts the repair workflow on them.
+- Linux amd64 and arm64 stay built, not qualified, whatever the answer says about macOS arm64; qualifying them is no condition of this request or of request 70.
+
+### Requests 59 to 68, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 59 | **complete** at Prior `d6abeb8`, for `f9ecae78`; re-asked as 63 | `Prior: docs/design/fusion-fj04-correction-prior-response.md` `## 59: shared fixtures` |
+| 60 | **complete** at `d6abeb8`; `c76bbce9…` qualified; re-asked as 64 | the same document, `## 60: runtime qualification` |
+| 61 | **answered Yes** at Prior `7da6690` | `Prior: docs/design/fusion-fj03d-prior-response.md` |
+| 62 | **accepted with corrections** at Prior `f32bf4a` | `Prior: docs/design/fusion-claim-takeover-prior-response.md` |
+| 63 | **complete** at Prior `34a2710`, for `dd4bf3d4` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 63 — Shared schemas and fixtures` |
+| 64 | **complete** at `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, the bundle `v13.0.0` ships | the same document, `## 64 — Runtime snapshot and replay` |
+| 65 | **complete**: "Yes" at Prior `167c605`, for C = `468d8e87`, now `v13.0.0` | `Prior: docs/design/fusion-fj05-release-evidence-prior-response.md` |
+| 66 | **never asked** (decision A2, option 1) | `## FJ05 (the release evidence at 468d8e87)` above |
+| 67 | **accepted with corrections** at Prior `da02626`; its P67-1 and P67-2 landed at `8bab88a`, corrected by `5199cf1`; the operator lifecycle CLI at `6080ba76` | `Prior: docs/design/fusion-module-bundle-prior-response.md`, and `### Prior's answer to 67 at da02626` above |
+| 68 | **open**: the hand-over delivered 2026-10-11 at the path above, digest `cd37dac7…`, built at fusion `f87609bf` against Prior `6080ba76`; waits for P67-3 | this section |
+
+These rows supersede the rows in `### Requests 59 to 67, as they stand` above. Request 68 is the one open request.
