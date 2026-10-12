@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "79ba9c8e-14db-4d4f-b901-5d2f3e3209b7",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/issues/261012-2126-the-installed-tree-diff-at-c-lists-five-files-where-step-20-names-three-because-install-sh-copies-hooks-and-codec-whole.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
