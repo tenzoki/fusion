@@ -17,17 +17,20 @@ The host side that calls this module is `Prior: internal/fusionhost/external_exp
 
 | Path | What it is |
 |---|---|
-| `PRIOR_PIN` | One line: the full hash of the Prior revision the adapter is built and tested against. |
+| `PRIOR_PIN` | One line: the full hash of the Prior revision the adapter is built and tested against, `10ad78becad0bb5323b1afeba4842fc21605f570`. It moved there from `6080ba76` at plan step 17, when Prior added `moduleapi/v1/repair_wire.go` (the six service constants, `RepairCall`, `RepairOperationID`, `DecodeRepairCall`, `RepairResponse`, `DecodeRepairResponse`, `RepairSnapshot`), which the repair client uses instead of re-implementing; `go.mod`, `go.sum` and the rest of `moduleapi/v1` are unchanged since `167c605`. The explorer bundle Prior accepted at request 68 stays the one built against `6080ba76`. |
 | `stage.sh` | Clones Prior at the pin into a scratch directory, stages the sources there and runs a Go command. The only way these sources are ever compiled. |
+| `build.sh` | The reproducible build, its verification with Prior's own inspector and its delivery; see `## Building the bundle`. |
 | `check-imports.sh` | The import discipline, checked with `find`, `grep` and `awk`: no `go.mod`, `go.work`, `go.sum` or `vendor/` under this directory; no import under Prior's `internal/` or `modules/`; every non-standard import is the SDK or an own package. |
-| `fusionmodule/cmd/fusion-module/` | The executable: identity and secret from the two environment variables, the payload located above its own path, the explorer served over stdin and stdout. |
+| `launcher/fusion-module.sh` | The `/bin/sh` launcher shipped as the bundle's `executable`, `bin/fusion-module`: maps `/usr/bin/uname -s -m` to one of the three binaries beside it and execs it, nothing through `PATH`, nothing on stdout; exit 4 for a host it has no binary for. |
+| `fusionmodule/cmd/fusion-module/` | The executable: identity and secret from the two environment variables, the payload located above its own path, the explorer and the repair workflow served over stdin and stdout. |
+| `fusionmodule/cmd/fusion-bundle/` | The assembler `build.sh` builds and runs inside the staged clone, never shipped: the three target builds, the payload, its identity by Prior's index algorithm, the deterministic tarball, the sidecar and `handover.json`. |
 | `fusionmodule/internal/steps/` | The floor: bundle reader, catalog, profile and workflow decoders with exactly Prior's key sets, a strict JSON parser, a JSON Schema validator over the keyword subset the shipped schemas use, the observe-then-act executor over one durable role, and the frame-bound check. |
 | `fusionmodule/internal/explorer/` | The explorer workflow: interprets `workflows/explorer.v1.json` on the step executor and serves `fusion.explorer.v1`. |
-| `fusionmodule/internal/fixture/` | Test support only: a payload built from `catalog/`, and a fake host with in-memory durable `host.role.*` services. Not linked into the executable. |
-
-Plan step 8 adds `build.sh`, the launcher `launcher/fusion-module.sh` and the
-assembler `fusionmodule/cmd/fusion-bundle/`; step 9 adds
-`fusionmodule/conformance/`, which starts the launcher from a built bundle.
+| `fusionmodule/internal/hostsvc/` | The client of the six repair host services of Prior's answer 69 (`host.role.compose.v1`, `host.workspace.v1`, `host.capture.v1`, `host.integrate.v1`, `host.snapshot.v1`, `host.workbench.v1`), one method each over the workflow's `HostCaller`, every request an `api.RepairCall` marshalled once per slot so a replay sends the same bytes. |
+| `fusionmodule/internal/repair/` | The repair workflow: interprets `workflows/repair.v1.json` over the step executor and the host service client and serves `fusion.repair.v1`; ten steps, the attempt map validated before any role call, every role read before it is run on restart. |
+| `fusionmodule/internal/fixture/` | Test support only: a payload built from `catalog/`, and a fake host with in-memory durable `host.role.*` services and the six repair services. Not linked into the executable. |
+| `fusionmodule/conformance/` | The conformance suite: starts the launcher from a bundle `build.sh` wrote and drives both workflows through `moduleapi/v1` against the fake host; see `### Conformance against a built bundle`. |
+| `testdata/repair-fixture/` | The repair conformance's toy repository and `task.json`; see the same section. |
 
 ## How the sources are built
 
@@ -70,6 +73,41 @@ Edit `PRIOR_PIN`, run `stage.sh test`, and read Prior's
 wire or build change the adapter has to follow. The pin is the revision Prior
 runs the explorer proof on; the bundle's build identity names it.
 
+## Building the bundle
+
+```
+adapters/prior/build.sh build [<out>]
+adapters/prior/build.sh verify <out>
+adapters/prior/build.sh deliver
+```
+
+`build` renders the catalog for Prior (`cd catalog && npm run render -- prior
+<work>/rendered`), runs the assembler through `stage.sh run` in the staged
+clone, where it builds `cmd/fusion-module` for `darwin-arm64`, `linux-amd64`
+and `linux-arm64` in Prior's exact form (`GOWORK=off GOTOOLCHAIN=local
+CGO_ENABLED=0`), assembles the payload with the launcher at `bin/fusion-module`
+and the binaries at `bin/<os>-<arch>/fusion-module`, and writes
+`<out>/payload/`, `<out>/fusion-<version>.tar` (uncompressed, normalized),
+its `.sha256` sidecar and `<out>/handover.json`; it prints the bundle digest.
+`<out>` must be empty or absent and outside both repositories; the default is
+a fresh directory under `TMPDIR`. The version is read from
+`.claude-plugin/plugin.json`. The payload's `build-identity.json` names the
+fusion revision, the Prior revision (the pin), the toolchain and the commands
+that ran, and inventories the adapter sources, the launcher and every other
+payload file; the bundle digest covers it, so a build at any other commit
+yields another digest. The build refuses a dirty fusion tree outside
+`fusion-workbench/`; `FUSION_BUILD_ALLOW_DIRTY=1` builds anyway and marks the
+revision `<sha>+dirty`.
+
+`verify` writes a throwaway probe into the clone's `integrationbuild/` and
+runs Prior's own `InspectBundle` over `<out>/payload/` and, after
+`ExtractBundleArchive`, over the extracted tarball, comparing both identities
+with `handover.json`. `deliver` builds, verifies, and copies the tarball, the
+sidecar and `handover.json` to
+`~/.local/share/prior/incoming/fusion/<version>/<digest-hex>/`, mode `0444`,
+refusing a file already there with different bytes, and prints that path,
+which the hand-over section in `codec/fixtures/prior/REQUESTS.md` records.
+
 ## What the executable does
 
 Prior's `BundleManager.Start` runs the bundle's launcher with exactly two
@@ -92,8 +130,13 @@ and no `PATH`. The executable:
    (`invocation_schema`, `role_input_schema`, `result_schema`,
    `envelope_schema`). A definition whose hand-over or completion says
    something this executor does not do is refused at load;
-4. serves `fusion.explorer.v1` through `api.Server`, which performs the
-   authenticated handshake and advertises the capability.
+4. loads the repair definition, `workflows/repair.v1.json`, the same way,
+   with the roles of its ten steps and their schemas (`internal/repair`);
+5. serves `fusion.explorer.v1` and `fusion.repair.v1` through `api.Server`,
+   which performs the authenticated handshake and advertises both
+   capabilities. The rest of this section describes the explorer; the repair
+   workflow's contract is Prior's answer 69 and the header of
+   `fusionmodule/internal/repair/repair.go`.
 
 No service preflight is performed: the SDK's `HostCaller` exposes `CallHost`
 only, and Prior compares the definition's `requires` with its service map
@@ -171,9 +214,56 @@ evidence.
   host call; an oversize answer refused within the frame; a host conflict
   reported; a lost reply returned as an error; and the handler behind
   `api.Server` over pipes against `api.ConnectWithServices`;
-- `cmd/fusion-module`: the exits before the handshake, nothing on stdout.
+- `cmd/fusion-module`: the exits before the handshake, nothing on stdout;
+- `internal/hostsvc` and `internal/repair`: the six service clients and the
+  repair workflow over scripted hosts.
+
+### Conformance against a built bundle
+
+```
+adapters/prior/build.sh build <out>
+FUSION_BUNDLE_DIR=<out> adapters/prior/stage.sh test
+```
+
+`fusionmodule/conformance/` reads `FUSION_BUNDLE_DIR`, the directory
+`build.sh build` wrote; unset, every case skips with that reason. Each case
+extracts the tarball into its own temporary directory and starts the
+launcher from there through `os/exec` with exactly the two Prior variables
+and no `PATH`, its working directory the payload, in its own process group,
+as Prior's `internal/module.StartProcess` does. The host side is the SDK's
+`ConnectWithServices` with the fake host of `internal/fixture`: in-memory
+durable `host.role.*` services and the six repair services. Seventeen cases:
+
+- eleven explorer cases (`explorer_test.go`, plan step 9): the handshake
+  advertises the explorer; a valid answer completes with the host evidence
+  copied; a schema-invalid answer and five findings against a limit of four
+  are refused, not completed; a kill after the persisted answer and a restart
+  run no model; `settled` is reused without a run; `accepted` is
+  `recovery-required` with null evidence; `answered` without the required
+  audit is `recovery-required`; a fresh operation id with the same run is
+  accepted; an oversize input and an unknown capability are refused;
+- six repair cases (`repair_test.go`, plan step 18) over
+  `testdata/repair-fixture/`, a toy repository (`pkg/a` with one failing
+  test, `pkg/b` as read-only context, a `CLAUDE.md` that becomes the project
+  context, one work package with a bound plan in the codec shapes) and
+  `task.json` with two criteria, two checks and a write scope of `pkg/a`;
+  the test copies it, runs `git init` and one fixed commit, and takes `HEAD`
+  as `base_revision`, so no `.git` enters fusion's tree. A reviewed repair
+  runs to audited close; a `revise` verdict loops once within the bound on
+  distinct run ids, then `escalate` stops at review; a kill at each of
+  sixteen persisted boundaries from the explorer's compose to the workbench
+  close, then a resume under a fresh operation id, reproduces the byte-equal
+  envelope with zero further model calls; a corrupted review binding is
+  refused with `review.binding`; an attempt map short of the bound is refused
+  before any role call; and the explorer's results still decode under the
+  frozen schemas.
+
+The launcher maps this machine's `/usr/bin/uname -s -m` to one binary, so the
+suite starts `bin/darwin-arm64/fusion-module` on the build machine and never
+the two Linux binaries, which are delivered built, not qualified (67.9). No
+missing-service case is written: that preflight is Prior's (67.6).
 
 This is conformance on the build machine against a fake host, not Prior's
 acceptance. What Prior's host does with the envelope, the checks of
 `host_evidence` against its durable record above all, is proven only by
-Prior's run of the delivered bundle (request 68).
+Prior's run of the delivered bundle (requests 68 and 70).

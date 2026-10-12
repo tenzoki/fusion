@@ -17,11 +17,13 @@ install: `install.sh` copies a fixed list of entries and `catalog/` is not on it
 | `catalog.json` | The roles: canonical id, Claude agent name, Prior ids, aliases with their domain, and one support state per host (`supported`, `planned`, `unsupported`). Copied byte for byte into the bundle. |
 | `profiles/<id>/profile.json` | A role's profile: its `parts` list (fusion's own, never shipped) and the seven keys Prior reads. |
 | `profiles/<id>/parts/*.md` | The role text, in order, each file tagged `neutral`, `claude` or `prior` in `profile.json`. |
-| `workflows/<id>.v1.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. |
+| `workflows/<id>.v1.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. Two exist: `explorer.v1.json`, one durable role, and `repair.v1.json`, the ten-step reviewed repair of Prior's answer 69. |
 | `schemas/*.schema.json` | The schemas of the three file kinds above; their `description` fields document each shape. |
 | `schemas/*.v1.json` | The request, role-input, envelope and result schemas the bundle ships. |
+| `schemas/FROZEN` | The sha256 of every published schema and workflow definition, one line each, written at plan step 15 on Prior's answer 69. See `## The frozen assets`. |
 | `src/render.ts` | The renderer and its CLI. |
 | `src/__tests__/render.test.ts` | The contract, as tests. |
+| `src/__tests__/frozen.test.ts` | The freeze, as tests. |
 
 ## The two commands
 
@@ -70,7 +72,21 @@ gets nothing written and nothing listed, never a placeholder (Prior's
 follow-up of 2026-10-11). A `supported` role with no parts is reported as
 missing and the command exits 1, because Prior refuses a bundle whose
 supported role has no text. The bundle's `workflows/` and `schemas/` are
-copied by the bundle assembler (plan step 8), not by this command.
+copied by the bundle assembler, `adapters/prior/fusionmodule/cmd/fusion-bundle/`
+run by `adapters/prior/build.sh`, not by this command.
+
+## The frozen assets
+
+Every `schemas/*.v1.json` and `workflows/*.v1.json` is a published contract:
+Prior decodes the bundle's copy, and the explorer's five were accepted byte
+for byte at request 68. `schemas/FROZEN` names each with its sha256, and
+`src/__tests__/frozen.test.ts` holds four things: the list parses and is
+exactly the published set, every named file hashes to its line, a copy with
+one byte appended is reported, and the explorer's assets are the bytes Prior
+accepted. A change to a frozen file turns `npm test` red; the route is a new
+schema version beside the old one, agreed with Prior, and a new `FROZEN`
+line for it, never an edit under the same name. The `*.schema.json` files
+and the profiles are fusion's own and are not frozen.
 
 ## Editing a converted prompt
 

@@ -1,4 +1,4 @@
-# frozen at plan step 15 on Prior's answer 69 at a4f463f; one line per published asset: <relative path from catalog/> <sha256>
+# frozen at plan step 15 on Prior's answer 69 at a4f463f; one line per published asset: <sha256>  <relative path from catalog/>
 ac1ca858ed2e68576076950555a7ad24d17c91ef16a168592dbed4900a1be5f0  schemas/audit-request.v1.json
 7c6f52787e6477195d618a240497d8a8ed3a093c949a50ccf5499455b1c844e5  schemas/audit-result.v1.json
 8af82ac71061d8c7dc2fdd611c270b974966e8c421210abd22d19df4d604497c  schemas/explorer-envelope.v1.json
