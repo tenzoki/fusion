@@ -1,6 +1,8 @@
 // Package fixture serves the adapter's tests: a payload directory built from
-// fusion's catalog, and a fake host whose three host.role.* services are
-// durable in memory. Nothing here is linked into the module executable.
+// fusion's catalog, a fake host whose three host.role.* services are durable
+// in memory, and, in repair.go, a fake host that adds the six repair services
+// of Prior's answer 69 over it. Nothing here is linked into the module
+// executable.
 package fixture
 
 import (
@@ -31,24 +33,47 @@ func CatalogDir(t *testing.T) string {
 	return dir
 }
 
-// DataFiles are the payload entries the fixture declares, in manifest order.
-var DataFiles = []string{
-	"catalog.json",
-	"profiles/explorer.json",
-	"profiles/explorer.md",
-	"workflows/explorer.v1.json",
-	"schemas/explorer-request.v1.json",
-	"schemas/explorer-role-input.v1.json",
-	"schemas/explorer-envelope.v1.json",
-	"schemas/explorer-result.v1.json",
+// Profiles are the four roles the bundle serves on Prior, each with its
+// rendered profile in the payload.
+var Profiles = []string{"explorer", "code-implementer", "reviewer", "state-auditor"}
+
+// Workflows are the two definitions the payload carries.
+var Workflows = []string{"explorer", "repair"}
+
+// Schemas are the twelve published schemas, as catalog/schemas/FROZEN lists
+// them.
+var Schemas = []string{
+	"explorer-request", "explorer-role-input", "explorer-envelope", "explorer-result",
+	"repair-request", "repair-result",
+	"implementer-request", "implementer-result",
+	"review-request", "review-response",
+	"audit-request", "audit-result",
+}
+
+// DataFiles are the payload entries the fixture declares, in manifest order:
+// the catalog, then each profile's pair, each workflow and each schema.
+var DataFiles = dataFiles()
+
+func dataFiles() []string {
+	out := []string{"catalog.json"}
+	for _, id := range Profiles {
+		out = append(out, "profiles/"+id+".json", "profiles/"+id+".md")
+	}
+	for _, id := range Workflows {
+		out = append(out, "workflows/"+id+".v1.json")
+	}
+	for _, name := range Schemas {
+		out = append(out, "schemas/"+name+".v1.json")
+	}
+	return out
 }
 
 // Bundle writes a payload under a fresh temp directory from the catalog:
-// catalog.json, the workflow and the four schemas copied unchanged, the
-// explorer profile reduced to the seven keys Prior reads (as render.ts's
-// priorProfileJson does), a placeholder profile text and a module.json that
-// declares them. The executable the manifest names is not written: the tests
-// never start a process.
+// catalog.json, the two workflows and the twelve schemas copied unchanged,
+// each supported profile reduced to the seven keys Prior reads (as
+// render.ts's priorProfileJson does), a placeholder profile text and a
+// module.json that declares them. The executable the manifest names is not
+// written: the tests never start a process.
 func Bundle(t *testing.T, catalogDir string) string {
 	t.Helper()
 	root := t.TempDir()
@@ -69,25 +94,29 @@ func Bundle(t *testing.T, catalogDir string) string {
 		write(rel, body)
 	}
 	copyFile("catalog.json", "catalog.json")
-	copyFile("workflows/explorer.v1.json", "workflows/explorer.v1.json")
-	for _, name := range []string{"explorer-request", "explorer-role-input", "explorer-envelope", "explorer-result"} {
+	for _, id := range Workflows {
+		copyFile("workflows/"+id+".v1.json", "workflows/"+id+".v1.json")
+	}
+	for _, name := range Schemas {
 		copyFile("schemas/"+name+".v1.json", "schemas/"+name+".v1.json")
 	}
-	profileBytes, err := os.ReadFile(filepath.Join(catalogDir, "profiles", "explorer", "profile.json"))
-	if err != nil {
-		t.Fatal(err)
+	for _, id := range Profiles {
+		profileBytes, err := os.ReadFile(filepath.Join(catalogDir, "profiles", id, "profile.json"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		var profile map[string]json.RawMessage
+		if err := json.Unmarshal(profileBytes, &profile); err != nil {
+			t.Fatal(err)
+		}
+		delete(profile, "parts")
+		reduced, err := json.Marshal(profile)
+		if err != nil {
+			t.Fatal(err)
+		}
+		write("profiles/"+id+".json", reduced)
+		write("profiles/"+id+".md", []byte("fixture profile text\n"))
 	}
-	var profile map[string]json.RawMessage
-	if err := json.Unmarshal(profileBytes, &profile); err != nil {
-		t.Fatal(err)
-	}
-	delete(profile, "parts")
-	reduced, err := json.Marshal(profile)
-	if err != nil {
-		t.Fatal(err)
-	}
-	write("profiles/explorer.json", reduced)
-	write("profiles/explorer.md", []byte("fixture profile text\n"))
 	manifest := map[string]any{"schema_version": 1, "module_id": Identity.ModuleID, "version": Identity.Version, "runtime_api": "1", "executable": "bin/fusion-module", "data": DataFiles}
 	manifestBytes, err := json.Marshal(manifest)
 	if err != nil {
@@ -168,11 +197,26 @@ type Run struct {
 // store, with the knobs the explorer cases need. Every call is recorded.
 type Host struct {
 	mu sync.Mutex
-	// Model is called once per run on absent; nil answers Answer(1).
+	// Model is called once per run on absent, whatever the profile; nil
+	// consults Models by profile, and with no entry there answers Answer(1).
 	Model func(input json.RawMessage) json.RawMessage
+	// Models answers per profile when Model is nil, each given the run id and
+	// the frozen input.
+	Models map[string]func(runID string, input json.RawMessage) json.RawMessage
+	// Profiles are the profiles the host serves; nil serves the explorer
+	// alone, which is what the explorer cases expect.
+	Profiles []string
+	// Principal names the principal of a run's answer; nil names
+	// principal:<profile>, one per profile.
+	Principal func(profile, runID string) string
 	// RequireAudit, when set, is the audit reference completion needs; any
 	// other value, the empty one included, is refused recovery-required.
 	RequireAudit string
+	// RequireAuditRun, when set, confines RequireAudit to that run: its
+	// completion needs the reference, and a completion of any other run
+	// that carries a reference is refused invalid-request, since the
+	// reference names one run and is never sent blindly to another.
+	RequireAuditRun string
 	// ModelCalls counts fake model invocations.
 	ModelCalls int
 	// Runs is the durable store by run id.
@@ -192,20 +236,55 @@ func NewHost() *Host {
 	return &Host{Runs: map[string]*Run{}}
 }
 
-// Seed places a run in a state before any call: accepted (no answer),
-// answered or settled with the given output.
+// Seed places an explorer run in a state before any call: accepted (no
+// answer), answered or settled with the given output.
 func (h *Host) Seed(runID, state string, input, output json.RawMessage) {
+	h.SeedRole(runID, "explorer", state, input, output)
+}
+
+// SeedRole is Seed for a run of any profile.
+func (h *Host) SeedRole(runID, profile, state string, input, output json.RawMessage) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	r := &Run{State: state, Input: append([]byte(nil), input...)}
 	if output != nil {
-		r.Answer = h.answer(runID, output)
+		r.Answer = h.answer(runID, profile, output)
 	}
 	h.Runs[runID] = r
 }
 
-func (h *Host) answer(runID string, output json.RawMessage) *api.RoleAnswer {
-	return &api.RoleAnswer{RunID: runID, ModuleID: Identity.ModuleID, ModuleVersion: Identity.Version, Profile: "explorer", PrincipalID: "principal:explorer", Output: output, ObservedAt: time.Date(2026, 10, 11, 9, 30, 0, 123456789, time.UTC)}
+func (h *Host) answer(runID, profile string, output json.RawMessage) *api.RoleAnswer {
+	return &api.RoleAnswer{RunID: runID, ModuleID: Identity.ModuleID, ModuleVersion: Identity.Version, Profile: profile, PrincipalID: h.principal(profile, runID), Output: output, ObservedAt: time.Date(2026, 10, 11, 9, 30, 0, 123456789, time.UTC)}
+}
+
+func (h *Host) principal(profile, runID string) string {
+	if h.Principal != nil {
+		return h.Principal(profile, runID)
+	}
+	return "principal:" + profile
+}
+
+func (h *Host) serves(profile string) bool {
+	if h.Profiles == nil {
+		return profile == "explorer"
+	}
+	for _, p := range h.Profiles {
+		if p == profile {
+			return true
+		}
+	}
+	return false
+}
+
+func (h *Host) model(profile, runID string, input json.RawMessage) json.RawMessage {
+	h.ModelCalls++
+	if h.Model != nil {
+		return h.Model(input)
+	}
+	if m := h.Models[profile]; m != nil {
+		return m(runID, input)
+	}
+	return Answer(1)
 }
 
 // Services are the handlers ConnectWithServices offers, or a HostCaller
@@ -228,7 +307,7 @@ func (h *Host) serve(capability string, inv api.Invocation) api.RoleResponse {
 		return api.RoleResponse{State: "refused", Code: "invalid-request"}
 	}
 	h.Calls = append(h.Calls, Call{capability, call})
-	if call.Identity != Identity || call.Profile != "explorer" {
+	if call.Identity != Identity || !h.serves(call.Profile) {
 		return api.RoleResponse{State: "refused", Code: "permission-denied"}
 	}
 	run := h.Runs[call.RunID]
@@ -243,12 +322,8 @@ func (h *Host) serve(capability string, inv api.Invocation) api.RoleResponse {
 		return api.RoleResponse{State: run.State, Result: run.Answer}
 	case api.RoleRunCapability:
 		if run == nil {
-			h.ModelCalls++
-			output := Answer(1)
-			if h.Model != nil {
-				output = h.Model(call.Input)
-			}
-			run = &Run{State: "answered", Input: append([]byte(nil), call.Input...), Answer: h.answer(call.RunID, output)}
+			output := h.model(call.Profile, call.RunID, call.Input)
+			run = &Run{State: "answered", Input: append([]byte(nil), call.Input...), Answer: h.answer(call.RunID, call.Profile, output)}
 			h.Runs[call.RunID] = run
 		}
 		if run.Answer == nil {
@@ -259,7 +334,11 @@ func (h *Host) serve(capability string, inv api.Invocation) api.RoleResponse {
 		if run == nil || run.Answer == nil {
 			return api.RoleResponse{State: "refused", Code: "recovery-required"}
 		}
-		if h.RequireAudit != "" && call.AuditRef != h.RequireAudit {
+		if h.RequireAuditRun != "" && call.RunID != h.RequireAuditRun {
+			if call.AuditRef != "" {
+				return api.RoleResponse{State: "refused", Code: "invalid-request"}
+			}
+		} else if h.RequireAudit != "" && call.AuditRef != h.RequireAudit {
 			return api.RoleResponse{State: "refused", Code: "recovery-required"}
 		}
 		run.State = "settled"

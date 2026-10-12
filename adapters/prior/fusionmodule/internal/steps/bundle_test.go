@@ -101,11 +101,16 @@ func TestCatalogResolvesSupportedRolesOnly(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	role, domain, err := c.Resolve("explorer")
-	if err != nil || role.ID != "explorer" || domain != "" {
-		t.Fatalf("explorer: %+v %q %v", role, domain, err)
+	// The four roles the catalog supports on Prior since plan step 16
+	// resolve, the reviewer through its two aliases with their domains;
+	// every other role, and a name outside the catalog, refuses.
+	for name, want := range map[string]struct{ id, domain string }{"explorer": {"explorer", ""}, "code-implementer": {"code-implementer", ""}, "reviewer": {"reviewer", ""}, "code-reviewer": {"reviewer", "code"}, "data-reviewer": {"reviewer", "ontology"}, "state-auditor": {"state-auditor", ""}} {
+		role, domain, err := c.Resolve(name)
+		if err != nil || role.ID != want.id || domain != want.domain {
+			t.Errorf("%s: %+v %q %v", name, role, domain, err)
+		}
 	}
-	for _, name := range []string{"code-implementer", "reviewer", "code-reviewer", "data-reviewer", "state-auditor", "defect-fixer", "orchestrator", "nobody"} {
+	for _, name := range []string{"defect-fixer", "orchestrator", "data-implementer", "plan-reviewer", "analyst", "nobody"} {
 		if _, _, err := c.Resolve(name); err == nil {
 			t.Errorf("%s resolved", name)
 		}
@@ -117,8 +122,11 @@ func TestCatalogResolvesSupportedRolesOnly(t *testing.T) {
 	if p.InputSchema != "schemas/explorer-role-input.v1.json" || p.ResultSchema != "schemas/explorer-result.v1.json" || p.MayDelegate || p.WritesWorkbench["prior"] {
 		t.Fatalf("profile %+v", p)
 	}
-	if _, err := LoadProfile(b, "reviewer"); err == nil {
-		t.Error("a planned role's absent profile loaded")
+	if p, err := LoadProfile(b, "reviewer"); err != nil || p.InputSchema != "schemas/review-request.v1.json" || p.ResultSchema != "schemas/review-response.v1.json" || p.MayDelegate || p.WritesWorkbench["prior"] {
+		t.Errorf("reviewer profile %+v: %v", p, err)
+	}
+	if _, err := LoadProfile(b, "analyst"); err == nil {
+		t.Error("an unsupported role's absent profile loaded")
 	}
 	w, err := LoadWorkflow(b, "workflows/explorer.v1.json")
 	if err != nil {

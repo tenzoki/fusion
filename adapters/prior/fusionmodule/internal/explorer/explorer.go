@@ -168,15 +168,12 @@ type Envelope struct {
 }
 
 // Roles builds the step executor's role client over the workflow's
-// HostCaller; the module uses api.RemoteRoles, tests substitute a fake.
-type Roles func(api.HostCaller) steps.RoleClient
+// HostCaller; the module uses api.RemoteRoles, tests substitute a fake. It
+// is steps.Roles, shared with the repair workflow.
+type Roles = steps.Roles
 
 // RemoteRoles is the module's Roles: the SDK's client over the host caller.
-func RemoteRoles(id api.Identity) Roles {
-	return func(host api.HostCaller) steps.RoleClient {
-		return api.RemoteRoles{Host: host, Identity: id}
-	}
-}
+func RemoteRoles(id api.Identity) Roles { return steps.RemoteRoles(id) }
 
 // Handler serves the definition under the module's identity.
 func (d *Definition) Handler(id api.Identity, roles Roles) api.WorkflowHandler {

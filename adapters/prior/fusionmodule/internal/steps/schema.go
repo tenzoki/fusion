@@ -6,18 +6,21 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
+	"strings"
 	"unicode/utf8"
 )
 
-// A JSON Schema validator over the keyword subset the bundle's four shipped
+// A JSON Schema validator over the keyword subset the bundle's shipped
 // schemas use, draft 2020-12 semantics, standard library only: the adapter may
 // import nothing but moduleapi/v1 and the standard library (Prior answer
 // 67.4), and the host compiles the same files with a full validator, so this
 // one must agree with it on every keyword it accepts and refuse every keyword
 // it does not implement. An unknown keyword is a compile error, never an
-// annotation silently ignored: a schema change that reaches for `$ref`,
+// annotation silently ignored: a schema change that reaches for
 // `patternProperties` or `format` fails here before a bundle ships rather
-// than passing input the host would refuse.
+// than passing input the host would refuse. `$ref` is implemented for the one
+// form the repair schemas use, a pointer into the document's own root
+// `$defs`; any other reference target is refused at compile.
 
 // ErrSchema is returned for a schema this validator cannot compile.
 var ErrSchema = errors.New("unsupported schema")
@@ -48,6 +51,7 @@ type Schema struct {
 	additional    *Schema
 	required      []string
 	minLength     *int
+	maxLength     *int
 	minItems      *int
 	maxItems      *int
 	minProperties *int
@@ -64,6 +68,21 @@ type Schema struct {
 	ifSchema      *Schema
 	thenSchema    *Schema
 	elseSchema    *Schema
+	// ref is the schema a `$ref` names, resolved once the whole document is
+	// compiled; refName holds the `$defs` member until then.
+	ref     *Schema
+	refName string
+}
+
+// defsPrefix is the one reference form implemented: a pointer into the root
+// document's `$defs`, which is how every shipped repair schema uses `$ref`.
+const defsPrefix = "#/$defs/"
+
+// compiler carries the root `$defs` and the reference sites of one document
+// so that a `$ref` can name a definition compiled after it.
+type compiler struct {
+	defs map[string]*Schema
+	refs []*Schema
 }
 
 // CompileSchema parses and compiles one schema document.
@@ -72,21 +91,46 @@ func CompileSchema(body []byte) (*Schema, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrSchema, err)
 	}
-	return compile(v, "#")
+	c := &compiler{defs: map[string]*Schema{}}
+	if root, ok := v.(map[string]any); ok {
+		if raw, ok := root["$defs"]; ok {
+			defs, ok := raw.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("%w: #/$defs is not an object", ErrSchema)
+			}
+			for name, sub := range defs {
+				if c.defs[name], err = c.compile(sub, defsPrefix+name); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	s, err := c.compile(v, "#")
+	if err != nil {
+		return nil, err
+	}
+	for _, site := range c.refs {
+		target, ok := c.defs[site.refName]
+		if !ok {
+			return nil, fmt.Errorf("%w: $ref %s%s names no definition", ErrSchema, defsPrefix, site.refName)
+		}
+		site.ref = target
+	}
+	return s, nil
 }
 
-func compile(v any, at string) (*Schema, error) {
+func (c *compiler) compile(v any, at string) (*Schema, error) {
 	switch doc := v.(type) {
 	case bool:
 		b := doc
 		return &Schema{always: &b}, nil
 	case map[string]any:
-		return compileObject(doc, at)
+		return c.compileObject(doc, at)
 	}
 	return nil, fmt.Errorf("%w: %s is neither an object nor a boolean", ErrSchema, at)
 }
 
-func compileObject(doc map[string]any, at string) (*Schema, error) {
+func (c *compiler) compileObject(doc map[string]any, at string) (*Schema, error) {
 	s := &Schema{}
 	for key, raw := range doc {
 		where := at + "/" + key
@@ -94,6 +138,19 @@ func compileObject(doc map[string]any, at string) (*Schema, error) {
 		switch key {
 		case "$schema", "$id", "title", "description", "$comment":
 			// Annotations: no constraint.
+		case "$defs":
+			// Compiled by CompileSchema before the root; anywhere else it is
+			// a form this validator does not implement.
+			if at != "#" {
+				return nil, fmt.Errorf("%w: keyword %q at %s is not implemented", ErrSchema, key, at)
+			}
+		case "$ref":
+			str, ok := raw.(string)
+			if !ok || !strings.HasPrefix(str, defsPrefix) || strings.ContainsAny(str[len(defsPrefix):], "/~") || str == defsPrefix {
+				return nil, fmt.Errorf("%w: %s: only a %s<name> reference is implemented", ErrSchema, where, defsPrefix)
+			}
+			s.refName = str[len(defsPrefix):]
+			c.refs = append(c.refs, s)
 		case "type":
 			s.types, err = typeList(raw, where)
 		case "properties":
@@ -103,17 +160,19 @@ func compileObject(doc map[string]any, at string) (*Schema, error) {
 			}
 			s.properties = make(map[string]*Schema, len(obj))
 			for name, sub := range obj {
-				s.properties[name], err = compile(sub, where+"/"+name)
+				s.properties[name], err = c.compile(sub, where+"/"+name)
 				if err != nil {
 					return nil, err
 				}
 			}
 		case "additionalProperties":
-			s.additional, err = compile(raw, where)
+			s.additional, err = c.compile(raw, where)
 		case "required":
 			s.required, err = stringList(raw, where)
 		case "minLength":
 			s.minLength, err = nonNegativeInt(raw, where)
+		case "maxLength":
+			s.maxLength, err = nonNegativeInt(raw, where)
 		case "minItems":
 			s.minItems, err = nonNegativeInt(raw, where)
 		case "maxItems":
@@ -127,7 +186,7 @@ func compileObject(doc map[string]any, at string) (*Schema, error) {
 			}
 			s.uniqueItems = b
 		case "items":
-			s.items, err = compile(raw, where)
+			s.items, err = c.compile(raw, where)
 		case "minimum":
 			s.minimum, err = rational(raw, where)
 		case "maximum":
@@ -150,15 +209,15 @@ func compileObject(doc map[string]any, at string) (*Schema, error) {
 		case "const":
 			s.constValue, s.hasConst = raw, true
 		case "allOf":
-			s.allOf, err = schemaList(raw, where)
+			s.allOf, err = c.schemaList(raw, where)
 		case "oneOf":
-			s.oneOf, err = schemaList(raw, where)
+			s.oneOf, err = c.schemaList(raw, where)
 		case "if":
-			s.ifSchema, err = compile(raw, where)
+			s.ifSchema, err = c.compile(raw, where)
 		case "then":
-			s.thenSchema, err = compile(raw, where)
+			s.thenSchema, err = c.compile(raw, where)
 		case "else":
-			s.elseSchema, err = compile(raw, where)
+			s.elseSchema, err = c.compile(raw, where)
 		default:
 			return nil, fmt.Errorf("%w: keyword %q at %s is not implemented", ErrSchema, key, at)
 		}
@@ -214,14 +273,14 @@ func stringList(raw any, where string) ([]string, error) {
 	return out, nil
 }
 
-func schemaList(raw any, where string) ([]*Schema, error) {
+func (c *compiler) schemaList(raw any, where string) ([]*Schema, error) {
 	arr, ok := raw.([]any)
 	if !ok || len(arr) == 0 {
 		return nil, fmt.Errorf("%w: %s is not a non-empty array", ErrSchema, where)
 	}
 	out := make([]*Schema, 0, len(arr))
 	for i, item := range arr {
-		s, err := compile(item, fmt.Sprintf("%s/%d", where, i))
+		s, err := c.compile(item, fmt.Sprintf("%s/%d", where, i))
 		if err != nil {
 			return nil, err
 		}
@@ -268,6 +327,13 @@ func (s *Schema) validate(v any, path string) error {
 		}
 		return &Violation{path, "false", "schema accepts nothing"}
 	}
+	// A reference applies beside the keywords around it, as draft 2020-12
+	// has it; the violation reported is the referenced schema's own.
+	if s.ref != nil {
+		if err := s.ref.validate(v, path); err != nil {
+			return err
+		}
+	}
 	if len(s.types) > 0 && !matchesAnyType(v, s.types) {
 		return &Violation{path, "type", fmt.Sprintf("expected %v", s.types)}
 	}
@@ -298,6 +364,9 @@ func (s *Schema) validate(v any, path string) error {
 	case string:
 		if s.minLength != nil && utf8.RuneCountInString(t) < *s.minLength {
 			return &Violation{path, "minLength", fmt.Sprintf("fewer than %d characters", *s.minLength)}
+		}
+		if s.maxLength != nil && utf8.RuneCountInString(t) > *s.maxLength {
+			return &Violation{path, "maxLength", fmt.Sprintf("more than %d characters", *s.maxLength)}
 		}
 		if s.pattern != nil && !s.pattern.MatchString(t) {
 			return &Violation{path, "pattern", s.pattern.String()}

@@ -15,6 +15,17 @@ type RoleClient interface {
 	CompleteRole(context.Context, api.RoleRequest, string) (api.RoleResult, error)
 }
 
+// Roles builds a workflow's role client over its HostCaller; the module uses
+// RemoteRoles, tests substitute a fake. Both workflows take one.
+type Roles func(api.HostCaller) RoleClient
+
+// RemoteRoles is the module's Roles: the SDK's client over the host caller.
+func RemoteRoles(id api.Identity) Roles {
+	return func(host api.HostCaller) RoleClient {
+		return api.RemoteRoles{Host: host, Identity: id}
+	}
+}
+
 // Observation is what the last read of the durable role reported, plus the
 // host's refusal code when the step's last call was refused. State and Answer
 // always come from a read; the executor never reports a state it inferred.

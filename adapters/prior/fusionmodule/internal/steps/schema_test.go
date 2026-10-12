@@ -77,16 +77,33 @@ func TestSchemaKeywords(t *testing.T) {
 	check(t, always, `{"anything":1}`, "")
 	never := mustCompile(t, `false`)
 	check(t, never, `1`, "false")
+
+	bounded := mustCompile(t, `{"type":"string","maxLength":2}`)
+	check(t, bounded, `"éé"`, "")
+	check(t, bounded, `"abc"`, "maxLength")
+
+	// A reference into the root $defs, used before and after its definition,
+	// from nested positions, and beside other keywords.
+	refs := mustCompile(t, `{"type":"object","properties":{"a":{"$ref":"#/$defs/id"},"l":{"type":"array","items":{"$ref":"#/$defs/id"}},"n":{"$ref":"#/$defs/id","type":"string"}},"$defs":{"id":{"type":"string","pattern":"^r"}}}`)
+	check(t, refs, `{"a":"r1","l":["r2"],"n":"r3"}`, "")
+	check(t, refs, `{"a":"x"}`, "pattern")
+	check(t, refs, `{"l":["r","x"]}`, "pattern")
+	check(t, refs, `{"n":1}`, "type")
 }
 
 func TestSchemaRefusesUnimplementedKeywords(t *testing.T) {
 	for _, schema := range []string{
 		`{"$ref":"#/$defs/x"}`,
-		`{"$defs":{"x":{}}}`,
+		`{"$defs":{"x":{}},"$ref":"#/$defs/y"}`,
+		`{"$defs":{"x":{}},"$ref":"#/properties/x"}`,
+		`{"$defs":{"x":{}},"$ref":"other.json#/$defs/x"}`,
+		`{"$defs":{"x":{}},"$ref":"#/$defs/"}`,
+		`{"$defs":{"x":{}},"properties":{"a":{"$defs":{"y":{}}}}}`,
+		`{"$defs":[]}`,
 		`{"patternProperties":{"^a":{}}}`,
 		`{"format":"uri"}`,
 		`{"type":"blob"}`,
-		`{"properties":{"a":{"maxLength":1}}}`,
+		`{"properties":{"a":{"maxLength":-1}}}`,
 		`{"anyOf":[{}]}`,
 		`{"not":{}}`,
 		`{"minLength":-1}`,

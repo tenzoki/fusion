@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/fixture"
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/steps"
 	api "github.com/kai/prior/moduleapi/v1"
 )
 
@@ -49,5 +51,26 @@ func TestExitsBeforeTheHandshakeWithoutIdentity(t *testing.T) {
 	code, out = exitCode(t, api.IdentityEnvironment+"="+identity, api.SecretEnvironment+"="+hex.EncodeToString(make([]byte, 32)))
 	if code != 3 || out != "" {
 		t.Fatalf("outside a bundle: exit %d, stdout %q", code, out)
+	}
+}
+
+// The payload's two definitions are both registered, each under its own
+// capability, from a fixture bundle built off the catalog.
+func TestWorkflowsRegisterBothCapabilities(t *testing.T) {
+	bundle, err := steps.OpenBundle(fixture.Bundle(t, fixture.CatalogDir(t)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	handlers, err := workflows(bundle, fixture.Identity)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, capability := range []string{"fusion.explorer.v1", "fusion.repair.v1"} {
+		if handlers[capability] == nil {
+			t.Errorf("%s is not registered", capability)
+		}
+	}
+	if len(handlers) != 2 {
+		t.Fatalf("%d workflows registered", len(handlers))
 	}
 }
