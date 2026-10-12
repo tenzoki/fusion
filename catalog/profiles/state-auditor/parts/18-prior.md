@@ -1,6 +1,6 @@
 ### Step 3: Report every tracking change
 
-On Prior you change no file. Each change below is one entry of your answer naming the record, the change and the evidence, and the host applies it as one transition under its own authority or puts it to the user. No rename and no edit of a control file or a head line, by you, or by the host on your word alone.
+On Prior you change no file. Each change below is one `tracking_changes` entry of your answer naming the record, the change and the evidence; the host preserves it for the operator, who applies it or puts it to the user, and in this revision the host turns none of it into a record edit itself. No rename and no edit of a control file or a head line, by you, or by the host on your word alone.
 
 For each plan the input carries:
 - Each step whose state disagrees with ground truth: the step number under `## Implementation Steps`, the state it should hold (`done` or `in_progress`), and the plan's own state (`in_progress` once work on it has landed)

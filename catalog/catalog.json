@@ -62,7 +62,7 @@
       "claude_name": "code-implementer",
       "prior_ids": ["code-implementer"],
       "aliases": [],
-      "support": { "claude-code": "supported", "prior": "planned" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "data-implementer",
@@ -86,14 +86,14 @@
         { "id": "code-reviewer", "domain": "code" },
         { "id": "data-reviewer", "domain": "ontology" }
       ],
-      "support": { "claude-code": "supported", "prior": "planned" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "state-auditor",
       "claude_name": "state-auditor",
       "prior_ids": ["state-auditor"],
       "aliases": [],
-      "support": { "claude-code": "supported", "prior": "planned" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "work-package-manager",
