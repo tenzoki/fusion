@@ -1,0 +1,36 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+  "workbench_id": "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261012-1200-one-failing-test/plans/261012-1205-make-pkg-a-pass.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Toy Owner <owner@toy.example>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {"id": "1", "state": "in_progress"}
+    ],
+    "criteria": [
+      {"id": "go-test", "met": null},
+      {"id": "scope", "met": null}
+    ],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d",
+        "record_id": "5f0c1c2e-3a4b-4c5d-8e6f-70a1b2c3d4e5"
+      },
+      "revision": "sha256:6f1d3a9c2b8e4f70a1c5d9e3b7f2a6c4e8d0b1a3f5c7e9d2b4a6c8e0f1a3b5c7"
+    }
+  }
+}

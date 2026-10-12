@@ -1,0 +1,14 @@
+{
+  "summary": "Make the failing test in pkg/a pass",
+  "criteria": [
+    "go test ./... exits 0",
+    "no file outside pkg/a changes"
+  ],
+  "context_paths": ["pkg/a", "pkg/b"],
+  "write_paths": ["pkg/a"],
+  "checks": [
+    {"name": "vet", "argv": ["go", "vet", "./..."], "required": true, "baseline_failure": false},
+    {"name": "test", "argv": ["go", "test", "./..."], "required": true, "baseline_failure": false}
+  ],
+  "findings_limit": 4
+}

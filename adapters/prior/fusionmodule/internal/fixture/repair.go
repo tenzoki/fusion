@@ -52,15 +52,20 @@ func TaskSHA256() string { return "sha256:" + Sha256Hex(RepairTask()) }
 // RepairInvocation composes the outer invocation input of fusion.repair.v1.
 func RepairInvocation(t *testing.T, workflowID string, runs RepairRuns, auditRef string) json.RawMessage {
 	t.Helper()
+	return repairInvocation(t, workflowID, RepairTask(), RecordPath, "issue", runs, auditRef)
+}
+
+func repairInvocation(t *testing.T, workflowID string, task json.RawMessage, recordPath, recordKind string, runs RepairRuns, auditRef string) json.RawMessage {
+	t.Helper()
 	attempts := make([]map[string]string, 0, len(runs.Attempts))
 	for _, pair := range runs.Attempts {
 		attempts = append(attempts, map[string]string{"code-implementer": pair[0], "reviewer": pair[1]})
 	}
 	obj := map[string]any{
 		"workflow_id": workflowID,
-		"task":        RepairTask(),
-		"task_sha256": TaskSHA256(),
-		"record":      map[string]string{"path": RecordPath, "kind": "issue"},
+		"task":        task,
+		"task_sha256": "sha256:" + Sha256Hex(task),
+		"record":      map[string]string{"path": recordPath, "kind": recordKind},
 		"runs":        map[string]any{"explorer": runs.Explorer, "attempts": attempts, "state-auditor": runs.Auditor},
 	}
 	if auditRef != "" {
@@ -105,6 +110,17 @@ type RepairHost struct {
 	mu         sync.Mutex
 	WorkflowID string
 	Map        RepairRuns
+	// Task is the approved task the host binds the workflow to, RepairTask
+	// unless a caller sets another: its digest is the binding's plan_hash,
+	// its checks are the ones capture and integrate validate.
+	Task json.RawMessage
+	// Base is the commit the fake repository is detached at, BaseRevision
+	// unless a caller sets the revision of a real repository.
+	Base string
+	// RecordPath and RecordKind select the workbench record the repair
+	// resolves: RecordPath and "issue" unless a caller sets a package.
+	RecordPath string
+	RecordKind string
 	// Record is the workbench object a read serves; Revision its revision.
 	Record   json.RawMessage
 	Revision string
@@ -142,10 +158,30 @@ type RepairHost struct {
 // as output contracts.
 func NewRepairHost(t *testing.T, catalogDir, workflowID string, runs RepairRuns) *RepairHost {
 	t.Helper()
+	h := newRepairHost(workflowID, runs)
+	h.loadSchemas(t, catalogDir, func(id string) string { return filepath.Join("profiles", id, "profile.json") })
+	return h
+}
+
+// NewRepairHostFromPayload is NewRepairHost over an installed payload, the
+// extracted bundle the conformance starts: the profiles stand at
+// profiles/<id>.json and the schemas where those profiles name them.
+func NewRepairHostFromPayload(t *testing.T, payloadDir, workflowID string, runs RepairRuns) *RepairHost {
+	t.Helper()
+	h := newRepairHost(workflowID, runs)
+	h.loadSchemas(t, payloadDir, func(id string) string { return filepath.Join("profiles", id+".json") })
+	return h
+}
+
+func newRepairHost(workflowID string, runs RepairRuns) *RepairHost {
 	h := &RepairHost{
 		Host:       NewHost(),
 		WorkflowID: workflowID,
 		Map:        runs,
+		Task:       RepairTask(),
+		Base:       BaseRevision,
+		RecordPath: RecordPath,
+		RecordKind: "issue",
 		Record:     json.RawMessage(`{"control":{"kind":"issue","state":"open","revision":"7"},"narrative":"# One failing test\n\n---\npkg/a/a_test.go fails since the last refactor.\n"}`),
 		Revision:   "7",
 		Refuse:     map[string]string{},
@@ -166,18 +202,25 @@ func NewRepairHost(t *testing.T, catalogDir, workflowID string, runs RepairRuns)
 		"reviewer":         Review("accept"),
 		"state-auditor":    AuditPassed,
 	}
+	return h
+}
+
+// loadSchemas reads each profile's result schema under root, the profile at
+// the path profileOf gives, and keeps it compact as the output contract.
+func (h *RepairHost) loadSchemas(t *testing.T, root string, profileOf func(id string) string) {
+	t.Helper()
 	for _, id := range Profiles {
 		var profile struct {
 			ResultSchema string `json:"result_schema"`
 		}
-		body, err := os.ReadFile(filepath.Join(catalogDir, "profiles", id, "profile.json"))
+		body, err := os.ReadFile(filepath.Join(root, profileOf(id)))
 		if err != nil {
 			t.Fatal(err)
 		}
 		if err := json.Unmarshal(body, &profile); err != nil {
 			t.Fatal(err)
 		}
-		schema, err := os.ReadFile(filepath.Join(catalogDir, filepath.FromSlash(profile.ResultSchema)))
+		schema, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(profile.ResultSchema)))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -187,7 +230,25 @@ func NewRepairHost(t *testing.T, catalogDir, workflowID string, runs RepairRuns)
 		}
 		h.schemas[id] = compact.Bytes()
 	}
-	return h
+}
+
+// Invocation composes the outer invocation input of fusion.repair.v1 for
+// this host's workflow: its task, its record and its attempt map.
+func (h *RepairHost) Invocation(t *testing.T, auditRef string) json.RawMessage {
+	t.Helper()
+	return repairInvocation(t, h.WorkflowID, h.Task, h.RecordPath, h.RecordKind, h.Map, auditRef)
+}
+
+// taskSHA256 is the host-minted identity of the bound task.
+func (h *RepairHost) taskSHA256() string { return "sha256:" + Sha256Hex(h.Task) }
+
+// after is the revision the close writes: the numeric successor of a
+// numeric revision, else a digest over the revision and the record.
+func (h *RepairHost) after() string {
+	if before, err := strconv.Atoi(h.Revision); err == nil {
+		return strconv.Itoa(before + 1)
+	}
+	return "sha256:" + Sha256Hex([]byte(h.Revision+"\nclosed\n"+string(h.Record)))
 }
 
 // ImplementerDone is a done implementer result over the frozen input: one
@@ -319,7 +380,9 @@ func (h *RepairHost) Services() map[string]api.Handler {
 		out[capability] = h.gate(capability, handler)
 	}
 	for _, capability := range RepairCapabilities {
-		out[capability] = func(_ context.Context, inv api.Invocation) (json.RawMessage, error) { return h.serve(capability, inv), nil }
+		out[capability] = func(_ context.Context, inv api.Invocation) (json.RawMessage, error) {
+			return h.serve(capability, inv), nil
+		}
 	}
 	return out
 }
@@ -424,7 +487,7 @@ func (h *RepairHost) effect(capability string, call api.RepairCall) (json.RawMes
 			return nil, "invalid-request"
 		}
 		h.workspaces[call.RunID] = true
-		return marshal(map[string]any{"root": "workspace:" + call.RunID, "base_revision": BaseRevision}), ""
+		return marshal(map[string]any{"root": "workspace:" + call.RunID, "base_revision": h.Base}), ""
 	case api.CaptureCapability:
 		return h.capture(call)
 	case api.IntegrateCapability:
@@ -499,11 +562,7 @@ func (h *RepairHost) checkNames() []string {
 	var checks []struct {
 		Name string `json:"name"`
 	}
-	var task struct {
-		Checks json.RawMessage `json:"checks"`
-	}
-	_ = json.Unmarshal(RepairTask(), &task)
-	_ = json.Unmarshal(task.Checks, &checks)
+	_ = json.Unmarshal(h.taskChecks(), &checks)
 	names := make([]string, 0, len(checks))
 	for _, c := range checks {
 		names = append(names, c.Name)
@@ -537,11 +596,11 @@ func (h *RepairHost) capture(call api.RepairCall) (json.RawMessage, string) {
 	tree := "tree:" + call.RunID
 	diff := "diff --git a/pkg/a/a.go b/pkg/a/a.go\n--- a/pkg/a/a.go\n+++ b/pkg/a/a.go\n@@ -1 +1 @@\n-return 1\n+return 2\n"
 	reviewer := h.Map.Attempts[i][1]
-	binding := marshal(map[string]any{"participant": h.Host.principal("reviewer", reviewer), "plan_hash": TaskSHA256(), "input_revisions": []string{BaseRevision, tree}, "policy_version": PolicyVersion})
+	binding := marshal(map[string]any{"participant": h.Host.principal("reviewer", reviewer), "plan_hash": h.taskSHA256(), "input_revisions": []string{h.Base, tree}, "policy_version": PolicyVersion})
 	validations := h.validations(tree)
 	h.captures[call.RunID] = &capture{tree: tree, binding: binding, validations: validations}
 	return marshal(map[string]any{
-		"base_revision": BaseRevision, "tree": tree, "diff": diff, "diff_sha256": "sha256:" + Sha256Hex([]byte(diff)),
+		"base_revision": h.Base, "tree": tree, "diff": diff, "diff_sha256": "sha256:" + Sha256Hex([]byte(diff)),
 		"validations": validations, "criteria_sha256": "sha256:" + Sha256Hex([]byte("criteria")), "inputs_sha256": "sha256:" + Sha256Hex([]byte("inputs")),
 		"binding": binding,
 	}), ""
@@ -581,17 +640,17 @@ func (h *RepairHost) integrate(call api.RepairCall) (json.RawMessage, string) {
 	}
 	h.integration = &integration{implementer: implementerRun, reviewer: call.RunID, tree: captured.tree, commit: Sha256Hex([]byte(captured.tree)), reference: "refs/prior/accepted/fusion-repair"}
 	return marshal(map[string]any{
-		"id": "integration-1", "state": "integrated", "reference": h.integration.reference, "base": BaseRevision, "tree": captured.tree, "commit": h.integration.commit,
-		"record_name": RecordPath, "record_revision": h.Revision, "author": h.Host.principal("code-implementer", implementerRun), "reviewer": h.Host.principal("reviewer", call.RunID),
-		"checks": taskChecks(), "validations": h.validations(captured.tree), "correction": "",
+		"id": "integration-1", "state": "integrated", "reference": h.integration.reference, "base": h.Base, "tree": captured.tree, "commit": h.integration.commit,
+		"record_name": h.RecordPath, "record_revision": h.Revision, "author": h.Host.principal("code-implementer", implementerRun), "reviewer": h.Host.principal("reviewer", call.RunID),
+		"checks": h.taskChecks(), "validations": h.validations(captured.tree), "correction": "",
 	}), ""
 }
 
-func taskChecks() json.RawMessage {
+func (h *RepairHost) taskChecks() json.RawMessage {
 	var task struct {
 		Checks json.RawMessage `json:"checks"`
 	}
-	_ = json.Unmarshal(RepairTask(), &task)
+	_ = json.Unmarshal(h.Task, &task)
 	return task.Checks
 }
 
@@ -655,7 +714,7 @@ func (h *RepairHost) descriptor(handle string, object []byte, offset int) json.R
 func (h *RepairHost) workbench(call api.RepairCall) (json.RawMessage, string) {
 	switch call.Action {
 	case "read":
-		if call.Record != RecordPath {
+		if call.Record != h.RecordPath {
 			return nil, "permission-denied"
 		}
 		object := []byte(`{"record":` + string(bytes.TrimSpace(h.Record)) + `,"revision":"` + h.Revision + `"}`)
@@ -685,8 +744,7 @@ func (h *RepairHost) workbench(call api.RepairCall) (json.RawMessage, string) {
 		if answer == nil || json.Unmarshal(answer.Output, &audit) != nil || len(audit.Agreements) == 0 || len(audit.Discrepancies) != 0 || len(audit.Unknowns) != 0 || audit.Coherence.AuditResult != "coherent" || audit.Coherence.Rebalance != "none" {
 			return nil, "conflict"
 		}
-		before, _ := strconv.Atoi(h.Revision)
-		closure := marshal(map[string]any{"record": RecordPath, "before": h.Revision, "after": strconv.Itoa(before + 1), "reconciled": true})
+		closure := marshal(map[string]any{"record": h.RecordPath, "before": h.Revision, "after": h.after(), "reconciled": true})
 		if !h.ClosePaged {
 			return closure, ""
 		}
