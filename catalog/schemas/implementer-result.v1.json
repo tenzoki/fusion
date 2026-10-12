@@ -1,7 +1,7 @@
 {
   "$id": "urn:fusion:schema:fusion.implementer-result/v1",
   "title": "fusion.implementer-result/v1",
-  "description": "DRAFT, plan step 12: the code-implementer's domain result, the profile's result_schema and the object the host places in the role input as output_contract. It is the three-field report the role's neutral text mandates (agents/code-implementer.md, Report shape): the files changed, one verification entry per check run in exactly one of three forms, and a result the verification decides. done requires at least one verification entry and every entry of the exit form with exit code 0; any other entry makes the result blocked, and the implement step of workflows/repair.v1.json stops as escalated on blocked. The result is a claim: host.capture.v1 captures the change and runs the checks itself, and a change outside the write scope refuses the attempt whatever this object says. Prior's embedded contract at 167c605 (modules/fusion/roles/roles.go, outcome and summary) is replaced by this one on the ruling that fusion authors the output contract (67.7). No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the code-implementer's domain result, the profile's result_schema and the object the host places in the role input as output_contract. It is the three-field report the role's neutral text mandates (agents/code-implementer.md, Report shape): the files changed, one verification entry per check run, each naming the frozen check it covers and taking exactly one of three exclusive forms, and a result the verification decides. done requires at least one verification entry and every entry of the exit form with exit code 0; any other entry makes the result blocked, and the implement step of workflows/repair.v1.json stops as escalated on blocked. A host that grants no process.check may leave the implementer to report blocked, which neither relaxes done nor bypasses a check. The result is a claim: the host checks one-to-one coverage of the frozen mandatory check names against its own receipts, host.capture.v1 captures the change and runs every check itself, host.integrate.v1 runs them again, and a change outside the write scope refuses the attempt whatever this object says. Prior's embedded contract at 167c605 (modules/fusion/roles/roles.go, outcome and summary) is replaced by this one on the ruling that fusion authors the output contract (67.7); old runs under that contract stay readable under their original formats and pins and are not decoded by this schema. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
   "required": ["files_changed", "verification", "result"],
@@ -16,20 +16,25 @@
       }
     },
     "verification": {
-      "description": "One entry per check the implementer ran. exit: it ran and read the code. did-not-finish: it started and never returned a code. none: nothing was run, and detail says why. At least one entry, never left out.",
+      "description": "One entry per check the implementer ran, each naming the frozen check. exit: it ran and read the code; command and exit_code, no detail. did-not-finish: it started and never returned a code; command and detail, no exit_code. none: nothing was run, and detail says why; neither command nor exit_code. At least one entry, never left out.",
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["status"],
+        "required": ["check", "status"],
         "properties": {
+          "check": {
+            "description": "The name of the frozen check this entry covers, one of the role input's checks[].name; the host matches it against its own receipt.",
+            "type": "string",
+            "minLength": 1
+          },
           "status": {
             "type": "string",
             "enum": ["exit", "did-not-finish", "none"]
           },
           "command": {
-            "description": "The exact command, on exit and did-not-finish; absent on none.",
+            "description": "The command as the host displayed it for the check, echoed; the implementer chose the check by name through process_check and never argv.",
             "type": "string",
             "minLength": 1
           },
@@ -44,28 +49,18 @@
             "minLength": 1
           }
         },
-        "allOf": [
+        "oneOf": [
           {
-            "if": { "properties": { "status": { "const": "exit" } }, "required": ["status"] },
-            "then": {
-              "properties": { "command": { "type": "string" }, "exit_code": { "type": "integer" } },
-              "required": ["command", "exit_code"]
-            }
+            "properties": { "status": { "const": "exit" }, "command": true, "exit_code": true, "detail": false },
+            "required": ["command", "exit_code"]
           },
           {
-            "if": { "properties": { "status": { "const": "did-not-finish" } }, "required": ["status"] },
-            "then": {
-              "properties": { "command": { "type": "string" }, "detail": { "type": "string" } },
-              "required": ["command", "detail"]
-            }
+            "properties": { "status": { "const": "did-not-finish" }, "command": true, "detail": true, "exit_code": false },
+            "required": ["command", "detail"]
           },
           {
-            "if": { "properties": { "status": { "const": "none" } }, "required": ["status"] },
-            "then": {
-              "properties": { "detail": { "type": "string" } },
-              "required": ["detail"],
-              "not": { "properties": { "command": { "type": "string" } }, "required": ["command"] }
-            }
+            "properties": { "status": { "const": "none" }, "detail": true, "command": false, "exit_code": false },
+            "required": ["detail"]
           }
         ]
       }

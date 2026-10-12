@@ -1,7 +1,7 @@
 {
   "$id": "urn:fusion:schema:fusion.implementer-request/v1",
   "title": "fusion.implementer-request/v1",
-  "description": "DRAFT, plan step 12: the code-implementer's immutable role input, the profile's input_schema, composed for the implement step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 (proposed by request 69) before the attempt's first role call. The module's task carries brief, write_paths, checks, workspace and attempt and nothing else; the host adds project_context and output_contract and refuses a task that already carries a field of either name (67.2), validates the composed object against this schema and answers the frozen bytes, which travel unchanged as RoleCall.input on every role call of the run. The implementer works in workspace.root, an isolated host workspace detached at base_revision, with writes confined to write_paths; whether its grant includes the process tool class to run checks itself is request 69's question (67.2: the implementer's process tools stay with 69), and the host runs checks in host.capture.v1 either way. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the code-implementer's immutable role input, the profile's input_schema, composed for the implement step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 before the attempt's first role call. The module's task carries brief, write_paths, checks, workspace and attempt and nothing else; the host adds project_context and output_contract and refuses a task that already carries a field of either name (67.2), validates the composed object against this schema and answers the frozen bytes, which travel unchanged as RoleCall.input on every role call of the run. The implementer works in the isolated host workspace the workspace step provisioned, detached at base_revision, through host file tools confined to write_paths. Its process grant is the constrained process.check capability (model-facing process_check) for the frozen named checks only (69.6 (4)): it chooses a check by name and never argv, image, mounts, credentials or network; a qualified container runs the exact approved command without network under resource and time limits, with no local shell fallback; and host.capture.v1 runs every check again on the captured tree whatever the implementer ran. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
   "required": ["brief", "write_paths", "checks", "workspace", "attempt", "project_context", "output_contract"],
@@ -56,7 +56,7 @@
       }
     },
     "checks": {
-      "description": "Module's task: the request's checks unchanged, under the request's bound (every check mandatory, none expected to fail), so the implementer knows what the host will run.",
+      "description": "Module's task: the request's checks unchanged, under the request's bound (every check mandatory, none expected to fail). name is what the implementer passes to process_check and names in each verification entry; argv is the host-provided command display text, echoed in a verification entry's command and never parsed to obtain authority, since the host runs the approved command itself.",
       "type": "array",
       "minItems": 1,
       "maxItems": 4,
@@ -89,7 +89,7 @@
       "required": ["root", "base_revision"],
       "properties": {
         "root": {
-          "description": "An absolute path on the host; the only tree the implementer's tools reach.",
+          "description": "The host-selected label of the isolated workspace, the only tree the implementer's file tools reach; it is not a path the module submits to acquire authority, and files_changed of the result is stated under it.",
           "type": "string",
           "minLength": 1
         },

@@ -7,9 +7,42 @@
       "role": "explorer",
       "input_from": {
         "invocation_schema": "schemas/repair-request.v1.json",
+        "host_services": {
+          "status": "frozen at plan step 15 on Prior's answer 69 at a4f463f: the six services below host.role.*.v1 are accepted under these names and built by Prior (P69-1 to P69-6); none is advertised at b20edb6, and request 70 names the Prior revision that carries them. This object is the common contract of all six, stated once here, in the first step that calls one; every host_service step and every compose below reads it.",
+          "common_request": {
+            "identity": "the SDK Identity, as every host.role.*.v1 call carries it",
+            "workflow_id": "the invocation's workflow_id, host-minted, ^[a-zA-Z0-9_-]{1,64}$; the connection scope binds both to the owner, the bundle digest, the task, the record, the attempt map and the grants, and a matching string alone grants nothing"
+          },
+          "request_rule": "a closed object: the common pair first, then the service's own fields; an unknown member or a null in a non-nullable field is refused",
+          "operation_id": "repair: followed by the lowercase sha256 hex of the UTF-8 bytes of capability + \"\\n\" + workflow_id + \"\\n\" + slot; the handler derives the slot from its validated request and the body is frozen separately, so a changed input under the same slot conflicts and buys no second effect. The role operation id stays capability + \":\" + run_id.",
+          "envelope": {
+            "state": "completed, refused or recovery-required",
+            "result": "the service's object on completed, null otherwise",
+            "code": "empty on completed; otherwise one of the stable codes"
+          },
+          "codes": ["permission-denied", "invalid-request", "conflict", "frame.oversize", "context.limit", "record-conflict", "validation-failed", "scope-violation", "correction-required", "operation-unknown"],
+          "refusal_rule": "an expected refusal is a reply in the envelope, never a handler error; a transport failure stays an unknown outcome; no raw backend error and no credential crosses the boundary",
+          "preflight": "Prior compares requires with its service map and finds all nine services before module startup; the module performs no preflight of its own",
+          "frames": "every fully encoded frame stays within the SDK's 1 MiB; deadlines and provider context limits stay host configuration and are no byte budget on the role texts",
+          "replay": "a completed receipt replays without effects; an accepted effect without a confirmed receipt requires recovery, so a restart never starts a second workspace, check, reference update or closure because the module received no answer"
+        },
         "run": "runs.explorer",
-        "compose": "host.role.compose.v1",
-        "compose_status": "proposed by request 69; absent at Prior 6080ba76, where the host composes a role input only once, before the invocation (BuildInvocation); every role step here composes its task from the invocation and the preceding steps' answers",
+        "compose": {
+          "service": "host.role.compose.v1",
+          "request": {
+            "run_id": "runs.explorer",
+            "profile": "explorer",
+            "task": "the task object below, with no project_context and no output_contract, which the host adds"
+          },
+          "slot": "run_id",
+          "reply": {
+            "run_id": "the request's",
+            "profile": "the request's",
+            "role_input": "the composed object, valid against role_input_schema",
+            "role_input_sha256": "sha256:<hex> over the exact compact JSON bytes the host froze"
+          },
+          "bound": "the adapter forwards the frozen bytes as RoleCall.input on every role call of the run and neither rebuilds the object nor adds a recovery reference; the host verifies the task against the approved task and its durable dependency receipts and refuses composition while a dependency is not at the required state; a repeated identical composition answers the same bytes, a changed task conflicts before any model call, compose calls no model, host.role.run.v1 requires prior composition, and audit_ref never enters the frozen input. The implement, review and audit steps compose through this same wire with their own run, profile and task."
+        },
         "task": {
           "question": "task.summary followed by task.criteria, one line each",
           "path_scope": "task.context_paths",
@@ -30,18 +63,19 @@
       "id": "workspace",
       "host_service": "host.workspace.v1",
       "input_from": {
-        "service_status": "proposed by request 69; absent at Prior 6080ba76",
         "attempt": "i, the current attempt, 0 first; one call per attempt",
-        "run": "runs.attempts[i].code-implementer",
-        "base_revision": "task.base_revision",
-        "write_scope": "task.write_paths"
+        "request": {
+          "run_id": "runs.attempts[i].code-implementer"
+        },
+        "slot": "the implementer run id",
+        "derived_by_host": "base_revision, the read scope, the exact writable files and the check definitions come from the prepared workflow, never from the request"
       },
       "completion": {
         "answer": {
-          "root": "the absolute path of an isolated workspace on the host, detached at base_revision",
+          "root": "a host-selected label for the isolated workspace, never a path the module submits to acquire authority",
           "base_revision": "task.base_revision"
         },
-        "bound": "one workspace per attempt, never shared between attempts; writes confined to write_scope; a repeated call for the same run answers the same workspace and creates none",
+        "bound": "one workspace per attempt, each at the same immutable base, never shared and never carrying the previous attempt's edits; only the admitted implementer mutates it, through host tools that enforce the approved relative paths, protect Git metadata and reject traversal and symlink escapes; capture revokes implementer writes before it observes; reviewer and auditor views cannot mutate; a repeated call for the same run answers the same workspace, and recovery reopens a verified persisted workspace and never creates a second one",
         "then": "implement"
       }
     },
@@ -50,12 +84,19 @@
       "role": "code-implementer",
       "input_from": {
         "run": "runs.attempts[i].code-implementer",
-        "compose": "host.role.compose.v1",
-        "compose_status": "proposed by request 69; absent at Prior 6080ba76",
+        "compose": {
+          "service": "host.role.compose.v1",
+          "wire": "the explore step's compose: same request and reply shape, slot run_id",
+          "request": {
+            "run_id": "runs.attempts[i].code-implementer",
+            "profile": "code-implementer",
+            "task": "the task object below"
+          }
+        },
         "task": {
           "brief": "task.summary, task.criteria, task.context_paths and the explore step's result",
           "write_paths": "task.write_paths",
-          "checks": "task.checks",
+          "checks": "task.checks: the frozen named checks the implementer may run by name through process_check; argv is display text",
           "workspace": "the workspace step's answer for attempt i",
           "attempt": {
             "index": "i",
@@ -79,19 +120,24 @@
       "id": "capture",
       "host_service": "host.capture.v1",
       "input_from": {
-        "service_status": "proposed by request 69; absent at Prior 6080ba76",
-        "run": "runs.attempts[i].code-implementer",
-        "workspace": "the workspace step's answer for attempt i",
-        "checks": "task.checks",
-        "write_scope": "task.write_paths"
+        "request": {
+          "run_id": "runs.attempts[i].code-implementer"
+        },
+        "slot": "the implementer run id",
+        "precondition": "the implementer run settled with a valid done result; the host stops its writes before it observes"
       },
       "completion": {
         "answer": {
+          "base_revision": "task.base_revision",
           "tree": "the captured tree id",
-          "diff": "the exact diff against base_revision",
-          "validations": "one entry per check: name, status, detail, tree, contained, required"
+          "diff": "the exact diff against base_revision, the whole of it",
+          "diff_sha256": "sha256:<hex> over the diff's UTF-8 bytes",
+          "validations": "one entry per check, each name once on this exact tree: name, status, detail, tree, contained, required",
+          "criteria_sha256": "sha256:<hex>, host-minted over the frozen criteria",
+          "inputs_sha256": "sha256:<hex>, host-minted over the complete brief and the immutable source and context identities",
+          "binding": "the review request's four members with this attempt's reviewer principal: participant, plan_hash, input_revisions, policy_version"
         },
-        "bound": "a changed path outside write_scope refuses the attempt (stop: escalated); every check runs in the host's container with no network; the answer is persisted under the run and a repeated call answers the stored one",
+        "bound": "the host runs every mandatory check itself, in its container, without network, and rechecks that the tested tree did not change; a failed or unavailable mandatory check is validation-failed and a changed path outside write_paths is scope-violation, both stop: escalated at capture; a diff that does not fit this answer, the composed review frames and the model context is frame.oversize or context.limit, also stop: escalated at capture, and nothing is truncated or reviewed as a summary; completed checks are persisted and a repeated call answers the stored result; the host retains the check commands and their digests",
         "then": "review"
       }
     },
@@ -100,8 +146,15 @@
       "role": "reviewer",
       "input_from": {
         "run": "runs.attempts[i].reviewer",
-        "compose": "host.role.compose.v1",
-        "compose_status": "proposed by request 69; absent at Prior 6080ba76",
+        "compose": {
+          "service": "host.role.compose.v1",
+          "wire": "the explore step's compose: same request and reply shape, slot run_id",
+          "request": {
+            "run_id": "runs.attempts[i].reviewer",
+            "profile": "reviewer",
+            "task": "the task object below"
+          }
+        },
         "task": {
           "domain": "code",
           "brief": "the implement step's brief for attempt i",
@@ -109,9 +162,9 @@
           "tree": "the capture step's tree",
           "diff": "the capture step's diff",
           "validations": "the capture step's validations",
-          "criteria_sha256": "host-computed over task.criteria",
-          "inputs_sha256": "host-computed over the brief's inputs",
-          "binding": "participant (the reviewer's principal), plan_hash (task_sha256), input_revisions ([base_revision, tree]), policy_version (fusion.repair.v1)",
+          "criteria_sha256": "the capture step's criteria_sha256",
+          "inputs_sha256": "the capture step's inputs_sha256",
+          "binding": "the capture step's binding, unchanged",
           "attempt": "i"
         },
         "role_input_schema": "schemas/review-request.v1.json",
@@ -134,20 +187,30 @@
       "id": "integrate",
       "host_service": "host.integrate.v1",
       "input_from": {
-        "service_status": "proposed by request 69; absent at Prior 6080ba76",
-        "run": "runs.attempts[i].reviewer of the accepted attempt",
-        "tree": "the accepted attempt's capture tree",
-        "review": "the accepted attempt's review-response",
-        "checks": "task.checks",
-        "record": "record"
+        "request": {
+          "run_id": "runs.attempts[i].reviewer of the accepted attempt"
+        },
+        "slot": "integration",
+        "from_host_receipts": "capture, checks and review come from the host's durable receipts, never from caller copies"
       },
       "completion": {
         "answer": {
+          "id": "the integration id",
+          "state": "integrated on success",
+          "reference": "the accepted local reference advanced, refs/prior/accepted/...",
+          "base": "task.base_revision",
+          "tree": "the committed tree, equal to the accepted attempt's",
           "commit": "the integration commit",
-          "reference": "the accepted reference advanced",
-          "tree": "the committed tree, equal to the accepted attempt's"
+          "record_name": "the record's name",
+          "record_revision": "the record's revision at integration",
+          "author": "the implementer's principal",
+          "reviewer": "the reviewer's principal",
+          "checks": "task.checks unchanged",
+          "validations": "the checks re-run on the staged tree, one entry per check",
+          "correction": "empty on success"
         },
-        "bound": "once per workflow run: stage, re-validate every check, re-check the review binding, commit, advance the reference; correction-required on any failure (stop: escalated); recovery observes and never repeats a reference update",
+        "projection": "schemas/repair-result.v1.json carries commit, reference and tree of this answer; schemas/audit-request.v1.json carries the whole of it",
+        "bound": "once per workflow run: the host validates the review and every echoed field, domain code, independent principals, decision accept, no material objections and complete successful check evidence; stages the captured tree, runs every mandatory check again, confirms the staging tree equals the reviewed tree, then commits and compare-and-swaps the reference from the frozen base; no remote push, and the user's current branch never changes; known failed checks or a conflicting base, record or reference is correction-required (stop: escalated); an uncertain effect or lost response is recovery-required, which is no claim that no commit happened, and recovery observes the journal and the reference and never repeats a reference update",
         "then": "snapshot"
       }
     },
@@ -155,14 +218,24 @@
       "id": "snapshot",
       "host_service": "host.snapshot.v1",
       "input_from": {
-        "service_status": "proposed by request 69; absent at Prior 6080ba76",
-        "integration": "the integrate step's answer",
-        "write_scope": "task.write_paths",
-        "runs": "runs.explorer and the accepted attempt's two runs"
+        "request": "the common pair only",
+        "slot": "post-integration"
       },
       "completion": {
-        "answer": "the host's own observations: accepted reference and tree, changed paths against write_scope, blob and file comparison, the named runs' states and receipts",
-        "bound": "read-only; the host observes its Git objects and filesystem itself and states what it did not observe",
+        "answer": {
+          "snapshot_id": "the snapshot's id",
+          "integration_id": "the integrate step's id",
+          "reference": "the accepted reference",
+          "commit": "the integration commit",
+          "tree": "the committed tree",
+          "changed_paths": "the paths changed against the base",
+          "file_observations": "one per path: path, expected Git blob, observed content digest, match status; an unavailable observation is explicit, never an implied match",
+          "runs": "the explorer and every used implementer and reviewer run: id, profile, principal, state, durable role-receipt hash",
+          "unused_runs": "the slots never dispatched, with proof of no dispatch and no reservation",
+          "accounting": "every involved account, abandoned attempts included",
+          "limitations": "what the host did not observe"
+        },
+        "bound": "read-only: the host observes its Git objects and filesystem itself, as a persisted projection, never copied model commentary, and the call answers its frozen observation on replay; before close the host takes fresh observations and compares reference, tree, files, record, brief and plan revisions and run settlement against those audited; the answer fits the audit input or is refused explicitly",
         "then": "read-record"
       }
     },
@@ -170,16 +243,33 @@
       "id": "read-record",
       "host_service": "host.workbench.v1",
       "input_from": {
-        "service_status": "proposed by request 69; absent at Prior 6080ba76",
-        "request": "a codec read of record.path",
-        "page": "size stated by the host; a continuation handle until the last page"
+        "request": {
+          "action": "read",
+          "record": "record.path, the control path as data, equal to the prepared invocation's selection"
+        },
+        "slot": "record",
+        "page_request": {
+          "action": "page",
+          "handle": "the descriptor's handle",
+          "offset": "the descriptor's next_offset"
+        },
+        "page_slot": "page:<handle>:<offset>"
       },
       "completion": {
-        "answer": {
-          "record": "the record's control data and narrative",
-          "revision": "the workbench revision read"
+        "page_descriptor": {
+          "handle": "64 lowercase hex, opaque, bound to owner, workflow, pin, object digest and read authority, persisted across restart",
+          "sha256": "sha256:<hex> over the whole object",
+          "total_bytes": "the object's length",
+          "offset": "this page's byte offset",
+          "page_bytes": "at most 65536 decoded bytes",
+          "data_base64": "the page",
+          "next_offset": "the next byte offset, null only at the end"
         },
-        "bound": "reads come as pages of a stated size with a continuation handle; the codec runs under the host's authority and the module holds no workbench path",
+        "answer": {
+          "record": "the record's control data and the complete hash-verified narrative, assembled from the pages and checked against sha256 and total_bytes",
+          "revision": "the target record's own revision; no global workbench revision exists"
+        },
+        "bound": "the host freezes workbench UUID, record UUID, expected revision, the active brief and plan revisions and any claim authority at preparation, reads under its own authorized root and verifies the codec's declared hash; a concurrent mismatch refuses; an exact offset re-read answers identical bytes, and a foreign, altered or invalid-offset handle refuses; paging lifts neither the codec's 16 MiB response ceiling nor the 1 MiB role-input bound, and a complete audit input that cannot fit is frame.oversize or context.limit before dispatch; the module holds no workbench path",
         "then": "audit"
       }
     },
@@ -188,16 +278,23 @@
       "role": "state-auditor",
       "input_from": {
         "run": "runs.state-auditor",
-        "compose": "host.role.compose.v1",
-        "compose_status": "proposed by request 69; absent at Prior 6080ba76",
+        "compose": {
+          "service": "host.role.compose.v1",
+          "wire": "the explore step's compose: same request and reply shape, slot run_id",
+          "request": {
+            "run_id": "runs.state-auditor",
+            "profile": "state-auditor",
+            "task": "the task object below"
+          }
+        },
         "task": {
           "domain": "code",
           "directive": "task.summary followed by task.criteria, one line each: the brief both Brief edges read",
           "since": "task.base_revision: the anchor of the commit walk to integration.commit",
-          "integration": "the integrate step's answer with the checks, validations, author and reviewer principals",
+          "integration": "the integrate step's answer, all thirteen fields",
           "workbench": "the read-record step's record",
           "workbench_revision": "the read-record step's revision",
-          "runtime": "the snapshot step's answer",
+          "runtime": "the snapshot step's answer, all eleven fields",
           "proposed_outcome": "completed"
         },
         "role_input_schema": "schemas/audit-request.v1.json",
@@ -219,19 +316,23 @@
       "id": "close",
       "host_service": "host.workbench.v1",
       "input_from": {
-        "service_status": "proposed by request 69; absent at Prior 6080ba76",
         "gate": "the audit step passed",
-        "request": "the codec transition of record.path: an issue to closed with disposition fixed; a package to done with outcome completed, its evidence the integrate step's commit and the audit run",
-        "refs": "the integrate step's answer and runs.state-auditor"
+        "request": {
+          "action": "close",
+          "audit_run_id": "runs.state-auditor"
+        },
+        "slot": "close",
+        "selects": "the recorded auditor result and its dependencies; not an arbitrary codec request"
       },
       "completion": {
         "answer": {
           "record": "record.path",
-          "before": "the state read",
-          "after": "the state written",
-          "reconciled": "true when the post-image, the host's journal and the commit agree"
+          "before": "the codec revision read",
+          "after": "the codec revision written",
+          "reconciled": "true only when the post-image, the codec receipts, the host's journal and the integration commit agree"
         },
-        "bound": "a write is one codec request the host executes under its authority, answered within the frame or by a handle; once per workflow run; a repeated call answers the stored closure",
+        "answer_form": "inline when it fits; otherwise the read-record step's page descriptor, the retained result then fetched with action page; the decoder tells the two apart by handle",
+        "bound": "one logical operation over several codec operations under one frozen close intent: the host persists the review and audit reports as Markdown with recorded hashes, creates their typed codec evidence records, attaches the evidence and performs the final transition, an issue to closed with disposition fixed, a package to done with outcome class completed; each effect has its own persisted operation identity, precondition and receipt, through the qualified codec's existing operations with host prior and execution_policy prior-enforced, and only the codec writes the JSON control and evidence records; the chain starts after independent audit validation and fresh evidence, accounting and claim checks, advances only through its own recorded revisions, and a concurrent external edit stops it; once per workflow run, a repeated call answers the stored closure, a known closure precondition conflict is record-conflict (stop: escalated at close), and an interruption leaves an explicit partial close that stays recovery-required until observation or exact-request codec recovery finishes it; a module retry authorizes no fresh write and no new codec id; review findings, audit suggestions and tracking_changes are preserved for the operator and never turned into record edits",
         "envelope_schema": "schemas/repair-result.v1.json",
         "then": "end: the envelope with status completed; every stop above is the envelope with status escalated and stopped_at naming the step"
       }

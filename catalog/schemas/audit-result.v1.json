@@ -1,7 +1,7 @@
 {
   "$id": "urn:fusion:schema:fusion.audit-result/v1",
   "title": "fusion.audit-result/v1",
-  "description": "DRAFT, plan step 12: the state-auditor's domain result, the profile's result_schema and the object the host places in the audit request as output_contract. What it carries is what the role's Prior overlay says it is planned to carry (catalog/profiles/state-auditor/parts/20-prior.md): the values of the Coherence section as fields, what Step 4 lists, and the tracking changes of Step 3, which the role reports and the host applies, since on Prior it writes nothing. agreements, discrepancies, unknowns and limitations are Prior's embedded AuditResult at 167c605 (modules/fusion/integration/closure.go) in the bundle's key form: a discrepancy names its surface, owner and detail; limitations admits only the three scope exclusions Prior's embedded contract admits, and missing required evidence belongs in unknowns, never there. coherence is the three-edge Coherence audit result the role's neutral text returns (agents/state-auditor.md, the Coherence section): the result, one line per edge, and the recommendation that maps from them. report is Step 4: the counts, the key findings and the issues and decisions the role would have filed, one entry each for the host to file. tracking_changes is Step 3: one entry per record whose state or lines should move, naming the record, the change and the evidence; the host applies each as one transition under its own authority or puts it to the user. The audit step of workflows/repair.v1.json passes when agreements is non-empty, discrepancies and unknowns are empty, coherence.audit_result is coherent and the recommendation is none, which is Prior's passed() and fusion's closure gate conjoined; any other result stops for the user as escalated, and the close step never runs. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the state-auditor's domain result, the profile's result_schema and the object the host places in the audit request as output_contract. What it carries is what the role's Prior overlay says it carries (catalog/profiles/state-auditor/parts/20-prior.md): the values of the Coherence section as fields, what Step 4 lists, and the tracking changes of Step 3, which the role reports and the host preserves for the operator, since on Prior it writes nothing and the host interprets no auditor prose. agreements, discrepancies, unknowns and limitations are Prior's embedded AuditResult at 167c605 (modules/fusion/integration/closure.go) in the bundle's key form: a discrepancy names its surface, owner and detail; limitations admits only the three scope exclusions Prior's embedded contract admits, and missing required evidence belongs in unknowns, never there. coherence is the three-edge Coherence audit result the role's neutral text returns (agents/state-auditor.md, the Coherence section): the result, one line per edge, and the recommendation that maps from them. report is Step 4: the counts, the key findings and the issues and decisions the role would have filed, one entry each, preserved for the operator; plans_updated and issues_updated are zero, since the role changes nothing, and the count of proposals is the length of tracking_changes, never described as completed updates. tracking_changes is Step 3: one entry per record whose state or lines should move, naming the record, the change and the evidence; the host preserves each for the operator and turns none into a record edit in this revision, and a necessary unresolved correction belongs in discrepancies or unknowns, where it fails the audit, never hidden as a suggestion. The audit step of workflows/repair.v1.json passes when agreements is non-empty, discrepancies and unknowns are empty, coherence.audit_result is coherent and the recommendation is none, which is Prior's passed() and fusion's closure gate conjoined; any other result stops for the user as escalated, and the close step never runs. Prior retains the result in its durable records also when the workflow fails. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
   "required": ["agreements", "discrepancies", "unknowns", "limitations", "coherence", "report", "tracking_changes"],
@@ -90,7 +90,7 @@
       }
     },
     "report": {
-      "description": "Step 4 of the role's text. updated counts the records with an entry in tracking_changes, since the role itself updates nothing on Prior.",
+      "description": "Step 4 of the role's text. plans_updated and issues_updated are zero on Prior, where the role updates nothing; what it proposes is tracking_changes, and the proposals are counted there.",
       "type": "object",
       "additionalProperties": false,
       "required": ["plans_reviewed", "plans_updated", "issues_reviewed", "issues_updated", "key_findings", "issues", "decisions"],
@@ -100,16 +100,18 @@
           "minimum": 0
         },
         "plans_updated": {
+          "description": "Zero: the role changes nothing.",
           "type": "integer",
-          "minimum": 0
+          "const": 0
         },
         "issues_reviewed": {
           "type": "integer",
           "minimum": 0
         },
         "issues_updated": {
+          "description": "Zero: the role changes nothing.",
           "type": "integer",
-          "minimum": 0
+          "const": 0
         },
         "key_findings": {
           "description": "Things marked done that were not, things done but not marked; each citing a file, line or commit.",

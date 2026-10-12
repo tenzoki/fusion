@@ -1,7 +1,7 @@
 {
   "$id": "urn:fusion:schema:fusion.repair-result/v1",
   "title": "fusion.repair-result/v1",
-  "description": "DRAFT, plan step 12: the module's answer to a fusion.repair.v1 invocation, the asset Prior would select as EnvelopeSchema the way external_explorer.go at 6080ba76 selects the explorer's; request 69 proposes it. The explorer envelope's two members, extended for a run of several roles. domain.status takes four values: completed, the close step wrote the record and every step before it completed; escalated, the workflow stopped for the user at a named step (a blocked implementer, a revise verdict past revise_bound, an escalate verdict, a refused capture or integration, an audit that did not pass), with what ran so far in result; refused, the invocation or an answer violated its schema or bound; recovery-required, a role stood at accepted or a required audit was missing or invalid, never a fabricated audit or a fresh inference (67.5). Settlement is not acceptance (the 68 clarification): a settled run whose answer was refused stays settled, and a retry needs a newly provisioned run under a new invocation. host_evidence is the module's report of the host's observations, one entry per run read, copied from each role answer, or null when no answer exists; it is not independent evidence, and the host checks every entry against its durable records. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the module's answer to a fusion.repair.v1 invocation, the asset Prior selects as EnvelopeSchema the way external_explorer.go at 6080ba76 selects the explorer's. The explorer envelope's two members, extended for a run of several roles. domain.status takes four values: completed, the close step wrote the record and every step before it completed; escalated, the workflow stopped for the user at a named step (a blocked implementer, a failed or oversize capture, a revise verdict past revise_bound, an escalate verdict, a correction-required integration, an audit that did not pass, a known closure precondition conflict), with what ran so far in result; refused, the invocation or an answer violated its schema or bound; recovery-required, a role stood at accepted, a required audit was missing or invalid, or an integration or closure is unknown or in flight, never a fabricated audit or a fresh inference (67.5), and never a terminal refusal written to end the run. The host stores one verified terminal envelope under the workflow owner: completed records a successful operation, escalated and a verified terminal refused record failed ones with the envelope retained, recovery-required stays non-terminal, and a new invocation id under a terminal owner answers the same verdict with no model and no write call. Settlement is not acceptance (the 68 clarification): a settled run whose answer was refused stays settled, and a retry is a new invocation with a new workflow_id and six new run ids. On a restart, completed receipts replay without effects; an accepted effect without a confirmed receipt requires recovery, because a crash between accepting a check and recording its result does not prove the check never ran, and the SDK alone gives no exactly-once guarantee. host_evidence is the module's report of the host's observations: one final observation per run for which a persisted answer exists, in workflow and attempt order, no run id twice, which JSON Schema cannot state and host and module both check; principal_id and observed_at are copied from that answer; null means no answer exists. It is not independent evidence: the host checks run, step and attempt membership, completeness, principal, timestamp, state and result against its durable records, and runtime slot states (absent, accepted, a refused read) belong in the host's snapshot, never here. Old runs (the embedded repair-role:<role> receipts and the request-68 explorer run) stay readable under their original formats and pins and are not decoded by this schema. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
   "required": ["domain", "host_evidence"],
@@ -103,21 +103,24 @@
                 "minimum": 0
               },
               "run_id": {
+                "description": "A run of the invocation's attempt map, each at most once in the array.",
                 "type": "string",
-                "minLength": 1
+                "pattern": "^[a-zA-Z0-9_-]{1,64}$"
               },
               "principal_id": {
+                "description": "Copied from the run's persisted answer.",
                 "type": "string",
                 "minLength": 1
               },
               "observed_at": {
-                "description": "RFC 3339, as the host's role answer serialises its time.",
+                "description": "RFC 3339, copied from the run's persisted answer as the host serialises its time.",
                 "type": "string",
                 "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
               },
               "role_state": {
+                "description": "The two states under which a persisted answer exists; a run at absent, accepted or refused has no entry.",
                 "type": "string",
-                "enum": ["absent", "accepted", "answered", "settled", "refused"]
+                "enum": ["answered", "settled"]
               }
             }
           }
@@ -227,6 +230,7 @@
           }
         },
         "integration": {
+          "description": "The projection of the integrate step's thirteen-field receipt: commit, reference and tree; the whole receipt reaches the auditor in schemas/audit-request.v1.json and stays in the host's record.",
           "oneOf": [
             { "type": "null" },
             {
@@ -266,6 +270,7 @@
           ]
         },
         "closure": {
+          "description": "The close step's answer: one logical operation over several codec operations, assembled from pages when it did not fit inline.",
           "oneOf": [
             { "type": "null" },
             {
@@ -278,25 +283,30 @@
                   "minLength": 1
                 },
                 "before": {
+                  "description": "The codec revision read, not a state name.",
                   "type": "string",
                   "minLength": 1
                 },
                 "after": {
+                  "description": "The codec revision written, not a state name.",
                   "type": "string",
                   "minLength": 1
                 },
-                "reconciled": { "type": "boolean" }
+                "reconciled": {
+                  "description": "True only when the post-image, the codec receipts, the host's journal and the integration commit agree.",
+                  "type": "boolean"
+                }
               }
             }
           ]
         },
         "stopped_at": {
-          "description": "On escalated, the step id the workflow stopped at; null on completed.",
+          "description": "On escalated, the step id the workflow stopped at: close only on a known closure precondition conflict, an unknown or in-flight closure being recovery-required instead; null on completed.",
           "oneOf": [
             { "type": "null" },
             {
               "type": "string",
-              "enum": ["implement", "capture", "review", "integrate", "audit"]
+              "enum": ["implement", "capture", "review", "integrate", "audit", "close"]
             }
           ]
         }

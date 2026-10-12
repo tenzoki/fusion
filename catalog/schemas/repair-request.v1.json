@@ -1,11 +1,16 @@
 {
   "$id": "urn:fusion:schema:fusion.repair-request/v1",
   "title": "fusion.repair-request/v1",
-  "description": "DRAFT, plan step 12: the invocation input of fusion.repair.v1, the asset Prior would select as RequestSchema the way external_explorer.go at 6080ba76 selects the explorer's; request 69 proposes it and the host services it rests on, and step 15 freezes it on Prior's answer. Composition is trusted host code: task is the bounded request the operator approved, task_sha256 the identity of that approval (W1 of 261010-1504-span-map-and-repair-correspondence.md), record the workbench record the repair resolves, and runs the attempt map Prior answer 67.5 requires, every run host-provisioned and persisted before dispatch, the module creating none. runs.attempts has exactly revise_bound + 1 entries of workflows/repair.v1.json (1 + 1 = 2); the module refuses a shorter or longer map before any role call, and refuses a run id that appears twice. The role inputs are not carried here: each role step composes its task from this input and the preceding steps' answers and has the host freeze it through host.role.compose.v1 before the first role call (67.2: project_context and output_contract are the host's). audit_ref is the host's recovery overlay, absent at preparation and set on a fresh outer operation after a recorded recovery; the steps run in order and each role run settles before the next starts, so at most one run stands at answered on a restart, and the module sends audit_ref only as RoleCall.audit_ref on that run's host.role.complete.v1, never into any role input. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the invocation input of fusion.repair.v1, the asset Prior selects as RequestSchema the way external_explorer.go at 6080ba76 selects the explorer's. Composition is trusted host code: workflow_id is the host-minted identity of this invocation, persisted with the owner and bound by the connection scope to the owner, the bundle digest, the task, the record, the attempt map and the grants, so that a matching string alone grants nothing; task is the bounded request the operator approved, task_sha256 the identity of that approval (W1 of 261010-1504-span-map-and-repair-correspondence.md), record the workbench record the repair resolves, and runs the attempt map Prior answer 67.5 requires, every run host-provisioned and persisted with its role and principal before dispatch, the module creating none. runs.attempts has exactly revise_bound + 1 entries of workflows/repair.v1.json (1 + 1 = 2), checked by host and module alike; the module refuses a shorter or longer map before any role call, and refuses a run id that appears twice, which JSON Schema cannot state across the map. Provisioning is not admission: an unused slot has no role operation, no reservation and no model call, and its role state is absent. The role inputs are not carried here: each role step composes its task from this input and the preceding steps' answers and has the host freeze it through host.role.compose.v1 before the first role call (67.2: project_context and output_contract are the host's). audit_ref is the host's recovery overlay, absent at preparation and set on a fresh outer operation after a recorded recovery; the steps run in order and each role run settles before the next starts, so at most one run stands at answered on a restart, and the module sends audit_ref only as RoleCall.audit_ref on that run's host.role.complete.v1, never into any role input and never as an authorization to resume a workspace, an integration, a codec write or a controller effect. A retry is a new invocation: a new workflow_id, a new owner and binding, six new run ids and fresh authority, inheriting no old grant and reading no old run as its own. Old runs (the embedded repair-role:<role> receipts and the request-68 explorer run) stay readable under their original formats and pins and are not decoded by this schema. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["task", "task_sha256", "record", "runs"],
+  "required": ["workflow_id", "task", "task_sha256", "record", "runs"],
   "properties": {
+    "workflow_id": {
+      "description": "Host-minted, the identity of this invocation; every host service call after the role services carries it beside identity, and the operation id of such a call is derived from it.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
     "task": {
       "description": "The bounded repair request, the bounds of Prior's embedded internal/repair/plan.go Task at 167c605: at most 8 criteria, 8 context paths, 4 write paths, 4 mandatory checks. The repository itself is the host's and never named here.",
       "type": "object",
@@ -45,7 +50,7 @@
           "items": { "$ref": "#/$defs/path" }
         },
         "checks": {
-          "description": "The mandatory checks host.capture.v1 runs after every attempt and host.integrate.v1 runs again; names unique, which the host checks. required is always true and baseline_failure always false: a repair ships no check it expects to fail.",
+          "description": "The frozen named checks: host.capture.v1 runs every one after every attempt and host.integrate.v1 runs every one again, each in a qualified container without network; the implementer may run one by its name through the constrained process.check grant and never chooses argv. argv is the exact approved command the operator froze with the task, which the host runs and retains with its digest as evidence; names unique, which the host checks. required is always true and baseline_failure always false: a repair ships no check it expects to fail.",
           "type": "array",
           "minItems": 1,
           "maxItems": 4,
@@ -107,7 +112,7 @@
       }
     },
     "runs": {
-      "description": "The attempt map (67.5): one host-provisioned run per role per attempt, allocated and persisted before dispatch. The explorer and the state-auditor run once; each attempt has its own implementer and reviewer runs, on independent principals the host grants.",
+      "description": "The attempt map (67.5, 69.2): six distinct host-minted run ids, allocated and persisted with their role and principal assignment before any dispatch. The explorer and the state-auditor run once; each attempt has its own implementer and reviewer runs, on six distinct principals the host grants, each also distinct from the workflow owner; a collision is rejected before dispatch. Attempt 1 is eligible solely after attempt 0's valid revise verdict; when attempt 0 is accepted the second pair stays unused with its grants withdrawn.",
       "type": "object",
       "additionalProperties": false,
       "required": ["explorer", "attempts", "state-auditor"],
@@ -132,16 +137,16 @@
       }
     },
     "audit_ref": {
-      "description": "A host-recorded recovery audit reference for the one run standing at answered. Its presence never changes a role input.",
+      "description": "A host-recorded recovery audit reference for the one run standing at answered; it names that exact run in the host's recovery record and is sent only to its completion. Its presence never changes a role input.",
       "type": "string",
       "minLength": 1
     }
   },
   "$defs": {
     "run_id": {
-      "description": "A host-provisioned run; the module creates none.",
+      "description": "A host-provisioned run; the module creates none. Bounded to 64 characters so that the role operation id, capability + \":\" + run_id, fits the SDK's limit.",
       "type": "string",
-      "minLength": 1
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
     },
     "path": {
       "description": "Repository-relative: no leading slash, no segment starting with a dot, no backslash, colon or line break (Prior's pathOK at 167c605).",

@@ -1,7 +1,7 @@
 {
   "$id": "urn:fusion:schema:fusion.review-request/v1",
   "title": "fusion.review-request/v1",
-  "description": "DRAFT, plan step 12: the reviewer's immutable role input, the profile's input_schema, composed for the review step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 (proposed by request 69) before the attempt's first role call. The reviewer is an independent principal, never the implementer's, bound to the tree it saw and to the criteria and input hashes: Prior's embedded ReviewInput at 167c605 (modules/fusion/workpackage/workpackage.go: brief, tree, base revision, diff, criteria hash, inputs hash, validations), the domain code of the alias binding code-reviewer to reviewer (67.3), and the binding block the review-response echoes. The module's task carries the fields below except project_context and output_contract, which the host adds (67.2). A review is valid only for the tree it saw: a later tree needs a later review. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the reviewer's immutable role input, the profile's input_schema, composed for the review step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 before the attempt's first role call. The reviewer is an independent principal, never the implementer's, with read, list and search on the immutable reviewed view and no process, write or workbench tool, bound to the tree it saw and to the criteria and input hashes: Prior's embedded ReviewInput at 167c605 (modules/fusion/workpackage/workpackage.go: brief, tree, base revision, diff, criteria hash, inputs hash, validations), the domain code of the alias binding code-reviewer to reviewer (67.3), and the binding block the review-response echoes. tree, diff, validations, criteria_sha256, inputs_sha256 and binding are host.capture.v1's answer for this attempt, copied unchanged; the hashes are host-minted sha256:<hex> tokens, and the host checks every binding and its capture receipt itself. The module's task carries the fields below except project_context and output_contract, which the host adds (67.2). A review is valid only for the tree it saw: a later tree needs a later review, and one independent review per attempt precedes integration with no package-level review in its place. Old two-valued embedded reviews (repair-role:code-reviewer, accepted or rejected) stay readable under their original format and are not decoded by this schema or its response. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
   "required": ["domain", "brief", "base_revision", "tree", "diff", "validations", "criteria_sha256", "inputs_sha256", "binding", "attempt", "project_context", "output_contract"],
@@ -91,17 +91,17 @@
       }
     },
     "criteria_sha256": {
-      "description": "Host-computed over the brief's criteria, in the host's sha256:<hex> form.",
+      "description": "Host-minted over the frozen criteria, from the capture step's answer, in the host's sha256:<hex> form.",
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
     },
     "inputs_sha256": {
-      "description": "Host-computed over the brief's inputs, in the host's sha256:<hex> form.",
+      "description": "Host-minted over the complete brief and the immutable source and context identities, from the capture step's answer, in the host's sha256:<hex> form.",
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
     },
     "binding": {
-      "description": "The four values the review-response echoes verbatim, domain beside them; the host refuses a response whose echo differs. participant is the reviewer's principal as the host granted it; plan_hash the request's task_sha256; input_revisions the base revision and the tree, in that order; policy_version the workflow capability.",
+      "description": "The four values the review-response echoes verbatim, domain beside them, as host.capture.v1 answered them for this attempt; the host refuses a response whose echo differs. participant is the reviewer's principal as the host granted it; plan_hash the request's task_sha256; input_revisions the base revision and the tree, in that order; policy_version the workflow capability.",
       "type": "object",
       "additionalProperties": false,
       "required": ["participant", "plan_hash", "input_revisions", "policy_version"],

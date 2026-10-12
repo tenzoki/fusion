@@ -1,0 +1,15 @@
+# frozen at plan step 15 on Prior's answer 69 at a4f463f; one line per published asset: <relative path from catalog/> <sha256>
+ac1ca858ed2e68576076950555a7ad24d17c91ef16a168592dbed4900a1be5f0  schemas/audit-request.v1.json
+7c6f52787e6477195d618a240497d8a8ed3a093c949a50ccf5499455b1c844e5  schemas/audit-result.v1.json
+8af82ac71061d8c7dc2fdd611c270b974966e8c421210abd22d19df4d604497c  schemas/explorer-envelope.v1.json
+4b0920777f9ae86eb3274d7b22863775b8c0883c827e1be4e93bb387125dda18  schemas/explorer-request.v1.json
+e2af9a62957acd543ad029a7d2559865773855f63167ee63501807b437f80300  schemas/explorer-result.v1.json
+d33cbe3dea64861de63d9204195b8976a0b4ee57a9759964268b7290afb33d39  schemas/explorer-role-input.v1.json
+2ce4aa511b3aee429aa0cfd8afa63fd7dd78fb6a1014f2cbe15c645214ae010f  schemas/implementer-request.v1.json
+d0bd78f1a1022fcf1786329b2cf66aae4b59677eba6b6aac1df0456d98f78804  schemas/implementer-result.v1.json
+8b6b9ded521240322b983f6b041985ba3c4fab38b1d398267863b45ce85c9b39  schemas/repair-request.v1.json
+07a19c5dabb6e3761278edd259b2b18794b58526f4652c27d35dd4b8da66a852  schemas/repair-result.v1.json
+d9d98627201af82b64a568cb0ebace557f466814bc0ae4a76670ecc869e61031  schemas/review-request.v1.json
+0d62e44446a996bf9e96e0024f8396cddc176ca366acc869942fb9fe49ee4a0e  schemas/review-response.v1.json
+91141b018a6fc0f053d147274efb2ab83a90f7877a66706956e33c2e7c9f7ad6  workflows/explorer.v1.json
+2f1f30c0c75eb3ebb63967d61e5b472b348c6130f676441b2057b93002ac6488  workflows/repair.v1.json

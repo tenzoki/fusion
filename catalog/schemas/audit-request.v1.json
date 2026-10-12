@@ -1,7 +1,7 @@
 {
   "$id": "urn:fusion:schema:fusion.audit-request/v1",
   "title": "fusion.audit-request/v1",
-  "description": "DRAFT, plan step 12: the state-auditor's immutable role input, the profile's input_schema, composed for the audit step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 (proposed by request 69) before the run's first role call. The auditor is an independent principal, neither the implementer's nor the reviewer's, and audits local completion over the host's own observations: Prior's embedded AuditInput at 167c605 (modules/fusion/integration/closure.go: the integration record, the workbench record and its revision, the runtime snapshot, the proposed outcome), with the three lines the role's text reads off its dispatch as fields, as its Prior overlay says they arrive (catalog/profiles/state-auditor/parts/03-prior.md): domain, the verification protocol; directive, the brief; since, the commit anchor. integration is the integrate step's answer with the checks, validations and the two principals; workbench is what the read-record step read through host.workbench.v1; runtime is the snapshot step's answer, the host's Git and filesystem observations, which the auditor compares and never claims to have taken itself. The module's task carries the fields below except project_context and output_contract, which the host adds (67.2). No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "description": "Frozen at plan step 15 on Prior's answer 69 at a4f463f: the state-auditor's immutable role input, the profile's input_schema, composed for the audit step of workflows/repair.v1.json and frozen by the host through host.role.compose.v1 before the run's first role call. The auditor is an independent principal, neither the implementer's nor the reviewer's, with read-only grants (the reviewer's plus scoped Git and runtime inspection over the accepted reference and every used attempt) and no process, write or workbench tool, and audits local completion over the host's own observations: Prior's embedded AuditInput at 167c605 (modules/fusion/integration/closure.go: the integration record, the workbench record and its revision, the runtime snapshot, the proposed outcome), with the three lines the role's text reads off its dispatch as fields, as its Prior overlay says they arrive (catalog/profiles/state-auditor/parts/03-prior.md): domain, the verification protocol; directive, the brief; since, the commit anchor. integration is host.integrate.v1's complete thirteen-field receipt, unchanged; workbench and workbench_revision are what the read-record step assembled from host.workbench.v1's pages; runtime is host.snapshot.v1's eleven-field answer, the host's Git and filesystem observations, which the auditor compares and never claims to have taken itself. The audit runs once, after a successful integration and before close, so integration.state is integrated and integration.correction empty here. The module's task carries the fields below except project_context and output_contract, which the host adds (67.2); a complete audit input that cannot fit the frame is refused before dispatch. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
   "type": "object",
   "additionalProperties": false,
   "required": ["domain", "directive", "since", "integration", "workbench", "workbench_revision", "runtime", "proposed_outcome", "project_context", "output_contract"],
@@ -22,7 +22,7 @@
       "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
     },
     "integration": {
-      "description": "The integration record, Prior's integration.Plan at 167c605 in the bundle's key form.",
+      "description": "The integration record: host.integrate.v1's complete receipt, thirteen fields, Prior's integration.Plan at 167c605 in the bundle's key form; the envelope projects commit, reference and tree from it.",
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "state", "reference", "base", "tree", "commit", "record_name", "record_revision", "author", "reviewer", "checks", "validations", "correction"],
@@ -32,8 +32,9 @@
           "minLength": 1
         },
         "state": {
+          "description": "integrated: the one state under which the audit step runs.",
           "type": "string",
-          "minLength": 1
+          "const": "integrated"
         },
         "reference": {
           "description": "The accepted reference the integration advanced.",
@@ -125,24 +126,81 @@
           }
         },
         "correction": {
-          "description": "Empty when the integration needed none.",
-          "type": "string"
+          "description": "Empty: a successful integration needed none, and the audit runs only after one.",
+          "type": "string",
+          "const": ""
         }
       }
     },
     "workbench": {
-      "description": "The record the read-record step read, as the codec answers it; its shape is the codec's, not restated here.",
+      "description": "The record the read-record step assembled: the control data and the complete hash-verified narrative, as the codec answers it; its shape is the codec's, not restated here.",
       "type": "object",
       "minProperties": 1
     },
     "workbench_revision": {
+      "description": "The target record's own revision as read; no global workbench revision exists.",
       "type": "string",
       "minLength": 1
     },
     "runtime": {
-      "description": "The snapshot step's answer: the host's observations, its shape the host's and stated in request 69.",
+      "description": "The snapshot step's answer, host.snapshot.v1's persisted projection with its eleven fields; the entries' shapes are the host's. Coverage is the explorer and every used implementer and reviewer pair, unused slots listed separately with proof of no dispatch, every involved account covered.",
       "type": "object",
-      "minProperties": 1
+      "additionalProperties": false,
+      "required": ["snapshot_id", "integration_id", "reference", "commit", "tree", "changed_paths", "file_observations", "runs", "unused_runs", "accounting", "limitations"],
+      "properties": {
+        "snapshot_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "integration_id": {
+          "description": "Equal to integration.id.",
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "tree": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "file_observations": {
+          "description": "One per path: path, expected Git blob, observed content digest, match status; an unavailable observation is explicit, never an implied match.",
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "runs": {
+          "description": "The explorer and every used implementer and reviewer run: id, profile, principal, state, durable role-receipt hash.",
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "unused_runs": {
+          "description": "The slots never dispatched, with proof of no dispatch and no reservation.",
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "accounting": { "type": "object" },
+        "limitations": {
+          "description": "What the host did not observe; provider invoice reconciliation is a permitted one.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     },
     "proposed_outcome": {
       "description": "What the close step would write when the audit passes.",
