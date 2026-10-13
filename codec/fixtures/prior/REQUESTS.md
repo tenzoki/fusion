@@ -5096,7 +5096,7 @@ Prior states the actual counts in its answer. This is a correction of the reques
 
 #### What stays open
 
-Request 70 remains open. Its answer comes after P69-1 to P69-6, which the intake lists as the remaining acceptance work. A qualified container engine for the real checks is Prior's precondition: the Docker socket was absent at intake, and the checks must not fall back to a local shell. Fusion's plan steps 22 to 25 wait for that answer.
+At this reply, request 70 stayed open. Its answer was to come after P69-1 to P69-6, which the intake lists as the remaining acceptance work. A qualified container engine for the real checks was Prior's precondition: the Docker socket was absent at intake, and the checks must not fall back to a local shell. Fusion's plan steps 22 to 25 waited for that answer. Superseded: Prior answered at `f0b57b6`, accepting 70 and qualifying P69-1 to P69-6 with the checks in pinned containers (`### Prior's answer to 70 at f0b57b6` below).
 
 ### Prior's answer to 70 at f0b57b6
 
@@ -5198,3 +5198,42 @@ This is the "Yes" the first stop clause requires: a real external explorer and a
 | 70 | **accepted** at Prior `f0b57b6` (host `f36ac32`), on macOS arm64, for digest `56ac4c57…` built at C = `c8d5a6f1` against Prior `10ad78b`; P69-1 to P69-6 qualified; Linux amd64 and arm64 built, not qualified | `Prior: docs/design/fusion-repair-request70-prior-response.md`, `Prior: docs/qualification/fusion-request70-2026-10-13/`, and `### Prior's answer to 70 at f0b57b6` above |
 
 These rows supersede the rows in `### Requests 59 to 69, as they stand` above. No request is open.
+
+## Module bundle (released as v13.1.0)
+
+Fusion released the candidate Prior accepted under request 70. Nothing was rebuilt for the release: the tag points at C, and the bundle rebuilt from the tag is the one Prior ran.
+
+### The released identity
+
+| Item | Value |
+|---|---|
+| Tag | `v13.1.0`, annotated, tagger 2026-10-13 20:22:24 +0200, pushed to `origin` (`tenzoki/fusion`) |
+| Tag object | `042da0a9a2679b7aac4ea28cd5aba3804e29ab27` |
+| Commit (C) | `c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c` (`git rev-parse 'v13.1.0^{commit}'`) |
+| Version | `13.1.0`, as `git show v13.1.0:.claude-plugin/plugin.json` prints it |
+| Adapter's Prior build pin | `10ad78becad0bb5323b1afeba4842fc21605f570` (`adapters/prior/PRIOR_PIN` at the tag) |
+| Bundle digest | `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94` |
+| Tarball sha256 | `8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb` |
+| Marketplace entry | `tenzoki/claude-plugins` `.claude-plugin/marketplace.json`, fusion `version` `13.1.0`, its `description` equal to `plugin.json`'s at the tag |
+
+The digest and tarball hash are the ones step 20 recorded, step 21 delivered and Prior named in its answer at `f0b57b6`.
+
+### The proof from the tag (plan step 24)
+
+Both acceptance checks are met.
+
+- **The bundle rebuilt from the tag.** `adapters/prior/build.sh build` gave `bundle_digest` `sha256:56ac4c57…cd94` and tarball sha256 `8cbad734…08064bb`, `fusion_revision` C and `prior_revision` `10ad78b`, 29 files. The output directory is byte-identical to step 20's build (`diff -r` exits 0). The three delivered files under Prior's `incoming/fusion/13.1.0/<digest>/` compare equal with `cmp`. `build.sh verify` exits 0.
+- **The Claude distribution installed from the tag.** The `install.sh` committed at the tag ran under `env -i` with `FUSION_REF=tags/v13.1.0`. `diff -r` of the installed `.fusion` against step 20's install of C prints nothing; both trees hold 1507 regular files and 1 symlink. Outside `.fusion`, only the launcher's two HOME-path lines differ, as they do for any two HOMEs.
+
+**Method deviation.** The plan says "rebuilds the bundle from the tag's archive". That cannot run as written. `build.sh`'s `fusion_revision` calls `git rev-parse HEAD`, and that revision enters `handover.json`, `build-identity.json` and so the digest. A bare `git archive` of the tag exits 128 before anything is rendered. The proof therefore built from a clone of `origin`, detached at `v13.1.0`. That clone's tree equals the tag's archive (`diff -r -x .git -x node_modules` empty), so the build ran on the archive's bytes plus the `.git` that `build.sh` reads `HEAD` from. No issue is filed: an archive-only build is outside `build.sh`'s design.
+
+### Requests 67 to 70, as they stand
+
+| Request | Subject | State | Prior commit |
+|---|---|---|---|
+| 67 | The bundle and explorer contract | **accepted with corrections**; P67-1 and P67-2 landed at `8bab88a`, corrected by `5199cf1`; the operator lifecycle CLI at `6080ba76` | `da02626` |
+| 68 | A real explorer from the bundle | **accepted** on macOS arm64, for digest `cd37dac7…` built at fusion `f87609bf` against Prior `6080ba76`; P67-3 complete for that digest and platform; Linux built, not qualified | `b20edb6` |
+| 69 | The four-role repair contract | **accepted with corrections**, as the implementation contract for P67-4; P69-1 to P69-6 qualified later, under 70 | `a4f463f` |
+| 70 | A real explorer and a reviewed repair from the bundle built at C | **accepted** on macOS arm64, for digest `56ac4c57…` built at C = `c8d5a6f1` against Prior `10ad78b`; P69-1 to P69-6 qualified; Linux amd64 and arm64 built, not qualified | `f0b57b6` (host implementation `f36ac32`) |
+
+Each Prior commit is cited as the answer sections above record it. No request is open. Linux amd64 and arm64 remain built and not qualified: the released bundle carries them, and no Prior answer covers them.
