@@ -4589,3 +4589,495 @@ Step 14 closes on this record. Step 15 freezes against the ten items above: `rep
 | 69 | **accepted with corrections** at Prior `a4f463f`, as the implementation contract for P67-4; the six services are not implemented at `b20edb6`; P69-1 to P69-6 open before request 70 | `Prior: docs/design/fusion-repair-contract-prior-response.md`, and `### Prior's answer to 69 at a4f463f` above |
 
 These rows supersede the rows in `### Requests 59 to 68, as they stand` above. No request is open; request 70 waits for P69-1 to P69-6.
+
+## Module bundle (request 70, the reviewed repair at C)
+
+**Written against:** the candidate **C = `c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c`** on `main` (2026-10-12 20:20, "docs(plan): stop clause 4 measures the growth-bound tests only; step 20 lists README.md"), `v13.0.0-36-gc8d5a6f1`, version `13.1.0` in `.claude-plugin/plugin.json`. Outside `fusion-workbench/` C differs from `v13.0.0` (`468d8e87`) in 177 files (`git diff --stat v13.0.0 c8d5a6f1 -- . ':!fusion-workbench'`); under `codec/` it differs in this file alone, 1 263 added lines and no removal (`git diff --stat v13.0.0 c8d5a6f1 -- codec`). At C this file is 4 591 lines, `sha256:94024352eb22746b307787e3022da7223a788219b7678b75df327d87afa4831f`. The bundle below was built from a fresh clone of the fusion repository checked out detached at C, not from the working tree, whose `main` has since moved by two commits that touch `fusion-workbench/` alone. **Prior was read at `10ad78becad0bb5323b1afeba4842fc21605f570`** (2026-10-12 11:53, "feat(fusion): establish repair wire contract and durable request journal"), parent `a4f463f`, the adapter's `adapters/prior/PRIOR_PIN` at C. `go.mod` and `go.sum` are unchanged since `167c605`; `moduleapi/v1` differs from `6080ba76`, the pin request 68 was built against, by `repair_wire.go` (198 lines) and its test `repair_wire_test.go` (78 lines) alone (`git diff --stat 6080ba76 10ad78b -- moduleapi go.mod go.sum`). Every Prior path below is read with `git show 10ad78b:<path>`. **The codec bundle is unmoved:** `codec/dist/fusion-record.js` at C, 699 011 bytes, `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`.
+
+This is the hand-over P69-6 waits for: the candidate's bundle, both source revisions, the build identity and digest, step 20's verification of C, and the conformance of steps 9 and 18 from the extracted bundle. It asks Prior to run, from this bundle, a real explorer and then a complete reviewed repair through `fusion.repair.v1` with the named restart, to show that old runs stay readable, and to answer with the digest it ran. **It asks nothing about the codec**, and no line above is edited. It asks for no new CLI command.
+
+**This request presupposes P69-1 to P69-6 qualified.** Prior's answer to 69 says that request 70 "cannot run until it passes its tests", and Prior's step-15 confirmation at `10ad78b` says the same of its own commit: "These are implementation foundations, **not six advertised handlers or a completed P69-1** ... P69-2 through P69-6 remain outstanding; request 70 is not qualified by this confirmation." Fusion hands the bundle over now, so that Prior builds and tests P69-1 to P69-6 against the module it will run, and **Prior answers 70 when they are qualified**, not before.
+
+### The hand-over
+
+The absolute hand-over path, as `adapters/prior/build.sh deliver` printed it on 2026-10-13 07:10:
+
+```
+/Users/kai/.local/share/prior/incoming/fusion/13.1.0/56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94/
+```
+
+| File | Bytes | Identity |
+|---|---|---|
+| `fusion-13.1.0.tar` | 13 382 144 | the deterministic, uncompressed tarball; `shasum -a 256` prints `8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb` |
+| `fusion-13.1.0.tar.sha256` | 84 | the sidecar, one line: `8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb  fusion-13.1.0.tar` |
+| `handover.json` | 2 403 | quoted in full below |
+
+All three are mode 0444; `shasum -a 256 -c fusion-13.1.0.tar.sha256`, run inside that directory, prints `fusion-13.1.0.tar: OK`. `build-identity.json` is no separate file of the delivery: it is the payload's own file inside the tarball, quoted below, as it was for request 68. **The bundle digest is `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`**, the BundleIndex digest over the 29 payload files with `manifest_path` `module.json`, `build-identity.json` included. **The tarball's sha256 is `8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb`.** As in 68, the first is what `--trust-digest` takes and the second is what the sidecar checks.
+
+**The version is `13.1.0`**, the candidate's own. Module id `fusion`, beside the explorer bundle `13.0.0` accepted at 68 and the embedded `fusion` 1.8.0 (67.3).
+
+**How it was built and verified.** In a fresh clone at C (`git rev-parse HEAD` printed `c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c`, `git status --short` empty), after `cd catalog && npm ci`, `build.sh deliver` rendered the catalog, staged the adapter in a disposable clone of Prior at the pin (`stage.sh` printed `prior clone at 10ad78becad0bb5323b1afeba4842fc21605f570` and `go version go1.26.0 darwin/arm64`), built the three targets with the commands recorded in `build-identity.json`, assembled the payload and wrote the tarball. It then ran Prior's own `InspectBundle` from the same clone over the payload directory and, after `ExtractBundleArchive`, over the extracted tarball; both reported `{"module_id":"fusion","version":"13.1.0","bundle_digest":"sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94"}`, and the probe printed `verify: ok, 29 files, executable bin/fusion-module, 23 data files`. Only then did it copy the three files to the path above. `build.sh deliver` exited 0.
+
+**Reproducibility, measured.** Step 20 (`261012-2126-candidate-c-verification.md`, finding 5) built the bundle twice at C from its own clone, into two fresh directories: both printed this digest and this tarball sha256, and `diff -rq` of the two output directories printed nothing, `build-identity.json` included. The delivery above is a third build at C, from a third clone, and printed the same two hashes. The bundle is reproduced by building at exactly fusion `c8d5a6f1` with Prior at `10ad78b` and `go1.26.0`: the fusion revision and the Prior revision both enter the payload through `build-identity.json`, which the BundleIndex covers, so a build at any other commit of either repository, or from a dirty tree (which `build.sh` marks `<sha>+dirty`), yields another digest by construction.
+
+The 29 entries of the tarball, in its order (`tar -tf`), every one with uid and gid 0, empty names and mtime 0, the four under `bin/` mode 0500 and every other 0400:
+
+```
+bin/darwin-arm64/fusion-module
+bin/fusion-module
+bin/linux-amd64/fusion-module
+bin/linux-arm64/fusion-module
+build-identity.json
+catalog.json
+module.json
+profiles/code-implementer.json
+profiles/code-implementer.md
+profiles/explorer.json
+profiles/explorer.md
+profiles/reviewer.json
+profiles/reviewer.md
+profiles/state-auditor.json
+profiles/state-auditor.md
+schemas/audit-request.v1.json
+schemas/audit-result.v1.json
+schemas/explorer-envelope.v1.json
+schemas/explorer-request.v1.json
+schemas/explorer-result.v1.json
+schemas/explorer-role-input.v1.json
+schemas/implementer-request.v1.json
+schemas/implementer-result.v1.json
+schemas/repair-request.v1.json
+schemas/repair-result.v1.json
+schemas/review-request.v1.json
+schemas/review-response.v1.json
+workflows/explorer.v1.json
+workflows/repair.v1.json
+```
+
+`module.json` names `bin/fusion-module`, the `/bin/sh` launcher, as the executable, and 23 data files: every file above except the four under `bin/`, `build-identity.json` and `module.json` itself. Against request 68's bundle the payload gains nine files: the eight repair schemas and `workflows/repair.v1.json`. The four roles `explorer`, `code-implementer`, `reviewer` and `state-auditor` are all `support.prior = supported` in `catalog.json`, `reviewer` with the aliases `code-reviewer` (domain `code`) and `data-reviewer` (domain `ontology`); every other role is `unsupported` for Prior, and no role is `planned` any more.
+
+### `build-identity.json`, in full
+
+The payload's own copy, `tar -xOf fusion-13.1.0.tar build-identity.json`, 9 265 bytes. `adapter_sources` inventories the Go sources and the launcher script staged into the clone, test files included; `payload` inventories every other payload file and excludes this file (67.8). The launcher's sha256 under `adapter_sources` (`launcher/fusion-module.sh`) is the sha256 of `bin/fusion-module` under `payload`.
+
+```json
+{
+  "fusion_revision": "c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c",
+  "prior_revision": "10ad78becad0bb5323b1afeba4842fc21605f570",
+  "go_version": "go1.26.0",
+  "adapter_sources": [
+    {
+      "path": "fusionmodule/cmd/fusion-bundle/main.go",
+      "sha256": "b72368ab3e135b7dfee66d13c8e06e32e88f51e947f6527848c755ea2011ef70"
+    },
+    {
+      "path": "fusionmodule/cmd/fusion-module/main.go",
+      "sha256": "7dd2a2449efe26e668c5d68388aadc7cd04452a6347c36122216bb859f6f9065"
+    },
+    {
+      "path": "fusionmodule/cmd/fusion-module/main_test.go",
+      "sha256": "87ae25daecdfc1c627fde959ef76ece4f2379e28977bc4b8eafb57c06712c093"
+    },
+    {
+      "path": "fusionmodule/conformance/explorer_test.go",
+      "sha256": "1daab804abc916fc787e6ec675bfeb35e28f912811b59181ac746b75d0e57830"
+    },
+    {
+      "path": "fusionmodule/conformance/host_test.go",
+      "sha256": "2a61e745705ede479172c71efd6c9375d7d8f767e67b610af70879b7c6e37f28"
+    },
+    {
+      "path": "fusionmodule/conformance/repair_test.go",
+      "sha256": "0d2634c6ed7b4620111e95bea89519f8a796ac8923023aca9999fa028decfbc5"
+    },
+    {
+      "path": "fusionmodule/internal/explorer/explorer.go",
+      "sha256": "8575141df392039cd96aa4e30dd6b337dd3a9c6fb31e43370d60241ee11fdafa"
+    },
+    {
+      "path": "fusionmodule/internal/explorer/explorer_test.go",
+      "sha256": "6261637908aa146a4a8ce5778e245492947295788e5d09670e33e10ab617aff2"
+    },
+    {
+      "path": "fusionmodule/internal/fixture/fixture.go",
+      "sha256": "e7db5906aafdf62b24ed80ea81ed8c55a71614ce01c94d5635544e0aa8dff847"
+    },
+    {
+      "path": "fusionmodule/internal/fixture/repair.go",
+      "sha256": "02a002d9490362e8e974673987019e7c7f6ea599938e13b4f83175d61d3f9794"
+    },
+    {
+      "path": "fusionmodule/internal/fixture/sha.go",
+      "sha256": "31745707fcf8cb41c207f22f36507ba9b070ac6e273914fc2c2c4963d0dd6e27"
+    },
+    {
+      "path": "fusionmodule/internal/hostsvc/hostsvc.go",
+      "sha256": "d15d76312cda9e5e562278b751c5d8cc4fab648443a73ece08efdae55041e8c0"
+    },
+    {
+      "path": "fusionmodule/internal/hostsvc/hostsvc_test.go",
+      "sha256": "dcaf75242107eeb524ed476ea6d0c2942173c8e440391139cdf4722ec2453434"
+    },
+    {
+      "path": "fusionmodule/internal/repair/repair.go",
+      "sha256": "dd65722371423ece829d0ece6252f7d379ebc06e6bb10c55fadd617b2aec677a"
+    },
+    {
+      "path": "fusionmodule/internal/repair/repair_test.go",
+      "sha256": "1396ac824a9aeec3256d74b48613ca9b44f0bc60829369b260409bb8907a6878"
+    },
+    {
+      "path": "fusionmodule/internal/steps/bundle.go",
+      "sha256": "9503e33e22945694fa565b01b3a4caaa75acb1ed7f1daab297ad118c63c31845"
+    },
+    {
+      "path": "fusionmodule/internal/steps/bundle_test.go",
+      "sha256": "547bf5054c5a0aad40889eb2eb37a6d02cda661ea38c7a67cf36b80e9129e087"
+    },
+    {
+      "path": "fusionmodule/internal/steps/catalog.go",
+      "sha256": "88a9067eae7d6144f5f7e27bcbc50f2c2fde4f14aa393f96efd5d1c68895b809"
+    },
+    {
+      "path": "fusionmodule/internal/steps/frame.go",
+      "sha256": "7f3784ede7d192b3350420ff434953dc5409fe2754a2117bdcde97b4d379279b"
+    },
+    {
+      "path": "fusionmodule/internal/steps/role.go",
+      "sha256": "8b873f58fdbaf6ecf1af0135ff5a010f68896cfa68efa0941a33a1ad5d9cc5aa"
+    },
+    {
+      "path": "fusionmodule/internal/steps/role_test.go",
+      "sha256": "7c040fc812b8c21d25286658cdf3afa78252ddf15e8ceb5e50e97e1b5ac83fb6"
+    },
+    {
+      "path": "fusionmodule/internal/steps/schema.go",
+      "sha256": "4291b20463b0075a06e1830a02be32be40289a919bc052f26a8bff284eae1257"
+    },
+    {
+      "path": "fusionmodule/internal/steps/schema_test.go",
+      "sha256": "24124f29aa2e544ae3dbc7e9f43c4346a34444ebef9443a4e988380f30af7f6b"
+    },
+    {
+      "path": "fusionmodule/internal/steps/strictjson.go",
+      "sha256": "4b68c9c7024e47b4109d1a6bdfe8f68868b75185a3018921c3520b2fa77fd81c"
+    },
+    {
+      "path": "fusionmodule/internal/steps/strictjson_test.go",
+      "sha256": "78c66f67005f24f53cd36c57770c26bb6c0bc6a51cf5849bc1763786361d59db"
+    },
+    {
+      "path": "launcher/fusion-module.sh",
+      "sha256": "afcc7f8a65ae75d48b23ab49eccb2904a1b1571b75bc81c27f8e8be61174f3f2"
+    }
+  ],
+  "targets": [
+    {
+      "os": "darwin",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/darwin-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "a6fe08082975b5e559c87f14692eaa98ca8aea3a6120f25185f8bf532fae27eb"
+    },
+    {
+      "os": "linux",
+      "arch": "amd64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-amd64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "4d6c89a2be972529bfd0fe187199151cabd10da19c32bd8ebabb0a9685db3368"
+    },
+    {
+      "os": "linux",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "07ff4ec6c3cb6e137826a6f6f325c9d850bc52f75f904d168fdf54b4c444bb3f"
+    }
+  ],
+  "payload": [
+    {
+      "path": "bin/darwin-arm64/fusion-module",
+      "sha256": "a6fe08082975b5e559c87f14692eaa98ca8aea3a6120f25185f8bf532fae27eb"
+    },
+    {
+      "path": "bin/fusion-module",
+      "sha256": "afcc7f8a65ae75d48b23ab49eccb2904a1b1571b75bc81c27f8e8be61174f3f2"
+    },
+    {
+      "path": "bin/linux-amd64/fusion-module",
+      "sha256": "4d6c89a2be972529bfd0fe187199151cabd10da19c32bd8ebabb0a9685db3368"
+    },
+    {
+      "path": "bin/linux-arm64/fusion-module",
+      "sha256": "07ff4ec6c3cb6e137826a6f6f325c9d850bc52f75f904d168fdf54b4c444bb3f"
+    },
+    {
+      "path": "catalog.json",
+      "sha256": "d28bc5b9ba1c9d6953161708f5fa0ef51fd6278077b4e788dbc13e95f65dc98c"
+    },
+    {
+      "path": "module.json",
+      "sha256": "715e563ea818777ffaced728750165a533a9e2ba27f66c7db5a2150f66560d5e"
+    },
+    {
+      "path": "profiles/code-implementer.json",
+      "sha256": "86c834293afdf70f019ef4d001e963ea48bf838bde397575b402770b2a32159c"
+    },
+    {
+      "path": "profiles/code-implementer.md",
+      "sha256": "a66a16d390cb7c8e9efbf384d8451d7e3378a74b7ef0991fc1211387e5285b97"
+    },
+    {
+      "path": "profiles/explorer.json",
+      "sha256": "3a692280c9403f6363d5ea26e124150630f6b2deed46124435ac98de386ea068"
+    },
+    {
+      "path": "profiles/explorer.md",
+      "sha256": "7dc86b154f71459bb0861fd88c0fa7f0c3a653e87cacca7718b61f24925d5969"
+    },
+    {
+      "path": "profiles/reviewer.json",
+      "sha256": "afc6dedbe48b6be165197ad7353d881fc608bb5e23a30baa7367db292b81e2e1"
+    },
+    {
+      "path": "profiles/reviewer.md",
+      "sha256": "ba65084d2b647b6265cde8ef62520ee070286d78ff618f0357007bdcf34a7367"
+    },
+    {
+      "path": "profiles/state-auditor.json",
+      "sha256": "512d1d814503269f238478a95cbfadeb71f552836eaca0a7ef7e53d480abf47c"
+    },
+    {
+      "path": "profiles/state-auditor.md",
+      "sha256": "825df2e7cb2a12a32a9141981469f0734da022fb6e0a357fb21297a14cf7d8be"
+    },
+    {
+      "path": "schemas/audit-request.v1.json",
+      "sha256": "ac1ca858ed2e68576076950555a7ad24d17c91ef16a168592dbed4900a1be5f0"
+    },
+    {
+      "path": "schemas/audit-result.v1.json",
+      "sha256": "7c6f52787e6477195d618a240497d8a8ed3a093c949a50ccf5499455b1c844e5"
+    },
+    {
+      "path": "schemas/explorer-envelope.v1.json",
+      "sha256": "8af82ac71061d8c7dc2fdd611c270b974966e8c421210abd22d19df4d604497c"
+    },
+    {
+      "path": "schemas/explorer-request.v1.json",
+      "sha256": "4b0920777f9ae86eb3274d7b22863775b8c0883c827e1be4e93bb387125dda18"
+    },
+    {
+      "path": "schemas/explorer-result.v1.json",
+      "sha256": "e2af9a62957acd543ad029a7d2559865773855f63167ee63501807b437f80300"
+    },
+    {
+      "path": "schemas/explorer-role-input.v1.json",
+      "sha256": "d33cbe3dea64861de63d9204195b8976a0b4ee57a9759964268b7290afb33d39"
+    },
+    {
+      "path": "schemas/implementer-request.v1.json",
+      "sha256": "2ce4aa511b3aee429aa0cfd8afa63fd7dd78fb6a1014f2cbe15c645214ae010f"
+    },
+    {
+      "path": "schemas/implementer-result.v1.json",
+      "sha256": "d0bd78f1a1022fcf1786329b2cf66aae4b59677eba6b6aac1df0456d98f78804"
+    },
+    {
+      "path": "schemas/repair-request.v1.json",
+      "sha256": "8b6b9ded521240322b983f6b041985ba3c4fab38b1d398267863b45ce85c9b39"
+    },
+    {
+      "path": "schemas/repair-result.v1.json",
+      "sha256": "07a19c5dabb6e3761278edd259b2b18794b58526f4652c27d35dd4b8da66a852"
+    },
+    {
+      "path": "schemas/review-request.v1.json",
+      "sha256": "d9d98627201af82b64a568cb0ebace557f466814bc0ae4a76670ecc869e61031"
+    },
+    {
+      "path": "schemas/review-response.v1.json",
+      "sha256": "0d62e44446a996bf9e96e0024f8396cddc176ca366acc869942fb9fe49ee4a0e"
+    },
+    {
+      "path": "workflows/explorer.v1.json",
+      "sha256": "91141b018a6fc0f053d147274efb2ab83a90f7877a66706956e33c2e7c9f7ad6"
+    },
+    {
+      "path": "workflows/repair.v1.json",
+      "sha256": "2f1f30c0c75eb3ebb63967d61e5b472b348c6130f676441b2057b93002ac6488"
+    }
+  ]
+}
+```
+
+### `handover.json`, in full
+
+Beside the tarball at the hand-over path, outside the payload. `<payload>`, `<out>`, `<work>` and `<fusion-revision>` are placeholders in the recorded commands, so that no local absolute path enters an artefact (67.8).
+
+```json
+{
+  "module_id": "fusion",
+  "version": "13.1.0",
+  "bundle_digest": "sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94",
+  "tarball": "fusion-13.1.0.tar",
+  "tarball_sha256": "8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb",
+  "fusion_revision": "c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c",
+  "prior_revision": "10ad78becad0bb5323b1afeba4842fc21605f570",
+  "go_version": "go1.26.0",
+  "targets": [
+    {
+      "os": "darwin",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/darwin-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "a6fe08082975b5e559c87f14692eaa98ca8aea3a6120f25185f8bf532fae27eb"
+    },
+    {
+      "os": "linux",
+      "arch": "amd64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-amd64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "4d6c89a2be972529bfd0fe187199151cabd10da19c32bd8ebabb0a9685db3368"
+    },
+    {
+      "os": "linux",
+      "arch": "arm64",
+      "command": "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+      "sha256": "07ff4ec6c3cb6e137826a6f6f325c9d850bc52f75f904d168fdf54b4c444bb3f"
+    }
+  ],
+  "commands": [
+    "cd catalog && npm run --silent render -- prior <work>/rendered",
+    "adapters/prior/stage.sh run -- adapters/prior/build.sh _staged <out> <work>/rendered <fusion-revision>",
+    "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/darwin-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+    "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-amd64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module",
+    "GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -trimpath -buildvcs=false -o <payload>/bin/linux-arm64/fusion-module ./integrationbuild/fusionmodule/cmd/fusion-module"
+  ]
+}
+```
+
+### The Prior revision, and a later pin move
+
+The bundle was built against **Prior `10ad78becad0bb5323b1afeba4842fc21605f570`**, the implementation revision `adapters/prior/PRIOR_PIN` holds at C, as Prior's answer to 69 asked the next hand-over to name. It is not `b20edb6` and not `a4f463f`. The adapter uses `moduleapi/v1`'s repair wire types from that commit (the six capability constants, `RepairCall`, `DecodeRepairCall`, `RepairOperationID`, `RepairResponse` through `DecodeRepairResponse`, and `RepairSnapshot`) and re-implements none of them; apart from `repair_wire.go` and its test, `moduleapi/v1` is the one request 68 was built against.
+
+**Should P69-1 to P69-6 require a change to `moduleapi/v1`**, the move is a one-line change: `adapters/prior/PRIOR_PIN` names the new Prior commit, and it is the one line the build reads the pin from (`build.sh` and `stage.sh`). `adapters/prior/README.md`, `README-agents.md` and two source comments cite `10ad78b` as documentation and follow the line. That line enters `build-identity.json` as `prior_revision`, so a moved pin is a new candidate C', a rebuild and a new digest, never this one: fusion re-runs step 20 at C' and amends this request with the new commit, digest and tarball sha256 before Prior answers. A Prior commit that changes host code alone, and leaves `moduleapi/v1`, `go.mod` and `go.sum` byte-identical to `10ad78b`, needs no pin move: Prior may run this bundle on it and names the host commit in its answer.
+
+### Step 20's verification of C
+
+The report is `261012-2126-candidate-c-verification.md` in fusion's container for this package, measured on 2026-10-12 from a clean clone at C. Its verdict: C "is the candidate the plan can hand over at step 21, subject to one ruling". In brief:
+
+- The hooks, codec and catalog suites and the adapter suite ran at C. Codec: 1 797 tests passed, 13 skipped. Catalog: 35 passed. Adapter: green with the bundle unset and with it set. Hooks: 1 155 passed, 14 skipped, and **1 failed**, the pre-existing `workbench-citation-lint` red over two issue records of another fusion package, which nothing in this package touches.
+- Two bundle builds at C printed one digest, the one above, and their outputs were byte-identical.
+- Neither installed tree holds `catalog/` or `adapters/`. `agents`, `skills`, `rules`, `bin`, `templates` and `stilwerk` are byte-identical between `v13.0.0` and C.
+- **The installed-tree diff between a `v13.0.0` install and a C install lists five files**: `.claude-plugin/plugin.json` (the version line), `README.md` (the pin example at line 26), `README-agents.md` (11 added lines), `codec/fixtures/prior/REQUESTS.md` (this record, additions only) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the one-line citation-count pin). `install.sh` copies `hooks/` and `codec/` whole, so the last two ship although no agent, skill, hook or helper reads them at run time. **The user accepted the five-file diff for C**, and the plan's step-20 acceptance names those five (fusion `d6b68238`). The Claude distribution's behaviour is unchanged; its shipped bytes differ in those five files.
+
+### Steps 9 and 18: conformance on macOS arm64, not acceptance
+
+`adapters/prior/fusionmodule/conformance/` starts the bundle the way Prior's host does: each case extracts the tarball of the directory `FUSION_BUNDLE_DIR` names, starts `bin/fusion-module` through `os/exec` with exactly `PRIOR_MODULE_IDENTITY` and `PRIOR_MODULE_CONNECTION_SECRET` in its environment and no `PATH`, and connects through `moduleapi/v1` `ConnectWithServices` with fake, durable, in-memory host services: the three role services, and for the repair the six services of answer 69 in their `10ad78b` wire shapes. The repair cases serve a toy repository (`adapters/prior/testdata/repair-fixture/`), initialised as a Git repository under a temporary directory, with one failing test, one package and one plan.
+
+Run against **the delivered directory itself**: `FUSION_BUNDLE_DIR=<hand-over path> adapters/prior/stage.sh test` from the clone at C exited 0 on 2026-10-13 (Prior clone at `10ad78b`, `go1.26.0 darwin/arm64`), `ok` for `cmd/fusion-module`, `conformance`, `internal/explorer`, `internal/hostsvc`, `internal/repair` and `internal/steps`. A verbose run of the conformance package alone ran **17 cases, 17 `PASS`**, plus the 16 subtests of the kill case, each `PASS`, no `SKIP`:
+
+| Case | What it shows |
+|---|---|
+| the 11 explorer cases of step 9 | unchanged from request 68's table in `### Step 9's result: conformance on macOS arm64, not acceptance` above, now run against this bundle |
+| `TestReviewedRepairRunsToAuditedClose` | `completed`; evidence one entry per run in order `explore`, `implement[i]`, `review[i]`, `audit`, each `settled` and copied from the stored answer; the implementer `done` with one `exit` 0 entry per frozen check; the review `accept`; the integration projected to `{commit, reference, tree}` from a 13-field receipt the auditor received whole, with an 11-field runtime snapshot; the record read in at least two pages; the closure `reconciled`; every service call under the slot's `RepairOperationID` and the bundle's identity; every role call forwarding the frozen bytes; 4 model calls; each effect once; the second pair never dispatched; nothing on stderr |
+| `TestReviseWithinTheBoundThenEscalate` | `revise` on attempt 0, then `escalate` on attempt 1: `escalated`, code `review.escalate`, `stopped_at` `review`; attempt 1 on the second pair, a fresh workspace, the exact previous review in its task; 5 model calls; no integration, snapshot or audit |
+| `TestKillAtEveryPersistedBoundaryThenResumeRunsNoModel` | 16 boundaries, from "after the explorer was composed" to "after the close receipt", "after the integrate receipt" among them: the process killed after the fake host performed and journalled the effect, its reply lost; a fresh process under a new outer operation id answers the same envelope bytes as a clean run, with the clean run's model count, no effect repeated, at most one run at `answered`, and the recorded `audit_ref` sent on that run's completion alone |
+| `TestCorruptedReviewBindingIsRefused` | a review whose `plan_hash` names another task: `refused`, code `review.binding`, no integration, 3 model calls |
+| `TestAttemptMapShortOfTheBoundIsRefusedBeforeAnyRoleCall` | a one-attempt map (`invocation.invalid`) and a map with an implementer id twice (`runs.invalid`): `refused`, `host_evidence` null, no host call at all; the process keeps serving and the full map then completes |
+| `TestExplorerResultsStillDecodeUnderTheFrozenSchemas` | an explorer envelope and result from this bundle validate under the installed explorer schemas, which equal those at fusion `d52223a9` byte for byte |
+
+**This is conformance, not acceptance.** The host is a fake; the conformance started the launcher on **macOS arm64**, where it selected `bin/darwin-arm64/fusion-module` (`a6fe0808…`). **`linux-amd64` (`4d6c89a2…`) and `linux-arm64` (`07ff4ec6…`) are delivered built, not qualified**: cross-compiled with the recorded commands, never started. What Prior's host does with the envelope, its preflight, provisioning, grants, containment, journal and recovery, is proven only by Prior's run of the delivered bundle.
+
+### The frozen schemas, and what changed in the explorer
+
+The 14 schema and workflow files of the payload are byte-equal to `catalog/schemas/FROZEN` at C, one sha256 each, and to the copy Prior keeps under `internal/fusionhost/testdata/repair-contract/` at `10ad78b`, taken from fusion `e44821bf`. Between `e44821bf` and C, `FROZEN` changed in its comment line alone, whose column labels Prior's README there calls reversed; the 14 hashes are unchanged.
+
+Against request 68's bundle, the explorer's four schemas, `workflows/explorer.v1.json` and `profiles/explorer.json` are byte-identical. `profiles/explorer.md` changed from `51b42e9f…` to `7dc86b154f71459bb0861fd88c0fa7f0c3a653e87cacca7718b61f24925d5969` in one line, the provenance line of the inlined `rules/user-facing-output.md`, which names the commit it was rendered at (`f87609bf…` then, `c8d5a6f1…` now); the included file's own sha256, `129d8a7e…`, is the same. Both texts are 19 915 bytes.
+
+### The ruling's consequence
+
+The ruling of 2026-10-09 (`261009-1024-fusion-is-the-one-source-of-role-texts-and-workflow-rules-for-both-hosts.md`) makes fusion the one source of role texts and workflow rules for both hosts: "Fusion liefert einen gemeinsamen Rollenkatalog samt ausführbarem Workflow; Prior ersetzt dafür seine eingebetteten Fusion-Definitionen." The explorer was the first proof (68). **This bundle carries the second, the full repair flow of implementation, review and state audit, and once Prior accepts it, Prior replaces its embedded fusion definitions for new work, on its own schedule.** Fusion sets no date and asks for none. Runs made under the embedded `fusion` 1.8.0 stay what they are, readable under their own formats (70.6); replacement concerns what new work dispatches, never what old work was.
+
+### 70. Does the bundle built at C run a real explorer and a reviewed repair on Prior's host?
+
+**Closes:** nothing in the codec. On fusion's side, plan step 22 records the answer, and the release act (step 23) waits on it. Preferred form: a Prior response document at a Prior commit that names the Prior commit it ran on, the bundle digest it ran, the platform it ran on and both source revisions it installed, and gives each of 70.1 to 70.7 and each contract reading below one verdict (accepted, corrected with the correction, refused, or deferred naming the Prior item it waits for), with any defect named as such; this is P69-6.
+
+Fusion asks Prior to take these steps from the hand-over path above, in this order, once P69-1 to P69-6 are qualified:
+
+#### 70.1 Inspect, install under explicit trust, activate
+
+The sidecar's line against `shasum -a 256` of the tarball; `prior module inspect --archive <hand-over path>/fusion-13.1.0.tar`, comparing the reported identity with `{fusion, 13.1.0, sha256:56ac4c57…}`; `prior module install --runtime <runtime> --archive <hand-over path>/fusion-13.1.0.tar --trust-digest sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`; `prior module activate --runtime <runtime> --module fusion --version 13.1.0 --digest sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`.
+
+**Asked:** Does inspection report exactly the stated identity and 29 files, and does activation verify the complete installed payload, the four files under `bin/` at mode 0500 included?
+
+#### 70.2 Resolve the four roles and both workflows from the installed payload
+
+`LoadExternalCatalog` over the installed, digest-verified payload: `explorer`, `code-implementer`, `reviewer` and `state-auditor` resolve as `support.prior = supported`, each `profiles/<id>.md` and `profiles/<id>.json` loads, and each profile's `input_schema` and `result_schema` resolve inside the payload with no network reference; `reviewer` also through its aliases `code-reviewer` and `data-reviewer` with their domains; `workflows/explorer.v1.json` (`fusion.explorer.v1`) and `workflows/repair.v1.json` (`fusion.repair.v1`, ten steps, `revise_bound` 1, nine `requires` entries) resolve with all their schema paths. The 12 schemas and 2 workflows of the installed payload are byte-equal to the 14 lines of `catalog/schemas/FROZEN` at C, and so to Prior's copy at `10ad78b`.
+
+**Asked:** Does the resolver accept the payload as it stands? Which `profiles/<id>.md` bytes did it bind for each of the four roles (expected: the four `profiles/*.md` sha256 values of `build-identity.json` above)? Are the 14 installed files byte-equal to `FROZEN`?
+
+#### 70.3 One real explorer from this bundle
+
+As 68.3 to 68.6 ran it, now from 13.1.0: the role input composed and frozen, one host-provisioned run, the preflight, `PrepareExternalExplorer` and `Invoke` with a fresh outer operation id, the role run by a real model.
+
+**Asked:** The platform (`/usr/bin/uname -s -m`) and the binary the launcher selected (expected `bin/darwin-arm64/fusion-module`, `a6fe0808…`, on macOS arm64); the envelope's `domain.status` and the four `host_evidence` fields; the result's findings count, or the refusal code.
+
+#### 70.4 One complete reviewed repair, to audited close
+
+Through `fusion.repair.v1`, with a real model, on a repository and a package or issue record that Prior chooses, with a real failing check: the six services of P69 advertised and passing the nine-entry preflight, a host-minted `workflow_id` and six distinct run ids and principals, the explorer, a workspace, the implementer under the `process.check` grant of 69.6 (4), a capture with the host's checks, an independent review bound to the capture, the integration with its 13-field receipt and the accepted local reference, the snapshot, the paged workbench read, the audit, and the multi-operation close through the qualified codec. Fusion expects `domain.status` `completed`, `host_evidence` with one entry per answered run in workflow and attempt order, and the record closed (an issue `closed` with disposition `fixed`, or a package `done` with outcome class `completed`) with `reconciled` true.
+
+**Asked:** Which repository, base revision and record did Prior choose, and which checks? The envelope's status, its `host_evidence` entries, and whether attempt 0 was accepted or a `revise` ran attempt 1? The integration commit and accepted reference, the record's revisions before and after the close, and the number of model calls and tokens per run?
+
+#### 70.5 The named real kill point, and restart
+
+The kill point 69.5 names: **after the accepted Git reference update and before the host integration result is acknowledged.** On restart, under a fresh outer operation id, Prior observes the committed reference and its journal and finishes the workflow.
+
+**Asked:** Did the restart complete with no further model call, no further check run, no further commit and no further reference update, and with the same integration receipt? Which other restart and refusal checks of P69-6 ran (the deterministic host fault tests of 69.5, the eight fixture additions of 69.5), and with which outcome?
+
+#### 70.6 Old runs readable under their original formats
+
+The three old-run checks of 69.5, with this bundle installed and active: the embedded chain-01/a plan and result under `docs/qualification/follow-up-2026-09-27/chain-01/a/`, integration commit `7ab526981287228d90f2d004ae9e170b6c8f1561`, decoded by the original embedded types; the synthetic old-format fixtures through `repair.Completed` and `repair.Status` under the original `repair-role:<role>` keys and principals, labelled synthetic; and the request-68 runtime at `~/.local/share/prior/qualification/request68-20261011-02/runtime`, owner `request68-owner`, run `request68-explorer`, pin `cd37dac7…`, read for its persisted input, answer, settlement, usage and envelope, with no model call and no write.
+
+**Asked:** Did each of the three read without re-execution, alias migration, re-key or revalidation under another output contract? Does the request-68 run stay bound to `cd37dac7…`, with its `profiles/explorer.md` at `51b42e9f…`, after 13.1.0 is activated?
+
+#### 70.7 The identity Prior ran
+
+**Asked:** The bundle digest Prior ran (it must equal `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`), the tarball sha256, the platform, the selected binary's sha256, the fusion revision and the Prior adapter pin it installed (expected `c8d5a6f1…` and `10ad78b…`), and the Prior host commit it ran on, if that is a later commit than the pin.
+
+### Three contract readings for Prior to confirm or object to
+
+1. **`process` in the implementer's ceiling.** `profiles/code-implementer.json` declares `tools_ceiling` with `process` among its eight classes; 69.6 (4) corrected the grant to the existing `process.check` capability for the frozen named checks only. Fusion reads the ceiling as an upper bound that, by 67.2, creates no permission, so Prior grants `process_check` inside it and nothing broader, and the profile needs no new word. **Asked:** Does Prior read the `process` ceiling that way, or does it want `process.check` named in the profile, which would change the bundle and its digest?
+2. **`may_delegate: true` on the implementer.** `profiles/code-implementer.json` carries `may_delegate: true` because the Claude role may dispatch sub-agents; the other three profiles carry `false`. Fusion reads it as a ceiling like `tools_ceiling`: on Prior the host grants no delegation to any repair run, and the declaration creates no right. **Asked:** Does Prior grant no delegation tool to the repair's implementer, whatever `may_delegate` says?
+3. **Resume across the integration boundary.** On a re-invocation the module calls `host.integrate.v1` again for slot `integration` and expects the stored receipt on replay, or `recovery-required` while the host has not confirmed the effect; it never treats `recovery-required` as terminal and never skips the call on its own reading. Fusion's fake-host boundary "after the integrate receipt" exercises the first branch. **Asked:** Is that re-call the route Prior's host expects at the named kill point of 70.5, the host answering from its journal?
+
+### What is not claimed
+
+- That Prior can run this request today. At `10ad78b` the six services are neither implemented nor advertised, and P69-1 to P69-6 are open.
+- That any target ran on Prior's host. The conformance above ran on macOS arm64 against a fake host. Linux amd64 and arm64 are built, not qualified, and qualifying them is no condition of this request.
+- That a real model ever drove the repair workflow. Every repair model answer above is scripted.
+- That the Claude distribution is byte-unchanged. Its behaviour is; its shipped bytes differ in the five files step 20 lists, as the user accepted.
+- That this is the release. `main` and the tag at C are step 23, after Prior's answer.
+- Any change to the codec, to request 68's acceptance, or to the embedded `fusion` 1.8.0.
+
+### What fusion does with the answer
+
+- Plan step 22 records the answer, the Prior commit, the digest and the platform Prior ran. The recorded digest must equal `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`; an answer naming another digest ran another build and does not close 70.
+- A defect Prior names in the delivery is filed as an issue in fusion's container before step 22 closes; the answer is then not a "Yes" for this request.
+- An objection to a contract reading above, or a pin move, changes the bundle: a new candidate C', step 20 re-run at C', and this request amended with the new digest before Prior answers.
+- Linux amd64 and arm64 stay built, not qualified, whatever the answer says about macOS arm64.
+
+### Requests 59 to 70, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 59 | **complete** at Prior `d6abeb8`, for `f9ecae78`; re-asked as 63 | `Prior: docs/design/fusion-fj04-correction-prior-response.md` `## 59: shared fixtures` |
+| 60 | **complete** at `d6abeb8`; `c76bbce9…` qualified; re-asked as 64 | the same document, `## 60: runtime qualification` |
+| 61 | **answered Yes** at Prior `7da6690` | `Prior: docs/design/fusion-fj03d-prior-response.md` |
+| 62 | **accepted with corrections** at Prior `f32bf4a` | `Prior: docs/design/fusion-claim-takeover-prior-response.md` |
+| 63 | **complete** at Prior `34a2710`, for `dd4bf3d4` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 63 — Shared schemas and fixtures` |
+| 64 | **complete** at `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, the bundle `v13.0.0` ships | the same document, `## 64 — Runtime snapshot and replay` |
+| 65 | **complete**: "Yes" at Prior `167c605`, for C = `468d8e87`, now `v13.0.0` | `Prior: docs/design/fusion-fj05-release-evidence-prior-response.md` |
+| 66 | **never asked** (decision A2, option 1) | `## FJ05 (the release evidence at 468d8e87)` above |
+| 67 | **accepted with corrections** at Prior `da02626`; its P67-1 and P67-2 landed at `8bab88a`, corrected by `5199cf1`; the operator lifecycle CLI at `6080ba76` | `Prior: docs/design/fusion-module-bundle-prior-response.md`, and `### Prior's answer to 67 at da02626` above |
+| 68 | **accepted** at Prior `b20edb6`, on macOS arm64, for digest `cd37dac7…` built at fusion `f87609bf` against Prior `6080ba76`; P67-3 complete for that digest and platform; Linux amd64 and arm64 built, not qualified | `Prior: docs/design/fusion-explorer-qualification-prior-response.md`, and `### Prior's answer to 68 at b20edb6` above |
+| 69 | **accepted with corrections** at Prior `a4f463f`, as the implementation contract for P67-4; the six services are not implemented at `b20edb6`; P69-1 to P69-6 open before request 70 | `Prior: docs/design/fusion-repair-contract-prior-response.md`, and `### Prior's answer to 69 at a4f463f` above |
+| 70 | **open**: written at fusion this commit against Prior `10ad78b`, for digest `56ac4c57…` built at C = `c8d5a6f1`; waits for P69-1 to P69-6 | `## Module bundle (request 70, the reviewed repair at C)` above |
+
+These rows supersede the rows in `### Requests 59 to 69, as they stand` above. Request 70 is the one open request.
