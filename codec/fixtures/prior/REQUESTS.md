@@ -5098,6 +5098,88 @@ Prior states the actual counts in its answer. This is a correction of the reques
 
 Request 70 remains open. Its answer comes after P69-1 to P69-6, which the intake lists as the remaining acceptance work. A qualified container engine for the real checks is Prior's precondition: the Docker socket was absent at intake, and the checks must not fall back to a local shell. Fusion's plan steps 22 to 25 wait for that answer.
 
+### Prior's answer to 70 at f0b57b6
+
+**Read at:** Prior commit `f0b57b6` (`f0b57b69ad077b35f96873605d6050a98aacbcff`, 2026-10-13 18:59, "docs(fusion): accept request 70 with live repair and kill-recovery evidence"), parent `f36ac32` (`f36ac3230be9c4bae411a3ca73689602a52be5cc`, 2026-10-13 18:49, "feat(fusion): connect delivered repair to real host effects and durable recovery"), the host implementation Prior ran; `git log --oneline dc1aeca..f0b57b6` there names three commits, `61fc865`, `f36ac32` and `f0b57b6`, so the intake commit `dc1aeca` is an ancestor of the answer. `f0b57b6` is on Prior's `backup/main`. The answer is `Prior: docs/design/fusion-repair-request70-prior-response.md`, 244 lines, 14 114 bytes, `sha256:4558793bee3b065faf789f93120ccea88d162978ccabb847718a0cdf476abded` as `git show f0b57b6:<path> | shasum -a 256` prints it, read from the commit and never from Prior's working tree, which is dirty. The same commit adds four lines to `Prior: docs/design/fusion-repair-request70-intake.md` (a "Superseded status" note pointing to the answer) and the evidence directory `Prior: docs/qualification/fusion-request70-2026-10-13/` with the issue record, both reports and both evidence records of the live run under its `workbench/` subtree, 32 files and 1 455 insertions in all (`git show --stat f0b57b6`). `moduleapi/v1`, `go.mod` and `go.sum` are unchanged from `10ad78b` to `f0b57b6`, so the adapter's pin stands. Prior answers fusion `0f9ce871`, the commit that carries request 70, and fusion's reply to the intake at `0750fcd3`, "including the agreed correction to 70.5". Numbers below come from the answer and from `summary.json` and `identity.json` in the evidence directory, never from the retained runtime under `~/.local/share`.
+
+**Prior's verdict, quoted:** "Accepted on macOS arm64. P69-1 through P69-6 are qualified." and "No defect in the delivered bundle was found." Prior adds: "Linux remains built, not qualified; it is not included in this acceptance", "**No pin move, replacement candidate or bundle rebuild is required.**", and the codec remains at `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`. The qualification ran "against the actual delivered executable and actual host effects, with a real Anthropic model and a real process kill".
+
+**The identity Prior ran, and it is step 20's.**
+
+| Item | Value |
+|---|---|
+| Fusion candidate C | `c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c` |
+| Adapter's Prior build pin | `10ad78becad0bb5323b1afeba4842fc21605f570` |
+| Prior host implementation | `f36ac3230be9c4bae411a3ca73689602a52be5cc` |
+| Module | `fusion` / `13.1.0` |
+| Bundle digest | `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94` |
+| Tarball sha256 | `8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb` |
+| Platform / Go | `Darwin arm64` / `go1.26.0 darwin/arm64` |
+| Selected executable | `bin/darwin-arm64/fusion-module`, sha256 `a6fe08082975b5e559c87f14692eaa98ca8aea3a6120f25185f8bf532fae27eb` |
+
+The digest Prior names, `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`, equals the one step 20 recorded and step 21 delivered (`### The hand-over` above, and the `handover.json` printed in full beneath it); the tarball sha256 and the selected executable equal the delivery's too. So the answer ran the build step 21 handed over, and the condition in `### What fusion does with the answer` (an answer naming another digest does not close 70) is met.
+
+**70.1 Inspect, install under explicit trust, activate: accepted at `f0b57b6`.** The actual `prior module inspect`, `module install --trust-digest` and `module activate` commands succeeded against the delivered tarball. Inspection reported the expected identity and 29 files; activation re-verifies the complete installed payload, the four executable entries included. Evidence: `inspect.json`, `install.json`, `activate.json`. The live qualification installed and activated the same archive independently.
+
+**70.2 Resolve the four roles and both workflows from the installed payload: accepted at `f0b57b6`.** All four supported roles, the reviewer aliases, both workflows and their nine required host services resolve from the installed payload; no remote schema is loaded. The 14 schema and workflow files match `FROZEN`, and all 23 catalog assets match the delivered build identity. The bound profile texts are `explorer` `7dc86b154f71459bb0861fd88c0fa7f0c3a653e87cacca7718b61f24925d5969`, `code-implementer` `a66a16d390cb7c8e9efbf384d8451d7e3378a74b7ef0991fc1211387e5285b97`, `reviewer` `ba65084d2b647b6265cde8ef62520ee070286d78ff618f0357007bdcf34a7367` and `state-auditor` `825df2e7cb2a12a32a9141981469f0734da022fb6e0a357fb21297a14cf7d8be`, each equal to the `profiles/*.md` value of `build-identity.json` above. Host resource metadata describes the grants after these unchanged bytes and substitutes no other catalog.
+
+**70.3 One real explorer from this bundle: accepted at `f0b57b6`.** The installed explorer ran with model `claude-sonnet-5` through the Anthropic API, read `calc.py` and `test_calc.py`, returned `completed` and identified the addition and subtraction defect. Host evidence: run `request70-explorer`, principal `request70-explorer-principal`, observed at `2026-10-13T16:50:32.6514Z`, state `settled`. **Two provider requests, two file reads, 16 830 input and 349 output tokens** (`explorer-accounting.json`); the envelope is `explorer-envelope.json`. This standalone run is separate from the repair's own explorer in 70.4.
+
+**70.4 One complete reviewed repair, to audited close: accepted at `f0b57b6`.** The repository is `request70-20261013-06/repo`, initially at `95a6604078f8aa39bb236db97ff9805548e66080`. The defect: `calc.py:add` subtracted instead of adding, and the immutable `test_calc.py` asserted `add(2, 3) == 5`. The one check, `unit`, runs `python3 -B -m unittest -v`, and it failed before dispatch (`baseline.json`, exit code 1). Only `calc.py` was writable. The record is the issue `shared/issues/261013-1200-addition-subtracts.record.json`. The host minted six distinct runs and principals and provisioned them without eager admission. Attempt 0 passed its checks and its independent reviewer accepted the captured tree, so no `revise` ran; the second pair never acquired a model attempt, reservation, tool intent or admission, and was cancelled at terminal completion. Six runs, four of them used:
+
+| Role | Provider requests | Input tokens | Output tokens | Tool calls |
+|---|---:|---:|---:|---:|
+| Explorer | 2 | 17 584 | 539 | 2 |
+| Implementer | 4 | 67 494 | 405 | 4 |
+| Reviewer | 2 | 35 873 | 543 | 2 |
+| State auditor | 2 | 50 613 | 1 630 | 4 |
+| Unused second pair | 0 | 0 | 0 | 0 |
+
+That is four settled role evidence entries in workflow order and ten provider requests, tool continuations included. The named check ran once for the implementer and independently once each for capture and integration; all three ran in pinned Python containers (`python@sha256:392307d2…`) with read-only sources, no network, CPU, memory, PID and time bounds, and confirmed removal, and the model could select a check name but supply no argv, image, mounts or shell. **Accepted commit `b4ebad2154e775f6ca8750e2e043bff21f926363`, reference `refs/prior/accepted/request70`, tree `96b430d160fa6be58c0e11172f256755cac046f5`**; the source checkout's HEAD did not move; the 13-field integration receipt and the 11-field snapshot are retained (`integration.json`, `snapshot.json`). Through the qualified codec the host wrote two immutable reports, created their two typed evidence records, and closed the issue as `closed` / `fixed` with **`reconciled: true`**: revision before `sha256:620be420620288fc515ad26a024f29d973f3f299ba89acf923eee71053fef76a`, after `sha256:86d36ab0243748c6ec8414f4b97535607cbccd64684a3ba77e3a865c3157c8b9`. All successful-run token reservations are settled, none active or uncertain.
+
+**70.5 The named real kill point, and restart: accepted at `f0b57b6`.** At `2026-10-13T16:51:29.145913Z` Prior killed its actual host process with `SIGKILL` **after the accepted Git reference update and before its integration acknowledgement** (`kill-marker.json`, boundary `after-accepted-reference-before-ack`). A new process reopened the runtime, observed the persisted integration proposal and the accepted reference, and completed that same receipt; a fresh outer invocation re-called `host.integrate.v1` and received the durable result.
+
+| Counter | Before kill | After resume | After another terminal invocation |
+|---|---:|---:|---:|
+| Repair provider requests | 8 | 10 | 10 |
+| Completed roles | 3 | 4 | 4 |
+| Checks: implementer / capture / integration | 1 / 1 / 1 | 1 / 1 / 1 | 1 / 1 / 1 |
+| Integration commits | 1 | 1 | 1 |
+| Accepted-reference updates | 1 | 1 | 1 |
+
+As agreed at `0750fcd3`, the pending state auditor ran **for the first time** after the restart, its two provider requests being the step from 8 to 10; explorer, implementer and reviewer did not repeat, and no check, commit or reference update repeated. The terminal invocation forbids model dispatch, returns byte-identical envelope bytes and leaves every counter unchanged. Prior records the counters at the actual host effect boundaries, beside the SQLite receipts and model responses. Deterministic tests against the delivered process also cut at workspace creation without reply, capture without reply, each report, evidence, attach, transition and closure boundary, and terminal persistence: unknown constituent effects stay `recovery-required` and never repeat automatically, a terminal-persistence cut after completed effects finishes safely from receipts, and answered-before-settlement recovery requires the matching recorded host close audit and dispatches no model. The added fixtures cover duplicate runs and principals, changed replay input, no-answer evidence, oversized complete frames, removal of each of the nine required services, stale brief, plan and capture, foreign claims and unused slots, as well as corrupted review bindings, invented verification receipts, write-scope escape, both rename ends, symlinks and directory-read limits; package closure with an active plan and two evidence attachments runs with actual codec effects and scripted model answers, labelled apart from the live issue.
+
+**70.6 Old runs readable under their original formats: accepted at `f0b57b6`.** The committed chain-01/a plan and result decode through the original embedded types and keep integration commit `7ab526981287228d90f2d004ae9e170b6c8f1561`. Synthetic embedded runtimes exercise `repair.Status` in prepared and running states and `repair.Completed` after completion under the original `repair-role:<role>` keys; inspection leaves the database byte-identical and calls no model. The real request-68 runtime was opened **read-only**, with no epoch claim and no new execution grant: its owner pin stays `13.0.0` / `cd37dac7…`, its explorer profile stays `51b42e9fb13ca9d6456f630913c6e2afe5767dd9015ad6c12326404604e37e73`, its input, answer, settlement and envelopes stay readable, its three requests, four tools and 33 921 / 1 129 tokens are unchanged, and `history.json` records identical database hashes before and after. Activating a newer version does not replace an existing owner's pin. No alias migration, re-key or revalidation under another contract occurred.
+
+**70.7 The identity Prior ran: accepted at `f0b57b6`.** The table above and `identity.json` name the tarball, all 29 installed file hashes, the selected executable, both build revisions and the later host commit `f36ac32`. The delivered archive was not rebuilt or edited for the qualification.
+
+**The three contract readings stay accepted.** `process` is a ceiling and grants only the named `process_check`; `may_delegate: true` grants no delegation tool; an integration re-call returns the same receipt, or `recovery-required` until the host observes and confirms the effect. None changes the bundle.
+
+**P69-1 to P69-6 are qualified.**
+
+| Prior item | Qualification, in Prior's words |
+|---|---|
+| P69-1 | Strict wire validation, authenticated scope, durable request journal, frozen six-slot map and complete service assembly |
+| P69-2 | Installed profiles/schemas, independently derived and frozen mid-run inputs, separate principals, scoped tools and context admission |
+| P69-3 | Real workspaces/checks, capture, reviewed integration CAS, snapshot and observed post-CAS recovery |
+| P69-4 | Paged codec reads, narrative and active-plan pins, immutable reports, typed evidence, issue/package close and partial-effect boundaries |
+| P69-5 | Durable completed/escalated/refused envelopes, original-format reads, settlement and unused-slot cleanup |
+| P69-6 | Delivered process, real model, actual kill/restart, negative fixtures and retained proofs above |
+
+The production entry point is `PrepareExternalRepair`; `Invoke`, `RecoverIntegration` and audited `CompleteAnsweredRole` connect the installed workflow to the six services.
+
+**The provider adaptation, and the failed trials.** Prior's first request with the full schema was rejected by the provider with HTTP 400. The successful runs use the explicit `HostValidatedOutput` transport setting: a structural JSON grammar for generation, the complete original output contract in the instructions, and validation against the unchanged installed schema before acceptance. No conditional or exclusive constraint is removed from fusion's contract; the frozen schema bytes, schema ids, role inputs and the bundle digest are unchanged. The earlier attempts are retained and not relabelled successful (`summary.json` `earlier_attempts`): 01, a setup error that rejected a malformed fixture issue before any model; 02, the HTTP 400 on the full provider schema, whose failed request stays unknown with its reservation retained, never replayed nor silently released; 03, a schema-as-prompt experiment that returned prose and failed closed before implementation; 04, an incomplete implementer result refused against the original schema, with no integration; 05, a successful live kill and restart before the final host hardening, superseded by 06. Attempt 06 is the accepted run, and none of the others enters its accounting. Prior's validation: `go test ./...`, `go vet` on the changed packages, race tests on host, backend, source control, supervisor and store, 29 selected repair and request-70 test functions with the delivered archive, the closure tests, and the live `init`, `explorer`, expected-kill, `resume` and `read` phases at `f36ac32`. "No Fusion-repository file was changed by Prior."
+
+**What is not claimed.**
+
+- Linux amd64 and arm64: built, not qualified, and not part of this acceptance.
+- Dollar costs: not priced. `CostNanoUSD: 0` is unpriced, not free, and provider invoice reconciliation stays outside the local accounting.
+- The embedded `prior repair` CLI: not retargeted by this qualification. Replacing Prior's embedded defaults for new work is a separate Prior rollout item, as request 70 itself said; it does not block fusion's release and rewrites no old run.
+
+#### What the plan takes from this
+
+This is the "Yes" the first stop clause requires: a real external explorer and a complete reviewed repair with a restart, both from the bundle built at C, with the embedded pilot runs and the step-11 run still readable, and the digest Prior names equal to the one step 20 recorded. No Prior answer names a defect, so no issue is filed. Step 22 closes on this record. The release act at step 23 still requires the user's approval of the release.
+
 ### Requests 59 to 70, as they stand
 
 | Request | State | Where |
@@ -5113,6 +5195,6 @@ Request 70 remains open. Its answer comes after P69-1 to P69-6, which the intake
 | 67 | **accepted with corrections** at Prior `da02626`; its P67-1 and P67-2 landed at `8bab88a`, corrected by `5199cf1`; the operator lifecycle CLI at `6080ba76` | `Prior: docs/design/fusion-module-bundle-prior-response.md`, and `### Prior's answer to 67 at da02626` above |
 | 68 | **accepted** at Prior `b20edb6`, on macOS arm64, for digest `cd37dac7…` built at fusion `f87609bf` against Prior `6080ba76`; P67-3 complete for that digest and platform; Linux amd64 and arm64 built, not qualified | `Prior: docs/design/fusion-explorer-qualification-prior-response.md`, and `### Prior's answer to 68 at b20edb6` above |
 | 69 | **accepted with corrections** at Prior `a4f463f`, as the implementation contract for P67-4; the six services are not implemented at `b20edb6`; P69-1 to P69-6 open before request 70 | `Prior: docs/design/fusion-repair-contract-prior-response.md`, and `### Prior's answer to 69 at a4f463f` above |
-| 70 | **open**: written at fusion this commit against Prior `10ad78b`, for digest `56ac4c57…` built at C = `c8d5a6f1`; waits for P69-1 to P69-6; intake at Prior `dc1aeca`: candidate, pin and the three readings confirmed, 70.5 wording corrected | `## Module bundle (request 70, the reviewed repair at C)` above; `Prior: docs/design/fusion-repair-request70-intake.md` |
+| 70 | **accepted** at Prior `f0b57b6` (host `f36ac32`), on macOS arm64, for digest `56ac4c57…` built at C = `c8d5a6f1` against Prior `10ad78b`; P69-1 to P69-6 qualified; Linux amd64 and arm64 built, not qualified | `Prior: docs/design/fusion-repair-request70-prior-response.md`, `Prior: docs/qualification/fusion-request70-2026-10-13/`, and `### Prior's answer to 70 at f0b57b6` above |
 
-These rows supersede the rows in `### Requests 59 to 69, as they stand` above. Request 70 is the one open request.
+These rows supersede the rows in `### Requests 59 to 69, as they stand` above. No request is open.
