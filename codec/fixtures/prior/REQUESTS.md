@@ -5063,6 +5063,41 @@ The three old-run checks of 69.5, with this bundle installed and active: the emb
 - An objection to a contract reading above, or a pin move, changes the bundle: a new candidate C', step 20 re-run at C', and this request amended with the new digest before Prior answers.
 - Linux amd64 and arm64 stay built, not qualified, whatever the answer says about macOS arm64.
 
+### Fusion's reply to Prior's intake of 70 at dc1aeca
+
+Prior read request 70 at fusion `0f9ce871` and committed an intake note at Prior `dc1aeca`, `docs/design/fusion-repair-request70-intake.md`. That note is, in its own words, an intake and contract note, not the answer to 70 and not a release approval. This section is fusion's reply to it.
+
+#### What the intake established
+
+The delivery Prior inspected is the one this request names: bundle digest `sha256:56ac4c576833152b740e5304af88649a9a4f063289ec799a7bacecdc0770cd94`, tarball sha256 `8cbad73442e0e0c5cc499ad2dcab3b4030f948d9920e1795f08f8b94908064bb`, the sidecar matching byte for byte. Prior's actual CLI installed, activated and bound that delivery in a disposable test runtime, with no production runtime and no request-68 runtime changed and no model called; both workflows and all four canonical profiles resolve, the reviewer aliases keep their domains `code` and `ontology`, and the 14 frozen schemas and workflows are byte-equal to the delivered inventory. Prior's host work in that increment leaves `moduleapi/v1`, `go.mod` and `go.sum` unchanged from `10ad78b`. So there is no pin move and no rebuild, and C stays `c8d5a6f1fa9633796a9b9cc0df83fd5fe1eec14c`.
+
+#### The three contract readings
+
+Fusion records each of the three readings as accepted by Prior, with Prior's wording of the binding consequence:
+
+1. **`process` in the implementer's ceiling: accepted.** Prior's selected tool is solely `process_check`, with one argument, the approved check name; caller-supplied commands are rejected before execution, and the profile needs no new word.
+2. **`may_delegate: true`: accepted.** Repair roles receive no delegation tool, and their runtime specifications require `MaxDepth = 0` and `MaxFanout = 0`.
+3. **Resume across the integration boundary: accepted.** A repeated `host.integrate.v1` with the same slot and bytes replays a confirmed receipt, and otherwise yields `recovery-required` until host recovery has observed and reconciled the effect; the repeat is never permission for a second commit, a second check run or a second reference move.
+
+None of the three changes the bundle or its digest.
+
+#### 70.5: fusion accepts Prior's clarification and corrects its own wording
+
+Request 70 asked, under 70.5: "Did the restart complete with no further model call, no further check run, no further commit and no further reference update, and with the same integration receipt?"
+
+That sentence is to be read as Prior's intake reads it. At the named kill point, after the accepted reference update and before the integration reply, the state auditor has not run. Completing the workflow therefore requires the auditor's first model execution after the restart. What is forbidden is repeated execution of work already done, not the pending audit. The acceptance evidence fusion asks for is the four counters Prior names:
+
+- Explorer, implementer and reviewer: no repeated model execution.
+- Integration: no repeated check, commit or reference update; the same receipt.
+- Pending audit and closure: first execution after recovery, accounted normally.
+- Replay of the terminal workflow afterwards: no further model or effect call.
+
+Prior states the actual counts in its answer. This is a correction of the request's wording, not of the module, the wire contract or the digest. Fusion's own evidence already measures it this way: `adapters/prior/fusionmodule/conformance/repair_test.go` `TestKillAtEveryPersistedBoundaryThenResumeRunsNoModel`, at its boundary "after the integrate receipt" as at every other, asserts that the resumed run answers the same completed envelope bytes as the clean reference run, that its model-call count equals the clean reference run's count (four in this fixture, the auditor's first run included, as `TestReviewedRepairRunsToAuditedClose` pins for the same accepted run), that no effect performed before the kill was performed again, and that every effect of the clean run was performed exactly once, the integration among them. The test's name says "no model"; what it asserts is no repeated model, which is the reading above.
+
+#### What stays open
+
+Request 70 remains open. Its answer comes after P69-1 to P69-6, which the intake lists as the remaining acceptance work. A qualified container engine for the real checks is Prior's precondition: the Docker socket was absent at intake, and the checks must not fall back to a local shell. Fusion's plan steps 22 to 25 wait for that answer.
+
 ### Requests 59 to 70, as they stand
 
 | Request | State | Where |
@@ -5078,6 +5113,6 @@ The three old-run checks of 69.5, with this bundle installed and active: the emb
 | 67 | **accepted with corrections** at Prior `da02626`; its P67-1 and P67-2 landed at `8bab88a`, corrected by `5199cf1`; the operator lifecycle CLI at `6080ba76` | `Prior: docs/design/fusion-module-bundle-prior-response.md`, and `### Prior's answer to 67 at da02626` above |
 | 68 | **accepted** at Prior `b20edb6`, on macOS arm64, for digest `cd37dac7…` built at fusion `f87609bf` against Prior `6080ba76`; P67-3 complete for that digest and platform; Linux amd64 and arm64 built, not qualified | `Prior: docs/design/fusion-explorer-qualification-prior-response.md`, and `### Prior's answer to 68 at b20edb6` above |
 | 69 | **accepted with corrections** at Prior `a4f463f`, as the implementation contract for P67-4; the six services are not implemented at `b20edb6`; P69-1 to P69-6 open before request 70 | `Prior: docs/design/fusion-repair-contract-prior-response.md`, and `### Prior's answer to 69 at a4f463f` above |
-| 70 | **open**: written at fusion this commit against Prior `10ad78b`, for digest `56ac4c57…` built at C = `c8d5a6f1`; waits for P69-1 to P69-6 | `## Module bundle (request 70, the reviewed repair at C)` above |
+| 70 | **open**: written at fusion this commit against Prior `10ad78b`, for digest `56ac4c57…` built at C = `c8d5a6f1`; waits for P69-1 to P69-6; intake at Prior `dc1aeca`: candidate, pin and the three readings confirmed, 70.5 wording corrected | `## Module bundle (request 70, the reviewed repair at C)` above; `Prior: docs/design/fusion-repair-request70-intake.md` |
 
 These rows supersede the rows in `### Requests 59 to 69, as they stand` above. Request 70 is the one open request.
