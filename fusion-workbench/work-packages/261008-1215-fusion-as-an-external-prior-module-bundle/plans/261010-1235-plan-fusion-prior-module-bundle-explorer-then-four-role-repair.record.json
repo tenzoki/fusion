@@ -97,7 +97,7 @@
       },
       {
         "id": "20",
-        "state": "in_progress"
+        "state": "done"
       },
       {
         "id": "21",
@@ -126,7 +126,7 @@
         "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
         "record_id": "02daf987-9486-402b-bce1-cc997a7c5b48"
       },
-      "revision": "sha256:1e676f8f6bc33e05b009fba4c49345b8aaf5d48a16d143d3e64945e8566d1365"
+      "revision": "sha256:0e28853949f26b136d9172f6d162d2609235bb3ae372d392e5f19218d916c9c1"
     }
   }
 }

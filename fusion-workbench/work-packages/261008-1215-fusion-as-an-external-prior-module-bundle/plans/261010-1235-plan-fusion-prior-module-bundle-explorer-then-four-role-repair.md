@@ -21,7 +21,7 @@ The narrative's brief, not restated: from one pinned fusion revision, (1) a runn
 
 ## Approach
 
-**One source, two renders, one adapter.** The Node package `catalog/` holds the role catalog, the role parts, the workflow definitions and the schemas, and renders two targets: the Claude render reproduces `agents/<id>.md` byte for byte for the converted roles, the Prior render becomes the bundle's profile assets with the cited rule file inlined. The adapter is Go source under `adapters/prior/fusionmodule/`, authored and delivered by fusion (67.10, A). It has no `go.mod` and compiles nowhere in fusion's tree: every `go` command runs through `adapters/prior/stage.sh` in a disposable Prior clone at `adapters/prior/PRIOR_PIN` (67.4, route a; step 7). The workflows interpret fusion's definitions over one observe-then-act step executor: each step reads its durable role operation first and acts only on `absent`. Prior provisions runs, resolves instructions from the installed payload, supplies the project context, runs the service preflight and keeps authority, accounting and recovery; fusion's module decides domain sequence, hand-overs and completion.
+**One source, two renders, one adapter.** The Node package `catalog/` holds the role catalog, the role parts, the workflow definitions and the schemas, and renders two targets: the Claude render reproduces `agents/<id>.md` byte for byte for the converted roles, the Prior render becomes the bundle's profile assets with the cited rule file inlined. The adapter is Go source under `adapters/prior/fusionmodule/`, authored and delivered by fusion (67.10, A). It has no `go.mod`: every `go` command runs through `adapters/prior/stage.sh` in a disposable Prior clone at `adapters/prior/PRIOR_PIN` (67.4, route a; step 7). The workflows interpret fusion's definitions over one observe-then-act step executor: each step reads its durable role operation first and acts only on `absent`. Prior provisions runs, resolves instructions from the installed payload, supplies the project context, runs the service preflight and keeps authority, accounting and recovery; fusion's module decides domain sequence, hand-overs and completion.
 
 ```mermaid
 flowchart LR
@@ -61,7 +61,7 @@ flowchart LR
   RS -->|workbench requests| CODEC
 ```
 
-**The Claude distribution stays unchanged by construction; step 20 verifies it.** No step edits `agents/`, `skills/`, `rules/`, `hooks/`, `bin/`, `templates/`, `stilwerk/` or `CLAUDE.md`. **Growth bounds:** none grows, no baseline moves; `catalog/` and `adapters/prior/` test in their own trees, like `codec/`, outside every bound (an Open Question).
+**The Claude distribution stays unchanged by construction; step 20 verifies it.** No step edits `agents/`, `skills/`, `rules/`, `bin/`, `templates/`, `stilwerk/` or `CLAUDE.md`. **Growth bounds:** none grows, no baseline moves; `catalog/` and `adapters/prior/` test in their own trees, like `codec/`, outside every bound (an Open Question).
 
 ## Implementation Steps
 
@@ -75,7 +75,7 @@ flowchart LR
 2. **Request 67: the bundle and explorer contract proposal**
    - Executor: code-implementer
    - Files: `codec/fixtures/prior/REQUESTS.md` (a new section `## Module bundle (request 67, the contract proposal)` appended; no line above edited)
-   - Changes: Written against fusion HEAD and Prior `167c605`. Questions 67.1 to 67.8 for G1 to G7 and G11, each with fusion's proposal (the shapes of `## Data Structures`; delivery as a tarball and digest under Prior's explicit-trust install) and the preferred answer form, plus the explorer workflow as capability `fusion.explorer.v1`. Answer 67 (step 3) governs what the proposals became. It asks nothing about the codec.
+   - Changes: Written against fusion HEAD and Prior `167c605`. Questions 67.1 to 67.8 for G1 to G7 and G11, each with fusion's proposal and the preferred answer form, plus the explorer workflow as capability `fusion.explorer.v1`. Answer 67 (step 3) governs what the proposals became. It asks nothing about the codec.
    - Dependencies: step 1; decisions `261010-1235-how-is-the-host-neutral-role-text-the-source-of-both-the-claude-agents-and-the-prior-profiles.md` and `261010-1235-in-which-language-is-the-prior-module-executable-built-and-how-does-it-consume-priors-module-api.md` answered by the user
    - Acceptance: `git diff --stat HEAD -- codec` lists `codec/fixtures/prior/REQUESTS.md` alone; `cd codec && npm test` green; the section names each of G1 to G7 and G11 once.
 
@@ -89,7 +89,7 @@ flowchart LR
 4. **Catalog data: ids, support states, explorer workflow and schemas**
    - Executor: data-implementer
    - Files: `catalog/catalog.json`; `catalog/profiles/{explorer,code-implementer,reviewer,state-auditor}/profile.json`; `catalog/workflows/explorer.v1.json`; `catalog/schemas/{catalog,profile,workflow}.schema.json`; `catalog/schemas/{explorer-request,explorer-envelope}.v1.json`; `catalog/schemas/explorer-result.v1.json` (Prior's `modules/fusion/schemas/explorer-result.json` at `167c605`, copied unchanged, `$id` included)
-   - Changes: Every Prior id at `167c605` and every Claude agent name appears once, `defect-fixer` as `unsupported` on both hosts (67.3). Explorer: `prior` `supported`, `claude-code` `unsupported` (item 4 of the brief). The three repair roles carry `prior` `planned`, shipped for inspection, refusing dispatch (67.2); every other role `unsupported` for `prior`. `code-reviewer` and `data-reviewer` are aliases of `reviewer` with domain `code` or `ontology`, the domain preserved in the binding. Schemas per `## Data Structures`; no network `$ref`. The workflow definition states the explorer's one step, its hand-over, its completion condition (settled role, schema-valid result within the limit) and `revise_bound` 0, read as 67.5 rules: N permits N+1 attempts, one host-provisioned run each. `requires` names the three `host.role.*` services, the input to Prior's preflight.
+   - Changes: Every Prior id at `167c605` and every Claude agent name appears once, `defect-fixer` as `unsupported` on both hosts (67.3). Explorer: `prior` `supported`, `claude-code` `unsupported` (item 4 of the brief). The three repair roles carry `prior` `planned`, shipped for inspection, refusing dispatch (67.2); every other role `unsupported` for `prior`. `code-reviewer` and `data-reviewer` are aliases of `reviewer` with domain `code` or `ontology`, the domain preserved in the binding. Schemas per `## Data Structures`; no network `$ref`. The workflow definition states the explorer's one step, its hand-over, its completion condition (settled role, schema-valid result within the limit) and `revise_bound` 0 (67.5). `requires` names the three `host.role.*` services, the input to Prior's preflight.
    - Dependencies: step 3
    - Acceptance: `node -e` validation of each JSON file against its schema exits 0 (the command written into the step's report); `jq -r '.roles[].id' catalog/catalog.json | sort | uniq -d` prints nothing; `grep -l 'http' catalog/schemas/*.v1.json` lists `explorer-result.v1.json` alone, and `cmp` against `git show 167c605:modules/fusion/schemas/explorer-result.json` prints nothing.
 
@@ -152,7 +152,7 @@ flowchart LR
 13. **Request 69: the repair contract**
     - Executor: code-implementer
     - Files: `codec/fixtures/prior/REQUESTS.md` (`## Module bundle (request 69, the four-role repair)`)
-    - Changes: Proposes the host capabilities for G8 to G10 with their bounds. Workbench reads come as pages of a stated size with a continuation handle; workbench writes are codec requests the host executes under its authority, answered within the frame or by a handle. It proposes the attempt map (one host-provisioned run per attempt, persisted and frozen before dispatch) and the roles of each revision; restart semantics, independent principals and old-run readability: embedded runs keyed `repair-role:<role>`, the step-11 run, frozen `.v1` schemas (67.3). Cites step 12's files.
+    - Changes: Proposes the host capabilities for G8 to G10 with their bounds: paged reads, writes as codec requests under the host's authority. It proposes the attempt map (one host-provisioned run per attempt, persisted and frozen before dispatch) and the roles of each revision; restart semantics, independent principals and old-run readability: embedded runs keyed `repair-role:<role>`, the step-11 run, frozen `.v1` schemas (67.3). Cites step 12's files.
     - Dependencies: step 12
     - Acceptance: as step 2, naming each of G8 to G10 and the attempt map once.
 
@@ -180,7 +180,7 @@ flowchart LR
 17. **The adapter's repair workflow**
     - Executor: code-implementer
     - Files: `adapters/prior/fusionmodule/internal/repair/`, `adapters/prior/fusionmodule/internal/hostsvc/`, unit tests; `cmd/fusion-module/main.go` registers `fusion.repair.v1`
-    - Changes: Interprets `repair.v1.json` on the step executor of step 7. Performs no service preflight: the definition's `requires` list is Prior's input (67.6). Validates the invocation's attempt map against `revise_bound` before any role call and refuses a short one; attempt *i* runs on host-provisioned run *i*, no id reused, the loop bounded as the definition and answer 69 state. Workbench access goes through the answered paging and handle form only. Moves `PRIOR_PIN` to `10ad78b` and uses `moduleapi/v1`'s repair wire types (`RepairCall`, `DecodeRepairCall`, `RepairResponse`, `RepairSnapshot`, the six capability constants) rather than re-implementing them.
+    - Changes: Interprets `repair.v1.json` on the step executor of step 7. Performs no service preflight: the definition's `requires` list is Prior's input (67.6). Validates the invocation's attempt map against `revise_bound` before any role call and refuses a short one; attempt *i* runs on host-provisioned run *i*, no id reused, the loop bounded as the definition and answer 69 state. Workbench access goes through the answered paging and handle form only. Moves `PRIOR_PIN` to `10ad78b` and uses `moduleapi/v1`'s repair wire types rather than re-implementing them.
     - Dependencies: steps 7, 15
     - Acceptance: `adapters/prior/stage.sh test` green.
 
@@ -194,16 +194,16 @@ flowchart LR
 19. **Documentation and the version of the candidate**
     - Executor: code-implementer
     - Files: `README-agents.md` (`## Plugin structure`: the catalog, the generated prompts and their editing route; `## Releasing`: the bundle build, the Prior pin and the delivery directory); `.claude-plugin/plugin.json` (version, proposed 13.1.0)
-    - Changes: Names the three generated prompts and the command that regenerates them. `CLAUDE.md` is not edited: it is charged to every dispatch path at zero head-room. Done: the citation-count pin re-approved 2045/370 to 2051/373 for the added citations, and `README.md`'s pin example moved to `tags/v13.1.0`, a surface `## Releasing` lists.
+    - Changes: Names the three generated prompts and the command that regenerates them. `CLAUDE.md` is not edited (zero head-room). Done: the citation-count pin re-approved 2045/370 to 2051/373 for the added citations, and `README.md`'s pin example moved to `tags/v13.1.0`, a surface `## Releasing` lists.
     - Dependencies: step 18
     - Acceptance: `cd hooks && npm test` green with no `UPDATE_*` variable set; `git diff --quiet HEAD -- CLAUDE.md agents skills rules`.
 
 20. **The candidate C verified, the Claude distribution proven unchanged**
     - Executor: analyst
     - Files: `$OUT_ANALYSIS/<stamp>-candidate-c-verification.md`
-    - Changes: In an isolated clone at C, runs the three Node suites (`hooks`, `codec`, `catalog`) and `adapters/prior/stage.sh test`, and builds the bundle twice. Installs `v13.0.0` and C with `install.sh` under `env -i` into scratch homes, then diffs the two installed trees.
+    - Changes: In an isolated clone at C, runs the three Node suites (`hooks`, `codec`, `catalog`) and `adapters/prior/stage.sh test`, and builds the bundle twice. Installs `v13.0.0` and C with `install.sh` under `env -i` into scratch homes, then diffs the two installed trees. Done: C is `c8d5a6f1`; the report is `261012-2126-candidate-c-verification.md`.
     - Dependencies: step 19
-    - Acceptance: the report records each of: the installed-tree diff lists `.claude-plugin/plugin.json`, `README-agents.md` and `README.md` (the pin example at line 26 only) and nothing else; neither tree holds `catalog/` or `adapters/`; `git diff --quiet v13.0.0 C -- agents skills rules hooks bin templates stilwerk`; `git diff --stat v13.0.0 C -- codec` lists `codec/fixtures/prior/REQUESTS.md` alone; both bundle builds print one digest; every suite is green.
+    - Acceptance: the report records each of: the installed-tree diff lists `.claude-plugin/plugin.json`, `README-agents.md`, `README.md` (the pin example at line 26 only), `codec/fixtures/prior/REQUESTS.md` (the request record, additions only) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the citation-pin line, as the fourth stop clause permits), and nothing else; neither tree holds `catalog/` or `adapters/`; `git diff --quiet v13.0.0 C -- agents skills rules hooks bin templates stilwerk`; `git diff --stat v13.0.0 C -- codec` lists `codec/fixtures/prior/REQUESTS.md` alone; both bundle builds print one digest; every suite is green.
 
 21. **Request 70: the hand-over of the bundle built at C**
     - Executor: code-implementer
@@ -283,7 +283,7 @@ The four Prior answers (3, 11, 14, 22) and `8bab88a` are the only joins between 
 ## Where this work stops
 
 - The work is finished when step 22 records Prior's "Yes": a real external explorer, then a complete reviewed repair with a restart, both from the bundle built at C, with the embedded pilot runs and the step-11 run still readable. The digest Prior names must equal the one step 20 recorded.
-- Also only if step 20's report shows the Claude install from C differing from the `v13.0.0` install in `.claude-plugin/plugin.json`, `README-agents.md` and `README.md` (the pin example at line 26) alone, neither tree holding `catalog/` or `adapters/`.
+- Also only if step 20's report shows the Claude install from C differing from the `v13.0.0` install in `.claude-plugin/plugin.json`, `README-agents.md`, `README.md` (the pin example at line 26), `codec/fixtures/prior/REQUESTS.md` (the request record, additions only) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the citation-pin line, as the fourth stop clause permits) alone, neither tree holding `catalog/` or `adapters/` (condition met at C `c8d5a6f1`: the report lists exactly those five).
 - Also only if `git diff --stat v13.0.0 C -- codec` lists `codec/fixtures/prior/REQUESTS.md` alone, so requests 59 and 60 stay closed.
 - Also only if no growth-bound baseline or head-room constant changed between `v13.0.0` and C: `git diff v13.0.0 C -- hooks/lib/__tests__/surface-growth-bound.test.ts hooks/lib/__tests__/rules-emission-golden.test.ts hooks/lib/__tests__/helpers/growth-bound.ts hooks/lib/__tests__/fixtures` prints nothing. The citation-count pin in `hooks/lib/__tests__/reference-resolution-lint.test.ts` is no growth bound and may be re-approved for added citations, as its own message asks (step 19: 2045/370 to 2051/373, additions only).
 - The two decisions step 2 depends on stand `answered` before it runs (condition met: both answered 2026-10-10).
