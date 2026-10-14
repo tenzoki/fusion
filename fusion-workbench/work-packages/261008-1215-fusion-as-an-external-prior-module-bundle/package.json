@@ -3,7 +3,7 @@
   "id": "02daf987-9486-402b-bce1-cc997a7c5b48",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "fusion v13.1.0 released at C c8d5a6f1 with the external Prior module bundle (Go adapter, role catalog, explorer and four-role reviewed repair), digest sha256:56ac4c57 accepted by Prior at f0b57b6 (macOS arm64); marketplace 13.1.0; the Claude distribution unchanged apart from version, pins and the shipped request record. Closing review verdict revise, 12 issues and 1 decision for follow-on work.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "55b85df6-f4a8-426c-abe8-6e5d4174f69d",
+          "revision": "sha256:f63724104129b7c462672e010e7f73b9d4450ddc3967ed189fe35bc50474818b"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
