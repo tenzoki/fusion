@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "efdeb2be-95d6-4f19-89a3-f1230c745007",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/issues/261014-0830-citation-sweep-gojson-and-migrate-repair-carry-three-small-checking-gaps.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

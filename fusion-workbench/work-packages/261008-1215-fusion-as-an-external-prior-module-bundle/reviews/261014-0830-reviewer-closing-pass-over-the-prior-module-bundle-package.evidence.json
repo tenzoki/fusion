@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "55b85df6-f4a8-426c-abe8-6e5d4174f69d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "2dd9734ca8131dbe708b41c1f3785734c735c299",
+    "git_range": null
+  },
+  "brief_revision": "sha256:e674c41831917e0c837cd25ca8e740e8d761bc83de28f8369c5957e027adc7e4",
+  "plan_revision": "sha256:0e28853949f26b136d9172f6d162d2609235bb3ae372d392e5f19218d916c9c1",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/reviews/261014-0830-reviewer-closing-pass-over-the-prior-module-bundle-package.md",
+    "sha256": "sha256:2b0f225288e555cf15746192038f9ed4ff0d8ae62fdd5ec043781902f9fbf4e0",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-14T06:39:05Z",
+  "extensions": {}
+}

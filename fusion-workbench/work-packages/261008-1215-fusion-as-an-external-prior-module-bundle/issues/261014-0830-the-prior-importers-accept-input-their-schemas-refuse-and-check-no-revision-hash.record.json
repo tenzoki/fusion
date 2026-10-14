@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a40741c2-1ea0-4698-97a9-fc70b96b3622",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/issues/261014-0830-the-prior-importers-accept-input-their-schemas-refuse-and-check-no-revision-hash.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

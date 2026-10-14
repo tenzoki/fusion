@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "fc7d3971-8a40-4323-bfeb-f5e067333a7b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/issues/261014-0830-the-repair-module-answers-completed-on-a-close-whose-reconciled-is-false.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

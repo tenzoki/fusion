@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "df2dad75-3b08-401b-80a3-7ab0e888d15a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261008-1215-fusion-as-an-external-prior-module-bundle/decisions/261014-0830-does-a-shipped-file-change-after-a-release-tag-take-a-version-bump-when-the-bump-changes-the-prior-bundle-digest.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
