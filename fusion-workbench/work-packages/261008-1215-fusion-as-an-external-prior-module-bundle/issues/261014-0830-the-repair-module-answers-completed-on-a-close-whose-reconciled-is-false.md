@@ -14,3 +14,7 @@ Evidence:
 Fix direction: map a completed close with `reconciled: false` to `recovery-required` (non-terminal, violation code such as `closure.unreconciled`), which needs no change to a frozen schema; confirm the reading with Prior in the next request, since the frozen workflow text does not state it. If Prior says a `reconciled: false` close can never be `completed`, record that answer and add the module check as a guard anyway.
 
 Acceptance: a unit test in `internal/repair` whose fake close answers `{"record":…,"before":…,"after":…,"reconciled":false}` yields an envelope whose status is not `completed`; the existing `TestAcceptedFirstAttemptRunsToClose` stays green.
+
+## Note, 2026-10-14
+
+Correction of the closing review's commit message (edaf7f18), which said no finding touches the bundle Prior accepted: this defect is in the delivered repair module of v13.1.0 (digest 56ac4c57). Prior reports it does not void the acceptance: Prior's qualified close path answers a failed reconciliation with an error, never with a successful close carrying reconciled false, so the case was not reachable in the accepted run. The fix ships in a later bundle and needs Prior's acceptance then.

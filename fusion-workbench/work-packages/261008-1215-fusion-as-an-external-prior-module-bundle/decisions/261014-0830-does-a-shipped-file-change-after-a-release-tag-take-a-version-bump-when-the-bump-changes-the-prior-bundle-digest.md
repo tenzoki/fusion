@@ -30,3 +30,10 @@ The bytes Prior accepted at answer 70 (`f0b57b6`) stay what they are; no option 
 ## Recommendation
 
 Option 1 now, with `build.sh` refusing to build from a commit that is not at a `v<plugin.json version>` tag unless `FUSION_BUILD_ALLOW_UNTAGGED=1` is given. That closes the second-13.1.0-bundle gap at once. Option 3 can follow in a later request to Prior if bundles without hand-overs become common.
+
+## Prior's position, 2026-10-14
+
+Relayed by the user in chat, after the closing review: Prior supports option 1. Shipped changes get a new version; the tag and the accepted bundle of 13.1.0 stay unchanged. A Claude-only documentation change needs no new Prior acceptance; a newly delivered Prior bundle does.
+
+---
+Answered: this record `## Options` — option 1: every shipped change after a tag takes a version bump, the post-tag changes on main (60141589, cf17b3ba) ship as 13.1.1, and no Prior bundle is built or handed over for it since nothing the bundle carries for Prior was re-accepted; the build.sh guard in the recommendation is not ruled here; ruled by user, Kai Stalmann <ks@qantr.com>

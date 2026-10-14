@@ -16,3 +16,7 @@ The guard was confirmed by reading. The staged-rename case was not executed: inf
 Fix direction: end the rename half at Step 5 with "commit the renames, then run `/fusion:migrate` again"; offer Step 6 on a re-run whose renames are committed, `FOUND=0` included; name exit 4 with its stderr line; skip the write offer in `MODE=plain`.
 
 Acceptance: on a fixture v11 workbench in git, the documented sequence reaches a successful `--write` with no exit 4. On a plain workbench, Step 6 says why no write is offered.
+
+## Note, 2026-10-14
+
+Prior, relayed by the user: this must be fixed before the next affected migration run. The failure sequence is so far derived from the code; a reproduction and a regression test are still missing and belong to the fix.
