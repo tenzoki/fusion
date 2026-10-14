@@ -41,13 +41,13 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 - **User-facing output style**: which agents receive the full style contract and what it mandates. Detail: `README-agents.md` `## Plugin structure`.
 - **Critical stance**: the five reasoning norms every agent loads. Detail: `README-agents.md` `## Plugin structure`.
 - **No guard rule is emitted any more**, and how to measure the always-on floor rather than read a number out of this file. Detail: `README-hooks.md` `## Concept`.
-- **Growth bounds**: editing `agents/*.md`, `skills/*/SKILL.md`, a rule file or the hook tests can turn `npm test` red for how much the text grew, and this file is charged to all eleven dispatch paths at zero head-room. The way out of a red bound is a cut, never an edit to a baseline. Detail: `README-hooks.md` `### Growth bounds on the shipped text`.
+- **Growth bounds**: editing `agents/*.md`, `skills/*/SKILL.md`, a rule file or the hook tests can turn `npm test` red for how much the text grew, and this file is charged to all eleven dispatch paths at zero head-room. The way out of a red bound is a cut, or a head-room raise a ruling allows; never an edit to a baseline. Detail: `README-hooks.md` `### Growth bounds on the shipped text`.
 - **Voice profiles**: the two stylometric families under `fusion-workbench/stilwerk/`, and which declaration resolves each. Detail: `README-agents.md` `## Plugin structure`.
 - **Critical procedures**: model as user-invocable skills (e.g. `/fusion:setup`), never as "MUST" directives in agent prompts. A skill body becomes the user prompt; that's the only reliable enforcement.
 - **Workbench writes**: agents' records go only to `fusion-workbench/`. Sub-agents share no memory; everything persists through workbench files.
 - **Workbench bootstrap is exclusive to `/fusion:setup`** (since v2.5.0): only setup creates a workbench, writing the marker `fusion-workbench/.fusion-setup` (JSON: timestamp + plugin version). Agents (`bin/fusion-workbench-root`) and hooks (`hooks/lib/workbench-root.ts`) locate the workbench by walking up from `pwd` to that marker; with none found, agents halt with "run /fusion:setup" and hooks no-op silently, so a session whose cwd is in a non-fusion directory never creates a stray workbench. Since 13.0.0 setup refuses a v11 store name and every agent a Markdown-controlled workbench **until `/fusion:migrate` converts it**, the only workflow allowed to name both layouts literally, being the transition between them; the pre-v4 conversions live at the `v11.11.1` tag. Setup's probe names the legacy store too, and `EXEMPT_SKILLS` in `hooks/lib/__tests__/path-literal-lint.test.ts` still enumerates the two.
 - **One orchestrator per project**: advisory; `/fusion:check` warns when another session's marker is live. Detail: `README-agents.md` `## Invariants`.
-- **Issues vs decisions**: which store each goes to and which marker vocabulary each carries. Detail: `rules/fusion-workbench-conventions.md` `## Issues vs Decisions — when to use which`, which every agent already loads.
+- **Issues vs decisions**: which store each goes to and which state set each carries. Detail: `rules/fusion-workbench-conventions.md` `## Issues vs Decisions — when to use which`, which every agent already loads.
 - **SessionStart output**: `systemMessage` JSON reaches the user, plain stdout reaches the model. Detail: `README-hooks.md` `## Files`.
 - **`.gitignore`**: for shipped binaries inside excluded dirs use `dir/*` (file pattern) so `!path` exceptions work for new files. `dir/` (trailing slash) blocks all re-inclusion of files added later.
 - **The work package is the unit of work**: one directory per item, its state in `package.json`, its holder a checkout. Detail: `rules/fusion-workbench-conventions.md` `## Work packages`, which every agent already loads.
@@ -55,7 +55,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 
 ## Release process
 
-The two repositories, the seven numbered steps, the tag, the marketplace cache clone, the HTTPS installer's invariants and the five surfaces a release keeps coherent are in `README-agents.md` `## Releasing`, beside `## Adding a new agent`.
+The two repositories, the numbered steps, the tag, the marketplace cache clone, the HTTPS installer's invariants and the five surfaces a release keeps coherent are in `README-agents.md` `## Releasing`, beside `## Adding a new agent`.
 
 ## Testing during development
 

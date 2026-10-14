@@ -51,7 +51,7 @@ The reply answers the question that was asked; what you noticed on the way is fi
 
 Same binding as `## Vocabulary`: chat, approvals, `AskUserQuestion` text and summaries. Workbench records carry the machinery, and that is where it belongs.
 
-- **No process narration.** Which agent ran, in which pass, what it returned, which approval stands open, what a review result said: none of it reaches the user. It goes to the history file. Report the finding and its consequence instead: "the plan cites a commit that does not exist, so its three claims are unproven".
+- **No process narration.** Which agent ran, in which pass, what it returned, which approval stands open, what a review result said: none of it reaches the user. Report the finding and its consequence instead: "the plan cites a commit that does not exist, so its three claims are unproven".
 - **No self-assessment.** Not how an error feels, not who should have caught it, not which rule it breaks, not how you are reading the user. Own the error in one clause, then say what is wrong in his project and what fixes it: "I got that wrong. The hash is dead, so those three notes prove nothing until they cite the real one."
 
 ## Questions and approvals
@@ -68,11 +68,11 @@ Same binding as `## Vocabulary`: chat, approvals, `AskUserQuestion` text and sum
 
 - **Status reports: ~5–15 lines.** Result and user action first, trailing details after.
 - **Approval prompts: ≤ 8 lines total**, on any surface; `AskUserQuestion`'s per-field ceilings (≤ 6-line stem, ≤ 4-line label, ≤ 2-line description) never override the total.
-- **Session summary: ≤ 25 lines total, ≤ 10 before the first "Details" anchor** (decided in `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`); the rest lives in the linked history file.
+- **Session summary: ≤ 25 lines total, ≤ 10 before the first "Details" anchor** (decided in `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`).
 - **Chat reply default: ≤ 12 lines**; more goes to a file, linked.
 - **A report is sized by what the reader needs, not by how much work there was.** Wide tables and long lists go under "Details".
 
-Every cap is the budget for the whole output, Details included. Count the lines before sending; an over-count comes down by cutting (cuts go where that kind of thing lives: a store record, the history log), never by moving material further down the same reply, and never by relaxing the cap.
+Every cap is the budget for the whole output, Details included. Count the lines before sending; an over-count comes down by cutting (cuts go where that kind of thing lives: a store record), never by moving material further down the same reply, and never by relaxing the cap.
 
 ## Effort estimates
 

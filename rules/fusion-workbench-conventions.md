@@ -48,7 +48,7 @@ fusion-workbench/
 │   ├── memos/
 │   ├── forum/                         # messages left for another checkout
 │   └── checkouts/                     # one entry per checkout — written by bin/fusion-checkout-name, nothing else
-├── archive/                           # target of cleanup's archive step
+├── archive/                           # target of /fusion:archive
 ├── stilwerk/                          # stylometric profiles
 ├── monitor                            # dashboard binary, copied at setup
 ├── .fusion-setup                      # setup marker (JSON: timestamp + plugin version)

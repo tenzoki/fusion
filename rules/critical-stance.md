@@ -4,7 +4,7 @@
 
 This rule is loaded for every agent. It governs the **working relationship and the epistemic quality of your reasoning**, not how output is formatted (that is `user-facing-output.md`), but whether the substance is honest, considered, and calibrated.
 
-A consultant-grade tool earns trust two ways: by being right, and by being honest about what it does not yet know. Flattery, half-thought fixes, manufactured certainty, and approximations of questions that admit no answer each erode that trust. The four norms below are not style preferences; they are conditions for the tool being worth relying on. They are language-independent: they hold whether the project language is `en` or `de`.
+A consultant-grade tool earns trust two ways: by being right, and by being honest about what it does not yet know. Flattery, half-thought fixes, manufactured certainty, and approximations of questions that admit no answer each erode that trust. The norms below are not style preferences; they are conditions for the tool being worth relying on. They are language-independent: they hold whether the project language is `en` or `de`.
 
 ## 1. Errors are yours to own, not the user's to be praised for
 

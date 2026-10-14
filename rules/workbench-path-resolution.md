@@ -16,8 +16,7 @@ gets are the ones its own prompt already names. What follows is for whoever writ
 edits a consumer prompt, or changes `bin/fusion-paths` itself.
 
 That is why `bin/fusion-rules` emits this file to no agent. It is reached by the pointer in
-the conventions file, and cited by `CLAUDE.md`'s layout table; `bin/fusion-paths` itself
-cites only the conventions file.
+the conventions file.
 
 ## The name namespace
 
@@ -61,8 +60,8 @@ marker on the directory's record, no portfolio layer, no pointer file.
 `.active-circle` was corrupt or orphaned. That pointer is gone and nothing reads it, so the
 old meaning was retired outright rather than re-pointed at some other condition — a caller
 that had learned to key on 3 would otherwise have been branching on something it was never
-told about. What the code says now is that the item in scope cannot be **determined**: two
-or more claimed items, or a checkout identifier unreadable inside a git work tree. It is
+told about. What the code says now is that the item in scope cannot be **determined**, for
+one of the causes the header of `bin/fusion-claimed-package` lists. It is
 written into the conventions' exit table before any caller keys on it, which is the same
 care the retirement took. `bin/fusion-rules` still exits 3 for a malformed
 `rules/context-manifest.yaml`: read a 3 against the helper that returned it, never across
@@ -74,8 +73,8 @@ the two.
 `/fusion:migrate`. Every other consumer asks the resolver which store a kind maps to.
 Migrate is the transition *between* layouts, so it must name both sides, and the resolver
 cannot help it with either. The old sides are the v11 store names, `circles/`, `planning/`
-and `consult/`: no `OUT_*` key names them, and a `SCAN_*` key lists one only while it exists,
-which is exactly what the move ends. The pre-v4 shapes it names only to refuse them, with the
+and `consult/`: no `OUT_*` key names them, and since v13.0.0 closed the v12 window no `SCAN_*`
+key lists one either. The pre-v4 shapes it names only to refuse them, with the
 `v11.11.1` route. The new side would resolve, but migrate's own input
 is a tree the resolver's answers do not describe — it is reading files where they used to
 be in order to move them where they now belong. Its store paths are literal, and that is
