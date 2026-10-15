@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "ccb62ad0-7424-4448-a708-49bcb69246a2",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-15T13:50:10Z"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261015-1549-migrate-step-7-recognises-json-control-without-session/261015-1549-migrate-step-7-recognises-json-control-without-session.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "154a8b1c-5f2c-4f51-ba70-9049577dab85"
+      },
+      "role": "plan",
+      "revision": "sha256:91ca363cc334e2b67a9e22ebb0f983c922cc60f44e608a935da77baed6692528"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

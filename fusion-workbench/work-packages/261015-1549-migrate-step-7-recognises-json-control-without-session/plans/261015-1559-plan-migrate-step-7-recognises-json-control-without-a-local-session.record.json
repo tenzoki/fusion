@@ -1,0 +1,60 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "154a8b1c-5f2c-4f51-ba70-9049577dab85",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261015-1549-migrate-step-7-recognises-json-control-without-session/plans/261015-1559-plan-migrate-step-7-recognises-json-control-without-a-local-session.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "ccb62ad0-7424-4448-a708-49bcb69246a2"
+      },
+      "revision": "sha256:91ca363cc334e2b67a9e22ebb0f983c922cc60f44e608a935da77baed6692528"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# /fusion:migrate Step 7 recognises a JSON-controlled workbench with no local migration session
+
+## Directive
+
+Filed on the user's word of 2026-10-15 in chat, choosing "Für dieses Issue ein Arbeitspaket anlegen und übernehmen, dann den Plan schreiben lassen". The work is the fix of `261015-1310-migrate-step-7-reads-a-json-controlled-workbench-with-no-local-session-as-unmigrated-and-tells-the-user-to-fix-its-manifest-by-hand.md`, filed by the closing review of `261014-2003-migrate-step-6-offers-sweep-it-can-write`: Step 7 decides "already on JSON control" only from `done=true` in `fusion-migrate status`, whose session lives under `$HOME/.fusion-migrate/`, so a workbench migrated in another checkout, on another machine, or created JSON-native prints `run=none` and is sent to `survey` and `repair --list`, which name `workbench.json` and every control file as unrepairable for the user to fix by hand. Since 13.1.2 the help paragraph recommends exactly that re-run on JSON-controlled workbenches such as krk. Fix direction and acceptance are the issue's.
