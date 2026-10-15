@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "65243f06-4cbe-46e8-8cb8-abe396c07c00",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261014-2003-migrate-step-6-offers-sweep-it-can-write/decisions/261015-0633-does-a-migrate-run-on-a-v12-format-workbench-offer-the-citation-sweep-when-its-census-counts-store-prefixed-citations.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "261015-0633-does-a-migrate-run-on-a-v12-format-workbench-offer-the-citation-sweep-when-its-census-counts-store-prefixed-citations.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

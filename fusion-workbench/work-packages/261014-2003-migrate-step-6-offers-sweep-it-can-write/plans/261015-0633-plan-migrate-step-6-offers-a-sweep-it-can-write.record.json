@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "9ee81e4f-73af-47be-b9c2-657cbb24d041",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261014-2003-migrate-step-6-offers-sweep-it-can-write/plans/261015-0633-plan-migrate-step-6-offers-a-sweep-it-can-write.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "ac317df4-4942-4da4-80b1-4cd1705fed1f"
+      },
+      "revision": "sha256:ed34d86a2898d8a2952d3f7f50fcfa812db85b81baeb16fff27a4e2fee353f83"
+    }
+  }
+}

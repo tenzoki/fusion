@@ -3,8 +3,12 @@
   "id": "ac317df4-4942-4da4-80b1-4cd1705fed1f",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "open",
-  "claim": null,
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-15T04:29:21Z"
+  },
   "mode": {
     "value": "ordinary",
     "source": null
@@ -21,7 +25,16 @@
     "path": "work-packages/261014-2003-migrate-step-6-offers-sweep-it-can-write/261014-2003-migrate-step-6-offers-sweep-it-can-write.md"
   },
   "depends_on": [],
-  "active_documents": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "9ee81e4f-73af-47be-b9c2-657cbb24d041"
+      },
+      "role": "plan",
+      "revision": "sha256:ed34d86a2898d8a2952d3f7f50fcfa812db85b81baeb16fff27a4e2fee353f83"
+    }
+  ],
   "references": [],
   "evidence": [],
   "outcome": null,
