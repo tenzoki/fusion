@@ -69,7 +69,9 @@ if the project has more than one.
      Node is checked, then `bin/fusion-migrate survey` reads the workbench and writes nothing. It
      shows what it found and the values the Markdown never recorded and the migration derives
      instead (below, under the limits). Only a *blocking* finding asks a question, one at a time.
-     Then it asks once: migrate now, or not now.
+     Then it asks once: migrate now, or not now. A workbench already on JSON control, migrated in
+     this checkout, in another or created by setup, is reported as such, and nothing is surveyed or
+     asked.
 4. On "migrate now" it backs the workbench up outside itself, freezes a plan, writes the control
    files in chunks, verifies every pair, reference and hash, and only then writes `workbench.json`.
    The receipt lands under `archive/migrations/<id>/`. Live narratives lose their status head lines,
