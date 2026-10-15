@@ -120,7 +120,7 @@ describe("the apply", () => {
 describe("the citation sweep over the renamed tree", () => {
   const step6 = md("migrate").split("## Step 6")[1].split("## Step 7")[0];
   const WRITE = '"$SWEEP" --write --yes --kinds "$K"';
-  const vars = ["SWEEP", "K"].map((v) => step6.match(new RegExp("`(" + v + "=[^`]+)`"))![1]).join("; ");
+  const vars = ["SWEEP", "K"].map((v) => step6.match(new RegExp("(?:^| )(" + v + "=[^;\\s]+)", "m"))![1]).join("; ");
   const ROOT_ENV = { ...ENV, FUSION_PLUGIN_ROOT: pluginRoot };
   const write = (root: string) => spawnSync("bash", ["-c", `${vars}; ${WRITE}`], { cwd: root, encoding: "utf-8", env: ROOT_ENV });
   const PR = `${A}/260101-0101-a.md`, REC = "shared/issues/260101-0505_o_x.md";

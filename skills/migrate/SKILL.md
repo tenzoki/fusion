@@ -15,7 +15,7 @@ This workflow brings a workbench to the **v12 store names** (Steps 1 to 6), then
 
 **Directories move; no file changes.** Every file keeps its basename and its bytes, so every storeless citation resolves after the move exactly as before (`rules/fusion-workbench-conventions.md` `## Filename Patterns`), and the migration commit is renames only. `archive/`, the frozen stores, the Review-class stores, `stilwerk/` and every root file stay where they stand; the survey names each one, with the decision record that holds its question where one does.
 
-Run it once after updating to `12.0.0` or later. It is idempotent and resumable: on a workbench already in the v12 format it finds nothing and stops without asking; after an interruption the next run continues from what the filesystem holds.
+Run it once after updating to `12.0.0` or later. It is idempotent and resumable: on a workbench already in the v12 format it renames nothing and asks only about citations the sweep still counts; after an interruption the next run continues from what the filesystem holds.
 
 **An older workbench is refused, not converted.** The conversions of the pre-v4 type-folder layout, the flat v4-era `circles/<stamp>[t]-<slug>.md` file, the live `_a_`/`_t_` Circle record and the bracket-marked filename (`…[o]-….md`) left this workflow at `12.0.0`. The survey still recognises all four, since refusing loudly is cheaper than renaming a shape it was not written for, and stops with the route: check out the plugin source at the tag `v11.11.1`, load it with `claude --plugin-dir <that checkout>`, run `/fusion:migrate` there, then `fusion --update`, restart, and run `/fusion:migrate` again for the store names.
 
@@ -104,7 +104,7 @@ Then, in this order:
 - **`LEGACY=1`**: stop. Show the `LEGACY` lines and render the `REFUSED` line as one message. Ask nothing.
 - **`DIRTY>0`**: stop. Name every `DIRTY` path and ask the user to commit or stash, then run again: a rename over a modified file mixes the migration with work in flight and leaves no clean revert.
 - **`UNKNOWN>0`**: stop. Name the entry; the user moves the misplaced store by hand, then runs again.
-- **`FOUND=0`**: *"This workbench is already in the v12 format."* Ask nothing and go to Step 7.
+- **`FOUND=0`**: *"This workbench is already in the v12 format."* Ask nothing about renames and go to Step 6.
 
 ## Step 3 — Ask before moving
 
@@ -149,11 +149,23 @@ Report the tail counters (`moved`, `mv-fallbacks`, `collisions`, `left`), then:
 - every `GITIGNORE` hit, which is the project's own rule to edit;
 - every entry moved by `mv` in `git` mode (`git revert` will not restore it), every untracked entry left, and every collision with both paths.
 
-Then what to do next, in this order: commit the migration as one commit of renames and push it; tell the other checkouts to pull rather than migrate again, so the project has one revert point (a checkout holding an untracked container under `circles/` runs `/fusion:migrate` once more after the pull); run `/fusion:setup`. For `MODE=plain`, say that nothing here is in a diff.
+Then what to do next, in this order: commit the migration as one commit of renames and push it; tell the other checkouts to pull rather than migrate again, so the project has one revert point (a checkout holding an untracked container under `circles/` runs `/fusion:migrate` once more after the pull); run `/fusion:setup`. For `MODE=plain`, say that nothing here is in a diff, and go on to Step 6.
+
+**In `MODE=git`, a run that moved anything ends here**: commit the renames as one commit, then run `/fusion:migrate` again; the re-run offers the citation repairs and Step 7.
 
 ## Step 6 — Sweep the citations
 
-The pass moved directories and rewrote no record, so a citation spelling a moved store segment is the other half. Set `SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"` and `K=record,package-record,package-dir`. If `[ -x "$SWEEP" ]` is false, say the sweep was skipped because the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it, and go to Step 7. Otherwise run `"$SWEEP" --dry-run --kinds "$K"`; the workbench is still legacy here, and the sweep rewrites its names all the same. On exit 3 (install incomplete) or 6 (workbench not read) nothing is on stdout: show its stderr line and stop. Otherwise report its summary and its three `scope=` lines, naming the `archive/` and `extra-paths` (the project's `citations.extraPaths`, code included) shares apart from the workbench's, and ask in Step 3's shape whether to write these store repairs. On a yes run `"$SWEEP" --write --yes --kinds "$K"` and report its summary, and say that it wrote record content, which stays unstaged beside the staged renames and is committed separately, after the migration commit; on a no, say they were left as written.
+The pass moved directories and rewrote no record, so a citation spelling a moved store segment is the other half. Without `--yes` the sweep writes nothing: it applies its own guard, then prints its census.
+
+```bash
+SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"; K=record,package-record,package-dir; if [ -x "$SWEEP" ]; then "$SWEEP" --write --kinds "$K"; echo "EXIT=$?"; else echo "SWEEP=absent"; fi
+```
+
+- **`SWEEP=absent`**: say the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it; go to Step 7.
+- **`EXIT=1`, `2`, `3` or `6`**: nothing is on stdout; show its stderr line and stop.
+- **`EXIT=4`**: show its `refused (…)` line and say no write is offered for that reason; `dirty-tree` clears with a commit or a stash, and a re-run offers this step again. Go to Step 7.
+- **`EXIT=5`**, summary line `rewrites=0`: nothing to repair; ask nothing.
+- **`EXIT=5`**, rewrites above zero: report the summary and the three `scope=` lines, naming the `archive/` and `extra-paths` (the project's `citations.extraPaths`, code included) shares apart from the workbench's, and ask in Step 3's shape whether to write these store repairs. On a yes run `"$SWEEP" --write --yes --kinds "$K"`, report its summary and say the record content it wrote is committed as its own commit; on a no, say they were left as written.
 
 Then name the marker respelling (`bare-record`) as a separate, later choice and not part of the migration: the user may run `"$SWEEP" --dry-run --kinds bare-record` themselves. Why apart: it is unrelated to v12, and a respelled pre-v4 bracket marker resolves to nothing while `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md` is open. Then go to Step 7.
 
