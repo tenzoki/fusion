@@ -204,6 +204,27 @@ describe("Step 6 as shipped: the sweep is offered where it may write", () => {
   });
 });
 
+// Issue 261015-1310, Step 7 reads a JSON-controlled workbench with no local session as unmigrated:
+// the helper output Step 7's `**Survey.**` routes on, over a JSON tree no run on this machine migrated.
+describe("Step 7 on a JSON-controlled workbench with no local session", () => {
+  const MIG = '"$FUSION_PLUGIN_ROOT/bin/fusion-migrate"';
+  const project = () => {
+    const root = mkdtempSync(join(tmpdir(), "store-name-step7-")), home = mkdtempSync(join(tmpdir(), "store-name-home-")); roots.push(root, home);
+    jsonWorkbenchAt(root); mkdirSync(join(home, ".fusion-migrate"));
+    return { root, env: { ...FRESH_ENV, HOME: home } };
+  };
+  it("(a) status reports state=json-control and run=none, with no done= line", () => {
+    const { root, env } = project(), out = sh(`${MIG} status`, root, env);
+    for (const l of ["state=json-control", "run=none"]) expect(out).toMatch(new RegExp(`^${l}$`, "m"));
+    expect(out).not.toMatch(/^done=/m);
+  }, CASE_TIMEOUT);
+  it("(b) survey and repair --list name the manifest as a finding to fix by hand", () => {
+    const { root, env } = project(), s = sh(`${MIG} survey`, root, env);
+    expect(s).toMatch(/^layout=json-control$/m); expect(s).toMatch(/^blocking=\S+\tmanifest-present\t/m);
+    expect(sh(`${MIG} repair --list`, root, env)).toMatch(/^unrepairable=/m);
+  }, CASE_TIMEOUT);
+});
+
 it("a pulled marker stamping every periodic check makes none count as done, and a stamp taken here is read (issue 260924-1732)", () => {
   const setup = extractBashBlock(md("setup"), "Write the setup marker"), dir = tree(["x.md"]), m = join(dir, "fusion-workbench", ".fusion-setup"), env = { ...ENV, FUSION_PLUGIN_ROOT: pluginRoot };
   const SEL: string[] = JSON.parse(setup.match(/const SEL = (\[.*\]);/)![1]), at = new Date().toISOString().slice(0, 10), v = JSON.parse(readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8")).version;
