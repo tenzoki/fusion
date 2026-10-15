@@ -130,7 +130,8 @@ One checkout does this, once, for the whole project:
 storeless citation (`YYMMDD-HHMM_*_<topic>.md`) resolves after the move exactly as before. A citation
 that spells a store segment — `circles/…` or `planning/…` inside a record — is not touched by the
 migration, and `bin/fusion-citation-check` reports it as store-prefixed as it did before. The repair
-is yours to run by hand: `/fusion:migrate` offers it as its last step, or run
+is yours to run by hand: `/fusion:migrate` offers it on the run after the migration commit, not as
+the last step of the same run, or run
 `bin/fusion-citation-sweep --dry-run --kinds record,package-record,package-dir` yourself, read the
 census, and only then its write. Since 12.0.1 that step asks about these store repairs alone, and its
 census names the `archive/` and `citations.extraPaths` shares apart from the workbench's. The

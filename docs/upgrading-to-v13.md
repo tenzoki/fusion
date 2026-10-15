@@ -60,7 +60,9 @@ if the project has more than one.
    it renames, and a clean tree keeps the migration's commits apart from other work.
 3. Run `/fusion:migrate`. In order:
    - **Store names.** A workbench still on the v11 names is renamed first, as under v12, after one
-     question. A workbench already on `work-packages/`, `plans/` and `consultations/` skips this.
+     question. In a tracked workbench the run stops after the rename: commit the renames as one
+     commit and run `/fusion:migrate` again, and the two steps below come on that run. A workbench
+     already on `work-packages/`, `plans/` and `consultations/` skips this.
    - **Citation repairs.** The sweep lists citations that spell a renamed store and asks whether to
      write the repairs.
    - **The JSON migration** (`skills/migrate/SKILL.md` `## Step 7 — Repair, then migrate to JSON control`).
