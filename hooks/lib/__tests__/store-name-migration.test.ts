@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { extractBashBlock } from "./helpers/prompt-blocks.js";
+import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
 
 // `/fusion:migrate`'s store-name pass, run as shipped: guard, survey and apply
 // are lifted by heading anchor and run with a real bash on throwaway
@@ -112,6 +113,46 @@ describe("the apply", () => {
     const out = sh(survey, dirty);
     expect(out).toMatch(/^DIRTY=1$/m); expect(out).toContain(`DIRTY: fusion-workbench/${B}/260101-0202-b.md`);
   });
+});
+
+// Issue 261014-0830_*_migrate-step-6-runs-the-citation-sweep-write-on-a-tree-its-own-guard-refuses.md:
+// Step 6's write, run as the current text spells it, over the tree the shipped survey and apply leave.
+describe("the citation sweep over the renamed tree", () => {
+  const step6 = md("migrate").split("## Step 6")[1].split("## Step 7")[0];
+  const WRITE = '"$SWEEP" --write --yes --kinds "$K"';
+  const vars = ["SWEEP", "K"].map((v) => step6.match(new RegExp("`(" + v + "=[^`]+)`"))![1]).join("; ");
+  const ROOT_ENV = { ...ENV, FUSION_PLUGIN_ROOT: pluginRoot };
+  const write = (root: string) => spawnSync("bash", ["-c", `${vars}; ${WRITE}`], { cwd: root, encoding: "utf-8", env: ROOT_ENV });
+  const PR = `${A}/260101-0101-a.md`, REC = "shared/issues/260101-0505_o_x.md";
+  const CITING = { [REC]: `see \`${PR}\`\n`, [PR]: "see `shared/planning/260101-0303_o_plan-s.md`\n" };
+  const read = (root: string) => [REC, PR.replace("circles/", "work-packages/")].map((f) => readFileSync(join(root, "fusion-workbench", f), "utf-8"));
+  function renamed(withGit: boolean): string {
+    const root = tree(LEGACY); writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), '{"setup_at":"2026-01-01T00:00:00","plugin_version":"12.0.0"}\n');
+    for (const [f, body] of Object.entries(CITING)) writeFileSync(join(root, "fusion-workbench", f), body);
+    if (withGit) git(root);
+    expect(sh(survey, root)).toMatch(/^FOUND=1$/m); expect(sh(apply, root)).toMatch(new RegExp(`collisions=0 left=0 mode=${withGit ? "git" : "plain"}$`, "m"));
+    return root;
+  }
+  it("the text spells the write this block runs", () => { expect(step6).toContain(WRITE); expect(vars).toMatch(/^SWEEP=.*; K=record,package-record,package-dir$/); });
+  it("git: over the staged renames the write is refused dirty-tree, naming a renamed path, and writes nothing", () => {
+    const root = renamed(true), before = read(root), r = write(root);
+    expect([r.status, r.stdout]).toEqual([4, ""]);
+    expect(r.stderr).toMatch(/refused \(dirty-tree\): .*fusion-workbench\/(work-packages|shared\/plans|shared\/consultations)\//);
+    expect(read(root)).toEqual(before);
+  }, CASE_TIMEOUT);
+  it("git: after the renames are committed the same write exits 0 and counts the planted rewrites", () => {
+    const root = renamed(true); sh("git -c user.name=t -c user.email=t@t commit -qm renames", root);
+    const r = write(root);
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stdout.trim().split("\n").at(-1)).toMatch(/^files=\d+ rewrites=([2-9]|\d\d+) residual=\d+ record=[1-9]\d* package-record=[1-9]\d* .*mode=write$/);
+    expect(read(root)).not.toEqual(Object.values(CITING));
+  }, CASE_TIMEOUT);
+  it("plain: without git the write is refused, exit 4, and writes nothing", () => {
+    const root = renamed(false), before = read(root), r = write(root);
+    expect([r.status, r.stdout]).toEqual([4, ""]);
+    expect(r.stderr).toMatch(/refused \((not-a-git-work-tree|workbench-untracked|dirty-tree)\)/);
+    expect(read(root)).toEqual(before);
+  }, CASE_TIMEOUT);
 });
 
 it("a pulled marker stamping every periodic check makes none count as done, and a stamp taken here is read (issue 260924-1732)", () => {
