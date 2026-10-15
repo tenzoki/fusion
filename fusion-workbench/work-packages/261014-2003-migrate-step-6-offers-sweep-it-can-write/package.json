@@ -3,7 +3,7 @@
   "id": "ac317df4-4942-4da4-80b1-4cd1705fed1f",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "The migrate Step 6 sweep is offered on the re-run after the rename commit and never on a tree its guard refuses; all six steps done, released as 13.1.2; closing review verdict revise with five follow-on issues.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "79e7dbd4-317d-4521-a86d-759ee46959bb",
+          "revision": "sha256:50e6d302f199d30e2a2384e60902970c3511a921dd3ae4de9a0dfd480b873970"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
