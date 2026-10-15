@@ -161,13 +161,13 @@ The pass moved directories and rewrote no record, so a citation spelling a moved
 SWEEP="$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep"; K=record,package-record,package-dir; if [ -x "$SWEEP" ]; then "$SWEEP" --write --kinds "$K"; echo "EXIT=$?"; else echo "SWEEP=absent"; fi
 ```
 
-- **`SWEEP=absent`**: say the installed copy carries no `bin/fusion-citation-sweep` yet and `fusion --update` then a restart will get it; go to Step 7.
+- **`SWEEP=absent`**: say the installed copy carries no citation sweep yet and `fusion --update` then a restart will get it; go to Step 7.
 - **`EXIT=1`, `2`, `3` or `6`**: nothing is on stdout; show its stderr line and stop.
 - **`EXIT=4`**: show its `refused (…)` line and say no write is offered for that reason; `dirty-tree` clears with a commit or a stash, and a re-run offers this step again. Go to Step 7.
 - **`EXIT=5`**, summary line `rewrites=0`: nothing to repair; ask nothing.
-- **`EXIT=5`**, rewrites above zero: report the summary and the three `scope=` lines, naming the `archive/` and `extra-paths` (the project's `citations.extraPaths`, code included) shares apart from the workbench's, and ask in Step 3's shape whether to write these store repairs. On a yes run `"$SWEEP" --write --yes --kinds "$K"`, report its summary and say the record content it wrote is committed as its own commit; on a no, say they were left as written.
+- **`EXIT=5`**, rewrites above zero: report the summary and the three `scope=` lines, naming the `archive/` and `extra-paths` (the project's `citations.extraPaths`, code included) shares apart from the workbench's, and ask in Step 3's shape whether to write these store repairs. On a yes run `"$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep" --write --yes --kinds record,package-record,package-dir`, report its summary and say the record content it wrote is committed as its own commit; on a no, say they were left as written.
 
-Then name the marker respelling (`bare-record`) as a separate, later choice and not part of the migration: the user may run `"$SWEEP" --dry-run --kinds bare-record` themselves. Why apart: it is unrelated to v12, and a respelled pre-v4 bracket marker resolves to nothing while `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md` is open. Then go to Step 7.
+Then name the marker respelling (`bare-record`) as a separate, later choice and not part of the migration: the user may run `"$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep" --dry-run --kinds bare-record` themselves. Why apart: it is unrelated to v12, and a respelled pre-v4 bracket marker resolves to nothing while `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md` is open. Then go to Step 7.
 
 ## Step 7 — Repair, then migrate to JSON control
 

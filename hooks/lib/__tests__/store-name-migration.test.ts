@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { extractBashBlock } from "./helpers/prompt-blocks.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { jsonWorkbenchAt } from "./helpers/json-workbench.js";
 
 // `/fusion:migrate`'s store-name pass, run as shipped: guard, survey and apply
 // are lifted by heading anchor and run with a real bash on throwaway
@@ -117,23 +118,28 @@ describe("the apply", () => {
 
 // Issue 261014-0830_*_migrate-step-6-runs-the-citation-sweep-write-on-a-tree-its-own-guard-refuses.md:
 // Step 6's write, run as the current text spells it, over the tree the shipped survey and apply leave.
+const step6 = md("migrate").split("## Step 6")[1].split("## Step 7")[0];
+const step6Block = extractBashBlock(md("migrate"), "## Step 6 — Sweep the citations");
+// No SWEEP or K reaches a command from the environment: shell variables do not outlive the call that set them.
+const FRESH_ENV = { PATH: process.env.PATH, HOME: process.env.HOME, GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null", GIT_CONFIG_NOSYSTEM: "1", FUSION_PLUGIN_ROOT: pluginRoot };
+const PR = `${A}/260101-0101-a.md`, REC = "shared/issues/260101-0505_o_x.md";
+const CITING = { [REC]: `see \`${PR}\`\n`, [PR]: "see `shared/planning/260101-0303_o_plan-s.md`\n" };
+/** A cited v11 workbench through the shipped survey and apply, in git (committed before the apply) or plain. */
+function renamed(withGit: boolean): string {
+  const root = tree(LEGACY); writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), '{"setup_at":"2026-01-01T00:00:00","plugin_version":"12.0.0"}\n');
+  for (const [f, body] of Object.entries(CITING)) writeFileSync(join(root, "fusion-workbench", f), body);
+  if (withGit) git(root);
+  expect(sh(survey, root)).toMatch(/^FOUND=1$/m); expect(sh(apply, root)).toMatch(new RegExp(`collisions=0 left=0 mode=${withGit ? "git" : "plain"}$`, "m"));
+  return root;
+}
+
 describe("the citation sweep over the renamed tree", () => {
-  const step6 = md("migrate").split("## Step 6")[1].split("## Step 7")[0];
-  const WRITE = '"$SWEEP" --write --yes --kinds "$K"';
-  const vars = ["SWEEP", "K"].map((v) => step6.match(new RegExp("(?:^| )(" + v + "=[^;\\s]+)", "m"))![1]).join("; ");
-  const ROOT_ENV = { ...ENV, FUSION_PLUGIN_ROOT: pluginRoot };
-  const write = (root: string) => spawnSync("bash", ["-c", `${vars}; ${WRITE}`], { cwd: root, encoding: "utf-8", env: ROOT_ENV });
-  const PR = `${A}/260101-0101-a.md`, REC = "shared/issues/260101-0505_o_x.md";
-  const CITING = { [REC]: `see \`${PR}\`\n`, [PR]: "see `shared/planning/260101-0303_o_plan-s.md`\n" };
+  // The yes-branch command as the text spells it; it must run in a fresh shell that has only FUSION_PLUGIN_ROOT.
+  const WRITE = step6.match(/On a yes run `([^`]+)`/)![1];
+  const K = step6Block.match(/(?:^|; )K=([^;\s]+)/m)![1];
+  const write = (root: string) => spawnSync("bash", ["-c", WRITE], { cwd: root, encoding: "utf-8", env: FRESH_ENV });
   const read = (root: string) => [REC, PR.replace("circles/", "work-packages/")].map((f) => readFileSync(join(root, "fusion-workbench", f), "utf-8"));
-  function renamed(withGit: boolean): string {
-    const root = tree(LEGACY); writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), '{"setup_at":"2026-01-01T00:00:00","plugin_version":"12.0.0"}\n');
-    for (const [f, body] of Object.entries(CITING)) writeFileSync(join(root, "fusion-workbench", f), body);
-    if (withGit) git(root);
-    expect(sh(survey, root)).toMatch(/^FOUND=1$/m); expect(sh(apply, root)).toMatch(new RegExp(`collisions=0 left=0 mode=${withGit ? "git" : "plain"}$`, "m"));
-    return root;
-  }
-  it("the text spells the write this block runs", () => { expect(step6).toContain(WRITE); expect(vars).toMatch(/^SWEEP=.*; K=record,package-record,package-dir$/); });
+  it("the yes-branch write is self-contained and sweeps the block's kinds", () => { expect(WRITE).toBe(`"$FUSION_PLUGIN_ROOT/bin/fusion-citation-sweep" --write --yes --kinds ${K}`); expect(K).toBe("record,package-record,package-dir"); });
   it("git: over the staged renames the write is refused dirty-tree, naming a renamed path, and writes nothing", () => {
     const root = renamed(true), before = read(root), r = write(root);
     expect([r.status, r.stdout]).toEqual([4, ""]);
@@ -153,6 +159,49 @@ describe("the citation sweep over the renamed tree", () => {
     expect(r.stderr).toMatch(/refused \((not-a-git-work-tree|workbench-untracked|dirty-tree)\)/);
     expect(read(root)).toEqual(before);
   }, CASE_TIMEOUT);
+});
+
+// The same issue's regression: the sequence Steps 2, 5 and 6 now document reaches a write with no exit 4,
+// and Step 6's block, lifted whole, says why when it offers none.
+describe("Step 6 as shipped: the sweep is offered where it may write", () => {
+  const block = (root: string) => {
+    const r = spawnSync("bash", ["-c", step6Block], { cwd: root, encoding: "utf-8", env: FRESH_ENV });
+    expect(r.status, r.stderr).toBe(0);
+    const exit = Number(r.stdout.match(/^EXIT=(\d+)$/m)![1]), m = r.stdout.match(/^files=\d+ rewrites=(\d+) /m);
+    return { exit, rewrites: m ? Number(m[1]) : -1, stderr: r.stderr };
+  };
+  const yes = (root: string) => spawnSync("bash", ["-c", step6.match(/On a yes run `([^`]+)`/)![1]], { cwd: root, encoding: "utf-8", env: FRESH_ENV });
+  it("git: commit as Step 5 directs, re-run, the block offers, the yes-branch writes, and after its commit a third look counts nothing", () => {
+    const root = renamed(true), exits: number[] = [];
+    sh("git -c user.name=t -c user.email=t@t commit -qm renames", root); expect(sh(survey, root)).toMatch(/^FOUND=0$/m);
+    const offer = block(root); exits.push(offer.exit);
+    // exit 5's own line is guard (b)'s "refused (no --yes)"; no guard (a) refusal may stand beside it
+    expect([offer.exit, offer.rewrites > 0, offer.stderr.match(/refused \([^)]*\)/g)]).toEqual([5, true, ["refused (no --yes)"]]);
+    const w = yes(root); exits.push(w.status!); expect(w.status, w.stderr).toBe(0);
+    sh("git -c user.name=t -c user.email=t@t commit -qam sweep", root); // its own commit, as the yes-branch says
+    const again = block(root); exits.push(again.exit); expect([again.exit, again.rewrites]).toEqual([5, 0]);
+    expect(exits).not.toContain(4);
+  }, CASE_TIMEOUT);
+  it("plain: the block exits 4 and its refusal line is the reason no write is offered", () => {
+    const r = block(renamed(false));
+    expect(r.exit).toBe(4); expect(r.stderr).toMatch(/^fusion-citation-sweep: refused \((not-a-git-work-tree|workbench-untracked|dirty-tree)\): /m);
+  }, CASE_TIMEOUT);
+  it("a re-run before the commit: the block exits 4 dirty-tree", () => {
+    const r = block(renamed(true));
+    expect(r.exit).toBe(4); expect(r.stderr).toMatch(/refused \(dirty-tree\)/);
+  }, CASE_TIMEOUT);
+  it("a JSON-controlled v12 workbench still citing circles/ is offered the write (decision option 1)", () => {
+    const root = mkdtempSync(join(tmpdir(), "store-name-json-")); roots.push(root);
+    const wb = jsonWorkbenchAt(root), item = "260505-0505-widget-bar";
+    mkdirSync(join(wb, "work-packages", item), { recursive: true }); writeFileSync(join(wb, "work-packages", item, `${item}.md`), "x\n");
+    mkdirSync(join(wb, "shared", "issues"), { recursive: true }); writeFileSync(join(wb, "shared", "issues", "260101-0101_o_alpha.md"), `see \`circles/${item}/${item}.md\`\n`);
+    git(root); expect(sh(survey, root)).toMatch(/^FOUND=0$/m);
+    const r = block(root); expect([r.exit, r.rewrites > 0], r.stderr).toEqual([5, true]);
+  }, CASE_TIMEOUT);
+  it("the routing the blocks cannot carry: FOUND=0 goes to Step 6, and a git rename run ends asking for a second /fusion:migrate", () => {
+    expect(md("migrate").match(/^- \*\*`FOUND=0`\*\*.*$/m)![0]).toContain("go to Step 6");
+    expect(md("migrate").split("## Step 5")[1].split("## Step 6")[0]).toMatch(/run `\/fusion:migrate` again/);
+  });
 });
 
 it("a pulled marker stamping every periodic check makes none count as done, and a stamp taken here is read (issue 260924-1732)", () => {
