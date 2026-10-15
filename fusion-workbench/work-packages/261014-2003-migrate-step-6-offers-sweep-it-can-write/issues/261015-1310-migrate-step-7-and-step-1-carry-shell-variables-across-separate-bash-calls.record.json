@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "bef8dae5-21d7-4e05-b6c7-de67b73e4b87",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261014-2003-migrate-step-6-offers-sweep-it-can-write/issues/261015-1310-migrate-step-7-and-step-1-carry-shell-variables-across-separate-bash-calls.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

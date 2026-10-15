@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "79e7dbd4-317d-4521-a86d-759ee46959bb",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "768874bf9bbbdca5a30ace4146c8bf595b181ffd",
+    "git_range": null
+  },
+  "brief_revision": "sha256:8e582bb7829f35033883ded1eacf2d16d8c92402d7369d50d8ea56c1ebef3689",
+  "plan_revision": "sha256:ed34d86a2898d8a2952d3f7f50fcfa812db85b81baeb16fff27a4e2fee353f83",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261014-2003-migrate-step-6-offers-sweep-it-can-write/reviews/261015-1310-reviewer-closing-pass-over-the-migrate-step-6-package.md",
+    "sha256": "sha256:48b4b5f899f7995ff769de990d16a76551cba4030c070a24a23d79c1d0a0287b",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-15T11:12:28Z",
+  "extensions": {}
+}
