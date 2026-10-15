@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "d38bc3d5-b8b0-43fc-b1ad-02e2cf2520f9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "76dc504a501034eef7e7245733b2aa7825489d95",
+    "git_range": null
+  },
+  "brief_revision": "sha256:d44f9ca00e78a455761796c7bade2d79dd767765ee48a0230808d9726ef9300a",
+  "plan_revision": "sha256:91ca363cc334e2b67a9e22ebb0f983c922cc60f44e608a935da77baed6692528",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261015-1549-migrate-step-7-recognises-json-control-without-session/reviews/261015-2223-reviewer-closing-pass-over-the-migrate-step-7-package.md",
+    "sha256": "sha256:2870c188a85a60d4f9d2cd875fb47c76d9f874515c9b457849e4462e9bf9610e",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-15T20:24:17Z",
+  "extensions": {}
+}

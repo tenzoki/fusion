@@ -1,0 +1,23 @@
+Migrate Step 7 routes a stale done session over a legacy tree to Interrupted, where neither option gets out
+---
+A migration session recording `done=true`, `rolled_back=false` with no rollback in flight, over a tree that reads `state=legacy` (an uncommitted migration discarded with git, or a checkout back to before it), routes to `ROUTE=interrupted`. Continue answers `migrated=… result=no-op`, which is false about the tree. Undo is refused with exit 8 on every try. `run` no-ops too. Nothing names the way out, which is removing the session directory under `$HOME/.fusion-migrate/` or passing `--session`.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Cross-references:** `261015-2223-reviewer-closing-pass-over-the-migrate-step-7-package.md`, `261015-1559-plan-migrate-step-7-recognises-json-control-without-a-local-session.md`
+
+**Evidence.** I reproduced this on 2026-10-15 in a scratch git repo holding a copy of `codec/fixtures/legacy-v12/workbench`, with a private `HOME`:
+
+1. `bin/fusion-migrate run` exited 0 with `result=json-control`, and the result was committed.
+2. `git reset --hard HEAD~1`. `.json-state/` is git-ignored, so it stays. `status` then printed `state=legacy`, `fence=-`, `planned=yes`, `chunks=1/1`, `verified=yes`, `done=true`, `rolled_back=false`.
+3. The shipped `**Survey.**` block (`skills/migrate/SKILL.md` `## Step 7 — Repair, then migrate to JSON control`) printed `ROUTE=interrupted`.
+4. `resume` printed `migrated=migration-20261015-v12` and `result=no-op` and exited 0 (`hooks/migrate.ts` `resumeRun`, `if (s.done)`).
+5. `rollback` exited 8 with `migration rollback chunk 1 refused: conflict/plan-file-changed: archive/migrations/<id>/plan.json is no regular file`. A second `rollback` gave the same result. It wrote nothing (`git status` clean).
+6. `run` printed `result=no-op` with `note=nothing was sent: the session records this migration as verified` (`hooks/migrate.ts` `run`, `previous?.done && !previous.rolled_back`).
+
+The text that sends the user here is `**Interrupted.**`, which offers only continue and undo. Its exit-8 sentence expects a stderr line that says whether a fence stands and gives the way out. This refusal says neither. Before 13.1.3 the same cell said "already on JSON control" and stopped, which was also wrong. The new route makes no false claim, but it loops.
+
+`status` cannot tell this cell from the one the plan meant for case (e), a rollback interrupted after the manifest left. That case has `rollback` set in `state.json`, and `status` does not print it. The regression case (e) in `hooks/lib/__tests__/store-name-migration.test.ts` (`describe("Step 7 as shipped: …")`) writes `plan: null, rollback: null`, so it models neither real state.
+
+**Fix direction.** Have `status` print whether a rollback is in flight (for example `rollback=in-flight|none`). Route `done=true` + `state=legacy` + no rollback in flight to its own route. That route says the session records a migration the tree no longer carries, and names the way out: `--session <new dir>`, or removing the named session directory, after the user confirms the tree is the one they want. Alternatively, the helper's `run` could treat that cell as stale. Which of the two to build is the implementer's choice, or the user's if it widens the helper contract.
+
+**Acceptance.** A test over the shipped block, using a real migrated tree reset with git, gets a route other than `interrupted`, and the text under that route names a working way out. Case (e)'s fixture writes a `rollback` value, and its label matches the state it builds.
