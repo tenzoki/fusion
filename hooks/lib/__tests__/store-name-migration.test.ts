@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -223,6 +223,46 @@ describe("Step 7 on a JSON-controlled workbench with no local session", () => {
     expect(s).toMatch(/^layout=json-control$/m); expect(s).toMatch(/^blocking=\S+\tmanifest-present\t/m);
     expect(sh(`${MIG} repair --list`, root, env)).toMatch(/^unrepairable=/m);
   }, CASE_TIMEOUT);
+});
+
+// Its regression: the shipped `**Survey.**` block routes on the tree's state=, the session deciding only an in-flight run.
+describe("Step 7 as shipped: the survey block routes every cell of session by state", () => {
+  const text = md("migrate"), block = extractBashBlock(text, "**Survey.**");
+  /** A project in the given tree state, with its own HOME, and a session state.json when `run` is given. */
+  const route = (tree: "json" | "legacy" | "unreadable", run?: { done: boolean; rolled_back: boolean }) => {
+    const root = mkdtempSync(join(tmpdir(), "store-name-step7-")), home = mkdtempSync(join(tmpdir(), "store-name-home-")); roots.push(root, home);
+    const wb = jsonWorkbenchAt(root); mkdirSync(join(home, ".fusion-migrate")); const env = { ...FRESH_ENV, HOME: home };
+    if (tree === "legacy") rmSync(join(wb, "workbench.json")); if (tree === "unreadable") writeFileSync(join(wb, "workbench.json"), "{ not json\n");
+    if (run) {
+      const session = sh('"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status', root, env).match(/^session=(.*)$/m)![1];
+      mkdirSync(session, { recursive: true });
+      writeFileSync(join(session, "state.json"), JSON.stringify({ workbench: realpathSync(wb), migration_id: "m-test", plan: null, schedule: null, rollback: null, ...run }));
+    }
+    return sh(block, root, env);
+  };
+  const ROUTE = (out: string) => out.match(/^(ROUTE|EXIT)=.*$/m)![0];
+  it("(a) the issue's acceptance: JSON with no session routes json-control and names no finding, and the text stops there", () => {
+    const out = route("json");
+    expect([ROUTE(out), out.match(/^run=none$/m) !== null]).toEqual(["ROUTE=json-control", true]);
+    expect(out).not.toMatch(/^(blocking|finding|unrepairable)=/m);
+    const line = text.match(/^- \*\*`ROUTE=json-control`\*\*.*$/m)![0];
+    expect(line).toContain("already on JSON control"); expect(line).toMatch(/\bstop\b/);
+    const step7 = text.split("## Step 7")[1];
+    expect(step7.indexOf('fusion-migrate" survey')).toBeGreaterThan(step7.indexOf("**`ROUTE=survey`**"));
+  }, CASE_TIMEOUT);
+  it.each([
+    ["(b) Markdown, no session", "legacy", undefined, "ROUTE=survey"],
+    ["(c) JSON, run interrupted after verify", "json", { done: false, rolled_back: false }, "ROUTE=interrupted"],
+    ["(d) JSON, migrated here", "json", { done: true, rolled_back: false }, "ROUTE=json-control"],
+    ["(e) Markdown, rollback interrupted after the manifest left", "legacy", { done: true, rolled_back: false }, "ROUTE=interrupted"],
+    ["(f) Markdown, rolled back", "legacy", { done: true, rolled_back: true }, "ROUTE=survey"],
+    ["(g) an unreadable workbench.json", "unreadable", undefined, "ROUTE=stop"],
+  ] as const)("%s routes as the table assigns", (_n, t, run, want) => { expect(ROUTE(route(t, run))).toBe(want); }, CASE_TIMEOUT);
+  it("(h) the sibling issue's acceptance: every call spells the helper, and $ROOT stays inside Step 1's block", () => {
+    expect(text).not.toContain('"$M"'); expect(text).not.toContain("Set `M=");
+    const step1 = extractBashBlock(text, "## Step 1 — Locate the workbench");
+    expect(step1).toContain('cd "$ROOT"'); expect(text.split(step1).join("")).not.toContain("$ROOT");
+  });
 });
 
 it("a pulled marker stamping every periodic check makes none count as done, and a stamp taken here is read (issue 260924-1732)", () => {
