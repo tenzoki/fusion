@@ -3,7 +3,7 @@
   "id": "2e6fa64e-effa-410d-b0db-c003fbb0f846",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.5: rollback --end-fence ends an idle rollback fence a git reset left over a legacy tree, set-aside refuses while a fence stands and names the way out, the two set-aside messages corrected; closing review accept, all 13 stop conditions hold per the user",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "ebbc2a42-cf4c-4884-84bf-6c2ec1bb782f",
+          "revision": "sha256:c0da666ab5f4321dcf52a10b33a1f92cf3c67103a1e2f93182c4f3f4c91f59d4"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
