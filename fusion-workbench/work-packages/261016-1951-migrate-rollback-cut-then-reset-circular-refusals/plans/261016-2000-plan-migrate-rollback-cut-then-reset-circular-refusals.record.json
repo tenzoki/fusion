@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "02a0a4eb-df1e-4e67-933e-54be7703eba7",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261016-1951-migrate-rollback-cut-then-reset-circular-refusals/plans/261016-2000-plan-migrate-rollback-cut-then-reset-circular-refusals.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "08662fcb-c60f-49b8-bc8e-b4fec970a8fb"
+      },
+      "revision": "sha256:0c14ac1f3fd64d924b6dc9c5255394e2a227c487cdf9e0224168a4bac727eb6a"
+    }
+  }
+}
