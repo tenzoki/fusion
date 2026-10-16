@@ -539,13 +539,38 @@ function restoreBackup(wb: string, session: string, consent: boolean): string[] 
   return [`restored=${backup}`, `tree=${treeWithoutState(wb)}`, "result=restored"];
 }
 
+/**
+ * Whether the plan's evidence is gone from this tree: kept for another
+ * workbench, a manifest no plan of this record produced, a plan index missing
+ * or at other bytes, a done run over a legacy tree, or a rollback begun with
+ * neither the index nor rollback chunk 0's answer, stored or pending in its
+ * intent (the intent carries the answer before any plan file goes, and the
+ * answer lands under `ops/` only after the index, so a real cut has one of
+ * the two). It does not say the tree matches the record: a reset of an
+ * uncommitted migration leaves the plan files and reads current. Only
+ * positive contradictions count, so an unreadable tree and a rolled-back
+ * record are never stale. It reads the tree, not `s.rollback`: a refused
+ * `rollback` over a stale record writes that field before the codec refuses,
+ * so after one undo attempt the session alone looks like a rollback in flight.
+ */
+function stale(wb: string, s: State, state: string): boolean {
+  if (s.workbench !== wb) return true;
+  if (s.rolled_back) return false;
+  if (s.plan === null) return state === "json-control";
+  const index = join(wb, s.plan.path);
+  const planHolds = existsSync(index) && lstatSync(index).isFile() && sha(readFileSync(index)) === s.plan.sha256;
+  if (s.rollback === null) return !planHolds || (s.done && state === "legacy");
+  const chunk0 = s.schedule?.rollback.find((r) => r.chunk === 0);
+  return !planHolds && !(chunk0 !== undefined && (stored(wb, chunk0.operation_id) || existsSync(join(wb, STATE_DIR, "journal", chunk0.operation_id))));
+}
+
 function status(wb: string, session: string): string[] {
   const s = readState(session);
   const i = inspect(wb);
   const lines = [`session=${session}`, `state=${i.state}`, `fence=${i.maintenance?.operation_id ?? "-"}`, `backup=${existsSync(join(session, "backup.sha256")) ? "present" : "absent"}`, `repairs=${readRepairLog(session).length}`];
   if (s === null) return [...lines, "run=none"];
   const landed = s.schedule?.apply.filter((a) => stored(wb, a.operation_id)).length ?? 0;
-  return [...lines, `migration=${s.migration_id}`, `planned=${s.plan ? "yes" : "no"}`, `chunks=${landed}/${s.schedule?.apply.length ?? "-"}`, `verified=${s.schedule && stored(wb, s.schedule.verify) ? "yes" : "no"}`, `done=${s.done}`, `rolled_back=${s.rolled_back}`];
+  return [...lines, `migration=${s.migration_id}`, `planned=${s.plan ? "yes" : "no"}`, `chunks=${landed}/${s.schedule?.apply.length ?? "-"}`, `verified=${s.schedule && stored(wb, s.schedule.verify) ? "yes" : "no"}`, `done=${s.done}`, `rolled_back=${s.rolled_back}`, `record=${stale(wb, s, i.state) ? "stale" : "current"}`];
 }
 
 function surveyOut(wb: string, session: string): string[] {

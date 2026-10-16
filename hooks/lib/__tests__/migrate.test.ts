@@ -272,7 +272,7 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     git(root, "commit", "-qm", "migrated");
     expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
     const status = mig(root, home, "status").stdout;
-    expect(["state", "done", "rolled_back"].map((k) => value(status, k))).toEqual(["legacy", "true", "false"]);
+    expect(["state", "done", "rolled_back", "record"].map((k) => value(status, k))).toEqual(["legacy", "true", "false", "stale"]);
     const block = extractBashBlock(readFileSync(join(REPO_ROOT, "skills/migrate/SKILL.md"), "utf-8"), "**Survey.**");
     const routed = spawnSync("bash", ["-c", block], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home, FUSION_PLUGIN_ROOT: REPO_ROOT } });
     expect(routed.stdout).toMatch(/^ROUTE=interrupted$/m);
@@ -282,11 +282,58 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     for (let i = 0; i < 2; i++) {
       const back = mig(root, home, "rollback");
       expect([back.status, back.stderr]).toEqual([8, expect.stringContaining("plan-file-changed")]);
-      expect(state().rollback).not.toBeNull();
+      expect([state().rollback, value(mig(root, home, "status").stdout, "record")]).toEqual([expect.anything(), "stale"]);
     }
+    const chunk0 = state().schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
+    expect(existsSync(join(wb, ".json-state/journal", chunk0))).toBe(false); // no held chunk-0 intent explains the missing index
     const again = mig(root, home, "run");
     expect([again.status, value(again.stdout, "result")]).toEqual([0, "no-op"]);
     const fresh = mig(root, home, "run", "--session", join(root, "fresh"));
     expect([fresh.status, value(fresh.stdout, "result")], fresh.stderr).toEqual([0, "json-control"]);
   }, 6 * CASE_TIMEOUT);
+
+  // status's record= reads the tree against the record's last write: (b) migrated here and (c) a rollback cut after chunk 0 are current, (d) an overtaken copy is stale.
+  it("record=current over a migrated tree and a rollback interrupted after chunk 0, record=stale over a copy no plan of the record produced", () => {
+    const { root, wb, home } = project();
+    expect(mig(root, home, "run").status).toBe(0);
+    const record = (...a: string[]) => value(mig(root, home, "status", ...a).stdout, "record");
+    expect(record()).toBe("current");
+    cpSync(root, `${root}-copy`, { recursive: true, verbatimSymlinks: true });
+    const session = value(mig(root, home, "status").stdout, "session")!;
+    const real = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
+    mkdirSync(join(home, "overtaken"));
+    for (const plan of [null, { path: real.plan.path, sha256: sha("other bytes") }]) {
+      writeFileSync(join(home, "overtaken", "state.json"), JSON.stringify({ ...real, workbench: join(`${root}-copy`, "fusion-workbench"), plan, done: false, rollback: null }));
+      expect(value(mig(`${root}-copy`, home, "status", "--session", join(home, "overtaken")).stdout, "record"), JSON.stringify(plan)).toBe("stale");
+    }
+    expect(mig(root, home, "rollback").status).toBe(0);
+    const cut = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
+    writeFileSync(join(session, "state.json"), JSON.stringify({ ...cut, rolled_back: false }));
+    const chunk0 = cut.schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
+    expect([existsSync(join(wb, cut.plan.path)), existsSync(join(wb, `.json-state/ops/${chunk0}.json`)), cut.rollback, record()]).toEqual([false, true, expect.anything(), "current"]);
+  }, 4 * CASE_TIMEOUT);
+
+  // Chunk 0's intent removes the index last and its answer lands under ops/ only after that, so a cut between the two holds the answer in the intent alone.
+  it("record=current over a rollback cut inside chunk 0's intent, the index gone and the answer not yet stored", () => {
+    const plugin = join(base, "plugin-cut0");
+    for (const p of ["bin", "hooks/dist", "hooks/package.json", "codec/package.json", ".claude-plugin"]) cpSync(join(REPO_ROOT, p), join(plugin, p), { recursive: true });
+    mkdirSync(join(plugin, "codec/dist"));
+    cpSync(join(REPO_ROOT, "codec/dist/fusion-record.js"), join(plugin, "real/dist/fusion-record.js"));
+    cpSync(join(REPO_ROOT, "codec/package.json"), join(plugin, "real/package.json"));
+    // The stand-in makes ops/ read-only before the real codec takes chunk 0, so every write lands and the answer cannot.
+    writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { chmodSync, readFileSync } from "node:fs";
+const here = new URL(".", import.meta.url).pathname, input = readFileSync(0), q = JSON.parse(input);
+if (q.op === "migration" && q.phase === "rollback" && q.chunk === 0) chmodSync(q.workbench + "/.json-state/ops", 0o555);
+const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
+process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
+    const { root, wb, home } = project();
+    expect(mig(root, home, "run").status).toBe(0);
+    const cut = spawnSync(join(plugin, "bin", "fusion-migrate"), ["rollback"], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    chmodSync(join(wb, ".json-state/ops"), 0o755);
+    const s = JSON.parse(readFileSync(join(value(mig(root, home, "status").stdout, "session")!, "state.json"), "utf-8"));
+    const chunk0 = s.schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
+    expect([cut.status, existsSync(join(wb, s.plan.path)), existsSync(join(wb, `.json-state/ops/${chunk0}.json`)), existsSync(join(wb, ".json-state/journal", chunk0)), value(mig(root, home, "status").stdout, "record")], cut.stderr).toEqual([7, false, false, true, "current"]);
+    const back = mig(root, home, "rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+  }, 4 * CASE_TIMEOUT);
 });
