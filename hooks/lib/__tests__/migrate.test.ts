@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -141,6 +141,24 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
   }, 2 * CASE_TIMEOUT);
 });
 
+/** A plugin copy whose bundle is a stand-in: the real codec answers, then the process dies before its answer is read when kill.json names the request. */
+function killPlugin(): { plugin: string; kill: (rule: object | null) => void } {
+  const plugin = join(base, "plugin");
+  if (!existsSync(plugin)) {
+    for (const p of ["bin", "hooks/dist", "hooks/package.json", "codec/package.json", ".claude-plugin"]) cpSync(join(REPO_ROOT, p), join(plugin, p), { recursive: true });
+    mkdirSync(join(plugin, "codec/dist"));
+    cpSync(join(REPO_ROOT, "codec/dist/fusion-record.js"), join(plugin, "real/dist/fusion-record.js"));
+    cpSync(join(REPO_ROOT, "codec/package.json"), join(plugin, "real/package.json"));
+    writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { existsSync, readFileSync } from "node:fs";
+const here = new URL(".", import.meta.url).pathname, input = readFileSync(0), q = JSON.parse(input);
+const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
+const k = existsSync(here + "kill.json") ? JSON.parse(readFileSync(here + "kill.json", "utf-8")) : null;
+if (k && q.phase === k.phase && q.chunk === k.chunk) process.exit(9);
+process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
+  }
+  return { plugin, kill: (rule) => (rule ? writeFileSync(join(plugin, "codec/dist/kill.json"), JSON.stringify(rule)) : rmSync(join(plugin, "codec/dist/kill.json"), { force: true })) };
+}
+
 describe("bin/fusion-migrate migrates, rolls back and restores with the plugin and Node alone", () => {
   it("needs no repair, applies an optional one with consent, migrates through canonical paths, reads back, rolls back after activation and restores the backup", () => {
     const { root, wb, home } = project();
@@ -228,21 +246,7 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
   }, 6 * CASE_TIMEOUT);
 
   it("resumes after a kill following each chunk and one inside a chunk", () => {
-    const plugin = join(base, "plugin");
-    if (!existsSync(plugin)) {
-      for (const p of ["bin", "hooks/dist", "hooks/package.json", "codec/package.json", ".claude-plugin"]) cpSync(join(REPO_ROOT, p), join(plugin, p), { recursive: true });
-      mkdirSync(join(plugin, "codec/dist"));
-      cpSync(join(REPO_ROOT, "codec/dist/fusion-record.js"), join(plugin, "real/dist/fusion-record.js"));
-      cpSync(join(REPO_ROOT, "codec/package.json"), join(plugin, "real/package.json"));
-      // The bundle's stand-in: the real one answers, then the process dies before its answer is read when kill.json names the request.
-      writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { existsSync, readFileSync } from "node:fs";
-const here = new URL(".", import.meta.url).pathname, input = readFileSync(0), q = JSON.parse(input);
-const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
-const k = existsSync(here + "kill.json") ? JSON.parse(readFileSync(here + "kill.json", "utf-8")) : null;
-if (k && q.phase === k.phase && q.chunk === k.chunk) process.exit(9);
-process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
-    }
-    const kill = (rule: object | null) => (rule ? writeFileSync(join(plugin, "codec/dist/kill.json"), JSON.stringify(rule)) : rmSync(join(plugin, "codec/dist/kill.json"), { force: true }));
+    const { plugin, kill } = killPlugin();
     const { root, wb, home } = project();
     const cut = (sub: string) => spawnSync(join(plugin, "bin", "fusion-migrate"), [sub], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
     kill({ phase: "apply", chunk: 1 });
@@ -336,5 +340,61 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([cut.status, existsSync(join(wb, s.plan.path)), existsSync(join(wb, `.json-state/ops/${chunk0}.json`)), existsSync(join(wb, ".json-state/journal", chunk0)), value(mig(root, home, "status").stdout, "record")], cut.stderr).toEqual([7, false, false, true, "current"]);
     const back = mig(root, home, "rollback");
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+  }, 4 * CASE_TIMEOUT);
+
+  // issue 261016-1052, cells C, A and D of decision 261016-1436 as they stand: C is the dead end step 3 rewrites; A and D keep their fence.
+  it("cell C: a refused first rollback chunk, then a git reset, leaves a fence that set-aside walks into and nothing ends (issue 261016-1052)", () => {
+    const { root, wb, home } = project();
+    writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
+    expect(mig(root, home, "run").status).toBe(0);
+    git(root, "add", "-A");
+    git(root, "commit", "-qm", "migrated");
+    writeFileSync(join(wb, BENCH), `${read(wb, BENCH)}\nA hand edit, no codec operation.\n`);
+    const refused = mig(root, home, "rollback");
+    expect([refused.status, refused.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*fence .* stands/)]);
+    const fence = read(wb, ".json-state/maintenance.json");
+    expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
+    const status = mig(root, home, "status").stdout;
+    expect([value(status, "state"), value(status, "fence") !== "-", value(status, "record")], status).toEqual(["legacy", true, "stale"]);
+    const aside = mig(root, home, "set-aside", "--consent");
+    expect(aside.status, aside.stderr).toBe(0);
+    const run = mig(root, home, "run");
+    expect([run.status, run.stderr]).toEqual([5, expect.stringMatching(/a fence or a pending intent stands/)]);
+    const end = mig(root, home, "rollback", "--end-fence", "--session", value(aside.stdout, "set-aside")!);
+    expect([end.status, end.stderr, read(wb, ".json-state/maintenance.json")]).toEqual([5, expect.stringMatching(/no fence of a refused rollback stands on a store under JSON control/), fence]);
+  }, 6 * CASE_TIMEOUT);
+
+  it("cell A: a rollback cut after its first chunk over a legacy tree is current, --end-fence leaves its fence, and rollback completes (issue 261016-1052)", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, wb, home } = project();
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), a, { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill(null);
+    expect(cut("run").status).toBe(0);
+    kill({ phase: "rollback", chunk: 2 });
+    expect(cut("rollback").status).toBe(7);
+    kill(null);
+    const status = cut("status").stdout;
+    expect([value(status, "state"), value(status, "fence") !== "-", value(status, "record")], status).toEqual(["legacy", true, "current"]);
+    const s = JSON.parse(readFileSync(join(value(status, "session")!, "state.json"), "utf-8"));
+    const chunk2 = s.schedule.rollback.find((r: { chunk: number }) => r.chunk === 2).operation_id;
+    const fence = read(wb, ".json-state/maintenance.json");
+    expect([existsSync(join(wb, `.json-state/ops/${chunk2}.json`)), cut("rollback", "--end-fence").status, read(wb, ".json-state/maintenance.json")]).toEqual([true, 5, fence]);
+    const back = cut("rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+  }, 4 * CASE_TIMEOUT);
+
+  it("cell D: a fence this record did not begin, over a tree reset with git, is left by --end-fence (issue 261016-1052)", () => {
+    const { root, wb, home } = project();
+    writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
+    expect(mig(root, home, "run").status).toBe(0);
+    git(root, "add", "-A");
+    git(root, "commit", "-qm", "migrated");
+    const id = randomUUID();
+    const begin = spawnSync(resolve(REPO_ROOT, "bin", "fusion-record"), [], { cwd: wb, encoding: "utf-8", env: { PATH, HOME: home }, input: JSON.stringify({ op: "maintenance", operation_id: id, action: "begin" }) });
+    expect(begin.status, begin.stdout + begin.stderr).toBe(0);
+    const fence = read(wb, ".json-state/maintenance.json");
+    expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
+    const end = mig(root, home, "rollback", "--end-fence");
+    expect([end.status, read(wb, ".json-state/maintenance.json"), value(mig(root, home, "status").stdout, "fence")], end.stderr).toEqual([5, fence, id]);
   }, 4 * CASE_TIMEOUT);
 });
