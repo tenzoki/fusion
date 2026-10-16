@@ -345,8 +345,10 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
 
-  // issue 261016-1052, cells C, A and D of decision 261016-1436 as they stand: C is the dead end step 3 rewrites; A and D keep their fence.
-  it("cell C: a refused first rollback chunk, then a git reset, leaves a fence that set-aside walks into and nothing ends (issue 261016-1052)", () => {
+  // issue 261016-1052, cells C, A and D of decision 261016-1436: C's idle fence is ended by rollback --end-fence (option 1); A and D keep their fence.
+  const FENCE = ".json-state/maintenance.json";
+  /** Cell C: a migration committed, a first rollback chunk refused over a hand edit, then a git reset back to Markdown. */
+  function cellC(): { root: string; wb: string; home: string; session: string; fence: string } {
     const { root, wb, home } = project();
     writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
     expect(mig(root, home, "run").status).toBe(0);
@@ -355,16 +357,39 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     writeFileSync(join(wb, BENCH), `${read(wb, BENCH)}\nA hand edit, no codec operation.\n`);
     const refused = mig(root, home, "rollback");
     expect([refused.status, refused.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*fence .* stands/)]);
-    const fence = read(wb, ".json-state/maintenance.json");
     expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
     const status = mig(root, home, "status").stdout;
     expect([value(status, "state"), value(status, "fence") !== "-", value(status, "record")], status).toEqual(["legacy", true, "stale"]);
+    return { root, wb, home, session: value(status, "session")!, fence: read(wb, FENCE) };
+  }
+
+  it("cell C: set-aside refuses and names rollback --end-fence, which ends the idle fence (not while write.lock stands), and run then migrates (issue 261016-1052)", () => {
+    const { root, wb, home, session, fence } = cellC();
+    const stuck = mig(root, home, "set-aside", "--consent");
+    expect([stuck.status, stuck.stderr, existsSync(session)]).toEqual([5, expect.stringMatching(/no rollback chunk landed under it; `bin\/fusion-migrate rollback --end-fence` ends it, then `bin\/fusion-migrate set-aside --consent`/), true]);
+    expect(mig(root, home, "run").stderr).toMatch(/does not carry it[\s\S]*first, the fence .* `bin\/fusion-migrate rollback --end-fence` ends it; then `bin\/fusion-migrate set-aside --consent`/);
+    writeFileSync(join(wb, ".json-state/write.lock"), "");
+    const locked = mig(root, home, "rollback", "--end-fence");
+    rmSync(join(wb, ".json-state/write.lock"));
+    expect([locked.status, locked.stderr, read(wb, FENCE)]).toEqual([5, expect.stringMatching(/write\.lock stands[\s\S]*Nothing was removed/), fence]);
+    const ended = mig(root, home, "rollback", "--end-fence");
+    expect([ended.status, value(ended.stdout, "fence-ended"), value(ended.stdout, "result"), value(ended.stdout, "note"), value(mig(root, home, "status").stdout, "fence")], ended.stderr).toEqual([0, JSON.parse(fence).operation_id, "legacy", "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; set-aside --consent, then run", "-"]);
     const aside = mig(root, home, "set-aside", "--consent");
     expect(aside.status, aside.stderr).toBe(0);
+    const again = mig(root, home, "run");
+    expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
+  }, 6 * CASE_TIMEOUT);
+
+  it("cell C set aside under 13.1.4: run's fence refusal names rollback --end-fence under that record's --session, and run then migrates (issue 261016-1052)", () => {
+    const { root, home, session } = cellC();
+    const aside = `${session}.stale-20261016T000000Z`;
+    renameSync(session, aside);
     const run = mig(root, home, "run");
-    expect([run.status, run.stderr]).toEqual([5, expect.stringMatching(/a fence or a pending intent stands/)]);
-    const end = mig(root, home, "rollback", "--end-fence", "--session", value(aside.stdout, "set-aside")!);
-    expect([end.status, end.stderr, read(wb, ".json-state/maintenance.json")]).toEqual([5, expect.stringMatching(/no fence of a refused rollback stands on a store under JSON control/), fence]);
+    expect([run.status, run.stderr.includes("a fence or a pending intent stands"), run.stderr.includes(`\`bin/fusion-migrate rollback --end-fence --session ${aside}\` ends it`)], run.stderr).toEqual([5, true, true]);
+    const ended = mig(root, home, "rollback", "--end-fence", "--session", aside);
+    expect([ended.status, value(ended.stdout, "note")], ended.stderr).toEqual([0, "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; run"]);
+    const again = mig(root, home, "run");
+    expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
   }, 6 * CASE_TIMEOUT);
 
   it("cell A: a rollback cut after its first chunk over a legacy tree is current, --end-fence leaves its fence, and rollback completes (issue 261016-1052)", () => {
@@ -385,6 +410,26 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const back = cut("rollback");
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
+
+  it("cell A reset with git and cell C with a fence of another id: --end-fence leaves either fence byte-identical (issue 261016-1052)", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, wb, home } = project();
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), a, { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
+    kill(null);
+    expect(cut("run").status).toBe(0);
+    [["add", "-A"], ["commit", "-qm", "migrated"]].forEach((a) => git(root, ...a));
+    kill({ phase: "rollback", chunk: 2 });
+    expect(cut("rollback").status).toBe(7);
+    kill(null);
+    expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
+    const fence = read(wb, FENCE);
+    expect([value(cut("status").stdout, "record"), cut("rollback", "--end-fence").status, read(wb, FENCE)]).toEqual(["stale", 5, fence]);
+    const c = cellC();
+    const other = `${JSON.stringify({ ...JSON.parse(c.fence), operation_id: randomUUID() })}\n`;
+    writeFileSync(join(c.wb, FENCE), other);
+    expect([mig(c.root, c.home, "rollback", "--end-fence").status, read(c.wb, FENCE)]).toEqual([5, other]);
+  }, 8 * CASE_TIMEOUT);
 
   it("cell D: a fence this record did not begin, over a tree reset with git, is left by --end-fence (issue 261016-1052)", () => {
     const { root, wb, home } = project();

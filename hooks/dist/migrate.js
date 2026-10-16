@@ -56,7 +56,27 @@
  * rebuilds the exempt `maintenance` requests from that spelling (W5). The
  * session is keyed by machine and path, not by tree: a record whose last write
  * the tree does not carry (`stale`) is refused by `run`, `resume` and
- * `rollback`, and `set-aside --consent` renames its directory aside.
+ * `rollback`, and `set-aside --consent` renames its directory aside, never
+ * while a fence or pending intent stands that `run` would refuse on.
+ *
+ * ## Ending a fence over a legacy tree
+ *
+ * `.json-state/` ignores itself, so a git reset after a refused first rollback
+ * chunk keeps that rollback's fence over a tree that is legacy again, where
+ * the codec admits no `maintenance end` (no rollback chunk 0 evidence) and
+ * every `run` refuses. `rollback --end-fence` then removes
+ * `.json-state/maintenance.json` itself, the one removal of codec-owned state
+ * this host performs, and only over the known complete state the codec's fence
+ * refusal asks to be verified under the fence (`readFence` in the codec's
+ * store): the record is stale, the fence is the one its rollback began, no
+ * scheduled rollback chunk is stored, no intent is pending, no write lock
+ * stands, and the file still reads as that fence just before the unlink
+ * (`idleFence`; the ruling is
+ * `261016-1436-how-is-a-rollback-fence-ended-that-a-git-reset-left-standing-over-a-legacy-tree.md`,
+ * option 1). No codec write landed under such a
+ * fence, so the tree is what git put back. The "no recovery" sentence of
+ * `bin/fusion-record`'s and `bin/fusion-archive`'s headers concerns a fence
+ * whose move inventory is lost, not this state.
  *
  * ## Setup metadata
  *
@@ -71,7 +91,7 @@
  */
 import { createHash, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -112,6 +132,10 @@ function inspect(wb) {
 // --- the session -------------------------------------------------------------------
 function sessionDir(wb, flag) {
     return resolve(flag ?? join(homedir(), ".fusion-migrate", sha(wb).slice(7, 19)));
+}
+/** A helper command as a message names it, with `--session` where the session is not the default. */
+function command(wb, session, sub) {
+    return `\`bin/fusion-migrate ${sub}${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}\``;
 }
 function readState(session) {
     const p = join(session, "state.json");
@@ -323,7 +347,48 @@ function drive(wb, session, s) {
     writeState(session, s);
     return [...lines, `migrated=${s.migration_id}`, "result=json-control"];
 }
-function preconditions(wb) {
+/** A fence or a pending intent `inspect` names: what `run` refuses on, and `set-aside` too. */
+const standing = (i) => i.maintenance !== null || i.pending !== null;
+/**
+ * The fence id where this record's own rollback fence stands idle over a
+ * legacy tree, else null: cell C of the table in the ruling the header's
+ * `## Ending a fence over a legacy tree` cites. The fence is
+ * `s.rollback.begin_id` (a fence this record did not begin, cell D, fails
+ * here), and no scheduled rollback chunk of this record is stored and no
+ * intent is pending, `inspect`'s or any under `journal/`. A real rollback
+ * reaches a legacy tree only by landing one of its chunks (the first after
+ * activation removes the manifest, chunk 0 carries its answer in its intent
+ * before any plan file goes), so cells A and B fail the chunk evidence and
+ * only a fence no rollback chunk landed under passes.
+ */
+function idleFence(wb, s, i) {
+    if (i.state !== "legacy" || s.rollback === null || i.maintenance?.operation_id !== s.rollback.begin_id || i.pending !== null)
+        return null;
+    const journal = join(wb, STATE_DIR, "journal");
+    if (existsSync(journal) && readdirSync(journal).some((n) => !n.startsWith(".")))
+        return null;
+    return (s.schedule?.rollback ?? []).some((r) => stored(wb, r.operation_id)) ? null : s.rollback.begin_id;
+}
+/** The way out of an idle fence, named in every message that meets one. */
+const endFenceWay = (wb, session, fence) => `the fence ${fence} this record's rollback began stands over a legacy tree with no rollback chunk landed under it; ${command(wb, session, "rollback --end-fence")} ends it`;
+/** The set-aside record (`<session>.stale-*`) whose rollback began `fence`, or null. */
+function asideBegan(session, fence) {
+    const dir = dirname(session);
+    const prefix = `${session.slice(dir.length + 1)}.stale-`;
+    if (!existsSync(dir))
+        return null;
+    for (const n of readdirSync(dir).filter((x) => x.startsWith(prefix)).sort()) {
+        try {
+            if (readState(join(dir, n))?.rollback?.begin_id === fence)
+                return join(dir, n);
+        }
+        catch {
+            continue;
+        }
+    }
+    return null;
+}
+function preconditions(wb, session) {
     const names = legacyNames(wb);
     if (names.length)
         throw new Stop(EXIT.precondition, `the v11 store names stand (${names.join(", ")}); rename them first with /fusion:migrate's rename pass. Nothing was written.`);
@@ -332,8 +397,11 @@ function preconditions(wb) {
         throw new Stop(EXIT.precondition, "the installed codec does not implement `migration`; update the plugin. Nothing was written.");
     if (i.state !== "legacy")
         throw new Stop(EXIT.precondition, `the workbench is ${i.state}, not legacy Markdown. Nothing was written.`);
-    if (i.maintenance !== null || i.pending !== null)
-        throw new Stop(EXIT.precondition, `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}); \`resume\`, \`rollback\` or the archive helper that set it closes it. Nothing was written.`);
+    if (standing(i)) {
+        const aside = i.maintenance !== null ? asideBegan(session, i.maintenance.operation_id) : null;
+        const way = aside === null ? "`resume`, `rollback` or the archive helper that set it closes it" : `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it once no rollback chunk of that record landed, then run again`;
+        throw new Stop(EXIT.precondition, `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}); ${way}. Nothing was written.`);
+    }
     const lines = [];
     const marker = join(wb, ".session-marker");
     if (existsSync(marker))
@@ -356,7 +424,7 @@ function run(wb, session) {
         return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: the session records this migration as verified"];
     if (previous && !previous.rolled_back)
         throw new Stop(EXIT.precondition, `a run of ${previous.migration_id} is recorded in ${session}; \`resume\` finishes it or \`rollback\` undoes it`);
-    const lines = preconditions(wb);
+    const lines = preconditions(wb, session);
     try {
         ensureBackup(wb, session);
     }
@@ -466,12 +534,40 @@ function refusedFirstChunk(wb, session, s, refusal) {
     }
     return new Stop(EXIT.refused, `${refusal.message}. Work stored since the plan (${work.slice(0, 3).join(", ")}${work.length > 3 ? `, ${work.length - 3} more` : ""}) is refused by the codec's audit in every rollback of this migration, whatever is restored, so the fence ${fence} this rollback began is ended: the store stays under JSON control and takes writes again`);
 }
-/** `rollback --end-fence`: ends the fence a refused first rollback chunk left standing, and nothing else. */
+/**
+ * `rollback --end-fence`: ends the fence a refused first rollback chunk left
+ * standing, and nothing else. Under JSON control the codec ends it. Over a
+ * legacy tree a git reset left it on, the codec cannot, so this host removes
+ * the fence file once `idleFence` holds for a stale record, no write lock
+ * stands and the file still reads as exactly that fence (the header's
+ * `## Ending a fence over a legacy tree`).
+ */
 function endLeftFence(wb, session, s) {
     const i = inspect(wb);
+    const idle = i.state === "legacy" && stale(wb, s, i.state) !== null ? idleFence(wb, s, i) : null;
+    if (idle !== null) {
+        const rel = `${STATE_DIR}/maintenance.json`;
+        if (existsSync(join(wb, STATE_DIR, "write.lock")))
+            throw new Stop(EXIT.precondition, `${STATE_DIR}/write.lock stands, so a writer may hold the store; the fence ${idle} stays. Run ${command(wb, session, "rollback --end-fence")} again once no writer runs. Nothing was removed.`);
+        const file = join(wb, rel);
+        let again = null;
+        try {
+            if (lstatSync(file).isFile())
+                again = JSON.parse(readFileSync(file, "utf-8"));
+        }
+        catch {
+            again = null;
+        }
+        if (again === null || Object.keys(again).sort().join(",") !== "operation_id,since" || again.operation_id !== idle || again.since !== i.maintenance.since)
+            throw new Stop(EXIT.precondition, `${rel} no longer reads as the fence ${idle}; nothing was removed`);
+        unlinkSync(file);
+        s.rollback = null;
+        writeState(session, s);
+        return [`fence-ended=${idle}`, "result=legacy", `note=no rollback chunk landed under it, and the codec refuses every later rollback of this migration; ${/\.stale-[^/]*$/.test(session) ? "" : `set-aside --consent${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}, then `}run`];
+    }
     const last = s.schedule ? s.schedule.rollback.find((r) => r.chunk === s.schedule.apply.length) : undefined;
     if (s.rollback === null || i.state !== "json-control" || i.maintenance?.operation_id !== s.rollback.begin_id || (last && stored(wb, last.operation_id)))
-        throw new Stop(EXIT.precondition, "no fence of a refused rollback stands on a store under JSON control; nothing was sent");
+        throw new Stop(EXIT.precondition, "no fence of a refused rollback stands on a store under JSON control, nor an idle fence of this record over a legacy store; nothing was sent");
     const fence = s.rollback.begin_id;
     endRollbackFence(wb, session, s);
     return [`fence-ended=${fence}`, "result=json-control", "note=the codec refuses every later rollback of this migration"];
@@ -585,18 +681,26 @@ function stale(wb, s, state) {
 }
 /** Refuses a record `stale` reads as stale, before any write, and names the way out. */
 function current(wb, session, s) {
-    const shows = stale(wb, s, inspect(wb).state);
+    const i = inspect(wb);
+    const shows = stale(wb, s, i.state);
     if (shows === null)
         return;
     const claim = s.rollback !== null ? "a rollback in flight" : s.done ? "done" : "a run in flight";
-    throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: \`bin/fusion-migrate set-aside --consent${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}\` renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
+    const fence = idleFence(wb, s, i);
+    throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: ${fence === null ? "" : `first, ${endFenceWay(wb, session, fence)}; then `}${command(wb, session, "set-aside --consent")} renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
 }
-/** `set-aside --consent`: moves a stale record's session directory aside, never a current one, and deletes nothing. */
+/** `set-aside --consent`: moves a stale record's session directory aside, never a current one and never past a fence or intent `run` refuses on, and deletes nothing. */
 function setAside(wb, session, consent) {
     const s = readState(session);
     if (s === null)
         throw new Stop(EXIT.precondition, `no run is recorded in ${session}; nothing was moved`);
-    if (stale(wb, s, inspect(wb).state) === null)
+    const i = inspect(wb);
+    const shows = stale(wb, s, i.state);
+    if (shows !== null && standing(i)) {
+        const fence = idleFence(wb, s, i);
+        throw new Stop(EXIT.precondition, fence !== null ? `${endFenceWay(wb, session, fence)}, then ${command(wb, session, "set-aside --consent")}; \`run\` refuses while it stands. Nothing was moved.` : `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}), and \`run\` refuses while it stands, so ${session} stays; the tool that set it closes it. Nothing was moved.`);
+    }
+    if (shows === null)
         throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} and this tree carries it (record=current), so it stays; ${s.rolled_back ? "`run` starts a new migration" : "`resume` or `rollback` acts on it"}. Nothing was moved.`);
     const to = `${session}.stale-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}`;
     if (!consent)

@@ -62,13 +62,21 @@
 #   rollback --end-fence
 #                   ends the fence such a refusal left standing; the codec
 #                   then refuses every later rollback of this migration.
+#                   Over a tree a git reset made legacy again, where the codec
+#                   cannot end it, it removes .json-state/maintenance.json
+#                   itself, only when the record is stale, the fence is the
+#                   one its rollback began, no rollback chunk of it is stored,
+#                   no intent is pending, no write lock stands and the file
+#                   re-reads as that fence: no codec write landed under it.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.
 #   set-aside       with --consent, renames a session whose record the tree
 #                   does not carry (`status` prints record=stale) to
 #                   <dir>.stale-<UTC stamp>; deletes nothing. `run`, `resume`
-#                   and `rollback` refuse such a record and name this.
+#                   and `rollback` refuse such a record and name this. Refuses
+#                   while a fence or pending intent stands over the stale
+#                   record, naming `rollback --end-fence` where it ends it.
 #   status          where the recorded run stands, and with record= whether
 #                   the tree carries the record's last write.
 #
@@ -87,8 +95,9 @@
 #      was read or written.
 #   5  a precondition refused: v11 store names, a codec without `migration`,
 #      a fence or pending intent, a run already recorded, nothing to resume,
-#      a session whose record the tree does not carry, or restore-backup's
-#      or set-aside's conditions. Nothing was written by this call.
+#      a session whose record the tree does not carry, a fence or pending
+#      intent standing over the stale record, or restore-backup's or
+#      set-aside's conditions. Nothing was written by this call.
 #   6  blocking findings remain, or a repair was not applied (no consent, an
 #      unanswered question, a file changed); nothing was written.
 #   7  an outcome is unknown: the codec gave no answer. `resume` (or

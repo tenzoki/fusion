@@ -56,7 +56,27 @@
  * rebuilds the exempt `maintenance` requests from that spelling (W5). The
  * session is keyed by machine and path, not by tree: a record whose last write
  * the tree does not carry (`stale`) is refused by `run`, `resume` and
- * `rollback`, and `set-aside --consent` renames its directory aside.
+ * `rollback`, and `set-aside --consent` renames its directory aside, never
+ * while a fence or pending intent stands that `run` would refuse on.
+ *
+ * ## Ending a fence over a legacy tree
+ *
+ * `.json-state/` ignores itself, so a git reset after a refused first rollback
+ * chunk keeps that rollback's fence over a tree that is legacy again, where
+ * the codec admits no `maintenance end` (no rollback chunk 0 evidence) and
+ * every `run` refuses. `rollback --end-fence` then removes
+ * `.json-state/maintenance.json` itself, the one removal of codec-owned state
+ * this host performs, and only over the known complete state the codec's fence
+ * refusal asks to be verified under the fence (`readFence` in the codec's
+ * store): the record is stale, the fence is the one its rollback began, no
+ * scheduled rollback chunk is stored, no intent is pending, no write lock
+ * stands, and the file still reads as that fence just before the unlink
+ * (`idleFence`; the ruling is
+ * `261016-1436-how-is-a-rollback-fence-ended-that-a-git-reset-left-standing-over-a-legacy-tree.md`,
+ * option 1). No codec write landed under such a
+ * fence, so the tree is what git put back. The "no recovery" sentence of
+ * `bin/fusion-record`'s and `bin/fusion-archive`'s headers concerns a fence
+ * whose move inventory is lost, not this state.
  *
  * ## Setup metadata
  *
