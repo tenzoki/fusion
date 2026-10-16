@@ -263,8 +263,8 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([done.status, value(done.stdout, "result"), existsSync(join(wb, "workbench.json"))], done.stderr).toEqual([0, "json-control", true]);
   }, 4 * CASE_TIMEOUT);
 
-  // (ii) to (v) pin the defect as observed; (vi) is the way out every option relies on.
-  it("a done session over a tree reset with git: Step 7 routes interrupted, resume, rollback and run do not get out, a fresh session does (issue 261015-2223)", () => {
+  // (ii) still pins Step 7's route until the skill reads record=; resume, rollback and run refuse without a write, and set-aside --consent is the way out.
+  it("a done session over a tree reset with git: resume, rollback and run refuse it unchanged, set-aside --consent moves it aside, and run then migrates (issue 261015-2223)", () => {
     const { root, wb, home } = project();
     writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" }); // the session must survive the reset
     expect(mig(root, home, "run").status).toBe(0);
@@ -276,20 +276,22 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const block = extractBashBlock(readFileSync(join(REPO_ROOT, "skills/migrate/SKILL.md"), "utf-8"), "**Survey.**");
     const routed = spawnSync("bash", ["-c", block], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home, FUSION_PLUGIN_ROOT: REPO_ROOT } });
     expect(routed.stdout).toMatch(/^ROUTE=interrupted$/m);
-    const resume = mig(root, home, "resume");
-    expect([resume.status, value(resume.stdout, "result")]).toEqual([0, "no-op"]);
-    const state = () => JSON.parse(readFileSync(join(value(status, "session")!, "state.json"), "utf-8"));
-    for (let i = 0; i < 2; i++) {
-      const back = mig(root, home, "rollback");
-      expect([back.status, back.stderr]).toEqual([8, expect.stringContaining("plan-file-changed")]);
-      expect([state().rollback, value(mig(root, home, "status").stdout, "record")]).toEqual([expect.anything(), "stale"]);
-    }
-    const chunk0 = state().schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
-    expect(existsSync(join(wb, ".json-state/journal", chunk0))).toBe(false); // no held chunk-0 intent explains the missing index
+    const session = value(status, "session")!;
+    const bytes = () => readFileSync(join(session, "state.json"), "utf-8");
+    const refuse = (before: string) => {
+      for (const sub of ["resume", "rollback", "run"]) expect([sub, ...((r) => [r.status, r.stderr])(mig(root, home, sub)), bytes()]).toEqual([sub, 5, expect.stringMatching(/does not carry it[\s\S]*set-aside --consent[\s\S]*--session .*\.stale-/), before]);
+    };
+    refuse(bytes());
+    // 13.1.3's refused rollback wrote its ids before the codec refused: the record stays stale with them.
+    const s = JSON.parse(bytes());
+    writeFileSync(join(session, "state.json"), JSON.stringify({ ...s, rollback: { begin_id: "b", end_id: "e" } }));
+    refuse(bytes());
+    expect([mig(root, home, "set-aside").status, existsSync(session)]).toEqual([5, true]);
+    const aside = mig(root, home, "set-aside", "--consent");
+    const moved = value(aside.stdout, "set-aside")!;
+    expect([aside.status, moved, value(aside.stdout, "result"), existsSync(session), value(mig(root, home, "status", "--session", moved).stdout, "record")], aside.stderr).toEqual([0, expect.stringMatching(/\.stale-\d{8}T\d{6}Z$/), "no-record", false, "stale"]);
     const again = mig(root, home, "run");
-    expect([again.status, value(again.stdout, "result")]).toEqual([0, "no-op"]);
-    const fresh = mig(root, home, "run", "--session", join(root, "fresh"));
-    expect([fresh.status, value(fresh.stdout, "result")], fresh.stderr).toEqual([0, "json-control"]);
+    expect([again.status, value(again.stdout, "result"), value(mig(root, home, "status").stdout, "record")], again.stderr).toEqual([0, "json-control", "current"]);
   }, 6 * CASE_TIMEOUT);
 
   // status's record= reads the tree against the record's last write: (b) migrated here and (c) a rollback cut after chunk 0 are current, (d) an overtaken copy is stale.
@@ -297,20 +299,23 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const { root, wb, home } = project();
     expect(mig(root, home, "run").status).toBe(0);
     const record = (...a: string[]) => value(mig(root, home, "status", ...a).stdout, "record");
-    expect(record()).toBe("current");
+    expect([record(), mig(root, home, "set-aside", "--consent").status, existsSync(value(mig(root, home, "status").stdout, "session")!)]).toEqual(["current", 5, true]);
     cpSync(root, `${root}-copy`, { recursive: true, verbatimSymlinks: true });
     const session = value(mig(root, home, "status").stdout, "session")!;
     const real = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
     mkdirSync(join(home, "overtaken"));
     for (const plan of [null, { path: real.plan.path, sha256: sha("other bytes") }]) {
       writeFileSync(join(home, "overtaken", "state.json"), JSON.stringify({ ...real, workbench: join(`${root}-copy`, "fusion-workbench"), plan, done: false, rollback: null }));
-      expect(value(mig(`${root}-copy`, home, "status", "--session", join(home, "overtaken")).stdout, "record"), JSON.stringify(plan)).toBe("stale");
+      const at = (sub: string) => mig(`${root}-copy`, home, sub, "--session", join(home, "overtaken"));
+      expect([value(at("status").stdout, "record"), at("run").status, at("resume").status], JSON.stringify(plan)).toEqual(["stale", 5, 5]);
     }
     expect(mig(root, home, "rollback").status).toBe(0);
     const cut = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
     writeFileSync(join(session, "state.json"), JSON.stringify({ ...cut, rolled_back: false }));
     const chunk0 = cut.schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
     expect([existsSync(join(wb, cut.plan.path)), existsSync(join(wb, `.json-state/ops/${chunk0}.json`)), cut.rollback, record()]).toEqual([false, true, expect.anything(), "current"]);
+    const back = mig(root, home, "rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
 
   // Chunk 0's intent removes the index last and its answer lands under ops/ only after that, so a cut between the two holds the answer in the intent alone.

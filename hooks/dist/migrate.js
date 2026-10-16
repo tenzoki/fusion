@@ -53,7 +53,10 @@
  * read it and send the next request whose answer is not stored, under its
  * recorded id; an unknown outcome is answered by the same id, never a fresh
  * one. Every request names the workbench by its `realpath`, because the codec
- * rebuilds the exempt `maintenance` requests from that spelling (W5).
+ * rebuilds the exempt `maintenance` requests from that spelling (W5). The
+ * session is keyed by machine and path, not by tree: a record whose last write
+ * the tree does not carry (`stale`) is refused by `run`, `resume` and
+ * `rollback`, and `set-aside --consent` renames its directory aside.
  *
  * ## Setup metadata
  *
@@ -347,6 +350,8 @@ function preconditions(wb) {
 }
 function run(wb, session) {
     const previous = readState(session);
+    if (previous && !previous.rolled_back)
+        current(wb, session, previous);
     if (previous?.done && !previous.rolled_back)
         return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: the session records this migration as verified"];
     if (previous && !previous.rolled_back)
@@ -394,6 +399,7 @@ function recorded(wb, session) {
 }
 function resumeRun(wb, session) {
     const s = recorded(wb, session);
+    current(wb, session, s);
     if (s.rolled_back || s.rollback !== null)
         throw new Stop(EXIT.precondition, `${s.migration_id} is being or was rolled back; \`rollback\` finishes that`);
     if (s.done)
@@ -475,6 +481,7 @@ function rollback(wb, session, endFence = false) {
     const s = recorded(wb, session);
     if (endFence)
         return endLeftFence(wb, session, s);
+    current(wb, session, s);
     if (s.rolled_back)
         return [`rolled-back=${s.migration_id}`, "result=no-op"];
     if (s.plan === null || s.schedule === null) {
@@ -557,22 +564,46 @@ function restoreBackup(wb, session, consent) {
  * uncommitted migration leaves the plan files and reads current. Only
  * positive contradictions count, so an unreadable tree and a rolled-back
  * record are never stale. It reads the tree, not `s.rollback`: a refused
- * `rollback` over a stale record writes that field before the codec refuses,
- * so after one undo attempt the session alone looks like a rollback in flight.
+ * `rollback` before 13.1.4 wrote that field before the codec refused, so after
+ * one undo attempt the session alone looks like a rollback in flight. Returns
+ * what the tree shows against the record, or null where the record is current.
  */
 function stale(wb, s, state) {
     if (s.workbench !== wb)
-        return true;
+        return `the record is kept for ${s.workbench}`;
     if (s.rolled_back)
-        return false;
+        return null;
     if (s.plan === null)
-        return state === "json-control";
+        return state === "json-control" ? "the tree is under JSON control, and no plan of this record produced it" : null;
     const index = join(wb, s.plan.path);
     const planHolds = existsSync(index) && lstatSync(index).isFile() && sha(readFileSync(index)) === s.plan.sha256;
     if (s.rollback === null)
-        return !planHolds || (s.done && state === "legacy");
+        return !planHolds ? `the plan index ${s.plan.path} is missing or at other bytes` : s.done && state === "legacy" ? "the tree is legacy Markdown" : null;
     const chunk0 = s.schedule?.rollback.find((r) => r.chunk === 0);
-    return !planHolds && !(chunk0 !== undefined && (stored(wb, chunk0.operation_id) || existsSync(join(wb, STATE_DIR, "journal", chunk0.operation_id))));
+    return planHolds || (chunk0 !== undefined && (stored(wb, chunk0.operation_id) || existsSync(join(wb, STATE_DIR, "journal", chunk0.operation_id)))) ? null : `neither the plan index ${s.plan.path} nor rollback chunk 0's answer is in the tree`;
+}
+/** Refuses a record `stale` reads as stale, before any write, and names the way out. */
+function current(wb, session, s) {
+    const shows = stale(wb, s, inspect(wb).state);
+    if (shows === null)
+        return;
+    const claim = s.rollback !== null ? "a rollback in flight" : s.done ? "done" : "a run in flight";
+    throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: \`bin/fusion-migrate set-aside --consent\` renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
+}
+/** `set-aside --consent`: moves a stale record's session directory aside, never a current one, and deletes nothing. */
+function setAside(wb, session, consent) {
+    const s = readState(session);
+    if (s === null)
+        throw new Stop(EXIT.precondition, `no run is recorded in ${session}; nothing was moved`);
+    if (stale(wb, s, inspect(wb).state) === null)
+        throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} and this tree carries it (record=current), so it stays; \`resume\` or \`rollback\` acts on it. Nothing was moved.`);
+    const to = `${session}.stale-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}`;
+    if (!consent)
+        throw new Stop(EXIT.precondition, `set-aside moves ${session} to ${to}; pass --consent. Nothing was moved.`);
+    if (existsSync(to))
+        throw new Stop(EXIT.precondition, `${to} exists; nothing was moved`);
+    renameSync(session, to);
+    return [`set-aside=${to}`, "result=no-record"];
 }
 function status(wb, session) {
     const s = readState(session);
@@ -581,7 +612,7 @@ function status(wb, session) {
     if (s === null)
         return [...lines, "run=none"];
     const landed = s.schedule?.apply.filter((a) => stored(wb, a.operation_id)).length ?? 0;
-    return [...lines, `migration=${s.migration_id}`, `planned=${s.plan ? "yes" : "no"}`, `chunks=${landed}/${s.schedule?.apply.length ?? "-"}`, `verified=${s.schedule && stored(wb, s.schedule.verify) ? "yes" : "no"}`, `done=${s.done}`, `rolled_back=${s.rolled_back}`, `record=${stale(wb, s, i.state) ? "stale" : "current"}`];
+    return [...lines, `migration=${s.migration_id}`, `planned=${s.plan ? "yes" : "no"}`, `chunks=${landed}/${s.schedule?.apply.length ?? "-"}`, `verified=${s.schedule && stored(wb, s.schedule.verify) ? "yes" : "no"}`, `done=${s.done}`, `rolled_back=${s.rolled_back}`, `record=${stale(wb, s, i.state) === null ? "current" : "stale"}`];
 }
 function surveyOut(wb, session) {
     const sv = survey(wb);
@@ -644,12 +675,12 @@ function repair(wb, session, flags) {
     return [`applied=${id}\t${f.class}\t${f.path}`, `logged=${readRepairLog(session).length}`];
 }
 // --- the entry -----------------------------------------------------------------------
-const TAKES = { survey: [], repair: ["--list", "--optional", "--apply", "--value", "--consent"], run: [], resume: [], rollback: ["--end-fence"], status: [], "restore-backup": ["--consent"] };
+const TAKES = { survey: [], repair: ["--list", "--optional", "--apply", "--value", "--consent"], run: [], resume: [], rollback: ["--end-fence"], status: [], "restore-backup": ["--consent"], "set-aside": ["--consent"] };
 const VALUED = new Set(["--apply", "--value", "--session"]);
 function main(argv) {
     const [sub, given, ...rest] = argv;
     if (sub === undefined || !(sub in TAKES) || !given)
-        throw new Stop(EXIT.usage, "usage: migrate.js <survey|repair|run|resume|rollback|restore-backup|status> <workbench> [flags]; run it through bin/fusion-migrate");
+        throw new Stop(EXIT.usage, "usage: migrate.js <survey|repair|run|resume|rollback|restore-backup|set-aside|status> <workbench> [flags]; run it through bin/fusion-migrate");
     const flags = new Map();
     for (let i = 0; i < rest.length; i++) {
         const f = rest[i];
@@ -672,7 +703,8 @@ function main(argv) {
                 : sub === "resume" ? resumeRun(wb, session)
                     : sub === "rollback" ? rollback(wb, session, flags.has("--end-fence"))
                         : sub === "restore-backup" ? restoreBackup(wb, session, flags.has("--consent"))
-                            : status(wb, session);
+                            : sub === "set-aside" ? setAside(wb, session, flags.has("--consent"))
+                                : status(wb, session);
     out(lines);
     return EXIT.done;
 }

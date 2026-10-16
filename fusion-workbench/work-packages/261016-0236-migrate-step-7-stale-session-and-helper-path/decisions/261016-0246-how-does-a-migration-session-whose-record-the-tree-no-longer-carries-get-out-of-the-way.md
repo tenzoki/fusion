@@ -36,3 +36,5 @@ Measured by the planner on 2026-10-16 in a scratch git repository over a copy of
 ## Recommendation
 
 Option 1. The question "may this record be moved?" is decided by the same code that prints `record=stale`, so it cannot drift from it, and an agent never has to obey a guard on a path it only reads. The widening is one subcommand with one precondition. Option 2 is the alternative if the user wants the helper contract to grow by a single `status` line only, at the cost of an unguarded move in prose. Option 3 drops the consent this skill asks for everywhere else.
+
+Answered: this record `## Options` — option 1: a new guarded helper subcommand, `bin/fusion-migrate set-aside --consent`, refuses unless the record is stale and renames the session directory aside, deleting nothing; Step 7 asks the user before calling it. A consultant pass weighed option 3 against it: a predicate misfire would silently set aside a real rollback in flight; ruled by user, Kai Stalmann <ks@qantr.com>

@@ -9,6 +9,7 @@
 #   fusion-migrate resume
 #   fusion-migrate rollback [--end-fence]
 #   fusion-migrate restore-backup --consent
+#   fusion-migrate set-aside --consent
 #   fusion-migrate status
 # Every subcommand also takes --session <dir> (default
 # $HOME/.fusion-migrate/<12 hex of the workbench's real path>).
@@ -64,7 +65,12 @@
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.
-#   status          where the recorded run stands.
+#   set-aside       with --consent, renames a session whose record the tree
+#                   does not carry (`status` prints record=stale) to
+#                   <dir>.stale-<UTC stamp>; deletes nothing. `run`, `resume`
+#                   and `rollback` refuse such a record and name this.
+#   status          where the recorded run stands, and with record= whether
+#                   the tree carries the record's last write.
 #
 # Output on stdout, `KEY=value`, fields separated by a tab; every reason on
 # stderr, prefixed `fusion-migrate:`.
@@ -81,7 +87,8 @@
 #      was read or written.
 #   5  a precondition refused: v11 store names, a codec without `migration`,
 #      a fence or pending intent, a run already recorded, nothing to resume,
-#      or restore-backup's conditions. Nothing was written by this call.
+#      a session whose record the tree does not carry, or restore-backup's
+#      or set-aside's conditions. Nothing was written by this call.
 #   6  blocking findings remain, or a repair was not applied (no consent, an
 #      unanswered question, a file changed); nothing was written.
 #   7  an outcome is unknown: the codec gave no answer. `resume` (or
@@ -97,11 +104,11 @@
 set -eu
 
 usage() {
-  sed -n '3,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  sed -n '3,14p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
 }
 
 case "${1:-}" in
-  survey|repair|run|resume|rollback|restore-backup|status) ;;
+  survey|repair|run|resume|rollback|restore-backup|set-aside|status) ;;
   *)
     usage
     exit 2
