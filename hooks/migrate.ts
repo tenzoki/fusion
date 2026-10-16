@@ -554,10 +554,11 @@ function restoreBackup(wb: string, session: string, consent: boolean): string[] 
  * answer lands under `ops/` only after the index, so a real cut has one of
  * the two). It does not say the tree matches the record: a reset of an
  * uncommitted migration leaves the plan files and reads current. Only
- * positive contradictions count, so an unreadable tree and a rolled-back
- * record are never stale. It reads the tree, not `s.rollback`: a refused
- * `rollback` before 13.1.4 wrote that field before the codec refused, so after
- * one undo attempt the session alone looks like a rollback in flight. Returns
+ * positive contradictions count, so an unreadable tree never makes a record
+ * stale by its state alone, and a rolled-back record is never stale. It reads
+ * the tree, not `s.rollback`: a refused `rollback` before 13.1.4 wrote that
+ * field before the codec refused, so after one undo attempt the session alone
+ * looks like a rollback in flight. Returns
  * what the tree shows against the record, or null where the record is current.
  */
 function stale(wb: string, s: State, state: string): string | null {
@@ -576,14 +577,14 @@ function current(wb: string, session: string, s: State): void {
   const shows = stale(wb, s, inspect(wb).state);
   if (shows === null) return;
   const claim = s.rollback !== null ? "a rollback in flight" : s.done ? "done" : "a run in flight";
-  throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: \`bin/fusion-migrate set-aside --consent\` renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
+  throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: \`bin/fusion-migrate set-aside --consent${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}\` renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
 }
 
 /** `set-aside --consent`: moves a stale record's session directory aside, never a current one, and deletes nothing. */
 function setAside(wb: string, session: string, consent: boolean): string[] {
   const s = readState(session);
   if (s === null) throw new Stop(EXIT.precondition, `no run is recorded in ${session}; nothing was moved`);
-  if (stale(wb, s, inspect(wb).state) === null) throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} and this tree carries it (record=current), so it stays; \`resume\` or \`rollback\` acts on it. Nothing was moved.`);
+  if (stale(wb, s, inspect(wb).state) === null) throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} and this tree carries it (record=current), so it stays; ${s.rolled_back ? "`run` starts a new migration" : "`resume` or `rollback` acts on it"}. Nothing was moved.`);
   const to = `${session}.stale-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}`;
   if (!consent) throw new Stop(EXIT.precondition, `set-aside moves ${session} to ${to}; pass --consent. Nothing was moved.`);
   if (existsSync(to)) throw new Stop(EXIT.precondition, `${to} exists; nothing was moved`);

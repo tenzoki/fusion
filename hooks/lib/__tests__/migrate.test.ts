@@ -279,7 +279,7 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     const session = value(status, "session")!;
     const bytes = () => readFileSync(join(session, "state.json"), "utf-8");
     const refuse = (before: string) => {
-      for (const sub of ["resume", "rollback", "run"]) expect([sub, ...((r) => [r.status, r.stderr])(mig(root, home, sub)), bytes()]).toEqual([sub, 5, expect.stringMatching(/does not carry it[\s\S]*set-aside --consent[\s\S]*--session .*\.stale-/), before]);
+      for (const sub of ["resume", "rollback", "run"]) expect([sub, ...((r) => [r.status, r.stderr])(mig(root, home, sub)), bytes()]).toEqual([sub, 5, expect.stringMatching(/does not carry it[\s\S]*`bin\/fusion-migrate set-aside --consent`[\s\S]*--session .*\.stale-/), before]);
     };
     refuse(bytes());
     // 13.1.3's refused rollback wrote its ids before the codec refused: the record stays stale with them.
@@ -307,9 +307,12 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     for (const plan of [null, { path: real.plan.path, sha256: sha("other bytes") }]) {
       writeFileSync(join(home, "overtaken", "state.json"), JSON.stringify({ ...real, workbench: join(`${root}-copy`, "fusion-workbench"), plan, done: false, rollback: null }));
       const at = (sub: string) => mig(`${root}-copy`, home, sub, "--session", join(home, "overtaken"));
-      expect([value(at("status").stdout, "record"), at("run").status, at("resume").status], JSON.stringify(plan)).toEqual(["stale", 5, 5]);
+      const run = at("run");
+      expect([value(at("status").stdout, "record"), run.status, run.stderr.includes(`set-aside --consent --session ${join(home, "overtaken")}\``), at("resume").status], JSON.stringify(plan)).toEqual(["stale", 5, true, 5]);
     }
     expect(mig(root, home, "rollback").status).toBe(0);
+    const kept = mig(root, home, "set-aside", "--consent"); // a rolled-back record is current, and run is what acts on it (issue 261016-1052)
+    expect([kept.status, /`run` starts a new migration/.test(kept.stderr), kept.stderr.includes("`resume`")], kept.stderr).toEqual([5, true, false]);
     const cut = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
     writeFileSync(join(session, "state.json"), JSON.stringify({ ...cut, rolled_back: false }));
     const chunk0 = cut.schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
