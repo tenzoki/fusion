@@ -427,7 +427,7 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     kill(null);
     expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
     const fence = read(wb, FENCE);
-    // Issue 261016-1807, pinned as observed: the refusals over this cell point at each other (step 2 rewrites (iii) to (v)).
+    // Issue 261016-1807: every refusal over this cell names the rollback chunks that landed and the reset, never a step that refuses.
     const st = cut("status").stdout;
     expect(["state", "record"].map((k) => value(st, k))).toEqual(["legacy", "stale"]);
     expect(value(st, "fence")).not.toBe("-");
@@ -435,12 +435,22 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const s = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
     const chunk2 = s.schedule.rollback.find((r: { chunk: number }) => r.chunk === 2).operation_id;
     expect(existsSync(join(wb, ".json-state/ops", `${chunk2}.json`))).toBe(true);
-    for (const sub of ["rollback", "resume", "run"]) expect(cut(sub)).toMatchObject({ status: 5, stderr: expect.stringContaining("`bin/fusion-migrate set-aside --consent`") });
-    expect(cut("set-aside", "--consent")).toMatchObject({ status: 5, stderr: expect.stringContaining("the tool that set it closes it") });
-    expect(existsSync(session)).toBe(true);
-    expect(cut("rollback", "--end-fence")).toMatchObject({ status: 5, stderr: expect.stringMatching(/no fence of a refused rollback stands on a store under JSON control/) });
+    const named = { status: 5, stderr: expect.stringMatching(/rollback chunks? 2[\s\S]*reset/) };
+    for (const sub of ["rollback", "resume", "run"]) {
+      const r = cut(sub);
+      expect([r, r.stderr.includes("set-aside --consent")], r.stderr).toMatchObject([named, false]);
+    }
+    const aside = cut("set-aside", "--consent");
+    expect([aside, aside.stderr.includes("the tool that set it"), existsSync(session)], aside.stderr).toMatchObject([named, false, true]);
+    const end = cut("rollback", "--end-fence");
+    expect([end, end.stderr.includes("no fence of a refused rollback stands")], end.stderr).toMatchObject([named, false]);
     expect(read(wb, FENCE)).toBe(fence);
     expect([value(cut("status").stdout, "record"), cut("rollback", "--end-fence").status, read(wb, FENCE)]).toEqual(["stale", 5, fence]);
+    // A record 13.1.4 set aside over this cell: run's refusal names the situation under its --session.
+    const old = `${session}.stale-20261016T000000Z`;
+    renameSync(session, old);
+    const again = cut("run");
+    expect([again, again.stderr.includes(`--session ${old}`), again.stderr.includes("once no rollback chunk of that record landed"), read(wb, FENCE)], again.stderr).toMatchObject([named, true, false, fence]);
     const c = cellC();
     const other = `${JSON.stringify({ ...JSON.parse(c.fence), operation_id: randomUUID() })}\n`;
     writeFileSync(join(c.wb, FENCE), other);
