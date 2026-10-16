@@ -3,7 +3,7 @@
   "id": "b60a7bcd-f693-4d93-abc7-5539bf70c49f",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.7: the landed-fence message states only what the helper checked and names a git reset only as one way there; the unverified-proposal branch is pinned by a test and documented; guard unchanged; closing review accept",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "b7f7ee1b-492b-4762-bf2f-500f357e80e1",
+          "revision": "sha256:ab0a160a1bf5941c2f60a01bed97f3d2a5d75fd65dbc5cd05f176cfd736447a2"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
