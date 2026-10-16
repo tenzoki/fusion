@@ -181,23 +181,24 @@ W="$(sed -n 's/.*"node": *">=\([0-9][0-9.]*\)".*/\1/p' "$FUSION_PLUGIN_ROOT/code
 
 On `REFUSED`, tell the user that line and stop. Every call below runs from the root Step 1 changed to; the helper's lines are `KEY=value` on stdout with tab-separated fields, its reasons on stderr; on any exit other than those named here, show the stderr line and stop.
 
-**Survey.** The tree's `state=` decides the format; the local session only whether a run made here is in flight:
+**Survey.** The tree's `state=` decides the format, the session whether a run is in flight:
 
 ```bash
-S="$("$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status)"; E=$?; printf '%s\n' "$S"; [ "$E" -eq 0 ] || { echo "EXIT=$E"; exit 0; }; printf '%s\n' "$S" | awk -F= '{v[$1]=$2} END {print "ROUTE=" (v["rolled_back"]=="false" && !(v["done"]=="true" && v["state"]=="json-control") ? "interrupted" : v["state"]=="json-control" ? "json-control" : v["state"]=="legacy" ? "survey" : "stop")}'
+S="$("$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status)"; E=$?; printf '%s\n' "$S"; [ "$E" -eq 0 ] || { echo "EXIT=$E"; exit 0; }; printf '%s\n' "$S" | awk -F= '{v[$1]=$2} END {print "ROUTE=" (v["record"]=="stale" ? "stale" : v["rolled_back"]=="false" && !(v["done"]=="true" && v["state"]=="json-control") ? "interrupted" : v["state"]=="json-control" ? "json-control" : v["state"]=="legacy" ? "survey" : "stop")}'
 ```
 
 - **`EXIT=`**: show the stderr line and stop. **`ROUTE=stop`**: show the `state=` line and stop.
+- **`ROUTE=stale`**: the session records a migration this tree does not carry (git discarded or reverted it, or another checkout migrated). Show the `migration=`, `done=` and `state=` lines and ask: 1. set that record aside, 2. stop. Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" set-aside --consent`, show its `set-aside=` line (nothing is deleted) and say a re-run of `/fusion:migrate` continues.
 - **`ROUTE=interrupted`**: go to *Interrupted* below.
 - **`ROUTE=json-control`**: the workbench is already on JSON control, whatever `run=` says (migrated here, in another checkout, or created so). Say so and stop, asking nothing and naming no finding.
-- **`ROUTE=survey`**: run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" survey` (it writes nothing) and show its `count=` and `findings=` lines as a short table. Then show its `derived=` lines as one short table, field, rule and count: the reported values the Markdown never recorded, derived from git, carried as unknown or defaulted. Say once that each is marked as derived in its record and that nothing was asked for it, and that an owner who wants to correct the text first lists those findings with `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list --optional` and applies one as below.
+- **`ROUTE=survey`**: run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" survey` (it writes nothing) and show its `count=` and `findings=` lines as a short table. Then show its `derived=` lines as one short table, field, rule and count: the reported values the Markdown never recorded, derived from git, carried as unknown or defaulted. Say once that each is marked as derived in its record, nothing was asked for it, and an owner who wants to correct the text first lists those findings with `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list --optional` and applies one as below.
 
 **Repairs, blocking findings only, one at a time.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list`. With `blocking=0`, go on. A finding with an `unrepairable=` line is named with its reason: the user fixes it by hand, and this step stops before the question to migrate while any remains. Take the **first** other `finding=` only and put it to the user: its file, what is wrong (`detail`), the proposed edit (`edit=`) and every `listed=` citation it rewrites. Ask each `ask=` question in its own message, skipping one whose condition (the last field) the earlier answers do not meet: a `choice` question numbers its choices; an `actor` question takes an agent name or `user`; a `person` question takes `Name <email>` or an explicit "nobody". **A missing filer is never filled from the session or a neighbouring record**: the person comes only from the git author of the file's first commit, and the actor is carried as unknown. When the edit goes into the control file only, say that the record's text stays unchanged. Then ask:
 
 > 1. Apply this repair.
 > 2. Skip it: the migration stays blocked until it is fixed.
 
-Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired: report either and stop. After each applied repair run `repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
+Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired: report either and stop. After each applied repair run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
 
 **The question to migrate.** Once `blocking=0`, say first: *every installation that writes this workbench must be on 13.0.0 or later before it writes again; nothing detects a checkout that does not update.* Then ask once:
 
@@ -207,7 +208,7 @@ Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding
 
 **Run.** Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" run`. Show every `reported=`, `untracked=` and `ignored=` line, then the receipt (`verified=`, `migrated=`). `result=no-op` means it had already run and nothing was sent. Exit 6 means a finding came back: return to the repairs. Exit 5 or 8: show the reason and stop.
 
-**Interrupted.** On exit 7, or `ROUTE=interrupted`, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status` and ask: 1. continue (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" resume`), 2. undo (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done. A `rollback` refused with exit 8 says on stderr whether its fence stands and, if so, the way out (`rollback` again or `rollback --end-fence`): show it and ask which.
+**Interrupted.** On exit 7, or `ROUTE=interrupted`, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status` and ask: 1. continue (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" resume`), 2. undo (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done. A `rollback` refused with exit 8 says on stderr whether its fence stands and, if so, the way out (the same helper's `rollback` again or `rollback --end-fence`): show it and ask which.
 
 **Report.** Close with the receipt and the commit split, in this order: the repairs, only when one was applied; the originals and the record pairs; the rewritten records; the manifest. Then repeat the sentence: every installation that writes this workbench must be on 13.0.0 or later before it writes again, and nothing detects a checkout that does not update, so other checkouts update their installation first, then pull. `bin/fusion-migrate rollback` undoes the migration and `bin/fusion-migrate status` says where it stands.
 

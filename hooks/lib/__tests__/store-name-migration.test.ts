@@ -1,6 +1,6 @@
-import { describe, it, expect, afterAll } from "vitest";
+import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -225,22 +225,41 @@ describe("Step 7 on a JSON-controlled workbench with no local session", () => {
   }, CASE_TIMEOUT);
 });
 
-// Its regression: the shipped `**Survey.**` block routes on the tree's state=, the session deciding only an in-flight run.
+// Its regression: the shipped `**Survey.**` block routes on the tree's state=, the session deciding only an in-flight run,
+// and since issue 261015-2223 a record the tree does not carry routes to ROUTE=stale. Every session cell is a real run's.
 describe("Step 7 as shipped: the survey block routes every cell of session by state", () => {
-  const text = md("migrate"), block = extractBashBlock(text, "**Survey.**");
-  /** A project in the given tree state, with its own HOME, and a session state.json when `run` is given. */
-  const route = (tree: "json" | "legacy" | "unreadable", run?: { done: boolean; rolled_back: boolean }) => {
+  const text = md("migrate"), block = extractBashBlock(text, "**Survey.**"), MIG = '"$FUSION_PLUGIN_ROOT/bin/fusion-migrate"';
+  const ROUTE = (out: string) => out.match(/^(ROUTE|EXIT)=.*$/m)![0];
+  const project = () => {
     const root = mkdtempSync(join(tmpdir(), "store-name-step7-")), home = mkdtempSync(join(tmpdir(), "store-name-home-")); roots.push(root, home);
-    const wb = jsonWorkbenchAt(root); mkdirSync(join(home, ".fusion-migrate")); const env = { ...FRESH_ENV, HOME: home };
+    mkdirSync(join(home, ".fusion-migrate")); return { root, env: { ...FRESH_ENV, HOME: home } };
+  };
+  const session = (root: string, env: NodeJS.ProcessEnv) => sh(`${MIG} status`, root, env).match(/^session=(.*)$/m)![1];
+  /** A no-session project over a jsonWorkbenchAt tree in the given state. */
+  const route = (tree: "json" | "legacy" | "unreadable") => {
+    const { root, env } = project(), wb = jsonWorkbenchAt(root);
     if (tree === "legacy") rmSync(join(wb, "workbench.json")); if (tree === "unreadable") writeFileSync(join(wb, "workbench.json"), "{ not json\n");
-    if (run) {
-      const session = sh('"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status', root, env).match(/^session=(.*)$/m)![1];
-      mkdirSync(session, { recursive: true });
-      writeFileSync(join(session, "state.json"), JSON.stringify({ workbench: realpathSync(wb), migration_id: "m-test", plan: null, schedule: null, rollback: null, ...run }));
-    }
     return sh(block, root, env);
   };
-  const ROUTE = (out: string) => out.match(/^(ROUTE|EXIT)=.*$/m)![0];
+  const at = (root: string, env: NodeJS.ProcessEnv, dir: string) => ({ root, dir, call: (c: string) => spawnSync("bash", ["-c", c], { cwd: root, encoding: "utf-8", env }), routed: () => ROUTE(sh(block, root, env)) });
+  /** The legacy fixture migrated by the helper and committed, HOME outside the root so a reset keeps the session. */
+  const migrated = () => {
+    const { root, env } = project();
+    cpSync(join(pluginRoot, "codec/fixtures/legacy-v12/workbench"), join(root, "fusion-workbench"), { recursive: true });
+    writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), '{"setup_at":"t"}\n'); git(root);
+    expect(sh(`${MIG} run`, root, env)).toMatch(/^result=json-control$/m);
+    sh("git add -A && git -c user.name=t -c user.email=t@t commit -qm migrated", root);
+    return at(root, env, session(root, env));
+  };
+  let made = at("", {}, ""), real: Record<string, unknown> = {};
+  beforeAll(() => { made = migrated(); real = JSON.parse(readFileSync(join(made.dir, "state.json"), "utf-8")); }, 4 * CASE_TIMEOUT);
+  /** A copy of the migrated root (.git and .json-state/ included) under its own HOME, its session the real one with `edit` applied. */
+  const copy = (edit: (s: Record<string, any>) => Record<string, any> = (s) => s) => {
+    const { root, env } = project(); cpSync(made.root, root, { recursive: true });
+    const dir = session(root, env); cpSync(made.dir, dir, { recursive: true });
+    writeFileSync(join(dir, "state.json"), JSON.stringify(edit({ ...real, workbench: realpathSync(join(root, "fusion-workbench")) })));
+    return at(root, env, dir);
+  };
   it("(a) the issue's acceptance: JSON with no session routes json-control and names no finding, and the text stops there", () => {
     const out = route("json");
     expect([ROUTE(out), out.match(/^run=none$/m) !== null]).toEqual(["ROUTE=json-control", true]);
@@ -250,16 +269,36 @@ describe("Step 7 as shipped: the survey block routes every cell of session by st
     const step7 = text.split("## Step 7")[1];
     expect(step7.indexOf('fusion-migrate" survey')).toBeGreaterThan(step7.indexOf("**`ROUTE=survey`**"));
   }, CASE_TIMEOUT);
-  it.each([
-    ["(b) Markdown, no session", "legacy", undefined, "ROUTE=survey"],
-    ["(c) JSON, run interrupted after verify", "json", { done: false, rolled_back: false }, "ROUTE=interrupted"],
-    ["(d) JSON, migrated here", "json", { done: true, rolled_back: false }, "ROUTE=json-control"],
-    ["(e) Markdown, rollback interrupted after the manifest left", "legacy", { done: true, rolled_back: false }, "ROUTE=interrupted"],
-    ["(f) Markdown, rolled back", "legacy", { done: true, rolled_back: true }, "ROUTE=survey"],
-    ["(g) an unreadable workbench.json", "unreadable", undefined, "ROUTE=stop"],
-  ] as const)("%s routes as the table assigns", (_n, t, run, want) => { expect(ROUTE(route(t, run))).toBe(want); }, CASE_TIMEOUT);
-  it("(h) the sibling issue's acceptance: every call spells the helper, and $ROOT stays inside Step 1's block", () => {
+  it.each([["(b) Markdown, no session", "legacy", "ROUTE=survey"], ["(g) an unreadable workbench.json", "unreadable", "ROUTE=stop"]] as const)(
+    "%s routes as the table assigns", (_n, t, want) => { expect(ROUTE(route(t))).toBe(want); }, CASE_TIMEOUT);
+  it("(c) JSON, interrupted after verify (done=false), and (d) JSON, migrated here", () => {
+    expect([copy((s) => ({ ...s, done: false })).routed(), copy().routed()]).toEqual(["ROUTE=interrupted", "ROUTE=json-control"]);
+  }, 2 * CASE_TIMEOUT);
+  // The codec's rollback audit reconstructs requests over the tree it migrated, so this cell rolls back in place, not in a copy.
+  it("(f) Markdown, rolled back, and (e) Markdown, rollback interrupted after the manifest left: the cut before its final session write", () => {
+    const c = migrated(), r = c.call(`${MIG} rollback`); expect(r.status, r.stderr).toBe(0);
+    const after = JSON.parse(readFileSync(join(c.dir, "state.json"), "utf-8"));
+    expect([c.routed(), after.rollback, existsSync(join(c.root, "fusion-workbench", after.plan.path))]).toEqual(["ROUTE=survey", expect.anything(), false]);
+    writeFileSync(join(c.dir, "state.json"), JSON.stringify({ ...after, rolled_back: false }));
+    expect(c.routed()).toBe("ROUTE=interrupted");
+  }, 3 * CASE_TIMEOUT);
+  it("(i) the medium issue's acceptance: a done session over the tree reset with git routes stale, before and after a refused rollback, and the line's way out leads to the survey", () => {
+    const c = copy(); sh("git reset -q --hard HEAD~1", c.root);
+    expect(c.routed()).toBe("ROUTE=stale");
+    expect(c.call(`${MIG} rollback`).status).toBe(5); expect(c.routed()).toBe("ROUTE=stale");
+    const line = text.match(/^- \*\*`ROUTE=stale`\*\*.*$/m)![0], way = line.match(/run `([^`]+)`/)![1];
+    expect(way).toBe(`${MIG} set-aside --consent`);
+    const r = c.call(way); expect([r.status, existsSync(c.dir)], r.stderr).toEqual([0, false]);
+    expect(c.routed()).toBe("ROUTE=survey");
+  }, 4 * CASE_TIMEOUT);
+  it("(j) the sibling: a migrated tree under an abandoned local record with no plan routes stale", () => {
+    expect(copy((s) => ({ ...s, plan: null, done: false, rollback: null })).routed()).toBe("ROUTE=stale");
+  }, CASE_TIMEOUT);
+  it("(h) every call spells the helper, Step 7 says run `<subcommand>` nowhere, and $ROOT stays inside Step 1's block", () => {
     expect(text).not.toContain('"$M"'); expect(text).not.toContain("Set `M=");
+    const step7 = text.split("## Step 7")[1].split("## Guardrails")[0];
+    expect(step7.match(/run `(survey|repair|run|resume|rollback|status|set-aside)\b[^`]*`/gi)).toBeNull();
+    expect(step7.split("**Interrupted.**")[1].split("\n")[0]).toContain("the same helper");
     const step1 = extractBashBlock(text, "## Step 1 — Locate the workbench");
     expect(step1).toContain('cd "$ROOT"'); expect(text.split(step1).join("")).not.toContain("$ROOT");
   });

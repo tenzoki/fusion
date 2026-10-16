@@ -7,7 +7,6 @@ import { dirname, join, resolve } from "node:path";
 import { buildInventory } from "../legacy-import.js";
 import { treeHash } from "../legacy-repair.js";
 import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
-import { extractBashBlock } from "./helpers/prompt-blocks.js";
 
 // ---------------------------------------------------------------------------
 // `bin/fusion-migrate` against the real bundle, over copies of the legacy
@@ -263,7 +262,7 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([done.status, value(done.stdout, "result"), existsSync(join(wb, "workbench.json"))], done.stderr).toEqual([0, "json-control", true]);
   }, 4 * CASE_TIMEOUT);
 
-  // (ii) still pins Step 7's route until the skill reads record=; resume, rollback and run refuse without a write, and set-aside --consent is the way out.
+  // Resume, rollback and run refuse without a write, and set-aside --consent is the way out; Step 7's route over this tree is store-name-migration.test.ts case (i).
   it("a done session over a tree reset with git: resume, rollback and run refuse it unchanged, set-aside --consent moves it aside, and run then migrates (issue 261015-2223)", () => {
     const { root, wb, home } = project();
     writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" }); // the session must survive the reset
@@ -273,9 +272,6 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
     const status = mig(root, home, "status").stdout;
     expect(["state", "done", "rolled_back", "record"].map((k) => value(status, k))).toEqual(["legacy", "true", "false", "stale"]);
-    const block = extractBashBlock(readFileSync(join(REPO_ROOT, "skills/migrate/SKILL.md"), "utf-8"), "**Survey.**");
-    const routed = spawnSync("bash", ["-c", block], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home, FUSION_PLUGIN_ROOT: REPO_ROOT } });
-    expect(routed.stdout).toMatch(/^ROUTE=interrupted$/m);
     const session = value(status, "session")!;
     const bytes = () => readFileSync(join(session, "state.json"), "utf-8");
     const refuse = (before: string) => {
