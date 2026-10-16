@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "9e03a24d-f89f-4767-af6a-48437504a99e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch/issues/261017-0000-help-13-1-7-note-credits-the-release-with-a-proposal-check-13-1-6-already-had.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "b7f7ee1b-492b-4762-bf2f-500f357e80e1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "22387454bbc79755840714df6d8e4d46dbf48ba8",
+    "git_range": null
+  },
+  "brief_revision": "sha256:5e031abbd23f09c3e986fbbf215af1411468b6fa705b50747f4405ccb6c434ea",
+  "plan_revision": "sha256:10728ddfb406945b335f77a7f5da06bcb7ab07356300d6c03136c6e098d2e62c",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch/reviews/261017-0000-reviewer-closing-pass-over-the-migrate-landed-fence-wording-package.md",
+    "sha256": "sha256:5680fd0912d1e0f3f17087b484af99ee5e3b892be6082ef740b31bf212d36f32",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-16T22:00:58Z",
+  "extensions": {}
+}
