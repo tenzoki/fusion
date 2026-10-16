@@ -7,6 +7,7 @@ import { dirname, join, resolve } from "node:path";
 import { buildInventory } from "../legacy-import.js";
 import { treeHash } from "../legacy-repair.js";
 import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
+import { extractBashBlock } from "./helpers/prompt-blocks.js";
 
 // ---------------------------------------------------------------------------
 // `bin/fusion-migrate` against the real bundle, over copies of the legacy
@@ -365,6 +366,8 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
 
   it("cell C: set-aside refuses and names rollback --end-fence, which ends the idle fence (not while write.lock stands), and run then migrates (issue 261016-1052)", () => {
     const { root, wb, home, session, fence } = cellC();
+    const survey = () => spawnSync("bash", ["-c", extractBashBlock(readFileSync(join(REPO_ROOT, "skills/migrate/SKILL.md"), "utf-8"), "**Survey.**")], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home, FUSION_PLUGIN_ROOT: REPO_ROOT } }).stdout;
+    expect(survey()).toMatch(/^ROUTE=stale$/m); // the shipped Step 7 routes the idle fence to its stale line
     const stuck = mig(root, home, "set-aside", "--consent");
     expect([stuck.status, stuck.stderr, existsSync(session)]).toEqual([5, expect.stringMatching(/no rollback chunk landed under it; `bin\/fusion-migrate rollback --end-fence` ends it, then `bin\/fusion-migrate set-aside --consent`/), true]);
     expect(mig(root, home, "run").stderr).toMatch(/does not carry it[\s\S]*first, the fence .* `bin\/fusion-migrate rollback --end-fence` ends it; then `bin\/fusion-migrate set-aside --consent`/);
@@ -375,7 +378,7 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const ended = mig(root, home, "rollback", "--end-fence");
     expect([ended.status, value(ended.stdout, "fence-ended"), value(ended.stdout, "result"), value(ended.stdout, "note"), value(mig(root, home, "status").stdout, "fence")], ended.stderr).toEqual([0, JSON.parse(fence).operation_id, "legacy", "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; set-aside --consent, then run", "-"]);
     const aside = mig(root, home, "set-aside", "--consent");
-    expect(aside.status, aside.stderr).toBe(0);
+    expect([aside.status, survey()], aside.stderr).toEqual([0, expect.stringMatching(/^ROUTE=survey$/m)]); // exit 0: the survey block again
     const again = mig(root, home, "run");
     expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
   }, 6 * CASE_TIMEOUT);

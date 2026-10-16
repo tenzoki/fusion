@@ -288,6 +288,7 @@ describe("Step 7 as shipped: the survey block routes every cell of session by st
     expect(c.call(`${MIG} rollback`).status).toBe(5); expect(c.routed()).toBe("ROUTE=stale");
     const line = text.match(/^- \*\*`ROUTE=stale`\*\*.*$/m)![0], way = line.match(/run `([^`]+)`/)![1];
     expect(way).toBe(`${MIG} set-aside --consent`);
+    expect([line.includes("re-run"), line.includes("stderr"), line.includes("survey block again")]).toEqual([false, true, true]); // issue 261016-1052: exit 0 surveys again, exit 5 shows the way out
     const r = c.call(way); expect([r.status, existsSync(c.dir)], r.stderr).toEqual([0, false]);
     expect(c.routed()).toBe("ROUTE=survey");
   }, 4 * CASE_TIMEOUT);

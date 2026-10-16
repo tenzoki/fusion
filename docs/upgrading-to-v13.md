@@ -109,7 +109,9 @@ rather than a return. `bin/fusion-migrate status` says where a workbench stands.
 A session that records a migration the tree no longer carries, for example after git discarded
 it, is reported as `record=stale`, and `run`, `resume` and `rollback` refuse it. `/fusion:migrate`
 says so and offers to set it aside (the same helper's `set-aside --consent`), which renames the
-session directory and deletes nothing; run `/fusion:migrate` again afterwards to continue.
+session directory and deletes nothing, then surveys again. Where a fence the undo left still
+stands, the helper refuses to set the record aside and names how that fence is ended: a
+`rollback --end-fence` of the same record, once no rollback chunk landed under it.
 
 ## More than one checkout
 
