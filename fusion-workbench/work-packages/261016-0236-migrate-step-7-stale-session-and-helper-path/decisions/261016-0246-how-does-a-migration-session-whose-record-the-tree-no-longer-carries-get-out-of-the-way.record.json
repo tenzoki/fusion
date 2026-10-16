@@ -17,9 +17,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "261016-0246-how-does-a-migration-session-whose-record-the-tree-no-longer-carries-get-out-of-the-way.md",
-    "implementation_ref": null,
+    "implementation_ref": "80b94dc3",
     "superseded_by": null,
     "deferral": null
   }
