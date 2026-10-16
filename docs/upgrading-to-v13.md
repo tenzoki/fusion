@@ -106,6 +106,9 @@ in `261009-2148-the-rename-pass-cannot-drain-a-circles-store-whose-only-entry-is
 while no ordinary write has followed it. The first ordinary write, such as a claim, a filed issue
 or a transition, ends that: the rollback is refused from then on, and the way forward is a fix
 rather than a return. `bin/fusion-migrate status` says where a workbench stands.
+A session that records a migration the tree no longer carries, for example after git discarded
+it, is reported as `record=stale`, and nothing acts on it until the same helper's
+`set-aside --consent` moves its directory aside; nothing is deleted.
 
 ## More than one checkout
 
