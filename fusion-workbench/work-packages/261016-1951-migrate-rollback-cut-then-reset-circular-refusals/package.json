@@ -3,7 +3,7 @@
   "id": "08662fcb-c60f-49b8-bc8e-b4fec970a8fb",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.6: after a rollback landed chunks and a git reset, /fusion:migrate names the situation instead of steps that refuse, and names the hand deletion of the fence only when no control path of the migration stands (option 2 of decision 261016-1958); closing review accept, all 13 stop conditions hold per the user",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "0e893fc9-0f6f-490d-8b45-f58a8e4b107a",
+          "revision": "sha256:9ee3589e07e567a18f82fc0f58cb2f62e9bebd2340e6befee275a1e98d15ac56"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
