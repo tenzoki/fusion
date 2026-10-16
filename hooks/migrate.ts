@@ -418,12 +418,34 @@ function landedFence(wb: string, s: State, i: Record<string, any>): { fence: str
   return own === null || own.landed.length === 0 || intentStands(wb, i) ? null : own;
 }
 
-/** The way out of `landedFence`'s cell; the one clause the ruling's option replaces. */
-const landedWay = (): string => "no command of this helper ends that fence; nothing was written or lost";
+/**
+ * The way out of `landedFence`'s cell: the hand deletion of the fence file,
+ * once the three conditions the decision
+ * `261016-1958-is-a-rollback-fence-ended-when-the-rollback-landed-chunks-and-a-git-reset-then-took-the-tree-back-to-markdown.md`
+ * (option 2) names hold. The helper counts the proposal's standing control
+ * paths itself and names the deletion only when none stands; with any
+ * standing, the tree may hold a half-done rollback and the fence stays. It
+ * removes nothing.
+ */
+function landedWay(wb: string, session: string, s: State): string {
+  const head = "no command of this helper ends that fence, and nothing was written or lost";
+  let paths: string[];
+  try {
+    const raw = readFileSync(join(wb, s.proposal.path));
+    if (sha(raw) !== s.proposal.sha256) throw new Error("other bytes");
+    paths = Object.values((JSON.parse(raw.toString("utf-8")) as { records: Record<string, { control_path: string }> }).records).map((r) => r.control_path);
+  } catch {
+    return `${head}; the proposal ${s.proposal.path} is missing or at other bytes, so its control paths cannot be counted and no hand deletion is named`;
+  }
+  // Only a path that is certainly absent counts as absent; any other lstat error counts as standing, the safe direction.
+  const up = paths.filter((p) => { try { return lstatSync(join(wb, p)), true; } catch (e) { return !["ENOENT", "ENOTDIR"].includes((e as NodeJS.ErrnoException).code ?? ""); } }).length;
+  if (up > 0) return `${head}; this tree still carries control state of the migration (${up} of the ${paths.length} control paths the proposal lists stand), so the fence must stay`;
+  return `${head}. Deleting \`${STATE_DIR}/maintenance.json\` by hand ends it once ${command(wb, session, "status")} shows \`record=stale\`, \`${STATE_DIR}/journal/\` is empty and none of the ${paths.length} control paths the proposal lists stands (none stands now)`;
+}
 
 /** `landedFence`'s cell in words, then its way out. */
-const landedThenReset = (own: { fence: string; landed: number[] }): string =>
-  `a rollback of this record landed rollback chunk${own.landed.length > 1 ? "s" : ""} ${own.landed.join(", ")}, then the tree was reset to Markdown, so its plan index is gone and the fence ${own.fence} that rollback began stands; ${landedWay()}`;
+const landedThenReset = (wb: string, session: string, s: State, own: { fence: string; landed: number[] }): string =>
+  `a rollback of this record landed rollback chunk${own.landed.length > 1 ? "s" : ""} ${own.landed.join(", ")}, then the tree was reset to Markdown, so its plan index is gone and the fence ${own.fence} that rollback began stands; ${landedWay(wb, session, s)}`;
 
 /** The way out of an idle fence, named in every message that meets one. */
 const endFenceWay = (wb: string, session: string, fence: string): string =>
@@ -454,7 +476,7 @@ function preconditions(wb: string, session: string): string[] {
     const aside = i.maintenance !== null ? asideBegan(session, i.maintenance.operation_id) : null;
     const sib = aside === null ? null : readState(aside);
     const reset = sib !== null && stale(wb, sib, i.state) !== null ? landedFence(wb, sib, i) : null;
-    const way = aside === null ? "`resume`, `rollback` or the archive helper that set it closes it" : reset !== null ? `the record set aside in ${aside} (\`--session ${aside}\`) began it: ${landedThenReset(reset)}` : `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it once no rollback chunk of that record landed, then run again`;
+    const way = aside === null ? "`resume`, `rollback` or the archive helper that set it closes it" : reset !== null ? `the record set aside in ${aside} (\`--session ${aside}\`) began it: ${landedThenReset(wb, aside, sib!, reset)}` : `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it once no rollback chunk of that record landed, then run again`;
     throw new Stop(EXIT.precondition, `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}); ${way}. Nothing was written.`);
   }
   const lines: string[] = [];
@@ -605,7 +627,7 @@ function endLeftFence(wb: string, session: string, s: State): string[] {
     return [`fence-ended=${idle}`, "result=legacy", `note=no rollback chunk landed under it, and the codec refuses every later rollback of this migration; ${/\.stale-[^/]*$/.test(session) ? "" : `set-aside --consent${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}, then `}run`];
   }
   const reset = i.state === "legacy" && stale(wb, s, i.state) !== null ? landedFence(wb, s, i) : null;
-  if (reset !== null) throw new Stop(EXIT.precondition, `${landedThenReset(reset)}; nothing was sent`);
+  if (reset !== null) throw new Stop(EXIT.precondition, `${landedThenReset(wb, session, s, reset)}; nothing was sent`);
   const last = s.schedule ? s.schedule.rollback.find((r) => r.chunk === s.schedule!.apply.length) : undefined;
   if (s.rollback === null || i.state !== "json-control" || i.maintenance?.operation_id !== s.rollback.begin_id || (last && stored(wb, last.operation_id))) throw new Stop(EXIT.precondition, "no fence of a refused rollback stands on a store under JSON control, nor an idle fence of this record over a legacy store; nothing was sent");
   const fence = s.rollback.begin_id;
@@ -709,7 +731,7 @@ function current(wb: string, session: string, s: State): void {
   if (shows === null) return;
   const claim = s.rollback !== null ? "a rollback in flight" : s.done ? "done" : "a run in flight";
   const reset = landedFence(wb, s, i);
-  if (reset !== null) throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. ${landedThenReset(reset).replace(/^a/, "A")}.`);
+  if (reset !== null) throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. ${landedThenReset(wb, session, s, reset).replace(/^a/, "A")}.`);
   const fence = idleFence(wb, s, i);
   throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: ${fence === null ? "" : `first, ${endFenceWay(wb, session, fence)}; then `}${command(wb, session, "set-aside --consent")} renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
 }
@@ -722,7 +744,7 @@ function setAside(wb: string, session: string, consent: boolean): string[] {
   const shows = stale(wb, s, i.state);
   if (shows !== null && standing(i)) {
     const reset = landedFence(wb, s, i);
-    if (reset !== null) throw new Stop(EXIT.precondition, `${landedThenReset(reset)}. Nothing was moved.`);
+    if (reset !== null) throw new Stop(EXIT.precondition, `${landedThenReset(wb, session, s, reset)}. Nothing was moved.`);
     const fence = idleFence(wb, s, i);
     throw new Stop(EXIT.precondition, fence !== null ? `${endFenceWay(wb, session, fence)}, then ${command(wb, session, "set-aside --consent")}; \`run\` refuses while it stands. Nothing was moved.` : `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}), and \`run\` refuses while it stands, so ${session} stays; the tool that set it closes it. Nothing was moved.`);
   }

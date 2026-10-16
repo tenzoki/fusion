@@ -52,7 +52,7 @@ Whether a way out exists, and whether it is safe, is the decision `261016-1958-i
   - `help/SKILL.md` stands at 16 046 against its baseline of 16 919.
   - `README-hooks.md`, `docs/` and `bin/` carry no bound.
 - **`reference-resolution-lint`** pins `BASELINE = { paths: 2061, anchors: 371, stampBare: 11 }`. Any move is measured by swapping HEAD's copy of each edited file back in place, written with an attribution entry in the established form, and named to the user for re-approval at commit.
-- **Pre-existing reds**: `lib/__tests__/workbench-citation-lint.test.ts` reports exactly two findings, the tokens `260928-1200-open-package` and `261010-1200-q`. They are not this package's. Every "green" below means green apart from exactly those two. Any other red, a third finding in that lint included, is a stop.
+- **Pre-existing reds**: `lib/__tests__/workbench-citation-lint.test.ts` reports exactly two findings, one each in `261010-1045-a-narrative-that-is-a-directory-or-unreadable-makes-the-codec-throw-and-exit-1-for-every-workbench-wide-read.md` (line 18) and `261010-1045-containment-is-lexical-so-a-symlinked-store-sends-codec-writes-outside-the-workbench-and-list-never-sees-them.md` (line 9). They are not this package's. Every "green" below means green apart from exactly those two findings. Any other red, a third finding in that lint included, is a stop.
 
 ## Approach
 
