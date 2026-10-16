@@ -3,7 +3,7 @@
   "id": "6bffe544-51a6-4dbe-9c80-6b870d6ebad6",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Step 7 of /fusion:migrate recognises a stale migration session, run/resume/rollback refuse it with exit 5, set-aside --consent moves it out of the way; released as 13.1.4 (tag v13.1.4 on c85f03f5); closing review accept; all fourteen stop conditions hold by the user.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "9edee64d-1a3e-4ce2-97c1-1c7dbc1fac53",
+          "revision": "sha256:98c5abbb0b329f318cfe61fac88d844528bdbf8cae4791c746658d76fc06728b"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
