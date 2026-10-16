@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "ebbc2a42-cf4c-4884-84bf-6c2ec1bb782f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "352091232273dd27b5ceff841f8e7690ee995c5d",
+    "git_range": null
+  },
+  "brief_revision": "sha256:756dc0593f63fb2cf6851f2a019acaec940437afc2c5932e4ca93ea790c995e6",
+  "plan_revision": "sha256:ac810fdecb923cf399cc0ae77e748f2752c75c2d1749cac8b9b29eb33e35af07",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261016-1431-migrate-rollback-fence-after-reset-and-set-aside-messages/reviews/261016-1807-reviewer-closing-pass-over-the-migrate-rollback-fence-after-reset-package.md",
+    "sha256": "sha256:be235e100314ffc5569c6b6c4cb6e2b0ecffbd877abd6f7b1d43161d6f15aa52",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-16T16:08:57Z",
+  "extensions": {}
+}
