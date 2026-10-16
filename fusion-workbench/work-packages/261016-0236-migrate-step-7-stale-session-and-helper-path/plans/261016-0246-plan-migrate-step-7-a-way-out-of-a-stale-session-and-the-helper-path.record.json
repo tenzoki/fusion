@@ -1,0 +1,64 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "33d2efee-1c79-442e-963a-0ff3b66cfafc",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261016-0236-migrate-step-7-stale-session-and-helper-path/plans/261016-0246-plan-migrate-step-7-a-way-out-of-a-stale-session-and-the-helper-path.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "6bffe544-51a6-4dbe-9c80-6b870d6ebad6"
+      },
+      "revision": "sha256:181c0b336d84b6cd97874f7f1e1f20374b113baf9024095c6f5449d509b2de85"
+    }
+  }
+}

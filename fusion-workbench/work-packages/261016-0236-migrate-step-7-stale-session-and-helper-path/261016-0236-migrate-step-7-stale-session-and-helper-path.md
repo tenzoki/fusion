@@ -1,0 +1,5 @@
+# /fusion:migrate Step 7: a way out of a stale done session, and the helper path in every instruction
+
+## Directive
+
+Filed on the user's word of 2026-10-16 in chat, choosing "Ein Paket für beide anlegen, übernehmen und den Plan schreiben lassen". The work is the fix of the two issues the closing review of `261015-1549-migrate-step-7-recognises-json-control-without-session` filed: `261015-2223-migrate-step-7-routes-a-stale-done-session-over-a-legacy-tree-to-interrupted-where-neither-option-gets-out.md` (medium: after a migration is committed and the tree reset to Markdown, the local session still reads `done=true`, Step 7 routes to interrupted, `resume` reports a no-op and `rollback` exits 8, and only deleting the record under `$HOME/.fusion-migrate/` gets out, which nothing documents) and `261015-2223-migrate-step-7-still-tells-the-agent-to-run-two-subcommands-without-the-helper-path.md` (low: two Step 7 sentences name `repair --list` and `rollback` without the helper path). Fix direction and acceptance are the issues'.

@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "6bffe544-51a6-4dbe-9c80-6b870d6ebad6",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-16T00:37:06Z"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261016-0236-migrate-step-7-stale-session-and-helper-path/261016-0236-migrate-step-7-stale-session-and-helper-path.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "33d2efee-1c79-442e-963a-0ff3b66cfafc"
+      },
+      "role": "plan",
+      "revision": "sha256:181c0b336d84b6cd97874f7f1e1f20374b113baf9024095c6f5449d509b2de85"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}
