@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "2e6fa64e-effa-410d-b0db-c003fbb0f846",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-16T12:31:32Z"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261016-1431-migrate-rollback-fence-after-reset-and-set-aside-messages/261016-1431-migrate-rollback-fence-after-reset-and-set-aside-messages.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "956f9fd2-6075-46be-96a5-f2b3f02afc5b"
+      },
+      "role": "plan",
+      "revision": "sha256:ac810fdecb923cf399cc0ae77e748f2752c75c2d1749cac8b9b29eb33e35af07"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

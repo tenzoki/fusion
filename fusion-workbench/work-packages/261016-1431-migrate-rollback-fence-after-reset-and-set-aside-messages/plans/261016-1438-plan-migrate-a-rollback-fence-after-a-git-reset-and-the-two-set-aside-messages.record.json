@@ -1,0 +1,60 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "956f9fd2-6075-46be-96a5-f2b3f02afc5b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261016-1431-migrate-rollback-fence-after-reset-and-set-aside-messages/plans/261016-1438-plan-migrate-a-rollback-fence-after-a-git-reset-and-the-two-set-aside-messages.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "2e6fa64e-effa-410d-b0db-c003fbb0f846"
+      },
+      "revision": "sha256:ac810fdecb923cf399cc0ae77e748f2752c75c2d1749cac8b9b29eb33e35af07"
+    }
+  }
+}

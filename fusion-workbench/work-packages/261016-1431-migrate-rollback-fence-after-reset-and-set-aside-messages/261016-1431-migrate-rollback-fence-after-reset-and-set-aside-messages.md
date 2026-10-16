@@ -1,0 +1,5 @@
+# /fusion:migrate: a rollback fence that outlives a git reset, and the two set-aside messages
+
+## Directive
+
+Filed on the user's word of 2026-10-16 in chat, choosing "Ein Paket für die zwei Issues anlegen, beginnend mit der Entscheidung zur Sperre". The work is the fix of the two issues the closing review of `261016-0236-migrate-step-7-stale-session-and-helper-path` filed: `261016-1052_*_a-rollback-fence-left-in-json-state-survives-a-git-reset-and-set-aside-then-leads-to-a-run-that-refuses-for-good.md` (medium: a rollback whose first chunk is refused leaves its fence in `.json-state`, which survives a `git reset`, so `set-aside` succeeds and every following `run` refuses for good; the fix needs a ruling on how a fence over a legacy store is ended) and `261016-1052_*_the-stale-record-refusal-drops-the-session-flag-and-set-aside-names-resume-for-a-rolled-back-record.md` (low: the stale refusal names `set-aside` without the caller's `--session`, and `set-aside` tells a rolled-back record to use `resume` or `rollback` where `run` applies). The ruling on the fence comes first; fix direction and acceptance are otherwise the issues'.
