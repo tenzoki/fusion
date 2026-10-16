@@ -7,6 +7,7 @@ import { dirname, join, resolve } from "node:path";
 import { buildInventory } from "../legacy-import.js";
 import { treeHash } from "../legacy-repair.js";
 import { CASE_TIMEOUT, REPO_ROOT } from "./helpers/guard-harness.js";
+import { extractBashBlock } from "./helpers/prompt-blocks.js";
 
 // ---------------------------------------------------------------------------
 // `bin/fusion-migrate` against the real bundle, over copies of the legacy
@@ -261,4 +262,31 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const done = cut("resume");
     expect([done.status, value(done.stdout, "result"), existsSync(join(wb, "workbench.json"))], done.stderr).toEqual([0, "json-control", true]);
   }, 4 * CASE_TIMEOUT);
+
+  // (ii) to (v) pin the defect as observed; (vi) is the way out every option relies on.
+  it("a done session over a tree reset with git: Step 7 routes interrupted, resume, rollback and run do not get out, a fresh session does (issue 261015-2223)", () => {
+    const { root, wb, home } = project();
+    writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" }); // the session must survive the reset
+    expect(mig(root, home, "run").status).toBe(0);
+    git(root, "add", "-A");
+    git(root, "commit", "-qm", "migrated");
+    expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
+    const status = mig(root, home, "status").stdout;
+    expect(["state", "done", "rolled_back"].map((k) => value(status, k))).toEqual(["legacy", "true", "false"]);
+    const block = extractBashBlock(readFileSync(join(REPO_ROOT, "skills/migrate/SKILL.md"), "utf-8"), "**Survey.**");
+    const routed = spawnSync("bash", ["-c", block], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home, FUSION_PLUGIN_ROOT: REPO_ROOT } });
+    expect(routed.stdout).toMatch(/^ROUTE=interrupted$/m);
+    const resume = mig(root, home, "resume");
+    expect([resume.status, value(resume.stdout, "result")]).toEqual([0, "no-op"]);
+    const state = () => JSON.parse(readFileSync(join(value(status, "session")!, "state.json"), "utf-8"));
+    for (let i = 0; i < 2; i++) {
+      const back = mig(root, home, "rollback");
+      expect([back.status, back.stderr]).toEqual([8, expect.stringContaining("plan-file-changed")]);
+      expect(state().rollback).not.toBeNull();
+    }
+    const again = mig(root, home, "run");
+    expect([again.status, value(again.stdout, "result")]).toEqual([0, "no-op"]);
+    const fresh = mig(root, home, "run", "--session", join(root, "fresh"));
+    expect([fresh.status, value(fresh.stdout, "result")], fresh.stderr).toEqual([0, "json-control"]);
+  }, 6 * CASE_TIMEOUT);
 });
