@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "9edee64d-1a3e-4ce2-97c1-1c7dbc1fac53",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "52fe61b64ec95c7bf170ff70ecde80dfd15564a5",
+    "git_range": null
+  },
+  "brief_revision": "sha256:c5b6a958913ffc4c4cee4411c8cee3232b7d7eb457a82100121d56ff16620d3a",
+  "plan_revision": "sha256:181c0b336d84b6cd97874f7f1e1f20374b113baf9024095c6f5449d509b2de85",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261016-0236-migrate-step-7-stale-session-and-helper-path/reviews/261016-1052-reviewer-closing-pass-over-the-migrate-step-7-stale-session-package.md",
+    "sha256": "sha256:47534675d71132db69e1f606d37718c44bdd3e153fbf183a2d584d2d754cabb1",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-16T08:54:14Z",
+  "extensions": {}
+}
