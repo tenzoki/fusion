@@ -17,9 +17,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "261016-1958-is-a-rollback-fence-ended-when-the-rollback-landed-chunks-and-a-git-reset-then-took-the-tree-back-to-markdown.md",
-    "implementation_ref": null,
+    "implementation_ref": "364172a9",
     "superseded_by": null,
     "deferral": null
   }
