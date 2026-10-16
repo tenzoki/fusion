@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "0e893fc9-0f6f-490d-8b45-f58a8e4b107a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "e34015d1ff61c163ceee4db942060cfd01f48e37",
+    "git_range": null
+  },
+  "brief_revision": "sha256:c0e1ad602077e8d6e4693dd45ad6fe0518eb8811efd61aeeaf4a279259107a64",
+  "plan_revision": "sha256:0c14ac1f3fd64d924b6dc9c5255394e2a227c487cdf9e0224168a4bac727eb6a",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261016-1951-migrate-rollback-cut-then-reset-circular-refusals/reviews/261016-2123-reviewer-closing-pass-over-the-migrate-rollback-cut-then-reset-package.md",
+    "sha256": "sha256:6004669f35c188df7fd50c61982cc454a36bad2474d03abae70283116a7d37de",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-16T19:25:10Z",
+  "extensions": {}
+}
