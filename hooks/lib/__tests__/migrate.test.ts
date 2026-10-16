@@ -410,6 +410,13 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const chunk2 = s.schedule.rollback.find((r: { chunk: number }) => r.chunk === 2).operation_id;
     const fence = read(wb, ".json-state/maintenance.json");
     expect([existsSync(join(wb, `.json-state/ops/${chunk2}.json`)), cut("rollback", "--end-fence").status, read(wb, ".json-state/maintenance.json")]).toEqual([true, 5, fence]);
+    // `261016-2123-migrate-landed-fence-message-asserts-a-git-reset-it-never-checked.md`: the same cell made stale by hand, no reset.
+    const index = readFileSync(join(wb, s.plan.path));
+    rmSync(join(wb, s.plan.path));
+    const byHand = cut("set-aside", "--consent");
+    expect([value(cut("status").stdout, "record"), byHand.status, byHand.stderr, /the tree was reset|so its plan index is gone/.test(byHand.stderr), byHand.stderr.includes("nothing was written or lost"), byHand.stderr.includes("rollback chunk 0's answer"), byHand.stderr.includes("maintenance.json` by hand"), existsSync(value(status, "session")!), read(wb, FENCE)], byHand.stderr).toEqual(["stale", 5, expect.stringMatching(/rollback chunks? 2/), false, false, true, false, true, fence]);
+    writeFileSync(join(wb, s.plan.path), index);
+    expect(value(cut("status").stdout, "record")).toBe("current");
     const back = cut("rollback");
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
@@ -459,6 +466,14 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const held = cut("set-aside", "--consent");
     expect([held.status, held.stderr.includes("maintenance.json"), held.stderr.includes("(1 of the"), read(wb, FENCE)], held.stderr).toEqual([5, false, true, fence]);
     rmSync(join(wb, ctl));
+    // `261016-2123-migrate-proposal-unverified-branch-of-the-hand-deletion-is-untested-and-undocumented.md`: a proposal at other bytes names no deletion; put back, it names it.
+    const bytes = readFileSync(join(wb, s.proposal.path));
+    writeFileSync(join(wb, s.proposal.path), Buffer.concat([bytes, Buffer.from("\n")]));
+    const unverified = cut("set-aside", "--consent");
+    expect([unverified.status, unverified.stderr.includes(`the proposal ${s.proposal.path} is missing or at other bytes`), unverified.stderr.includes("maintenance.json` by hand"), read(wb, FENCE)], unverified.stderr).toEqual([5, true, false, fence]);
+    writeFileSync(join(wb, s.proposal.path), bytes);
+    const verified = cut("set-aside", "--consent");
+    expect([verified.status, verified.stderr.includes("maintenance.json` by hand")], verified.stderr).toEqual([5, true]);
     expect(aside.stderr).toMatch(/Deleting `\.json-state\/maintenance\.json` by hand ends it once `bin\/fusion-migrate status` shows `record=stale`, `\.json-state\/journal\/` is empty and none of the [1-9]\d* control paths the proposal lists stands \(none stands now\)/);
     rmSync(join(wb, FENCE));
     const moved = cut("set-aside", "--consent");

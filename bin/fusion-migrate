@@ -72,7 +72,8 @@
 #                   them and the hand deletion of that file once `status`
 #                   shows record=stale, .json-state/journal/ is empty and no
 #                   control path the proposal lists stands; while any does,
-#                   it names no deletion. It removes nothing there.
+#                   or while the proposal is missing or at other bytes, it
+#                   names no deletion. It removes nothing there.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.

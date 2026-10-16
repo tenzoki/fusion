@@ -112,10 +112,11 @@ says so and offers to set it aside (the same helper's `set-aside --consent`), wh
 session directory and deletes nothing, then surveys again. Where a fence the undo left still
 stands, the helper refuses to set the record aside and names how that fence is ended: a
 `rollback --end-fence` of the same record, once no rollback chunk landed under it. Where chunks
-had landed before git reset the tree, the helper says so and names deleting
+of the undo had landed and the tree then reads as legacy Markdown (a git reset is one way there),
+the helper says so and names deleting
 `.json-state/maintenance.json` by hand once `status` shows `record=stale`, `.json-state/journal/`
-is empty and none of the migration's control paths stands, naming no deletion while any does; it
-deletes nothing.
+is empty and none of the migration's control paths stands, naming no deletion while any does or
+while the proposal it counts them from is missing or at other bytes; it deletes nothing.
 
 ## More than one checkout
 
