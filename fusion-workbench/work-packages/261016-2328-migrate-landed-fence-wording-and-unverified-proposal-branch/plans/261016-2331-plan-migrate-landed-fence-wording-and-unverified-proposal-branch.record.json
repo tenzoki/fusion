@@ -1,0 +1,56 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "424d6e5a-dd4f-40c4-9c66-dea03026bda5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch/plans/261016-2331-plan-migrate-landed-fence-wording-and-unverified-proposal-branch.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "b60a7bcd-f693-4d93-abc7-5539bf70c49f"
+      },
+      "revision": "sha256:10728ddfb406945b335f77a7f5da06bcb7ab07356300d6c03136c6e098d2e62c"
+    }
+  }
+}

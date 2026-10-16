@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "b60a7bcd-f693-4d93-abc7-5539bf70c49f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-16T21:28:55Z"
+  },
+  "mode": {
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "path": "work-packages/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch.md",
+        "sha256": "sha256:5e031abbd23f09c3e986fbbf215af1411468b6fa705b50747f4405ccb6c434ea",
+        "kind": "other"
+      }
+    }
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch/261016-2328-migrate-landed-fence-wording-and-unverified-proposal-branch.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "424d6e5a-dd4f-40c4-9c66-dea03026bda5"
+      },
+      "role": "plan",
+      "revision": "sha256:10728ddfb406945b335f77a7f5da06bcb7ab07356300d6c03136c6e098d2e62c"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}
