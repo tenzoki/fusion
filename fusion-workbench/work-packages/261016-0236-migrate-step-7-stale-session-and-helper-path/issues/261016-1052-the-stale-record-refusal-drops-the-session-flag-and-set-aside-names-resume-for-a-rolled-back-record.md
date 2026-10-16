@@ -21,3 +21,7 @@ A test in `hooks/lib/__tests__/migrate.test.ts` covers both cases:
 
 - A stale refusal under an explicit `--session` names that `--session`.
 - `set-aside --consent` over a rolled-back record exits 5 and names `run`.
+
+---
+
+Resolved: 2026-10-16, plan `261016-1438-plan-migrate-a-rollback-fence-after-a-git-reset-and-the-two-set-aside-messages.md` step 2. `hooks/migrate.ts` `current()` ends the way out it names with `--session <path>` whenever the session is not the default one, and `setAside()` refusing a current record says `run` starts a new migration when the record is rolled back. `hooks/lib/__tests__/migrate.test.ts` pins both: the overtaken copy's refusal carries `set-aside --consent --session <home>/overtaken`, the done-session refusal names exactly `bin/fusion-migrate set-aside --consent`, and `set-aside` over a rolled-back record names `run` and not `resume`.

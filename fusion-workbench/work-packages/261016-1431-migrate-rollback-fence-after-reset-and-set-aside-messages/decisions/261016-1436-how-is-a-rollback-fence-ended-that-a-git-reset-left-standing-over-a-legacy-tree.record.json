@@ -17,9 +17,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "261016-1436-how-is-a-rollback-fence-ended-that-a-git-reset-left-standing-over-a-legacy-tree.md",
-    "implementation_ref": null,
+    "implementation_ref": "da817fa0",
     "superseded_by": null,
     "deferral": null
   }
