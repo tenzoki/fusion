@@ -107,8 +107,9 @@ while no ordinary write has followed it. The first ordinary write, such as a cla
 or a transition, ends that: the rollback is refused from then on, and the way forward is a fix
 rather than a return. `bin/fusion-migrate status` says where a workbench stands.
 A session that records a migration the tree no longer carries, for example after git discarded
-it, is reported as `record=stale`, and nothing acts on it until the same helper's
-`set-aside --consent` moves its directory aside; nothing is deleted.
+it, is reported as `record=stale`, and `run`, `resume` and `rollback` refuse it. `/fusion:migrate`
+says so and offers to set it aside (the same helper's `set-aside --consent`), which renames the
+session directory and deletes nothing; run `/fusion:migrate` again afterwards to continue.
 
 ## More than one checkout
 
