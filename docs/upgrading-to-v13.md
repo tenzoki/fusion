@@ -111,8 +111,9 @@ it, is reported as `record=stale`, and `run`, `resume` and `rollback` refuse it.
 says so and offers to set it aside (the same helper's `set-aside --consent`), which renames the
 session directory and deletes nothing, then surveys again. Where a fence the undo left still
 stands, the helper refuses to set the record aside and names how that fence is ended: a
-`rollback --end-fence` of the same record, once no rollback chunk landed under it. Where chunks
-of the undo had landed and the tree then reads as legacy Markdown (a git reset is one way there),
+`rollback --end-fence` of the same record, once no rollback chunk landed under it.
+Where that fence stands over a stale record, chunks of the undo had landed, no intent is pending
+and the tree then reads as legacy Markdown (a git reset is one way there),
 the helper says so and names deleting
 `.json-state/maintenance.json` by hand once `status` shows `record=stale`, `.json-state/journal/`
 is empty and none of the migration's control paths stands, naming no deletion while any does or
