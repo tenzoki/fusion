@@ -3,7 +3,7 @@
   "id": "1aa4a60a-c1bc-4a5a-80d3-8eb3f64623e2",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.11: every swept end-fence sentence is bounded by environment, session and only-when so an earlier refusal cannot make it false; no behaviour change; closing review accept with three low issues",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "8b28cff8-4397-4a43-8cdd-a5cdcd3493f5",
+          "revision": "sha256:0ccc676d1f384e971b1eb6110eca98cdafca4ad721e423b32a8337aad33815b0"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
