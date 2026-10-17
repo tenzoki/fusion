@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "993e93fb-5106-41f6-a160-b5114da58fce",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261017-1659-migrate-landed-cell-docs-entry-path-conditions/plans/261017-1708-plan-migrate-landed-cell-docs-entry-path-conditions.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "in_progress"
+      },
+      {
+        "id": "3",
+        "state": "in_progress"
+      },
+      {
+        "id": "4",
+        "state": "in_progress"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "1aa4a60a-c1bc-4a5a-80d3-8eb3f64623e2"
+      },
+      "revision": "sha256:f2fbd2e87e4d44bb17d4428753a011e8b88e0a964266241eaf31969dea326181"
+    }
+  }
+}
