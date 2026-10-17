@@ -1,0 +1,52 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "81e1a3ad-a858-493f-a6b8-d73d7049d8b0",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261017-0819-help-13-1-7-credit-and-idlefence-comment/plans/261017-0821-plan-help-13-1-7-credit-and-idlefence-comment.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "d03a9548-8f6e-47da-92c5-3a68fed72440"
+      },
+      "revision": "sha256:18741e0d73c4547e68839e827ec2a9e37e25c96f6d22779263f053a2300a4d7c"
+    }
+  }
+}
