@@ -102,16 +102,21 @@ copy is the one to keep, move it over the new one with `mv`. Then remove the emp
 with `rmdir`, innermost first, and run `/fusion:migrate` again. The defect is recorded
 in `261009-2148-the-rename-pass-cannot-drain-a-circles-store-whose-only-entry-is-a-colliding-ds-store-and-the-json-run-refuses-on-it.md`.
 
-**Undo.** `bin/fusion-migrate rollback` restores the workbench from the migration's own journal
-while no ordinary write has followed it. The first ordinary write, such as a claim, a filed issue
-or a transition, ends that: the rollback is refused from then on, and the way forward is a fix
-rather than a return. `bin/fusion-migrate status` says where a workbench stands.
-A session that records a migration the tree no longer carries, for example after git discarded
-it, is reported as `record=stale`, and `run`, `resume` and `rollback` refuse it. `/fusion:migrate`
-says so and offers to set it aside (the same helper's `set-aside --consent`), which renames the
-session directory and deletes nothing, then surveys again. Where a fence the undo left still
-stands, the helper refuses to set the record aside and names how that fence is ended: a
-`rollback --end-fence` of the same record, once no rollback chunk landed under it.
+**Undo.** `bin/fusion-migrate rollback` can restore the workbench from the migration's own journal
+only while no ordinary write has followed it. The first ordinary write, such as a claim, a filed
+issue or a transition, ends that: the rollback is refused from then on, and the way forward is a
+fix rather than a return. `bin/fusion-migrate status` says where a workbench stands. This and each
+refusal below hold once the helper runs and its codec answers; where either fails, its exit code
+says so instead. A session that records this workbench and that status reports as `record=stale`,
+for example after git discarded the migration it records, is refused by `run`, `resume` and
+`rollback`, the --end-fence form below aside. `/fusion:migrate` says so and offers to set it aside
+(the same helper's `set-aside --consent`); where nothing below stands in its way, that renames the
+session directory, never over an existing one, and deletes nothing, and the skill then surveys
+again. Where a fence the undo left still stands, the helper refuses to set the record aside. Over
+a stale record, while an intent is pending, it names no command for that fence and says the tool
+that set it closes it; with no intent pending, no rollback chunk landed under the fence and a tree
+that reads as legacy Markdown, it names a `rollback --end-fence` of the same record, which removes
+the fence once that command's own checks pass.
 Where that fence stands over a stale record, chunks of the undo had landed, no intent is pending
 and the tree then reads as legacy Markdown (a git reset is one way there),
 the helper says so and names deleting

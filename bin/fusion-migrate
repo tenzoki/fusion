@@ -20,6 +20,8 @@
 # (`bin/fusion-record`'s bundle) writes every control, plan and answer byte.
 # Plugin and Node only outside a git repository. Inside one (a `.git` entry at
 # or above the workbench) git is required too, and is asked.
+# Each entry below holds past the exits 1 to 4 and where the codec answers and
+# admits each request it is sent (else exit 7 or 8).
 #
 #   survey          counts of the record cut, findings by class, the derived
 #                   and defaulted values by rule, and each blocking finding
@@ -60,8 +62,12 @@
 #                   lock timeout, a receipt or narrative changed by hand), the
 #                   fence stays and stderr names the way out.
 #   rollback --end-fence
-#                   ends the fence such a refusal left standing; the codec
-#                   then refuses every later rollback of this migration.
+#                   every sentence here is about a session that records a run
+#                   of this workbench; one that records another workbench
+#                   path, or none, is exit 5 before the store is read. On a
+#                   store still under JSON control it ends the fence a refused
+#                   first rollback chunk left standing; the codec then refuses
+#                   every later rollback of this migration.
 #                   Over a tree a git reset made legacy again, where the codec
 #                   cannot end it, it removes .json-state/maintenance.json
 #                   itself, only when the record is stale, the fence is the
@@ -82,10 +88,16 @@
 #                   stays. Never calls the codec.
 #   set-aside       with --consent, renames a session whose record the tree
 #                   does not carry (`status` prints record=stale) to
-#                   <dir>.stale-<UTC stamp>; deletes nothing. `run`, `resume`
-#                   and `rollback` refuse such a record and name this. Refuses
-#                   while a fence or pending intent stands over the stale
-#                   record, naming `rollback --end-fence` where it ends it.
+#                   <dir>.stale-<UTC stamp>, never over an existing directory;
+#                   deletes nothing. `run`, `resume` and `rollback` refuse
+#                   such a record where it records this workbench, the fence
+#                   removal of --end-fence above aside; where it also has no
+#                   rollback chunk landed under a fence of its own, those
+#                   three name this, the --end-fence form excepted. Refuses
+#                   while a fence or an intent the codec reports as pending
+#                   stands over the stale record, naming
+#                   `rollback --end-fence` where that ends the fence over
+#                   a legacy tree.
 #   status          where the recorded run stands, and with record= whether
 #                   the tree carries the record's last write.
 #
