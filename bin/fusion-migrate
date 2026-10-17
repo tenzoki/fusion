@@ -68,12 +68,13 @@
 #                   one its rollback began, no rollback chunk of it is stored,
 #                   no intent is pending, no write lock stands and the file
 #                   re-reads as that fence: no codec write landed under it.
-#                   Where rollback chunks landed before the reset, it names
-#                   them and the hand deletion of that file once `status`
-#                   shows record=stale, .json-state/journal/ is empty and no
-#                   control path the proposal lists stands; while any does,
-#                   or while the proposal is missing or at other bytes, it
-#                   names no deletion. It removes nothing there.
+#                   Where rollback chunks of it landed and the tree then
+#                   reads as legacy Markdown (a git reset is one way there),
+#                   it names them and the hand deletion of that file once
+#                   `status` shows record=stale, .json-state/journal/ is empty
+#                   and no control path the proposal lists stands; while any
+#                   does, or while the proposal is missing or at other bytes,
+#                   it names no deletion. It removes nothing there.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.
