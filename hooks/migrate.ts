@@ -401,7 +401,8 @@ function intentStands(wb: string, i: Record<string, any>): boolean {
  * (the first after activation removes the manifest, chunk 0 carries its
  * answer in its intent before any plan file goes), so cells A and B fail the
  * chunk evidence and only a fence no rollback chunk landed under passes. A
- * rollback that landed chunks and then met a git reset fails it too, and
+ * rollback that landed chunks fails it too, whatever brought the tree back
+ * to legacy Markdown after them (a git reset is one way), and
  * `landedFence` names that cell (the decision
  * `261016-1958-is-a-rollback-fence-ended-when-the-rollback-landed-chunks-and-a-git-reset-then-took-the-tree-back-to-markdown.md`,
  * beside

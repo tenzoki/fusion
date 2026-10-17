@@ -14,3 +14,5 @@ The help topic's update paragraph says of 13.1.7 that the message "names no dele
 A user on 13.1.6 who reads the note may think 13.1.6 could name the deletion with an unverifiable proposal. It could not.
 
 **Acceptance.** The 13.1.7 sentence in that paragraph credits 13.1.7 with the wording change alone. It does not present the unverified-proposal refusal as new in 13.1.7, or it presents it as documented and tested only. The growth bounds stay green, and `reference-resolution-lint` passes at its `BASELINE` with no edit to it.
+---
+Resolved: 2026-10-17, plan `261017-0821-plan-help-13-1-7-credit-and-idlefence-comment.md` step 2. In `skills/help/SKILL.md` `### 4. Update`, the 13.1.7 sentence of the paragraph for updates from 13.1.6 or earlier now reads "13.1.7: the message for an undo that landed part of its work states only what it checked." The clause presenting the unverified-proposal refusal as new in 13.1.7 is gone; the growth golden was regenerated, and `surface-growth-bound` and `reference-resolution-lint` pass with no baseline edited.
