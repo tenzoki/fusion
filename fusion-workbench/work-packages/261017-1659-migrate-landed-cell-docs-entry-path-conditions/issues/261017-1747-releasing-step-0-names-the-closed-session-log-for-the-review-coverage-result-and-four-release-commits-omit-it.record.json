@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ecffae65-6234-41ba-864b-f0110bdb367e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261017-1659-migrate-landed-cell-docs-entry-path-conditions/issues/261017-1747-releasing-step-0-names-the-closed-session-log-for-the-review-coverage-result-and-four-release-commits-omit-it.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

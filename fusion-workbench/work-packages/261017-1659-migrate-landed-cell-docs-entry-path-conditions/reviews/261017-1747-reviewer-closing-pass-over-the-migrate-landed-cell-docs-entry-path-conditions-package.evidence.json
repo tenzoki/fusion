@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "8b28cff8-4397-4a43-8cdd-a5cdcd3493f5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "f144280b8575ed29c4e457a78a219afeb2a68ea7",
+    "git_range": null
+  },
+  "brief_revision": "sha256:e1c285f58bcea35fa688d5199b64323f581ab0be145c924f683d3ab85ffa9d4b",
+  "plan_revision": "sha256:97189433de6b82d2fae5ee95d7bf34b87bf800d1bb25806da333c88371a0dc44",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261017-1659-migrate-landed-cell-docs-entry-path-conditions/reviews/261017-1747-reviewer-closing-pass-over-the-migrate-landed-cell-docs-entry-path-conditions-package.md",
+    "sha256": "sha256:5ff218b888439b81197e8074dbd40203a083cd842eb7f03418cf11e7526d34a5",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-17T15:49:16Z",
+  "extensions": {}
+}
