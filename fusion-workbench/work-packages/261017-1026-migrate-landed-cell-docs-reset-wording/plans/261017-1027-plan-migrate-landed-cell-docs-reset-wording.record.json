@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "3714ec3e-063c-4f4e-b405-85a97f462e99",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261017-1026-migrate-landed-cell-docs-reset-wording/plans/261017-1027-plan-migrate-landed-cell-docs-reset-wording.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "in_progress"
+      },
+      {
+        "id": "3",
+        "state": "in_progress"
+      },
+      {
+        "id": "4",
+        "state": "in_progress"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "4f084cf5-3fc8-4522-86a1-88d817bb59a2"
+      },
+      "revision": "sha256:8a7e5b3db80595abaafe71c9bd0ab3514ab7efad30362e58ad172870da9306fd"
+    }
+  }
+}
