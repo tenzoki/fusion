@@ -3,7 +3,7 @@
   "id": "4f084cf5-3fc8-4522-86a1-88d817bb59a2",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.9: the bin/fusion-migrate header and the README-hooks migrate.ts row name a git reset only as one way into the landed cell; no behaviour change; closing review accept with one low issue",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "372ab616-05c1-4d37-af84-a01cc013cab8",
+          "revision": "sha256:81ef24c1e2f9e36d480d72ecb978ee71be409d80afc3e9b5550d3ff8dd97853b"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
