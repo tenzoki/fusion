@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "372ab616-05c1-4d37-af84-a01cc013cab8",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "9d3d936ce966b57d7bab4baf9435af30b163080e",
+    "git_range": null
+  },
+  "brief_revision": "sha256:205ddc778feb7281e7ddb44212e83876f2ad719654c30c9959569c368ebcf0df",
+  "plan_revision": "sha256:8a7e5b3db80595abaafe71c9bd0ab3514ab7efad30362e58ad172870da9306fd",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.1.9"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261017-1026-migrate-landed-cell-docs-reset-wording/reviews/261017-1049-reviewer-closing-pass-over-the-migrate-landed-cell-docs-reset-wording-package.md",
+    "sha256": "sha256:792582bde1f80f0f149373091b19809bd7b184302b0c715fd527dddeac874ac3",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-17T08:50:19Z",
+  "extensions": {}
+}
