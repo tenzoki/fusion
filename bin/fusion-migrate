@@ -20,8 +20,8 @@
 # (`bin/fusion-record`'s bundle) writes every control, plan and answer byte.
 # Plugin and Node only outside a git repository. Inside one (a `.git` entry at
 # or above the workbench) git is required too, and is asked.
-# Each entry below holds past the exits 1 to 4 and where the codec answers and
-# admits each request it is sent (else exit 7 or 8).
+# Each entry says what the subcommand does where it proceeds; where it stops,
+# stderr says why (the exit table below) and `status` shows where the run stands.
 #
 #   survey          counts of the record cut, findings by class, the derived
 #                   and defaulted values by rule, and each blocking finding
@@ -40,64 +40,47 @@
 #                   hashes. A terminal record's actor goes into its control
 #                   file only. A finding id binds its file's bytes: an edit
 #                   since `--list` makes it unknown.
-#   run             preconditions in this order: no v11 store name (routed to
-#                   /fusion:migrate's rename), `migration` implemented by the
-#                   codec, no fence or pending intent; then a live
-#                   .session-marker reported, untracked and ignored files
-#                   listed; the backup; a refusal while any blocking finding
-#                   remains, printing those lines first; then survey, the proposal into
+#   run             the migration: its preconditions; a live .session-marker
+#                   reported, untracked and ignored files listed; the backup;
+#                   the survey, and a refusal while any blocking finding
+#                   remains, printing those lines first; then the proposal into
 #                   .json-state/migration/, plan, one apply per chunk, verify,
-#                   setup metadata and `maintenance end`. A second run sends
-#                   nothing.
+#                   setup metadata and `maintenance end`. A refused precondition
+#                   is exit 5 and names itself on stderr; a v11 store name is
+#                   routed to /fusion:migrate's rename, a codec without
+#                   `migration` to an update. While the session holds a record
+#                   not rolled back, it sends no migration request.
 #   resume          sends the next request whose answer is not stored, under
 #                   its recorded id, after an interruption or an unknown outcome.
 #   rollback        every landed chunk in reverse, chunk 0, and the fence's end;
 #                   after activation under a fence of its own. Resumable.
 #                   Restores the frozen post-repair input. When the codec
-#                   refuses the first chunk (exit 8), whatever its class: with
-#                   a stored answer since the plan that is neither the
-#                   baseline's, this session's nor a no-op, which the codec's
-#                   audit refuses in every rollback, it ends that fence; with
-#                   none, the refusal is one a retry or a restore clears (a
-#                   lock timeout, a receipt or narrative changed by hand), the
-#                   fence stays and stderr names the way out.
+#                   refuses the first chunk after activation, it ends that
+#                   fence only where work stored since the plan already bars
+#                   every rollback of this migration (the codec's audit);
+#                   otherwise the fence stays.
 #   rollback --end-fence
-#                   every sentence here is about a session that records a run
-#                   of this workbench; one that records another workbench
-#                   path, or none, is exit 5 before the store is read. On a
-#                   store still under JSON control it ends the fence a refused
-#                   first rollback chunk left standing; the codec then refuses
-#                   every later rollback of this migration.
-#                   Over a tree a git reset made legacy again, where the codec
-#                   cannot end it, it removes .json-state/maintenance.json
-#                   itself, only when the record is stale, the fence is the
-#                   one its rollback began, no rollback chunk of it is stored,
-#                   no intent is pending, no write lock stands and the file
-#                   re-reads as that fence: no codec write landed under it.
-#                   Where the record is stale, the fence is the one its
-#                   rollback began, rollback chunks of it are stored, no
-#                   intent is pending and the tree reads as legacy Markdown (a
-#                   git reset is one way there), it names those chunks and the
-#                   hand deletion of that file once `status` shows
-#                   record=stale, .json-state/journal/ is empty and no control
-#                   path the proposal lists stands; while any does, or while
-#                   the proposal is missing or at other bytes, it names no
-#                   deletion. It removes nothing there.
+#                   ends the fence this session's rollback began and left
+#                   standing: on a store under JSON control through the codec's
+#                   `maintenance end`, after which the codec refuses every
+#                   later rollback of this migration; over a tree that reads
+#                   as legacy Markdown again (a git reset is one way there),
+#                   where the codec cannot, by removing
+#                   .json-state/maintenance.json itself. It ends no other
+#                   fence and removes no other file of the workbench, and it
+#                   removes that one only where no rollback chunk of the
+#                   record is stored. Whether the file may be deleted by hand
+#                   is said only by the helper's own message.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.
-#   set-aside       with --consent, renames a session whose record the tree
-#                   does not carry (`status` prints record=stale) to
-#                   <dir>.stale-<UTC stamp>, never over an existing directory;
-#                   deletes nothing. `run`, `resume` and `rollback` refuse
-#                   such a record where it records this workbench, the fence
-#                   removal of --end-fence above aside; where it also has no
-#                   rollback chunk landed under a fence of its own, those
-#                   three name this, the --end-fence form excepted. Refuses
-#                   while a fence or an intent the codec reports as pending
-#                   stands over the stale record, naming
-#                   `rollback --end-fence` where that ends the fence over
-#                   a legacy tree.
+#   set-aside       with --consent, renames the session directory to
+#                   <dir>.stale-<UTC stamp>, so its backup, repair log and ids
+#                   stay readable through --session; for a record `status`
+#                   reports as record=stale. It deletes nothing and renames
+#                   nothing else; it renames no record that reads as current,
+#                   nothing while the codec reports a fence or a pending
+#                   intent, and nothing where the new name exists.
 #   status          where the recorded run stands, and with record= whether
 #                   the tree carries the record's last write.
 #
@@ -114,11 +97,7 @@
 #      ownership, killed) is an exit 3 naming the call and the reason.
 #   4  Node is missing or older than codec/package.json's engines; nothing
 #      was read or written.
-#   5  a precondition refused: v11 store names, a codec without `migration`,
-#      a fence or pending intent, a run already recorded, nothing to resume,
-#      a session whose record the tree does not carry, a fence or pending
-#      intent standing over the stale record, or restore-backup's or
-#      set-aside's conditions. Nothing was written by this call.
+#   5  a precondition refused, named on stderr. Nothing was written by this call.
 #   6  blocking findings remain, or a repair was not applied (no consent, an
 #      unanswered question, a file changed); nothing was written.
 #   7  an outcome is unknown: the codec gave no answer. `resume` (or

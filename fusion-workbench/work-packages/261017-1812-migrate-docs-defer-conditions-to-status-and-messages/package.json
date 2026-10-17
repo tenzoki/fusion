@@ -10,8 +10,15 @@
     "claimed_at": "2026-10-17T16:12:24Z"
   },
   "mode": {
-    "value": "ordinary",
-    "source": null
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "path": "work-packages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages.md",
+        "sha256": "sha256:6ea774166a51f4312372aced4403b2443230957949c52f9fbdfe7690d43fce6c",
+        "kind": "other"
+      }
+    }
   },
   "origin": {
     "kind": "user-request",
