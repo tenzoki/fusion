@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "299a6fee-4334-4f9f-85df-0ec82b44df14",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages/plans/261017-1823-plan-migrate-docs-defer-conditions-to-status-and-messages.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "in_progress"
+      },
+      {
+        "id": "3",
+        "state": "in_progress"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "971d806f-ce96-447d-9f42-a04b1dc81a30"
+      },
+      "revision": "sha256:b9f46968b396bb00f1ec4c8d7689449b9bc11aa8df47ba0cf8ac605439130866"
+    }
+  }
+}

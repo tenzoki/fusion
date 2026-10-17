@@ -1,0 +1,46 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "971d806f-ce96-447d-9f42-a04b1dc81a30",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-17T16:12:24Z"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "299a6fee-4334-4f9f-85df-0ec82b44df14"
+      },
+      "role": "plan",
+      "revision": "sha256:b9f46968b396bb00f1ec4c8d7689449b9bc11aa8df47ba0cf8ac605439130866"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}
