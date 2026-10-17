@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "1350e922-a40b-4106-835b-3b9d6e28940f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "934459e513b5122673bcbcc58c6a5444a724a7c4",
+    "git_range": null
+  },
+  "brief_revision": "sha256:6ea774166a51f4312372aced4403b2443230957949c52f9fbdfe7690d43fce6c",
+  "plan_revision": "sha256:b9f46968b396bb00f1ec4c8d7689449b9bc11aa8df47ba0cf8ac605439130866",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages/reviews/261017-1908-reviewer-closing-pass-over-the-migrate-docs-defer-conditions-package.md",
+    "sha256": "sha256:0ef55357d1e8a0c5ca9003468c80cad3a242a851a047c682dfb1a5478da25e10",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-17T17:10:22Z",
+  "extensions": {}
+}

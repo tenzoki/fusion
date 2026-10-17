@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b3b5b0ed-e85c-48cf-a1f0-199de8061d37",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261017-1812-migrate-docs-defer-conditions-to-status-and-messages/issues/261017-1908-migrate-header-end-fence-entry-says-it-removes-no-other-workbench-file-without-the-itself-its-json-branch-needs.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
