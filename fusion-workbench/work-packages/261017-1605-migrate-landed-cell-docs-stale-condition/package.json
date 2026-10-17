@@ -3,7 +3,7 @@
   "id": "24c4e473-e5dd-4fcb-8ffb-64cc2d01635b",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.10: the three landed-cell clauses state the five conditions every landedFence caller applies; no behaviour change; closing review accept with two low issues",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "ead9c136-6967-40a0-930a-f454eb67a324",
+          "revision": "sha256:f0760acff0a017ae234c3cb7dfe95f5fd7bc417f34c2263d2f7977943ab1a42f"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
