@@ -3,7 +3,7 @@
   "id": "971d806f-ce96-447d-9f42-a04b1dc81a30",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.12: the migrate docs state purpose and unconditional invariants and defer refusal conditions to status and the helper messages; no behaviour change; closing review accept with three low issues",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "1350e922-a40b-4106-835b-3b9d6e28940f",
+          "revision": "sha256:fab80e3ecaebc27cf2ac9cede7b84dd5e3b9512dbe1f3b9ab25ca84f685589a1"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
