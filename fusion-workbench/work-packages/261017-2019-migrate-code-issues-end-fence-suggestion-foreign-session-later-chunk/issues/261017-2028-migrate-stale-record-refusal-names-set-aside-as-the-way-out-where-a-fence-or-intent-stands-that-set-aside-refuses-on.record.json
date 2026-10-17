@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6e085f06-c346-4369-a2b5-1d12c9f92ed9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261017-2019-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk/issues/261017-2028-migrate-stale-record-refusal-names-set-aside-as-the-way-out-where-a-fence-or-intent-stands-that-set-aside-refuses-on.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
