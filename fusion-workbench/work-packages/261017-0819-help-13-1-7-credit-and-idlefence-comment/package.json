@@ -3,7 +3,7 @@
   "id": "d03a9548-8f6e-47da-92c5-3a68fed72440",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Release 13.1.8: the help credits 13.1.7 with the wording change alone, the idleFence comment names a git reset only as one way into the cell; no behaviour change; closing review accept",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "f704257c-e76d-45a7-baab-6e7bae96369a",
+          "revision": "sha256:64e21e7a0a452260dfecb589752800da15d34c408b97fa43c928bdf36a4bd323"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
