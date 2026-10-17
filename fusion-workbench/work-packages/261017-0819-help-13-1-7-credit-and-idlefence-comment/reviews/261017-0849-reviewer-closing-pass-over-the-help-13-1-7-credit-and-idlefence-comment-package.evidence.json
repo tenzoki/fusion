@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "f704257c-e76d-45a7-baab-6e7bae96369a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "2e0d1c9107f85b960a6b82b255a3d42df531cc9a",
+    "git_range": null
+  },
+  "brief_revision": "sha256:93cdbd3a9c21c8e2665509dc466908048f8ce4bf43aaa247eeda4602ac4e052b",
+  "plan_revision": "sha256:18741e0d73c4547e68839e827ec2a9e37e25c96f6d22779263f053a2300a4d7c",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.0.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261017-0819-help-13-1-7-credit-and-idlefence-comment/reviews/261017-0849-reviewer-closing-pass-over-the-help-13-1-7-credit-and-idlefence-comment-package.md",
+    "sha256": "sha256:bae59561423682c2e04bedbb680a753316d7feb6de0d0bbc3f529a17e2e616ca",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-17T06:50:51Z",
+  "extensions": {}
+}
