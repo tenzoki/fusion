@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "24c4e473-e5dd-4fcb-8ffb-64cc2d01635b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-17T14:05:55Z"
+  },
+  "mode": {
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "path": "work-packages/261017-1605-migrate-landed-cell-docs-stale-condition/261017-1605-migrate-landed-cell-docs-stale-condition.md",
+        "sha256": "sha256:d4bce591e53231c2b68e079a36168f47b889dd0453a257ae8bbe4063130cda10",
+        "kind": "other"
+      }
+    }
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261017-1605-migrate-landed-cell-docs-stale-condition/261017-1605-migrate-landed-cell-docs-stale-condition.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "2def143d-8c65-41be-a2a7-f2d250814b83"
+      },
+      "role": "plan",
+      "revision": "sha256:26be2013f493a1a60446479e713cbcb0f54a5f44e9a1660d4623e5a9d7a372e9"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

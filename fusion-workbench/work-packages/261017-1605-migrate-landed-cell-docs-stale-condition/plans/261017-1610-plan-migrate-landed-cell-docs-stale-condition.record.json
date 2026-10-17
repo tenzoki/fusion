@@ -1,0 +1,48 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2def143d-8c65-41be-a2a7-f2d250814b83",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261017-1605-migrate-landed-cell-docs-stale-condition/plans/261017-1610-plan-migrate-landed-cell-docs-stale-condition.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "in_progress"
+      },
+      {
+        "id": "3",
+        "state": "in_progress"
+      },
+      {
+        "id": "4",
+        "state": "in_progress"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "24c4e473-e5dd-4fcb-8ffb-64cc2d01635b"
+      },
+      "revision": "sha256:26be2013f493a1a60446479e713cbcb0f54a5f44e9a1660d4623e5a9d7a372e9"
+    }
+  }
+}
