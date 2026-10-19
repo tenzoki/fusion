@@ -689,7 +689,10 @@ digests and any changed narrative), then every source hash (`source-changed`)
 and every rewrite's deletion ranges; the cut and the operation-id schedule
 (`proposal-invalid`); and the freeze bound (`schema-invalid/plan-too-large`).
 The writes are cut in narrative-path order into chunks of at most 50, a pair
-never split, originals first. The plan is frozen under
+never split, originals first. A proposal naming no record is admitted: the
+cut then makes one chunk with no write (`writes: []`), so a record-less
+workbench still reaches the fence, the receipt and `workbench.json`. The plan
+is frozen under
 `archive/migrations/<id>/` as `chunks/<n>.json`,
 `parts/{records,inventory,findings,repairs,answers}-<n>.json` and
 `plan.json`, the index, which binds every part by hash and carries
@@ -747,7 +750,8 @@ one with chunks 1 to n − 1 applied, added, removed, re-kinded and re-hashed
 entries alike (`conflict/source-changed`, naming the first difference
 bytewise); a staged file over 1 MiB (`schema-invalid/too-large`). Then, for
 n = 1, the fence `{operation_id: <chunk 1's id>, since}` in its own sequence,
-and one intent with the chunk's writes, originals first. The answer keeps the
+and one intent with the chunk's writes, originals first. Chunk 1 sets its
+fence whether or not it carries a write. The answer keeps the
 established envelope (C15): `{ok: true, result: {operation_id, migration_id,
 chunk, fence, writes: [{path, kind}]}, revisions}`, `revisions` beside
 `result`. Because every chunk rechecks the whole store, a source edited after
