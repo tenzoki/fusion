@@ -107,6 +107,24 @@ describe("legacy import: what blocks activation", () => {
       expect(Object.keys(FINDINGS).filter((k) => FINDINGS[k as FindingClass] === "blocking")).toEqual(["legacy-store-name", "manifest-present", "control-file-exists", "unknown-state", "unknown-package-status", "two-package-heads", "container-without-head", "invalid-claim", "unknown-mode", "duplicate-control-head", "several-active-plans", "plan-adopted-twice", "unresolvable-live-dependency", "dependency-not-a-package", "dependency-archived", "ambiguous-structural-citation", "closure-without-v1-state", "closure-incomplete", "record-is-link", "narrative-too-large"]);
     }));
 
+  // Package 261019-0906: a tree with no record composes to no record, and a closed issue alone is plain-terminal, not a record.
+  it("composes no record over a tree holding a memo alone, or a closed issue alone", () => {
+    const root = mkdtempSync(join(tmpdir(), "fusion-legacy-"));
+    try {
+      mkdirSync(join(root, "shared/memos"), { recursive: true });
+      writeFileSync(join(root, ".fusion-setup"), "{}\n");
+      writeFileSync(join(root, "shared/memos/notes-fixture-person.md"), "# Notes\n\nA memo, and no record.\n");
+      const compose = () => composeProposal({ root, inventory: buildInventory(root), migrationId: "m1", newId: () => "00000000-0000-4000-8000-000000000000", firstAdd: () => ({ unknown: "untracked" }) });
+      const zero = { "package-live": 0, "package-terminal": 0, "record-live": 0, "record-closure": 0, "plain-terminal": 0, "empty-container": 0 };
+      expect([compose().records, compose().counts]).toEqual([[], zero]);
+      mkdirSync(join(root, "shared/issues"));
+      writeFileSync(join(root, "shared/issues/260805-1000_c_readme-typo.md"), readFileSync(join(FIX, "workbench/archive/260820-0900-safe-cleanup-tier-1/shared/issues/260805-1000_c_readme-typo.md")));
+      expect([compose().records, compose().counts, blocking(compose())]).toEqual([[], { ...zero, "plain-terminal": 1 }, []]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it("refuses the v11-named twin with the route to the store rename", () =>
     withCopy((wb, compose) => {
       renameSync(join(wb, WP), join(wb, "circles"));

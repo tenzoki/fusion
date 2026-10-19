@@ -501,3 +501,64 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([end.status, read(wb, ".json-state/maintenance.json"), value(mig(root, home, "status").stdout, "fence")], end.stderr).toEqual([5, fence, id]);
   }, 4 * CASE_TIMEOUT);
 });
+
+// Package 261019-0906: a legacy workbench holding no record migrates as one chunk with no write, and the record a refused plan left has two ways out.
+describe("bin/fusion-migrate over a legacy workbench holding no record", () => {
+  function empty(): { root: string; wb: string; home: string } {
+    const root = join(base, `e${n++}`), wb = join(root, "fusion-workbench");
+    mkdirSync(join(wb, "shared/memos"), { recursive: true });
+    mkdirSync(join(root, "home"));
+    writeFileSync(join(wb, ".fusion-setup"), '{"setup_at":"t"}\n');
+    writeFileSync(join(wb, "shared/memos/notes-fixture-person.md"), "# Notes\n\nA memo, and no record.\n");
+    return { root, wb, home: join(root, "home") };
+  }
+  const files = (d: string) => buildInventory(d).files.filter((f) => !f.path.startsWith(".json-state/")).map((f) => `${f.path} ${f.sha256}`);
+  const paths = (root: string, home: string) => spawnSync(resolve(REPO_ROOT, "bin", "fusion-paths"), ["implementation-planner"], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } }).status;
+
+  it("survey counts 0, run reaches json-control in one chunk, the readers answer, and rollback puts back the backup's files", () => {
+    const { root, wb, home } = empty();
+    expect(paths(root, home)).toBe(3);
+    const survey = mig(root, home, "survey");
+    expect([survey.status, survey.stdout.split("\n").filter((l) => l.startsWith("count=")).map((l) => l.split("\t")[1])], survey.stderr).toEqual([0, ["0", "0", "0", "0", "0", "0"]]);
+    const run = mig(root, home, "run");
+    expect([run.status, value(run.stdout, "result")], run.stderr).toEqual([0, "json-control"]);
+    const status = mig(root, home, "status").stdout;
+    expect(["chunks", "verified", "done"].map((k) => value(status, k))).toEqual(["1/1", "yes", "true"]);
+    const inspect = spawnSync(resolve(REPO_ROOT, "bin", "fusion-record"), [], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home }, input: '{"op":"inspect"}' });
+    expect([JSON.parse(inspect.stdout).result.state, paths(root, home)]).toEqual(["json-control", 0]);
+    const back = mig(root, home, "rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+    // The files are the backup's; the migration's directories under archive/ stay, empty.
+    const id = value(status, "migration")!;
+    expect([files(wb), buildInventory(wb).dirs.filter((d) => d.startsWith("archive"))]).toEqual([files(join(value(status, "session")!, "backup")), ["archive", "archive/migrations", `archive/migrations/${id}`, `archive/migrations/${id}/chunks`, `archive/migrations/${id}/parts`]]);
+  }, 4 * CASE_TIMEOUT);
+
+  it("the record the old refusal left: resume reaches json-control, and rollback then run does too", () => {
+    const plugin = join(base, "plugin-refuse");
+    for (const p of ["bin", "hooks/dist", "hooks/package.json", "codec/package.json", ".claude-plugin"]) cpSync(join(REPO_ROOT, p), join(plugin, p), { recursive: true });
+    mkdirSync(join(plugin, "codec/dist"));
+    cpSync(join(REPO_ROOT, "codec/dist/fusion-record.js"), join(plugin, "real/dist/fusion-record.js"));
+    cpSync(join(REPO_ROOT, "codec/package.json"), join(plugin, "real/package.json"));
+    // The stand-in answers plan as the codec before a9ac4fe4 did, storing no answer; every other request reaches the real codec.
+    writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { readFileSync } from "node:fs";
+const here = new URL(".", import.meta.url).pathname, input = readFileSync(0), q = JSON.parse(input);
+if (q.op === "migration" && q.phase === "plan") { process.stdout.write(JSON.stringify({ ok: false, error: { class: "schema-invalid", reason: "proposal-invalid", detail: q.proposal.path + " names no record; a migration converts at least one pair" } }) + "\\n"); process.exit(0); }
+const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
+process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
+    const refused = (root: string, home: string) => {
+      const r = spawnSync(join(plugin, "bin", "fusion-migrate"), ["run"], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+      const status = mig(root, home, "status").stdout;
+      expect([r.status, r.stderr, ["planned", "done", "record"].map((k) => value(status, k))]).toEqual([8, expect.stringContaining("names no record; a migration converts at least one pair"), ["no", "false", "current"]]);
+    };
+    const one = empty();
+    refused(one.root, one.home);
+    const resumed = mig(one.root, one.home, "resume");
+    expect([resumed.status, value(resumed.stdout, "result")], resumed.stderr).toEqual([0, "json-control"]);
+    const two = empty();
+    refused(two.root, two.home);
+    const back = mig(two.root, two.home, "rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "nothing-planned"]);
+    const again = mig(two.root, two.home, "run");
+    expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
+  }, 6 * CASE_TIMEOUT);
+});
