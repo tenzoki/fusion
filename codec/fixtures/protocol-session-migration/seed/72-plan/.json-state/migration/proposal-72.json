@@ -1,0 +1,41 @@
+{
+  "schema": "fusion.migration-proposal/v1",
+  "migration_id": "migration-20261002-session",
+  "workbench_id": "ab1ebe00-0000-4000-8000-000000000000",
+  "source_layout": "fusion-v12",
+  "source_inventory_sha256": "sha256:d1940b44eca04640778033c0824ad6a67778acb2a10a2baa9f7183db11158201",
+  "operation_ids": {
+    "plan": "ab1e0f72-0000-4000-8000-000000000072",
+    "apply": [
+      "ab1e0f40-0000-4000-8000-000000000040"
+    ],
+    "verify": "ab1e0f44-0000-4000-8000-000000000044",
+    "rollback": [
+      "ab1e0f50-0000-4000-8000-000000000050",
+      "ab1e0f51-0000-4000-8000-000000000051"
+    ]
+  },
+  "exclusions": [
+    ".session-marker",
+    ".checkout-id",
+    ".cadence-anchors",
+    ".check-stamps",
+    "monitor",
+    "orchestrator-events.jsonl",
+    ".fusion-setup",
+    ".asset-provenance",
+    ".guard-state",
+    ".commit-lock"
+  ],
+  "records": {},
+  "counts": {
+    "package_live": 0,
+    "package_terminal": 0,
+    "record_live": 0,
+    "record_closure": 0,
+    "plain_terminal": 0,
+    "empty_container": 0
+  },
+  "findings": [],
+  "repairs": []
+}

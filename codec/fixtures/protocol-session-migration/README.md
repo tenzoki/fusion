@@ -1,10 +1,12 @@
 # protocol-session-migration: the recorded migration session (FJ04 steps 7 and 12c)
 
-Seventy exchanges through `bin/fusion-record`. They cover `migration` in all five phases, with the `maintenance`, `claim` and read operations that bracket them. The contract is `../prior/REQUESTS.md`, `## FJ04 (the contract delta, amended for ab9cb59)`, `## FJ04 (addendum for a1fb17a)` and `## FJ04 (addendum for Prior d0fce6c and ruling b1)`. The gate is `src/__tests__/round-trip-cli-migration.test.ts`. It regenerates these files only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`, and its header lists every exchange with what it answers. The session is not indexed by `../manifest.json` (`fixtures.test.ts` exempts the directory).
+The exchanges through `bin/fusion-record`, one `<nn>-<op>.request.json` and one `<nn>-<op>.response.json` each; `ls *.request.json | wc -l` counts them. They cover `migration` in all five phases, with the `maintenance`, `claim` and read operations that bracket them. The contract is `../prior/REQUESTS.md`, `## FJ04 (the contract delta, amended for ab9cb59)`, `## FJ04 (addendum for a1fb17a)`, `## FJ04 (addendum for Prior d0fce6c and ruling b1)` and, for base E, `## Record-less migration (request 71, the contract delta)`. The gate is `src/__tests__/round-trip-cli-migration.test.ts`. It regenerates these files only under `UPDATE_PROTOCOL_SESSION_MIGRATION=1`, and its header lists every exchange with what it answers. The session is not indexed by `../manifest.json` (`fixtures.test.ts` exempts the directory).
 
 ## The base
 
 There is no `base/` here. Each of the four bases A, B, C and D starts from a fresh copy of the legacy fixture `../legacy-v12/workbench/`, taken as it stands. Its one link stays a link with its own text: `cp -R` on macOS, `cp -a` on Linux, `cpSync(..., { recursive: true, verbatimSymlinks: true })` in Node. The fixture's empty container tree and its untracked file are not recreated.
+
+Base E starts from an empty `fusion-workbench/` directory instead, with no copy of the fixture: it is a workbench that holds no record.
 
 ## What the host does between exchanges
 
@@ -19,6 +21,8 @@ Seeds are copied onto the workbench root immediately before the exchange named i
 | `seed/05-plan/` | proposal 05, composed over 03's survey, and the note `shared/memos/notes-fixture-added-during-composition.md`, which lands after it | 05; third in B, C and D |
 | `seed/07-plan/` | proposal 07, composed over 06's survey | 07; fourth in B, C and D |
 | `seed/11-apply/` | chunk 2's committed intent, cut in process after its commit point | 11 |
+| `seed/71-survey/` | `.fusion-setup` and one memo, `shared/memos/notes-fixture-person.md`: no record | 71 |
+| `seed/72-plan/` | proposal 72, composed over 71's survey: no record, every count 0, one apply id and two rollback ids | 72 |
 
 Each proposal lies at `.json-state/migration/proposal-<nn>.json`, and its plan request binds it by sha256. Every proposal copies `eligible_sha256` from the survey it was composed after (C9, option 1). Every proposal except 04 selects the whole exclusion allowlist.
 
@@ -36,7 +40,7 @@ Edits the host makes, each on the workbench root:
 ## The substitutions
 
 - **`<workbench>`.** In the answers, this stands for the base's absolute root. No request names `workbench`: each is answered against `FUSION_WORKBENCH`, or against the root `bin/fusion-record` finds by walking up to `fusion-workbench/.fusion-setup`. So no request digest depends on where the root lies, and neither does any answer that carries a digest (`rollback.json`'s binding, chunk 0's `progress`).
-- **`<since:<nn>-<op>>`.** This stands for a fence's `since`, which is the clock when the fence lands: chunk 1's apply (08, 28, 47, 60) or a `begin` (24, 34, 67). Every later occurrence is recorded as the placeholder naming its setter. That includes `seed/11-apply/`'s `intent.json`, which carries 08's.
+- **`<since:<nn>-<op>>`.** This stands for a fence's `since`, which is the clock when the fence lands: chunk 1's apply (08, 28, 47, 60, 73) or a `begin` (24, 34, 67, 79). Every later occurrence is recorded as the placeholder naming its setter. That includes `seed/11-apply/`'s `intent.json`, which carries 08's.
 
 Nothing else depends on the clock, the host or a generated id. The cut that produced seed 11 ran with the clock fixed at `2026-10-02T12:00:00.000Z`.
 
@@ -44,8 +48,8 @@ Nothing else depends on the clock, the host or a generated id. The cut that prod
 
 For each base:
 
-1. Copy `../legacy-v12/workbench/` to `<project>/fusion-workbench/`.
-2. Run the exchanges of that base in order (A: 01 to 26, then 55 to 58; B: 27 to 45; C: 46 to 54; D: 59 to 70).
+1. Copy `../legacy-v12/workbench/` to `<project>/fusion-workbench/`; for base E, create `<project>/fusion-workbench/` empty.
+2. Run the exchanges of that base in order (A: 01 to 26, then 55 to 58; B: 27 to 45; C: 46 to 54; D: 59 to 70; E: 71 to 83).
 3. Before each exchange, do what the two tables above name. When copying a seed, replace each `<since:...>` with the value its setter answered in this replay.
 4. Send `<nn>-<op>.request.json` to `bin/fusion-record` from `<project>`, with `FUSION_WORKBENCH` unset.
 5. Compare stdout byte for byte with `<nn>-<op>.response.json`. Replace `<workbench>` with the real path the wrapper resolved (`pwd -P`) and each `<since:...>` with this replay's value.
@@ -59,3 +63,4 @@ The gate's last case does exactly this from bash, over roots whose path holds a 
 - **Base B** rolls back across activation. The first rollback binds `rollback.json`. An altered copy of it is `plan-file-changed`. Chunk 0 removes it with the plan files, and 35's replay answers without it. After cleanup, B records the legacy `end`, its replay, and the replays of apply 1 and verify.
 - **Base C** rolls back two landed chunks. The rollback is refused after a host write, then completes down to chunk 0 and the legacy `end`.
 - **Base D** keeps the evidence of a refusal after real work. After activation and `end` come an ordinary `claim` of the open package and then a no-op (66). The first rollback refuses on the activated tree, because the claimed bytes stand. With them written back, it refuses again in the audit, naming the claim (65) and not the no-op. The base ends with the `end` of its own `begin`.
+- **Base E** migrates a workbench that holds no record (request 71). Plan freezes one chunk with no write. Apply 1 sets the fence and writes nothing, and inspect names that fence on the legacy store. Verify writes the receipt, every count 0, and the manifest. After `end`, inspect answers `json-control` and `list` names no record. Under a `begin`, rollback 1, the first after activation, removes the manifest and the receipt and binds `rollback.json`. Rollback 0 removes the plan files, and after the legacy `end` inspect answers `legacy` with no fence. The memo is never rewritten.
