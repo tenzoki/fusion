@@ -5237,3 +5237,107 @@ Both acceptance checks are met.
 | 70 | A real explorer and a reviewed repair from the bundle built at C | **accepted** on macOS arm64, for digest `56ac4c57…` built at C = `c8d5a6f1` against Prior `10ad78b`; P69-1 to P69-6 qualified; Linux amd64 and arm64 built, not qualified | `f0b57b6` (host implementation `f36ac32`) |
 
 Each Prior commit is cited as the answer sections above record it. No request is open. Linux amd64 and arm64 remain built and not qualified: the released bundle carries them, and no Prior answer covers them.
+
+## Record-less migration (request 71, the contract delta)
+
+**Written against:** fusion `9409d998` on `main` (2026-10-19 09:31, "docs(workbench): package for migrating a record-less legacy workbench, filed and claimed with its approved plan"), `v13.1.12-5-g9409d998`. Outside `fusion-workbench/` it equals `v13.1.12` (`d825345e`): `git diff --stat v13.1.12 9409d998 -- . ':!fusion-workbench'` prints nothing. Under `codec/` it differs from `v13.1.0` in this file alone (`git diff --stat v13.1.0 9409d998 -- codec`). At `9409d998` this file is 5 239 lines, `sha256:967db08b5b2181551c63dff5fef0c7c99cddf37e04ce91cc6358c67c17a0cf7e`. Prior was read at `dbdfbb6` (2026-10-14 11:38, "feat(repair): default new CLI plans to installed Fusion workflow"), the head of its `main`, one commit past `f0b57b6`, the answer to 70. `git log --all` there names no later commit. Every Prior path below is read with `git show dbdfbb6:<path>`, never from Prior's working tree, which is dirty. **The codec bundle is the one Prior holds, unmoved:** `codec/dist/fusion-record.js`, 699 011 bytes, `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f` (`git show 9409d998:codec/dist/fusion-record.js | shasum -a 256`, `wc -c`), blob `1dfd1378`, last changed at `00e465f6` (2026-10-09). `git log v13.1.0..9409d998 -- codec/dist codec/src codec/schemas` is empty. The same digest is `QualifiedCodecDigest` in `Prior: internal/fusionhost/workbench.go`, line 22, the bundle request 64 qualified. Prior's snapshot of the shared set, `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, names fusion `dd4bf3d4`. The three schemas this delta touches and `fixtures/manifest.json` hash equal in that snapshot and at `9409d998`, and `git diff --stat dd4bf3d4 9409d998 -- codec/schemas codec/contract codec/src codec/dist codec/fixtures ':!codec/fixtures/prior'` prints nothing.
+
+This section opens the first codec revision after 13.1.0. Fusion's work package is `261019-0906-migrate-an-empty-legacy-workbench.md`, and its plan is `261019-0913-plan-migrate-an-empty-legacy-workbench.md`. As for every delta before it, only the changed parts of the contract follow, nothing below is frozen, and the digest is fixed at the hand-over, which will carry requests 72 and 73. Fusion's codec steps follow this text without waiting for the answer. A correction Prior asks for lands before the hand-over is written, and the user ruled that the release tag waits for Prior's acceptance of this request (`261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md`, option 2). No line above is edited.
+
+### The case, and the user's ruling
+
+On 2026-10-18 the user ran `/fusion:migrate` on the Prior repository's own workbench, `/Users/kai/Projects/productive/F09-Prior/fusion-workbench`, after `/fusion:setup` had routed there. The plan phase refused: `schema-invalid/proposal-invalid: … names no record; a migration converts at least one pair` (`migrationPlan` in `codec/src/migration.ts`, line 966 at `9409d998`). Read on that tree on 2026-10-19, and not written:
+
+| Fact | Measured |
+|---|---|
+| Regular files outside `.json-state/` | 17: the setup marker and the assets setup installs, the checkout's local files, the guard's state, the voice profiles, the dispatch event log and one checkout note under `shared/checkouts/` |
+| `workbench.json`, `*.record.json` | none |
+| The proposal the refused run left | `.json-state/migration/migration-20261018-v12.json`, 867 bytes, `sha256:4dbf7baed1e8e15e33522a4d0075504a2fc5c3cc1cfd503c208df9eda3723283`: `source_layout` `fusion-v12`, `records` `{}`, every count 0, no finding, no repair, one apply id and two rollback ids |
+| The host's run record | `plan: null`, `done: false`; the plan phase stores no answer for a refusal, so the fixed codec answers a resend under the recorded id |
+
+`/fusion:setup` routes such a workbench to the migration because `initialize` refuses existing content. Request 27 ruled that, and spec section 4.1 at `dbdfbb6` states it: "Die Erstinitialisierung verlangt ein bestehendes, leeres Zielverzeichnis. […] Bestehende Legacy-Bestände gehen durch FJ04." The migration then refused the same workbench, so the two together leave it no route to JSON control.
+
+The user ruled on 2026-10-19, choosing the migration over `initialize` (`261019-0913-which-route-takes-a-legacy-workbench-that-holds-no-record-to-json-control.md`, option 1): "Die Migration akzeptiert einen leeren alten Workbench-Ordner. Sie konvertiert nichts und schreibt nur das Abschlussprotokoll und die `workbench.json`." At plan approval the user confirmed fusion's reading of it as "converts and rewrites no record". The receipt binds the frozen plan and its parts by hash (`codec/schemas/migration-receipt.schema.json`), so the plan files under `archive/migrations/<id>/` stand beside the receipt and the manifest, as for every migration. `initialize` and request 27 stay as they are.
+
+### The one change of shape
+
+**The cut always yields at least one chunk.** That is the convention `split` already follows for the parts ("at least one part even with no item", `codec/src/migration.ts` at `9409d998`). The user ruled this shape over two others, no chunk with the fence set by `verify`, and no chunk and no fence (`261019-0913-how-does-the-shared-migration-contract-shape-a-run-that-converts-no-pair.md`, option 1). Three statements carry it:
+
+1. **The plan step's refusal is withdrawn.** A proposal whose `records` is empty is admitted. Every other check of the plan step runs as at `9409d998`, in the same order: the inventory digest, the exclusions, the findings, the closure, and every source sha256.
+2. **The cut emits chunk 1 with no write when no pair is cut.** Its chunk file carries `writes: []`, and its index entry is `{"part": "chunk", "n": 1, "path": "archive/migrations/<id>/chunks/1.json", "sha256": "sha256:…", "writes": 0}`. With at least one pair, the cut is byte for byte what it is at `9409d998`.
+3. **No later phase changes.** Every one keys on the chunk count being at least one and on chunk 1's apply id, never on a write count (`readIndex`, `landedChunks`, `exemptSet` and `chunkZero` in `codec/src/migration.ts`). Apply 1 makes the checks of n = 1 and sets the fence named by `schedule.apply[0]` in its own sequence. It then commits one intent with no write: `mutate` in `codec/src/kernel.ts` writes a `fenceFirst` fence and then calls `commitIntent` over the planned writes, and no lower bound applies to that list. `verify` runs under that fence with chunk 1's answer stored. Its checks run over a json-control view that holds no control file, and it writes the receipt and then `workbench.json`. `maintenance end` names apply 1's id. A rollback after activation, a rollback before it, chunk 0 and the legacy `end` run as recorded for bases A to D.
+
+**The schema delta**, every bound and description it touches:
+
+| File | Location | At `9409d998` | After |
+|---|---|---|---|
+| `codec/schemas/migration-plan.schema.json` | `$defs/chunk`, `writes` | `minItems: 1`, `maxItems: 50` | `minItems: 0`, `maxItems: 50` |
+| the same | `$defs/part_entry`, `writes` | `minimum: 1`, `maximum: 50` | `minimum: 0`, `maximum: 50` |
+| the same | `$defs/chunk`, `description` | "one apply request's writes, originals first" | one clause added: a store with no pair has one chunk, with no write |
+| `codec/schemas/migration-proposal.schema.json` | `description` | the rules JSON Schema cannot check | one clause added: "a proposal naming no record is admitted; the cut then makes one chunk with no write" |
+| `codec/schemas/protocol.schema.json` | `description`, the `migration` sentence | "apply lands one chunk per request, chunk 1 first setting the fence" | one clause added: "chunk 1 sets the fence also when it carries no write" |
+
+### What does not move
+
+- **The id bounds.** The plan schema's `$defs/schedule` keeps `apply` `minItems: 1` and `rollback` `minItems: 2`. The proposal schema's `operation_ids` keeps the same two bounds, and its `records` gains no `minProperties`, having none. A record-less run uses exactly one apply id and two rollback ids. `hooks/migrate.ts` already schedules them: its `chunks = Math.floor(writes / 48) + 1` (line 519) gives one chunk for zero writes, and the proposal the refused run left on the Prior workbench carries one apply id and two rollback ids.
+- **`readIndex`'s refusal of an index naming no chunk part,** `conflict/plan-file-changed` (line 1208). An index keeps at least one chunk.
+- **Every refusal reason and its order.** No reason is added, and no reason is withdrawn. `schema-invalid/proposal-invalid` loses one of its messages and keeps every other case.
+- **The fence and the rollback machinery.** The fence file and its one remover, the exempt set of a rollback after activation (verify, the one `maintenance end` naming chunk 1's fence, the standing `begin`), `rollback.json` and its `exempt` lower bound of 3, chunk 0, and the journal, which gains no write kind.
+- **The receipt schema.** It carries no lower bound on a count, and its `checks` keeps `minItems: 1`, which verify's checks meet over zero items.
+- **The shared fixtures already pinned.** No existing case changes its expectation. No file under `codec/fixtures/valid/migration/` or `codec/fixtures/invalid/migration/` carries `writes: []` on a chunk or `writes: 0` on a part entry (read at `9409d998`). `invalid/migration/index-chunk-part-without-writes.json` stays invalid, because `writes` stays required on a chunk part.
+- **`initialize`,** as request 27 ruled it.
+
+### Recorded bytes this revision moves
+
+| Item | What moves | Measured or inferred |
+|---|---|---|
+| `codec/dist/fusion-record.js` | rebuilt with the two bounds and the three descriptions, since the schemas are inlined into it; its size and digest are stated at the hand-over beside `fb170361…` | inferred |
+| The three schemas | as the schema delta above | read at `9409d998` |
+| The shared fixtures | four valid cases, a proposal with no record, a chunk with no write, an index with one chunk of no write, and a records part with no record; one invalid case, a chunk part entry with `writes: -1`, `schema-invalid`; one manifest entry each, so 370 entries become 375, the 76 under the three migration schemas become 81, and the 15 valid among them become 19 | the counts at `9409d998`, by `node -e` over `codec/fixtures/manifest.json`; the five files inferred from the plan |
+| `codec/fixtures/protocol-session-migration/` | base E appended from exchange 71, over a root seeded with `.fusion-setup` and one memo and holding no record: survey, plan (one chunk, no write), apply 1, `inspect` under the fence, verify, `maintenance end` naming apply 1's id, `inspect` (`json-control`), `list`, `maintenance begin`, rollback 1, rollback 0, the legacy `end`, `inspect` (legacy, no fence); two new seeds; the README gains base E. Exchanges 01 to 70 and every existing seed stay byte-unchanged, and a change to any of them stops the work before the hand-over | inferred; the session holds 70 exchanges over bases A to D at `9409d998` |
+| Every other recorded session | nothing | inferred: none holds a migration plan file; `CODEC_REQUIRE_GOLDENS=1 npm test` with no recorded file rewritten is the check |
+
+### The version boundary
+
+Inferred from the source at `9409d998`. The hand-over measures it by running the qualified bundle, extracted from git by its blob, over the workbench base E leaves after verify.
+
+- **The qualified bundle reads a record-less plan's index and refuses it.** `readIndex` validates the index against `fusion.migration-plan/v1`, and `writes: 0` on chunk 1's entry fails `minimum: 1`. So `apply`, `verify`, `rollback` and the second-run `plan` over such a plan answer `conflict/plan-file-changed`, and nothing is written. Its `plan` refuses a record-less proposal, as on the Prior workbench.
+- **Every other operation reads the activated workbench as `json-control`.** No other operation reads the plan files.
+- **A checkout on 13.1.12 or older therefore cannot roll back** a record-less migration that a newer checkout made. Section 8.1 at `dbdfbb6` covers this: "Deshalb müssen alle schreibenden Installationen aktualisiert sein", and `/fusion:migrate` already says it.
+- **Prior's runtime keeps `fb170361…` until it re-pins.** Over a record-less workbench migrated by the new codec it reads as above and refuses only a `migration` request.
+
+### 71. Does a record-less migration as one chunk with no write meet section 8?
+
+**Closes:** the condition of fusion's release tag, under the user's ruling in `261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md` (option 2): the tag waits for Prior's acceptance of this request, and the re-snapshot and the re-pin, requests 72 and 73, may follow it. The run shape the user ruled (`261019-0913-how-does-the-shared-migration-contract-shape-a-run-that-converts-no-pair.md`, option 1) rests on 71(a) and 71(b). Preferred form, as for 67: a Prior response document at a Prior commit that gives each of 71(a) to 71(c) one verdict, accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for).
+
+#### 71(a) The run's shape under section 8
+
+A store with no record pair is frozen as one chunk with no write. Apply 1 sets the migration's fence and commits an intent with no write. From apply 1 to `maintenance end`, normal work meets the fence, as section 8.3.4 requires ("Der Migrationsclient bleibt währenddessen exklusiv; normale Arbeit ist gesperrt"). A rollback before and after activation runs as section 8.4 and the recorded bases have it.
+
+**Asked:** Does Prior accept a record-less run as one chunk with no write, with every later phase, fence and exempt set unchanged?
+
+#### 71(b) The whole schema delta
+
+**Asked:** Does Prior accept the two relaxed bounds (`$defs/chunk` `writes` to `minItems: 0`, `$defs/part_entry` `writes` to `minimum: 0`), together with the withdrawn plan-step refusal and the three description clauses, as the whole delta? Is any other bound Prior's harness checks, beyond the shared schemas, expected to move with them?
+
+#### 71(c) Activation when nothing is converted
+
+Section 8.3.5 activates "erst nach vollständigem Erfolg". Section 8.3.4 has the receipt written and checked before activation, and section 8.3.6 names what the receipt holds. A record-less run converts nothing and rewrites nothing. Verify runs its checks over zero items, then writes the receipt and then `workbench.json`. Its plan files, inventory included, stand beside the receipt. A second `plan` answers the receipt as a verified no-op (section 8.3.7).
+
+**Asked:** Does Prior read "a migration converts nothing and writes its receipt and the manifest" as within section 8.3's activation rule, with the frozen plan files counted as the receipt's evidence and not as converted records?
+
+### What fusion does with the answer
+
+- **Accepted:** the plan's steps 2 to 7 stand, and the hand-over records the answer by question, with the Prior commit that holds it. The tag may follow, and requests 72 and 73 ask for the re-snapshot and the re-pin.
+- **Corrected:** the correction lands before the hand-over is written. If it changes the run's shape, to no chunk or no fence, fusion's plan stops before the hand-over and goes back to the user to be re-planned.
+- **Refused or deferred:** no tag carries the codec change, and the user rules.
+
+### Requests 64 and 67 to 71, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, still `QualifiedCodecDigest` at `dbdfbb6` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **open**: this section | — |
+
+Request 71 is the one open request.
