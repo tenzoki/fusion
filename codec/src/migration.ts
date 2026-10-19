@@ -17,7 +17,8 @@
 //   plan     the proposal under `.json-state/migration/`, bound by the
 //            request's sha256 and read strictly at its 16 MiB cap; checked in
 //            the contract's order; the inventory taken under the lock; the
-//            writes cut into chunks of at most fifty; the plan frozen under
+//            writes cut into chunks of at most fifty, at least one, chunk 1
+//            with no write when no pair is cut; the plan frozen under
 //            `archive/migrations/<migration id>/` as numbered parts and an
 //            index, in ONE bounded intent with the index its last write.
 //   apply    chunk n of the frozen plan in one intent, originals first; chunk
@@ -639,7 +640,10 @@ export interface Frozen {
 /**
  * Pairs in narrative order cut into chunks: a pair never spans two, a chunk
  * closes at `CHUNK_WRITES` writes or where its file would pass the 1 MiB cap
- * by the estimate; within a chunk the originals come first.
+ * by the estimate; within a chunk the originals come first. The cut yields at
+ * least one chunk, as `split` yields at least one part: with no pair, chunk 1
+ * carries no write, so apply 1 still sets the fence every later phase keys on
+ * (request 71).
  */
 export function cut(migrationId: string, pairs: readonly PairWrites[]): Array<Frozen & { writes: number }> {
   const out: Array<Frozen & { writes: number }> = [];
@@ -647,7 +651,7 @@ export function cut(migrationId: string, pairs: readonly PairWrites[]): Array<Fr
   let writes = 0;
   let weight = 0;
   const close = (): void => {
-    if (current.length === 0) return;
+    if (current.length === 0 && out.length > 0) return;
     const file = chunkFile(migrationId, out.length + 1, current);
     out.push({ file, bytes: Buffer.from(serialise(file), "utf-8"), writes });
     current = [];
@@ -963,7 +967,6 @@ export function migrationPlan(req: MigrationPlanRequest, sitesOf: SitesOf): Plan
     if (!read.ok) return read;
     const p = read.value;
     const order = Object.keys(p.records).sort((a, b) => bytewise((p.records[a] as ProposalRecord).narrative, (p.records[b] as ProposalRecord).narrative));
-    if (order.length === 0) return invalid(`${req.proposal.path} names no record; a migration converts at least one pair`);
     const ranges = rangesAndExclusions(p, order);
     if (!ranges.ok) return ranges;
 

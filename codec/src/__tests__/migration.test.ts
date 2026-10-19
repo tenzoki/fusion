@@ -1884,3 +1884,132 @@ describe("a generated store of the largest measured copy's size", () => {
     expect(verifyMs).toBeLessThan(5_000);
   }, 300_000);
 });
+
+// --- a record-less store (request 71) -------------------------------------------------------
+
+describe("a legacy store holding no record (request 71): one chunk with no write, every later phase unchanged", () => {
+  const MEMO = "shared/memos/notes-example-person.md";
+  /** A legacy root with the setup marker and one memo, and the proposal the host composes for it: no record, every count 0, one apply id and two rollback ids. */
+  function recordless(): Run["p"] {
+    write(root, ".fusion-setup", '{"setup":"generated"}\n');
+    write(root, MEMO, "# Notes\n\na memo, no record\n");
+    return {
+      schema: "fusion.migration-proposal/v1",
+      migration_id: MID,
+      workbench_id: WB,
+      source_layout: "fusion-v12",
+      source_inventory_sha256: observed(root),
+      operation_ids: { plan: oid(0), apply: [oid(100)], verify: oid(1), rollback: [oid(5000), oid(5001)] },
+      exclusions: [...ALLOWLIST],
+      records: {},
+      counts: { package_live: 0, package_terminal: 0, record_live: 0, record_closure: 0, plain_terminal: 0, empty_container: 0 },
+      findings: [],
+      repairs: [],
+    };
+  }
+  async function plannedEmpty(): Promise<Run & { answer: Record<string, unknown> }> {
+    const p = recordless();
+    const answer = okResult(await dispatch(planRequest(root, propose(root, p))));
+    return { p, plan: answer.plan as { path: string; sha256: string }, chunks: (answer.schedule as { apply: unknown[] }).apply.length, answer };
+  }
+
+  it("plan freezes chunk 1 with no write and the five part kinds, each valid and bound by the index", async () => {
+    const r = await plannedEmpty();
+    expect(r.chunks).toBe(1);
+    const parts = r.answer.parts as Array<{ part: string; n: number; path: string; sha256: string; writes?: number }>;
+    expect(parts.map((x) => x.part)).toEqual(["chunk", "records", "inventory", "findings", "repairs", "answers"]);
+    expect(parts[0]).toEqual({ part: "chunk", n: 1, path: `archive/migrations/${MID}/chunks/1.json`, sha256: revisionOf(readFileSync(join(root, `archive/migrations/${MID}/chunks/1.json`))), writes: 0 });
+    expect(chunkFile(r, 1).writes).toEqual([]);
+    expect(validate(PLAN_SCHEMA_ID, readJson(PLAN_PATH))).toEqual({ ok: true });
+    for (const x of parts) expect(validate(PLAN_SCHEMA_ID, readJson(x.path)), x.path).toEqual({ ok: true });
+    const records = readJson(`archive/migrations/${MID}/parts/records-1.json`);
+    expect(records.records).toEqual({});
+    expect(records.counts).toEqual(r.p.counts);
+    expect(r.answer.schedule).toEqual({ plan: oid(0), apply: [{ chunk: 1, operation_id: oid(100) }], verify: oid(1), rollback: [{ chunk: 0, operation_id: oid(5000) }, { chunk: 1, operation_id: oid(5001) }], unassigned: [] });
+  });
+
+  it("apply 1 sets the fence under its own id and lands nothing outside the plan area; verify writes the receipt and the manifest; inspect answers json-control; a second plan is the no-op", async () => {
+    const r = await plannedEmpty();
+    const before = tree(root);
+    const a1 = await dispatch(applyReq(r, 1));
+    const first = okResult(a1);
+    expect(first.writes).toEqual([]);
+    expect((a1 as { revisions: Record<string, string> }).revisions).toEqual({});
+    expect(first.fence).toEqual(fenceFile());
+    expect(fenceFile()?.operation_id).toBe(F1(r));
+    expect(tree(root)).toBe(before);
+    expect((await inspectOf()).maintenance).toEqual(fenceFile());
+    const v = okResult(await dispatch(verifyReq(r)));
+    const receipt = readJson(`archive/migrations/${MID}/receipt.json`);
+    expect(validate(RECEIPT_SCHEMA_ID, receipt)).toEqual({ ok: true });
+    const checks = receipt.checks as Array<{ name: string; result: string }>;
+    expect(checks.map((c) => c.name)).toEqual(["pairs", "ids", "graph", "references", "acceptance", "closure", "validate", "reconcile"]);
+    expect(checks.every((c) => c.result === "passed")).toBe(true);
+    expect(Object.values(receipt.counts as Record<string, number>).every((n) => n === 0)).toBe(true);
+    const manifestBytes = readFileSync(join(root, "workbench.json"));
+    expect(v.manifest).toEqual({ path: "workbench.json", revision: revisionOf(manifestBytes) });
+    expect(receipt.manifest_revision).toBe(revisionOf(manifestBytes));
+    expect(readFileSync(join(root, MEMO), "utf-8")).toBe("# Notes\n\na memo, no record\n");
+    okResult(await dispatch(end(tid(0x62), F1(r))));
+    const i = await inspectOf();
+    expect(i.state).toBe("json-control");
+    expect(i.maintenance).toBeNull();
+    expect(okResult(await dispatch({ op: "list", workbench: root })).records).toEqual([]);
+    const t = tree(root);
+    const again = okResult(await dispatch(planRequest(root, propose(root, r.p), tid(0x64))));
+    expect(again).toMatchObject({ no_op: true, migration_id: MID, receipt: { path: `archive/migrations/${MID}/receipt.json` } });
+    expect(tree(root)).toBe(t);
+  });
+
+  /** The survey's entries, less the directories the run created and left empty: the frozen input. */
+  const input = async (surveyed: ReadonlyArray<Record<string, unknown>>): Promise<void> => {
+    const known = new Set(surveyed.map((e) => e.path as string));
+    const after = await surveyEntries();
+    expect(after.filter((e) => known.has(e.path as string))).toEqual(surveyed);
+    expect(after.filter((e) => !known.has(e.path as string)).every((e) => e.kind === "directory")).toBe(true);
+    const i = await inspectOf();
+    expect(i.state).toBe("legacy");
+    expect(i.maintenance).toBeNull();
+  };
+
+  it("a rollback after activation: under a begin, rollback 1 removes the manifest and the receipt and binds rollback.json, rollback 0 and the legacy end return the frozen input", async () => {
+    const p = recordless();
+    const surveyed = await surveyEntries();
+    const r = { p, plan: okResult(await dispatch(planRequest(root, propose(root, p)))).plan as { path: string; sha256: string }, chunks: 1 };
+    await applyAll(r);
+    okResult(await dispatch(verifyReq(r)));
+    okResult(await dispatch(end(tid(0x62), F1(r))));
+    okResult(await dispatch(begin(tid(0x68))));
+    const b1 = okResult(await dispatch(rollbackReq(r, 1)));
+    expect(b1.activation_undone).toBe(true);
+    expect(b1.removed).toEqual(["workbench.json", `archive/migrations/${MID}/receipt.json`]);
+    expect(b1.restored).toEqual([]);
+    expect(readJson(`archive/migrations/${MID}/rollback.json`).fence).toBe(tid(0x68));
+    const z = okResult(await dispatch(rollbackReq(r, 0)));
+    expect(z.fence).toBe(tid(0x68));
+    okResult(await dispatch(end(tid(0x69), tid(0x68))));
+    await input(surveyed);
+  });
+
+  it("a rollback before activation (apply 1 landed, rollback 1, rollback 0, the legacy end) and a full abort (rollback 0, no fence) return the frozen input", async () => {
+    const p = recordless();
+    const surveyed = await surveyEntries();
+    const r = { p, plan: okResult(await dispatch(planRequest(root, propose(root, p)))).plan as { path: string; sha256: string }, chunks: 1 };
+    await applyAll(r);
+    const b1 = okResult(await dispatch(rollbackReq(r, 1)));
+    expect(b1).toMatchObject({ chunk: 1, restored: [], removed: [], activation_undone: false });
+    const z = okResult(await dispatch(rollbackReq(r, 0)));
+    expect(z.fence).toBe(F1(r));
+    okResult(await dispatch(end(tid(0x65), F1(r))));
+    await input(surveyed);
+
+    rmSync(join(root, `archive`), { recursive: true });
+    const q = { ...p, source_inventory_sha256: observed(root), operation_ids: { plan: oid(2), apply: [oid(0x300)], verify: oid(3), rollback: [oid(0x400), oid(0x401)] } };
+    const s = { p: q, plan: okResult(await dispatch(planRequest(root, propose(root, q), oid(2)))).plan as { path: string; sha256: string }, chunks: 1 };
+    const abort = okResult(await dispatch(rollbackReq(s, 0)));
+    expect(abort.fence).toBeNull();
+    expect(fenceFile()).toBeNull();
+    expect(existsSync(join(root, PLAN_PATH))).toBe(false);
+    await input(surveyed);
+  });
+});
