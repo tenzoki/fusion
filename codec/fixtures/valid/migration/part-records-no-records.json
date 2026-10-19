@@ -1,0 +1,15 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "records",
+  "migration_id": "migration-20261002-example",
+  "n": 1,
+  "counts": {
+    "package_live": 0,
+    "package_terminal": 0,
+    "record_live": 0,
+    "record_closure": 0,
+    "plain_terminal": 0,
+    "empty_container": 0
+  },
+  "records": {}
+}

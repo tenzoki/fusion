@@ -2507,5 +2507,36 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "A no-op entry is exactly {operation_id, request_digest, answer_sha256}; its op is always migration and is not carried, so a fourth member is refused."
+  },
+  {
+    "path": "valid/migration/proposal-no-records.json",
+    "schema": "urn:fusion:schema:fusion.migration-proposal/v1",
+    "expect": "valid",
+    "note": "The proposal of a record-less run (request 71, work package 261019-0906-migrate-an-empty-legacy-workbench): records {}, every count 0, no finding and no repair, one apply id and two rollback ids, which the cut into one chunk with no write uses."
+  },
+  {
+    "path": "valid/migration/chunk-no-writes.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "Chunk 1 of a record-less run (request 71, work package 261019-0906-migrate-an-empty-legacy-workbench): writes []; the cut always yields at least one chunk, and chunk 1 sets its fence with no write."
+  },
+  {
+    "path": "valid/migration/index-one-chunk-no-writes.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "The index of a record-less run (request 71, work package 261019-0906-migrate-an-empty-legacy-workbench): one chunk whose part entry carries writes 0, the schedule with one apply id and rollback ids for chunks 0 and 1, none unassigned."
+  },
+  {
+    "path": "valid/migration/part-records-no-records.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "valid",
+    "note": "Records part 1 of a record-less run (request 71, work package 261019-0906-migrate-an-empty-legacy-workbench): records {} and the cut's counts, every one 0."
+  },
+  {
+    "path": "invalid/migration/index-chunk-part-writes-negative.json",
+    "schema": "urn:fusion:schema:fusion.migration-plan/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A chunk part entry's writes is at least 0, the lower bound a record-less run (request 71, work package 261019-0906-migrate-an-empty-legacy-workbench) moved from 1; writes -1 is refused."
   }
 ]

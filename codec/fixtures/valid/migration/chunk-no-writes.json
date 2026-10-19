@@ -1,0 +1,7 @@
+{
+  "schema": "fusion.migration-plan/v1",
+  "part": "chunk",
+  "migration_id": "migration-20261002-example",
+  "chunk": 1,
+  "writes": []
+}
