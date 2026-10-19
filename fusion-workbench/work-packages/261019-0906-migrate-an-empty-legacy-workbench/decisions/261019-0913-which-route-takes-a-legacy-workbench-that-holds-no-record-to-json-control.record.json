@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "64da3148-aaab-4f19-a98c-3e62137a74de",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261019-0906-migrate-an-empty-legacy-workbench/decisions/261019-0913-which-route-takes-a-legacy-workbench-that-holds-no-record-to-json-control.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "261019-0906-migrate-an-empty-legacy-workbench.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
