@@ -1375,8 +1375,10 @@ describe("the shipped reconcile, cadence, check gitignore, migrate Step 7 and he
   it("/fusion:migrate ## Step 7's Node gate: NODE= on the host's node, the refusal for a node too old and for none on PATH", () => {
     expect(install.failure).toBeNull();
     expect(install.status).toBe(0);
-    const [gate, ...rest] = shippedBlocks("migrate", "## Step 7 —");
-    expect(rest, "## Step 7 — carries more than its Node gate block").toEqual([]);
+    // Step 7 carries other blocks after the gate (the survey's status/ROUTE= block), so the gate is picked by what it prints, not by position.
+    const gates = shippedBlocks("migrate", "## Step 7 —").filter((b) => b.includes('echo "NODE=') && b.includes('echo "REFUSED: the JSON migration needs Node'));
+    expect(gates.length, "## Step 7 — carries exactly one Node gate block").toBe(1);
+    const [gate] = gates;
     const want = (JSON.parse(readFileSync(join(install.home, "codec", "package.json"), "utf-8")) as { engines: { node: string } }).engines.node.replace(">=", "");
     const refusal = `REFUSED: the JSON migration needs Node ${want} or later, and node is missing or older. Install it and run /fusion:migrate again.\n`;
     const sh = (PATH: string) => run("bash", ["-c", gate], { cwd: install.tmp, env: { PATH, HOME: join(install.tmp, "home-dir"), FUSION_PLUGIN_ROOT: install.home } });
