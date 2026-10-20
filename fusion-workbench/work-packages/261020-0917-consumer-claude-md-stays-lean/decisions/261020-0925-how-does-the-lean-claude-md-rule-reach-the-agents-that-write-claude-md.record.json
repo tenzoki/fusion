@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a5603b77-bf20-4882-964f-7b087d2d5421",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261020-0917-consumer-claude-md-stays-lean/decisions/261020-0925-how-does-the-lean-claude-md-rule-reach-the-agents-that-write-claude-md.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

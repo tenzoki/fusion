@@ -1,0 +1,58 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "9a662896-b682-48f5-b700-f81aeb5ab57e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261020-0917-consumer-claude-md-stays-lean/plans/261020-0927-plan-consumer-claude-md-stays-lean.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": null
+  }
+}
