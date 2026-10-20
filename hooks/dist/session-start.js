@@ -85,6 +85,17 @@
  * set has shrunk three times since it was measured, so a number written into
  * prose about it is stale before it is committed.
  *
+ * ## The due-checks line
+ *
+ * Where a workbench is found, the same envelope also names the periodic checks
+ * that are due ("fusion: periodic checks due (claude-md, upstream): run
+ * /fusion:check"), after the warning, computed by `lib/checks-due.ts`, the
+ * module `bin/fusion-checks-due` runs for `/fusion:setup` Step 0. A session
+ * started through the orchestrator never runs setup and was told nothing
+ * (issue `261020-0916-claude-md-check-never-runs-in-orchestrator-sessions.md`).
+ * Nothing due, or any failure, is no line; the line asks nothing and blocks
+ * nothing.
+ *
  * ## The second product: this session's `session_start` row
  *
  * Since the substrate step of the ceremony cut, this hook also appends one
@@ -135,6 +146,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { dueChecks, dueLine, pluginVersion } from "./lib/checks-due.js";
 import { countsFromHelperOutput, domainFor } from "./lib/domain-cascade.js";
 import { failOpen } from "./lib/fail-open.js";
 import { git, GIT_TIMED_OUT } from "./lib/git.js";
@@ -257,8 +269,13 @@ async function readPayload() {
  * it so a late failure cannot emit a second envelope on top of the first.
  */
 let envelopeWritten = false;
-function emitEnvelope(warning) {
-    if (warning === null) {
+/**
+ * The one reply, carrying every line this start has to say, in order, joined
+ * into a single `systemMessage`. A null entry is a line that has nothing to say.
+ */
+function emitEnvelope(lines) {
+    const said = lines.filter((l) => l !== null);
+    if (said.length === 0) {
         // A bare object: valid JSON, no fields, no banner. Same shape the guard's
         // allow path emits, so a quiet run is parseable rather than empty.
         process.stdout.write("{}\n");
@@ -267,16 +284,32 @@ function emitEnvelope(warning) {
         process.stdout.write(JSON.stringify({
             hookSpecificOutput: {
                 hookEventName: "SessionStart",
-                systemMessage: warning,
+                systemMessage: said.join("\n\n"),
             },
         }) + "\n");
     }
     envelopeWritten = true;
 }
+/**
+ * The due-checks line (`lib/checks-due.ts`), or `null`: no workbench, nothing
+ * due, an unreadable version, or any failure. It asks nothing and blocks
+ * nothing; a session that never runs `/fusion:setup` is told here instead.
+ */
+function checksDueLine(root) {
+    if (root === null)
+        return null;
+    try {
+        const version = pluginVersion(pluginRoot());
+        return version === null ? null : dueLine(dueChecks(root, version));
+    }
+    catch {
+        return null;
+    }
+}
 async function main() {
     const cwd = resolve(process.cwd());
     const root = findWorkbenchRoot(cwd);
-    emitEnvelope(subdirectoryWarning(cwd, root));
+    emitEnvelope([subdirectoryWarning(cwd, root), checksDueLine(root)]);
     // Everything below is the addendum. No workbench, no log to append to.
     if (root === null)
         return;

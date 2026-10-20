@@ -67,37 +67,32 @@ This is the layout defined in `rules/fusion-workbench-conventions.md` `## fusion
 - **`work-packages/` is created empty, and Setup creates nothing inside it.** A work package's container and its own stores come into existence when the package is filed and when its first artefact is written; Setup has no item to create one for.
 - **Of the root-anchored surfaces, only `.guard-state/` is pre-created above.** The rest appear when their consumer first writes them, at the fixed root-relative paths the layout names; never create one anywhere else, because no consumer has a fallback path.
 
-Write the setup marker — the file every agent and hook looks for to confirm fusion is set up here — and read, out of the same block, which periodic checks are due. Both halves need the version the module ships, so they are one call rather than two. The marker is rewritten only when its content would change; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why that matters.
+Write the setup marker — the file every agent and hook looks for to confirm fusion is set up here — and read which periodic checks are due. The marker is rewritten only when its content would change; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why that matters.
 
 ```bash
 M=./fusion-workbench/.fusion-setup
 V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
 [ -n "$V" ] || { echo "marker-version-unresolved"; exit 0; }
-command -v node >/dev/null 2>&1 || { [ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; echo "checks_due=unread (no node on PATH)"; exit 0; }
-node -e '
-const fs = require("fs"); const [m, v, c] = process.argv.slice(1);
-const SEL = ["monitor","concurrency","assets","config","permissions","gitattributes","identity","gitignore","upstream","leftovers","claude-md"];
+if command -v node >/dev/null 2>&1; then node -e '
+const fs = require("fs"); const [m, v] = process.argv.slice(1);
 let o = null; try { o = JSON.parse(fs.readFileSync(m, "utf8")); } catch {}
 if (typeof o !== "object" || o === null) o = {};
 const before = JSON.stringify(o);
 if (typeof o.setup_at !== "string") o.setup_at = new Date().toISOString().slice(0, 19);
 o.plugin_version = v;
 delete o.checks;
-let s = null; try { s = JSON.parse(fs.readFileSync(c, "utf8")); } catch {}
-const now = Date.now();
-const due = SEL.filter((sel) => { const e = s?.[sel]; return !e || e.version !== v || !(now - Date.parse(e.at) < 30 * 864e5); });
 const after = JSON.stringify(o);
 if (after !== before) fs.writeFileSync(m, after + "\n");
 console.log("marker=" + (after !== before ? "written" : "unchanged"));
-console.log("checks_due=" + (due.join(",") || "none"));
-' "$M" "$V" ./fusion-workbench/.check-stamps
+' "$M" "$V"; else [ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; fi
+"$FUSION_PLUGIN_ROOT/bin/fusion-checks-due"
 ```
 
-`marker=unchanged` means nothing was written and the file's modification time did not move, which is the property the tracking rule asks for. `marker=written` means the marker was missing, carried another version, or still carried the `checks` object it drops. The due list reads `.check-stamps`, which never travels.
+`marker=unchanged` means nothing was written and the file's modification time did not move, which is the property the tracking rule asks for. `marker=written` means the marker was missing, carried another version, or still carried the `checks` object it drops. `checks_due=` comes from `bin/fusion-checks-due`, which the session-start hook shares; it reads `.check-stamps`, which never travels.
 
 **`marker-version-unresolved` says the version could not be read, which is not the same as the version matching.** The version decides both halves, so an unreadable one leaves no comparison to make and no due list to compute: the block writes nothing and prints that token. Setup is not blocked. A marker is never written with an empty version, because the next run cannot tell an empty one apart from a real one. Report the token together with whichever outcome followed: an existing marker was left exactly as it stands, or the workbench has no marker at all and is therefore not set up here until the session is restarted and Setup run again.
 
-**`checks_due=unread` says node is not on this machine's `PATH`.** The marker is still written, by the shell fallback, so the workbench is set up; what could not be computed is the due list. Every fusion hook is a node program, so none of them is running either. Report both facts and continue.
+**`checks_due=unread` says no due list was computed, and its parenthesis says why;** usually node is not on this machine's `PATH`. The marker is still written, by the shell fallback, so the workbench is set up; what could not be computed is the due list. Every fusion hook is a node program, so none of them is running either. Report both facts and continue.
 
 ## Step 0d — Ensure stylometric profiles are present locally
 

@@ -39,10 +39,10 @@
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6792
-  setup/SKILL.md 15958
+  setup/SKILL.md 15527
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 225680
+  total 225249
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
@@ -111,11 +111,11 @@
   rules-voice-profile.test.ts 319
   sentence-identifier-containment.test.ts 456
   session-start-event.test.ts 150
-  session-start-subdirectory.test.ts 159
+  session-start-subdirectory.test.ts 244
   staging-drift.test.ts 733
-  store-name-migration.test.ts 315
+  store-name-migration.test.ts 316
   surface-growth-bound.test.ts 557
   window-bound.test.ts 24
   work-graph.test.ts 127
   workbench-citation-lint.test.ts 333
-  total 25438
+  total 25524

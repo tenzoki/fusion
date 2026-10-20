@@ -85,6 +85,17 @@
  * set has shrunk three times since it was measured, so a number written into
  * prose about it is stale before it is committed.
  *
+ * ## The due-checks line
+ *
+ * Where a workbench is found, the same envelope also names the periodic checks
+ * that are due ("fusion: periodic checks due (claude-md, upstream): run
+ * /fusion:check"), after the warning, computed by `lib/checks-due.ts`, the
+ * module `bin/fusion-checks-due` runs for `/fusion:setup` Step 0. A session
+ * started through the orchestrator never runs setup and was told nothing
+ * (issue `261020-0916-claude-md-check-never-runs-in-orchestrator-sessions.md`).
+ * Nothing due, or any failure, is no line; the line asks nothing and blocks
+ * nothing.
+ *
  * ## The second product: this session's `session_start` row
  *
  * Since the substrate step of the ceremony cut, this hook also appends one

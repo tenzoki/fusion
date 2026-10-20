@@ -53,6 +53,7 @@ bin/*
 !bin/fusion-work-order
 !bin/fusion-edge-answers
 !bin/fusion-claude-md-weight
+!bin/fusion-checks-due
 !bin/fusion-record
 !bin/fusion-write
 !bin/fusion-archive

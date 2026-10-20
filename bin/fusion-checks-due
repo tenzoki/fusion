@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# fusion-checks-due — which of fusion's periodic checks are due in this project.
+#
+# Usage:
+#   fusion-checks-due
+#
+# Output on stdout, one line:
+#
+#   checks_due=claude-md,upstream    # the due selectors, in /fusion:check's order
+#   checks_due=none                  # nothing is due
+#   checks_due=unread (<why>)        # no due list: no node on PATH, no readable
+#                                    # plugin version, or no workbench above cwd
+#
+# A selector is due when fusion-workbench/.check-stamps has no entry for it, the
+# entry carries another plugin version, or it is 30 days old or older. The rule
+# is hooks/lib/checks-due.ts, and hooks/session-start.ts imports the same module
+# to name the due checks at every session start; /fusion:setup Step 0 calls this
+# helper. It reads only; it never stamps.
+#
+# Exit codes:
+#   0  always, `unread` included — a due list is a result, not a failure
+#      (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md).
+#   1  usage error.
+#
+# The work is hooks/dist/checks-due.js, resolved relative to this script, the
+# pattern bin/fusion-staging-drift uses; the plugin root handed to it is this
+# script's own, so the version compared is the one this copy ships.
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/checks-due.js"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "checks_due=unread (no node on PATH)"
+  exit 0
+fi
+if [ ! -f "$entry" ]; then
+  echo "checks_due=unread ($entry is missing)"
+  exit 0
+fi
+
+exec node "$entry" "$here/.."

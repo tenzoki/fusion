@@ -128,26 +128,26 @@ describe("enumeration lint: the skill roster", () => {
 
 describe("enumeration lint: the /fusion:check selector roster", () => {
   // The roster is stated twice: its authoring home is the selector table in
-  // `skills/check/SKILL.md`, and `SEL` in `skills/setup/SKILL.md` is a second
-  // copy that decides which checks Setup reports due. The two drifted in one
+  // `skills/check/SKILL.md`, and `CHECK_SELECTORS` in `hooks/lib/checks-due.ts`
+  // (Setup's `SEL` until 261020-0917 step 6) decides which checks are reported due. The two drifted in one
   // commit (`c9d4013d`) with a green suite, and the eleventh selector was
   // invisible to Setup until a reviewer read both files (260916-1310). This is
   // fix 2 of 260916-1323, which the cheaper fix could not afford at the time.
   //
-  // Set equality, not order: the table's order is a reading order and `SEL`'s is
+  // Set equality, not order: the table's order is a reading order and the list's is
   // a reporting order, and neither is contractual, so a reorder is not a defect.
-  it("Setup's SEL array holds exactly the selectors the check table documents", () => {
+  it("the due computation's CHECK_SELECTORS holds exactly the selectors the check table documents", () => {
     const table = [...read("skills/check/SKILL.md").matchAll(/^\| `([a-z-]+)` \| /gm)].map((m) => m[1]);
     expect(
       table.length,
       "no selector rows found — `skills/check/SKILL.md`'s table was reshaped; update the parser",
     ).toBeGreaterThan(5);
-    const sel = read("skills/setup/SKILL.md").match(/const SEL = \[([^\]]*)\]/);
-    expect(sel, "`skills/setup/SKILL.md` no longer declares `const SEL = [...]` — update the parser").not.toBeNull();
+    const sel = read("hooks/lib/checks-due.ts").match(/CHECK_SELECTORS = \[([^\]]*)\]/);
+    expect(sel, "`hooks/lib/checks-due.ts` no longer declares `CHECK_SELECTORS = [...]` — update the parser").not.toBeNull();
     expect(
       [...sel![1].matchAll(/"([a-z-]+)"/g)].map((m) => m[1]).sort(),
-      "Setup's SEL has drifted from the selector table: a selector missing here is a check " +
-        "Setup never reports due, and one only here is a check that can never run",
+      "CHECK_SELECTORS has drifted from the selector table: a selector missing here is a check " +
+        "never reported due, and one only here is a check that can never run",
     ).toEqual([...table].sort());
   });
 });

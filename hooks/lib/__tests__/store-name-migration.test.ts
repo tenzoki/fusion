@@ -7,6 +7,7 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 import { extractBashBlock } from "./helpers/prompt-blocks.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { jsonWorkbenchAt } from "./helpers/json-workbench.js";
+import { CHECK_SELECTORS } from "../checks-due.js";
 
 // `/fusion:migrate`'s store-name pass, run as shipped: guard, survey and apply
 // are lifted by heading anchor and run with a real bash on throwaway
@@ -307,7 +308,7 @@ describe("Step 7 as shipped: the survey block routes every cell of session by st
 
 it("a pulled marker stamping every periodic check makes none count as done, and a stamp taken here is read (issue 260924-1732)", () => {
   const setup = extractBashBlock(md("setup"), "Write the setup marker"), dir = tree(["x.md"]), m = join(dir, "fusion-workbench", ".fusion-setup"), env = { ...ENV, FUSION_PLUGIN_ROOT: pluginRoot };
-  const SEL: string[] = JSON.parse(setup.match(/const SEL = (\[.*\]);/)![1]), at = new Date().toISOString().slice(0, 10), v = JSON.parse(readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8")).version;
+  const SEL: string[] = [...CHECK_SELECTORS], at = new Date().toISOString().slice(0, 10), v = JSON.parse(readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8")).version;
   writeFileSync(m, JSON.stringify({ setup_at: "2026-09-01T00:00:00", plugin_version: v, checks: Object.fromEntries(SEL.map((s) => [s, { at, version: v }])) }));
   expect(sh(setup, dir, env)).toBe(`marker=written\nchecks_due=${SEL.join(",")}\n`);
   sh(extractBashBlock(md("check"), "## Stamp what you ran").replace("<sel...>", SEL.join(" ")), dir, env);
