@@ -38,13 +38,13 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": {
       "path": "archive/migrations/migration-20261006-v12/originals/work-packages/260912-0438-human-facing-docs-leave-claude-md/decisions/260916-1006_a_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md",
       "sha256": "sha256:55ea7820ef280116b5beed82ef05e3be32b0c4efa8827dffb72cf5b64fc0a33e",
       "kind": "decision"
     },
-    "implementation_ref": null,
+    "implementation_ref": "006c73cd",
     "superseded_by": null,
     "deferral": null
   }

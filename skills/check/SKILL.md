@@ -346,7 +346,7 @@ H="$FUSION_PLUGIN_ROOT/bin/fusion-claude-md-weight"
 if [ -x "$H" ]; then "$H"; else echo "claude-md=unread"; fi
 ```
 
-Report what it printed and nothing past it. `clean` and `absent` are one line, **not a warning**; on `weighed`, the rows marked `over` and `/fusion:curate` as what acts on them. It writes nothing and never fails the session. `unread` — this install lacks the helper: the check was **not taken**, which is not the same as a clean file. The rest: that helper's header.
+Report what it printed and nothing past it. `clean` and `absent` are one line, **not a warning**; on `weighed`, the `over` rows and the last line's route: `/fusion:curate --placement`, then `### Relocating in a consuming project`. It writes nothing and never fails the session. `unread` — this install lacks the helper: the check was **not taken**, which is not the same as a clean file. The rest: that helper's header.
 
 ## Stamp what you ran
 

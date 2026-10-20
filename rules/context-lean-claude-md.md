@@ -327,3 +327,17 @@ not named is not this exception. It is a loss, and no later reader can tell the
 two apart.
 
 Binding decision: `260916-1006_*_how-does-a-consuming-project-bring-its-claude-md-to-the-lean-convention-when-the-curator-asks-a-different-question.md`.
+
+### Relocating in a consuming project
+
+`/fusion:curate --placement` proposes the moves and cuts the source; it does not
+finish them alone. The curator writes `./rules/` and `.claude/rules/` files,
+never a module header and never `rules/context-manifest.yaml`. An entry whose
+destination is a header or the manifest stays `stale`, with an issue the curator
+files naming the owner, until a code-implementer step (header) or a
+data-implementer step (manifest) has written it; a second
+`/fusion:curate --placement` then cuts the source. Moves that together exceed a
+fifth of the file's bytes trip the curator's blast-radius pause. A
+`.claude/rules/` file whose name contains a `bin/fusion-rules` pattern word
+(`coding`, `ontology`, `normative`, `verb`, `analyst`) is also emitted to the
+agents that word serves, who read it whole, `paths:` or not.

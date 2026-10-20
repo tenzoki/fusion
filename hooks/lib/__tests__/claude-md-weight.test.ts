@@ -112,10 +112,11 @@ describe("claude-md-weight: it reports, and never gates", () => {
     expect(run("--root", root, "--threshold", "5").stdout).toContain("claude-md=weighed");
   });
 
-  it("clause 4 — the report's last line names /fusion:curate", () => {
+  it("clause 4 — the report's last line names /fusion:curate --placement and the route", () => {
     const out = lines(run("--root", scratchRoot(HEAVY)).stdout);
 
-    expect(out[out.length - 1]).toContain("/fusion:curate");
+    expect(out[out.length - 1]).toContain("/fusion:curate --placement");
+    expect(out[out.length - 1]).toContain("/rules/context-lean-claude-md.md `### Relocating in a consuming project`");
   });
 
   it("clause 5 — it renders no verdict about topic, and says whose judgement that is", () => {
@@ -124,7 +125,7 @@ describe("claude-md-weight: it reports, and never gates", () => {
 
     expect(closing[0]).toMatch(/^Topic is not decidable here: /);
     expect(closing[0]).toContain("the reader's judgement, not this helper's");
-    expect(closing[1]).toMatch(/^Act on a finding with \/fusion:curate: /);
+    expect(closing[1]).toMatch(/^Act on a finding with \/fusion:curate --placement, behind your approval; .*This helper never writes\.$/);
     // The rows carry sizes and the threshold mark, and no word about topic.
     expect(out.filter((l) => /^ {2}(over|under) /.test(l)).join("\n")).not.toMatch(/topic/i);
   });

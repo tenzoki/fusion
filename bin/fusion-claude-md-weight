@@ -27,7 +27,7 @@
 #     over     16906     25  ## Layout
 #     under     3074     11  (preamble)
 #   Topic is not decidable here: …
-#   Act on a finding with /fusion:curate: …
+#   Act on a finding with /fusion:curate --placement, behind your approval; …
 #
 # Rows are largest first, and every section is printed — `over` and `under` is
 # how the threshold is marked. The preamble above the first heading is a row of
@@ -222,5 +222,8 @@ echo "writes=none"
 printf '%s\n' "$rows" | awk -F'\t' -v t="$THRESHOLD" '
   { printf "  %-5s %8d %6d  %s\n", ($1 > t ? "over" : "under"), $1, $2, $3 }'
 echo "Topic is not decidable here: whether a section is bound to a topic is the reader's judgement, not this helper's."
-echo "Act on a finding with /fusion:curate: it is the tool that writes CLAUDE.md, and this helper never does."
+# The route's path is resolved from this helper's own location, so the line
+# names a file that exists in a consuming project as much as in this repo.
+plugin=$(cd "$(dirname "$0")/.." && pwd)
+echo "Act on a finding with /fusion:curate --placement, behind your approval; what it cannot write itself: $plugin/rules/context-lean-claude-md.md \`### Relocating in a consuming project\`. This helper never writes."
 exit 0
