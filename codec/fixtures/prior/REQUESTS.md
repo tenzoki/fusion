@@ -5341,3 +5341,181 @@ Section 8.3.5 activates "erst nach vollständigem Erfolg". Section 8.3.4 has the
 | 71 | **open**: this section | — |
 
 Request 71 is the one open request.
+
+## Record-less migration (the hand-over, requests 72 and 73)
+
+**Written against:** fusion `ec76d4fd` on `main` (2026-10-19 15:57, "chore(release): 13.2.0, a legacy workbench holding no record migrates to JSON control"), `v13.1.12-14-gec76d4fd`. `.claude-plugin/plugin.json` there names 13.2.0, and no tag carries it. The working tree differs from `ec76d4fd` in two files under `fusion-workbench/` and in this section, nothing else (`git status --porcelain`). At `ec76d4fd` this file is 5 343 lines, `sha256:893e823f7dae622f90da79211d9397c3a8e0da8fca386c4aaf80a0b26e06d28e`. The last commit that moved a byte under `codec/dist/` is `a9ac4fe4` (2026-10-19 10:16, `git log -1 -- codec/dist/fusion-record.js`). `git log a9ac4fe4..ec76d4fd -- codec/dist codec/src codec/schemas` names one commit, `be8d6fe7`, which touches a test file alone. Prior was read at `8f59121` (2026-10-19 21:34, "docs(fusion): accept request 71 record-less migration contract"), the head of its `main`, parent `dbdfbb6`. `git log --all --oneline dbdfbb6..` there names `8f59121` and `88b2e6c`, the second on `review/fj04-candidate-524fdfad`, as before. Every Prior path below is read with `git show 8f59121:<path>`.
+
+**The bundle:** `codec/dist/fusion-record.js` is 699 094 bytes, `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, blob `27a6973d`. It replaces the qualified `fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`, 699 011 bytes, blob `1dfd1378`, which Prior qualified under request 64 and which stays Prior's pin until 73 is answered: `QualifiedCodecDigest` in `Prior: internal/fusionhost/workbench.go` line 22 and `codecBundleDigest` in `Prior: internal/fusionhost/codec_process_test.go` line 22, both at `8f59121`. `shasum -a 256` and `wc -c` over the working tree's file and `git show ec76d4fd:codec/dist/fusion-record.js | shasum -a 256` print the same digest. `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` in the working tree reported `dist/fusion-record.js: unchanged` in its build step, and the file hashed the same after the suite. Only `dfab3f21…` is asked to be pinned.
+
+This section is the conformance hand-over that `## Record-less migration (request 71, the contract delta)` announced: request 72 for the shared schemas, fixtures and manifest, request 73 for the bundle, base E of the migration session, and the replay and conformance run. No line above is edited. Where this section disagrees with a section above, this section governs.
+
+### Prior's answer to 71, and how this revision meets it
+
+**Read at:** Prior `8f59121`, which adds one file and nothing else: `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md`, 111 lines, 6 299 bytes, `sha256:ed3cbbd7ba08b2aa3a755fa6572c5e88cbac351bd66b55eef6f56ba84ab30acc` as `git show 8f59121:<path> | shasum -a 256` prints it. From here on it is cited as that path at `8f59121`. Prior answered against fusion `224a224a`, the commit that appended request 71, and says it inspected the implementation and schema delta through `ec76d4fd`.
+
+**Prior's verdict, quoted:** "71(a), 71(b) and 71(c): accepted. This is contract acceptance, not a new codec digest qualification. It satisfies the Prior-answer condition for Fusion's release tag described in request 71. Requests 72 and 73 remain the separate snapshot, replay and pin hand-over."
+
+**Prior asks for no correction to the shape.** The answer names harness updates for Prior's own next qualification and says: "These updates belong to Prior's next qualification; they are not corrections Fusion must make to the agreed run shape." So nothing lands between request 71 and this hand-over, and the plan's steps 2 to 7 stand as built.
+
+| Question | Prior's verdict | How this revision meets it, at `ec76d4fd` |
+|---|---|---|
+| 71(a), the run's shape | **accepted**: one apply chunk, chunk 1, with `writes: []`, its scheduled operation id, committed intent, fence, verify, receipt, manifest activation and matching `maintenance end`; one apply id and two rollback ids; "the normal execution, recovery and rollback rules remain in force" | Base E: `72-plan` freezes one chunk part with `writes: 0`; `73-apply` sets the fence named by its own id and answers `writes: []`; `75-verify`; `76-maintenance` ends the fence naming `73`'s id; `79` to `82` roll back after activation and end. `hooks/migrate.ts` schedules one apply id and two rollback ids for zero writes, unchanged. The memo of base E is never rewritten (the session README, base E). |
+| 71(b), the schema delta | **accepted**: the two bounds are "the complete semantic schema delta"; "no positive-write-count requirement in Prior's migration client/replay code beyond the shared schema"; three harness updates named for 72 and 73 | `git diff 9409d998 ec76d4fd -- codec/schemas` is exactly the two bounds of `migration-plan.schema.json` and the three description clauses, no schema id, no other bound. The harness updates are requests 72 and 73 below. Base E starts from an empty `fusion-workbench/` and is seeded by `seed/71-survey/` and `seed/72-plan/` alone, so it inherits neither `codec/fixtures/legacy-v12/` nor the A to D seeds, as Prior's item 2 asks. |
+| 71(c), activation without conversions | **accepted**: verify runs the full checks, writes and checks the receipt, activates `workbench.json` last; the frozen plan files "are not converted records"; a fresh session observes `json-control`, the bound manifest and receipt, and an empty `list`; "the second plan is a verified no-op"; "Do not manufacture records" | `75-verify` answers eight checks, each `checked: 0`; `77-inspect` answers `json-control` with the manifest naming `receipt.json`; `78-list` answers `records: []`. Base E records no second-run plan. The no-op is `migration.test.ts`'s case "… a second plan is the no-op" (`a9ac4fe4`), and in the scratch replay below the head answers a plan under a fresh id over base E's activated tree with `no_op: true`. No record is manufactured anywhere in base E. |
+
+Prior's limits, as it states them: the qualified bytes stay available for existing runtimes, a prepared Prior runtime refuses a digest mismatch, and "this contract acceptance is not a pin override". "No new bundle replay or conformance result is claimed here." "Older codecs reject the zero-write index under their existing lower bound and cannot roll it back. All installations performing migration/rollback must use the supporting revision." The measurement below confirms the last two sentences for `fb170361…`.
+
+### What landed, and at which commits
+
+| Commit | Plan step | What it carries |
+|---|---|---|
+| `9409d998` | — | The work package filed and claimed, its plan approved, the three decision records. Workbench files only |
+| `954cc258` | — (repair) | Two issue records spelt a fixture's directory and a scratch run's control file as stamp-shaped tokens, so the workbench citation lint kept `hooks` `npm test` red at HEAD. Workbench files only |
+| `224a224a` | 1 | Request 71, the section above |
+| `7429df6e` | — (repair) | `codec/src/__tests__/install.test.ts` took the first bash block of `/fusion:migrate` Step 7 as the Node gate and asserted it was the only one, so the codec suite was red at HEAD. It now selects the block by its output. No path either Prior pin holds |
+| `a9ac4fe4` | 2 | `codec/src/migration.ts` (the plan step's refusal withdrawn; `cut` emits chunk 1 with no write), the three schemas, `codec/src/__tests__/migration.test.ts` (four record-less cases), the bundle `dfab3f21…` |
+| `9838363d` | 3 | The five shared fixtures and their five manifest entries, appended (370 to 375) |
+| `be8d6fe7` | 4 | Base E, exchanges 71 to 83, its two seeds, the session README and `round-trip-cli-migration.test.ts` |
+| `7ab72901` | 5 | `hooks/lib/__tests__/migrate.test.ts` and `legacy-import.test.ts`: the record-less route end to end through `bin/fusion-migrate`, and both ways out of the record a refused plan left |
+| `e14cf44d` | 6 | `codec/README.md` `## migration` and `skills/migrate/SKILL.md` Step 7 |
+| `ec76d4fd` | 7 | 13.2.0 on `plugin.json`, `install.sh`, `README.md` and `skills/help/SKILL.md`. No path either Prior pin holds |
+
+Every hash above was checked with `git show --stat`. `git diff --stat 9409d998 ec76d4fd -- codec/src/kernel.ts codec/src/journal.ts codec/src/store.ts codec/src/references.ts codec/src/cli codec/contract codec/package.json bin/fusion-record` prints nothing. Outside the tests, `codec/src/migration.ts` is the one source file that changed. `git diff --name-status --diff-filter=MDR 9409d998 ec76d4fd -- codec/fixtures codec/contract` names three files, `manifest.json` (31 lines in, none out), this file and the migration session's README. No existing fixture, seed, delta or exchange moved.
+
+### What changed for Prior's two pins, at `ec76d4fd`
+
+Both pin files name fusion `dd4bf3d4` at `8f59121`. The counts come from the command of `## FJ05 (the takeover revision, requests 63 and 64)`, with `dd4bf3d4` replaced by `ec76d4fd` and the pin read from the Prior commit:
+
+```
+for pin in fusion-codec:codec/ fusion-fj01:; do n=0; m=0; while read p h; do n=$((n+1)); [ "$(git show "ec76d4fd:${pin#*:}$p" 2>/dev/null | shasum -a 256 | cut -c1-64)" = "$h" ] || { m=$((m+1)); echo "  moved ${pin%%:*} $p"; }; done < <(git -C "$PRIOR" show 8f59121:tests/testdata/${pin%%:*}/UPSTREAM.json | jq -r '.files|to_entries[]|"\(.key) \(.value)"'); echo "${pin%%:*}: $m of $n moved"; done
+```
+
+It prints `fusion-codec: 5 of 413 moved` and `fusion-fj01: 3 of 715 moved`. No pinned path is missing at `ec76d4fd`.
+
+`Prior: tests/testdata/fusion-codec/UPSTREAM.json` (413 files): five differ.
+
+| Path | `sha256` at `ec76d4fd` | Change |
+|---|---|---|
+| `schemas/migration-plan.schema.json` | `c3760301f15864a939d26c95458de589a2fb5815d2f1f84fc187c13ecca6e652` | `$defs/chunk` `writes` `minItems` 1 to 0, `$defs/part_entry` `writes` `minimum` 1 to 0, one clause in `$defs/chunk`'s description |
+| `schemas/migration-proposal.schema.json` | `a642be6efd8d19d8a3eb5f2cb28634c1e5cdcfa6b4cb2eefa90ffb42dc825b04` | one description clause: "A proposal naming no record is admitted; the cut then makes one chunk with no write." |
+| `schemas/protocol.schema.json` | `4098fd7a7765dd0f62973ee7e046b220425f06947d94c927c48c52a99a0a93ee` | one description clause: "chunk 1 sets the fence also when it carries no write" |
+| `fixtures/manifest.json` | `64cfd83eb5dc2a4e81ae3d78d550d1a172993c9cba917aad9dd21600b45d6e21` | 370 to 375 entries, five appended |
+| `fixtures/prior/REQUESTS.md` | `893e823f7dae622f90da79211d9397c3a8e0da8fca386c4aaf80a0b26e06d28e` | the sections since `dd4bf3d4`; this section changes it again |
+
+The other seven pinned schemas, `codec/contract/` and the 13 goldens are unchanged. No schema id was added. New in the shared set are five fixtures, so the pin grows to 418 files. The FJ05 listing command, run at `ec76d4fd` against the pin at `8f59121`, prints 5:
+
+| Fixture | Expect | `sha256` |
+|---|---|---|
+| `valid/migration/proposal-no-records.json` | valid | `7c3654542adad720522431db9506bb76b0dcefdf0d73bf6566850e209cfef528` |
+| `valid/migration/chunk-no-writes.json` | valid | `64c9f5815a455d81a9ebad29a9870d375b4378454a0cc84320c03a66fc2a0d79` |
+| `valid/migration/index-one-chunk-no-writes.json` | valid | `7fb137f4910a1ba066e984a256b5bd930b4b9d8bb355518c6ba1b677f6f19606` |
+| `valid/migration/part-records-no-records.json` | valid | `ca44d65b95a99ecfdb877d53101dbea712f847601fcda848a09642e4c410e5bf` |
+| `invalid/migration/index-chunk-part-writes-negative.json` | `schema-invalid` | `12688596342f0379301c2c82caf550787a2db986acdad0890d70690c11a986a4` |
+
+The invalid case pins the new lower bound, `writes: -1` on a chunk part entry. A negative write count stays invalid, as Prior's answer to 71(b) says.
+
+`Prior: tests/testdata/fusion-fj01/UPSTREAM.json` (715 files, bundle `fb170361…`): three differ.
+
+| Path | `sha256` at `ec76d4fd` | Change |
+|---|---|---|
+| `codec/dist/fusion-record.js` | `dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f` | the two bounds and three descriptions, inlined; the plan step's refusal withdrawn; the cut's chunk 1 with no write |
+| `codec/fixtures/protocol-session-migration/README.md` | `f517930b2fb572d955cf4864050230fa4b12c58dde2f3cdb4df535e774e31263` | base E in the contract line, the base description, the seed table, the substitutions and the replay steps |
+| `codec/fixtures/prior/REQUESTS.md` | `893e823f…6d28e` | as above |
+
+`bin/fusion-record` and `codec/package.json` are unchanged. **No response delta.** Every recorded request and response of the six other sessions, exchanges 01 to 70 of the migration session, every existing seed, every delta file, `codec/fixtures/legacy-v12/` and `codec/fixtures/workbench/` hash equal to the pin at `ec76d4fd`. No delta file was added. New is base E, 29 files:
+
+```
+git ls-tree -r --name-only ec76d4fd codec/fixtures/protocol-session-migration | grep -vxFf <(git -C "$PRIOR" show 8f59121:tests/testdata/fusion-fj01/UPSTREAM.json | jq -r '.files|keys[]') | wc -l
+```
+
+prints 29: thirteen request and response pairs, `71-survey` to `83-inspect`, and three seed files, `seed/71-survey/.fusion-setup`, `seed/71-survey/shared/memos/notes-fixture-person.md` and `seed/72-plan/.json-state/migration/proposal-72.json`. So the pin grows to 744 entries, and the migration session holds 261 files where it held 232.
+
+**The test file.** `codec/src/__tests__/round-trip-cli-migration.test.ts` is in neither pin. It replays base E as it replays A to D, and its header lists the thirteen exchanges. It runs 126 cases at `ec76d4fd`, 110 at `29c6c0ff`, and no commit between `29c6c0ff` and `9409d998` touched it. Prior's own replay of base E is `Prior: internal/fusionhost/codec_migration_test.go`, which enumerates A to D and exchanges through 70 at `8f59121`. Prior's answer to 71(b), item 2, names that update.
+
+### Base E, the recorded exchanges
+
+Thirteen exchanges through `bin/fusion-record`, over an empty `fusion-workbench/`, as the session README's base E describes them: `71` survey (`legacy`, four entries); `72` plan (one chunk part, `writes: 0`, and the five part kinds); `73` apply 1 (the fence named by its own id, `writes: []`, `revisions: {}`); `74` inspect (`legacy`, the fence named); `75` verify (eight checks passed, each `checked: 0`, the receipt, then `workbench.json`); `76` `maintenance end` naming `73`'s id; `77` inspect (`json-control`); `78` list (`records: []`); `79` `maintenance begin`; `80` rollback 1, the first after activation (manifest and receipt removed, `rollback.json` bound); `81` rollback 0 (the plan files removed); `82` the legacy `end` naming `79`'s fence; `83` inspect (`legacy`, no fence). The substitutions are those of A to D, `<workbench>` and `<since:73-apply>` and `<since:79-maintenance>`.
+
+### The version boundary, measured
+
+Request 71 inferred the boundary from the source. Measured here, in a scratch directory under this session's scratchpad and never on the live tree, by `boundary.sh` (kept in the scratchpad, not committed):
+
+1. `git cat-file blob 1dfd1378421844ef83b47b058db7fe34974757bc > <scratch>/old/dist/fusion-record.js`, checked: `sha256:fb1703619c94bd2ed6ef8b753e70dd38e36dcb26da0775fb4e19274ed11bb66f`, 699 011 bytes.
+2. Base E replayed with `ec76d4fd`'s `bin/fusion-record` into three fresh roots, from `<project>` with `FUSION_WORKBENCH` unset, seeds copied as the README says: up to `75` (after verify, the fence standing), up to `76` (activated, no fence) and up to `79` (activated, under a `begin`). Every exchange's stdout, with `<workbench>` and each `<since:…>` substituted back, equals its recorded response.
+3. The old bundle run as `FUSION_WORKBENCH=<root> node <scratch>/old/dist/fusion-record.js < <request>`, over each root. Each root's tree, every path and every file's sha256, hashed before and after.
+
+What `fb170361…` answers:
+
+| Request | After `75` | After `76` | After `79` |
+|---|---|---|---|
+| `inspect` | `json-control`, the manifest | `json-control`, the manifest | `json-control` |
+| `list` | `records: []` | `records: []` | `records: []` |
+| `validate` | `checked: 0`, `valid: true` | the same | not sent |
+| `migration` `survey` | answers, `layout: json-control` | the same | not sent |
+| `72-plan`, `73-apply`, `75-verify`, recorded requests | the stored answers, byte-equal to the head's answers to the same requests | the same | not sent |
+| plan under a fresh id, proposal 72 | refused `migration-incomplete/receipt-unverified`: the receipt binds `plan.json`, which fails `/parts/0/writes minimum: must be >= 1` | the same | not sent |
+| apply 1 and verify under a fresh id | refused `conflict/manifest-present`; the head, on a copy, answers the same | the same | not sent |
+| `80-rollback` (chunk 1), `81-rollback` (chunk 0) | not sent | not sent | refused `conflict/plan-file-changed`, the same schema message |
+| tree before and after | equal | equal | equal |
+
+For contrast, the head answers the fresh-id plan over the root after `76` with `no_op: true`, naming the receipt. That run was on a copy of the root.
+
+So the old bundle reads the activated record-less workbench. It cannot take the second-run no-op and cannot roll the migration back. Replays of stored answers come back unchanged, because the replay lookup precedes the index read, and nothing it is sent moves a byte. Prior's sentence "Older codecs reject the zero-write index under their existing lower bound and cannot roll it back" holds as measured.
+
+**A gap this measurement shows in fusion's shipped text.** `skills/migrate/SKILL.md` Step 7 at `ec76d4fd` says, before the question and again in the report, that "every installation that writes this workbench must be on 13.0.0 or later before it writes again". For a record-less migration that floor is too low. A checkout on 13.0.0 to 13.1.12 carries `fb170361…` or an older bundle, so it reads the workbench but cannot roll the migration back and cannot take its no-op, as the table shows. It refuses and moves nothing, so the gap costs a refusal, not a byte. This section changes no skill text. The gap goes to the user.
+
+### The figures at `ec76d4fd`
+
+Re-taken in the working tree, Node 25.7.0, the codec suite on 2026-10-19 and the hooks suite on 2026-10-20. `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exits 0: 22 test files and 1 839 tests, all passed, none skipped, `fixtures: 375 manifest entries`, `0 derived-from-source, 13 Go-emitted golden(s)` and `163 of 163 prior_keys exercised`. Per file: `fixtures.test.ts` 378 (373 at `29c6c0ff`), `migration.test.ts` 100 (96), `round-trip-cli-migration.test.ts` 126 (110), `install.test.ts` 20, `ops.test.ts` 228, `kernel.test.ts` 62, `round-trip-cli.test.ts` 18, `prior-handback.test.ts` 6, `round-trip-cli-fj02.test.ts` 39, `round-trip-cli-fj02b.test.ts` 49, `round-trip-cli-initialize.test.ts` 91, `round-trip-cli-archive.test.ts` 107, `round-trip-cli-takeover.test.ts` 59, `committed-bundle.test.ts` 4. `cd hooks && npm test`, run after the codec suite and not beside it, with this section in the working tree, exits 0: 68 test files, 67 passed and 1 skipped, and 1 200 tests, 1 186 passed and 14 skipped, the opt-in observation suite without `FUSION_AGENT_RUN`. `git status --porcelain -- codec bin hooks` after both runs names this file alone.
+
+### Requests 64 and 67 to 73, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, still `QualifiedCodecDigest` at `8f59121` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 | **asked** below | this section |
+| 73 | **asked** below | this section |
+
+These rows supersede the rows of `### Requests 64 and 67 to 71, as they stand` above.
+
+### 72. Re-snapshot the shared fixture set at `ec76d4fd` and re-run the Go harness
+
+**Closes:** `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, today fusion `dd4bf3d4`, 413 files: its `commit` to `ec76d4fd`, the five paths above, and the five new fixtures, so the pin holds 418 files. `REQUESTS.md` with this section stands at the commit that appends it, after `ec76d4fd`, and pinning it there is Prior's choice, as at request 63. Preferred form: the re-snapshot and the test run in the Prior repository, and a reply with the counts at a Prior commit.
+
+`TestFusionCodecSharedManifest` should pass 375 of the 375 manifest entries, 95 valid and 280 invalid (279 `schema-invalid`, 1 `unsupported-format`). Prior's answer to 71(b), item 1, names the same three figures for the assertion in `Prior: tests/fusion_codec_test.go`:
+
+| Schema | Valid / invalid at `ec76d4fd` | At `dd4bf3d4` |
+|---|---|---|
+| migration-plan | 14 / 38 | 11 / 37 |
+| migration-proposal | 4 / 16 | 3 / 16 |
+| protocol, package, record, campaign, evidence, migration-receipt, workbench, workbench/v2, bytes | unchanged: 31 / 62, 15 / 43, 19 / 48, 4 / 22, 3 / 19, 1 / 8, 4 / 15, 0 / 1, 0 / 8 | |
+
+The three migration schemas hold 81 entries, 19 valid, where they held 76 and 15. Counted by `jq` over `git show ec76d4fd:codec/fixtures/manifest.json` and `git show dd4bf3d4:codec/fixtures/manifest.json`, grouped by `schema`, `expect` and `error_class`. No entry valid at `dd4bf3d4` changed its expectation: the manifest's diff since then deletes no line.
+
+`TestFusionAppliedRulingAndGoldens` should pass unchanged. `codec/contract/` and the 13 goldens did not move. A differing count is a finding to report, not something to reconcile by editing either side.
+
+### 73. Re-pin the bundle `dfab3f21…`, replay every recorded session through its deltas with base E added, re-qualify, with Prior's conformance run
+
+**Closes:** in `Prior: tests/testdata/fusion-fj01/UPSTREAM.json`, `commit` (to `ec76d4fd`), `bundle_digest` (to `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`), the entries for the three paths above, and base E's 29 files, so the pin holds 744 entries. In `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, request 72's re-snapshot. `codecBundleDigest` in `Prior: internal/fusionhost/codec_process_test.go` and `QualifiedCodecDigest` in `Prior: internal/fusionhost/workbench.go` (line 22 of each at `8f59121`). Base E in `Prior: internal/fusionhost/codec_migration_test.go`. `REQUESTS.md` as request 72 states. Preferred form: the re-pin, the runs below in the Prior repository, and a reply at a Prior commit saying they are green against `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`.
+
+What it asks Prior to run, and what fusion asserts at `ec76d4fd`:
+
+- **Every older session, as at request 64.** The 225 exchanges Prior replayed under 64 (FJ01 6 and the handback, FJ02 15, FJ02b 20, `initialize` 26, archive 51, migration 01 to 70, takeover 37), each through its delta files. Fusion's tests that replay them: 18 and 6, 39, 49, 91, 107, 59, and the A to D cases of `round-trip-cli-migration.test.ts`. No recorded exchange, seed or delta file changed since `dd4bf3d4`, so Prior's replay preparation applies as it stands.
+- **Base E, exchanges 71 to 83, byte for byte**, per the session README: an empty root, its own two seeds, the substitutions `<workbench>`, `<since:73-apply>` and `<since:79-maintenance>`. With them, 238 exchanges. As Prior's answer to 71(b) item 2 says, E inherits neither the legacy fixture nor the A to D seed sequence.
+- **The kernel.** `kernel.ts`, the journal, the store and `codec/src/cli/` are byte-unchanged since `dd4bf3d4`, so the qualified kernel stands. What is new is in `migration.ts` alone: the plan step admits a proposal with no record, and `cut` emits chunk 1 with no write when no pair is cut. Every later phase keys on the chunk count and chunk 1's apply id, as request 71 states. `migration.test.ts` adds four record-less cases (the freeze, apply to verify and the no-op, a rollback after activation, a rollback before it and a full abort). Prior's existing recovery and replay tests run unchanged over exchanges that did not move.
+- **The version boundary** above: Prior may run `fb170361…` over the roots base E leaves after `75`, `76` and `79` and observe the same answers, the same refusals and the unmoved trees.
+- **The shared manifest** as request 72 states it.
+- **Prior's conformance run:** `go test ./...` and `go vet ./...` green.
+
+The re-pin should change the digest, the three moved pin entries, base E added, the counts of request 72, and nothing else in Prior's assertions. If Prior's replay differs anywhere else, the differing exchange and its stdout are the finding.
+
+If Prior does not qualify `dfab3f21…`, or asks for a codec byte to change, the finding goes to the user before any later codec revision is planned. 13.2.0's tag does not wait for it: the user ruled that the tag waits for the acceptance of 71 alone (`261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md`, option 2), and Prior's answer to 71 says it "satisfies the Prior-answer condition for Fusion's release tag". Until 73 is answered, Prior's runtime keeps `fb170361…` and refuses a bundle whose digest differs.
+
+### Corrections, by line
+
+- **Line 5304**, `### The version boundary`: "So `apply`, `verify`, `rollback` and the second-run `plan` over such a plan answer `conflict/plan-file-changed`, and nothing is written." Measured, a rollback answers `conflict/plan-file-changed`, a second-run plan under a fresh id answers `migration-incomplete/receipt-unverified`, and an apply or verify under a fresh id answers `conflict/manifest-present` once verify has written the manifest, as the head does. A resend under a recorded id answers its stored answer. Nothing is written in any case. The conclusion stands: the old bundle cannot roll back a record-less migration and cannot take its second-run no-op.
+- **Line 5307**, "Over a record-less workbench migrated by the new codec it reads as above and refuses only a `migration` request." Measured, `inspect`, `list`, `validate` and the `migration` `survey`, a read, all answer. Every fresh `migration` mutation is refused, and replays answer their stored bytes.
+- **Line 5306**, "and `/fusion:migrate` already says it". It says every writing installation must be on 13.0.0 or later. For a record-less migration the floor is 13.2.0 (`### The version boundary, measured`, above). Section 8.1's sentence stands as quoted.
