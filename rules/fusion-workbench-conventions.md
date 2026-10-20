@@ -528,16 +528,9 @@ it exactly as it stands, including when you transition it: those drifted headers
 evidence the removal was decided on. Binding decision:
 `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`.
 
-## Rule-file provenance
+## A project's CLAUDE.md
 
-Every file in a `rules/` directory opens with a `**Provenance:** <citation>` line in its
-first ten lines, naming the record or commit that caused it to exist. The three
-legitimate citation forms, the placement rule, what
-`hooks/lib/__tests__/provenance-header-lint.test.ts` checks and what it cannot, and who
-carries the obligation are authored in `rules/rule-file-provenance.md`. Read it before you
-create or edit any file under `rules/`. `bin/fusion-rules` emits it to no agent: the one
-agent whose routine work includes writing normative rule text is the `policy-curator`, and
-`agents/policy-curator.md` reaches this definition by citing it at Setup rather than by emission.
+A project's `CLAUDE.md` loads into every session, so it holds only what every session needs: identity, the language lines, the rules binding every edit, and pointers. Topic-bound content goes where only its readers load it: a function's invariant to its module's header, or to `.claude/rules/<topic>.md` with `paths:` frontmatter (without it, Claude Code loads the file at every start, like `CLAUDE.md`); a ruling to its decision record. A plan step that writes `CLAUDE.md` names why its content binds every session. The test, and who writes which destination: `$FUSION_PLUGIN_ROOT/rules/context-lean-claude-md.md` `## How to tell "always-on" from "on-demand"`.
 
 ## Session history
 

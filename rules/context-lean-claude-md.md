@@ -246,6 +246,14 @@ which is why the destination is written before the source is cut. The
 **section** is optional, and earns its place only where the destination file is
 big enough that naming it saves a search.
 
+The destination is named by kind. A function's or module's invariant goes to
+that module's header, which code-implementer writes, or to
+`.claude/rules/<topic>.md` with a `paths:` glob over the module. A fusion-only
+rule goes to `./rules/<topic>.md` behind the manifest. An unscoped
+`.claude/rules/` file is not a relocation: Claude Code loads it at launch with
+the same priority as `CLAUDE.md` (https://code.claude.com/docs/en/memory,
+"Path-specific rules").
+
 Where the cut emptied a section, collect its pointer line into the one table
 described under *What stays always-on* above, rather than leaving it stranded
 where its section used to be. The table is what a reader scans; a scatter of

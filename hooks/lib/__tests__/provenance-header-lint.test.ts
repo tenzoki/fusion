@@ -392,13 +392,13 @@ describe("provenance-header lint: a real rule file stripped of its header fails"
   });
 });
 
-describe("provenance-header lint: the conventions file passes on its header, not on its prose", () => {
+describe("provenance-header lint: the rule's own definition file passes on its header, not on its prose", () => {
   it("passes on its own line-3 header, and fails once that line is removed", () => {
-    // The file that documents this convention necessarily contains the string
-    // `Provenance:` in its body. This is where the position rule earns its keep:
+    // The documentation moved from the conventions file to its authoring home, which
+    // contains `Provenance:` in its body. The position rule earns its keep here:
     // a keyword-anywhere gate would pass this file on its documentation of the
     // rule rather than on its compliance with it.
-    const rel = "rules/fusion-workbench-conventions.md";
+    const rel = "rules/rule-file-provenance.md";
     const text = readFileSync(join(pluginRoot, rel), "utf-8");
     const lines = text.split("\n");
 

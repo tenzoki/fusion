@@ -9,3 +9,6 @@ krk: 44 of 53 plans name CLAUDE.md, 12 name the section `Was man nicht sieht` as
 Evidence: `261020-0835-why-a-consumers-claude-md-grows-unchecked.md`
 
 **Acceptance:** `bin/fusion-rules` output for those four agents contains a binding rule naming CLAUDE.md's allowed content and the destinations for topic-bound content, and a plan step targeting CLAUDE.md must name why the content binds every session.
+
+---
+Resolved: `rules/fusion-workbench-conventions.md` `## A project's CLAUDE.md` (emitted to every agent) names CLAUDE.md's allowed content, the destinations for topic-bound content including `.claude/rules/<topic>.md` with `paths:`, and that a plan step writing CLAUDE.md names why its content binds every session; `rules/context-lean-claude-md.md` `### Step 3` names destinations by kind. `## Rule-file provenance` removed to pay for it; the provenance-header lint case retargeted to `rules/rule-file-provenance.md` on the user's ruling. Plan step 1 of `261020-0927-plan-consumer-claude-md-stays-lean.md`.
