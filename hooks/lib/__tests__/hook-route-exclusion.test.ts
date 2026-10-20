@@ -296,7 +296,7 @@ describe("every other configured hook command stays off the same helpers", () =>
     expect(spawning).toEqual(["lib/git.js", "lib/orchestrator-events.js", "session-start.js"]);
     // What each starts, one entry per call site, on every branch whether a payload takes it or not.
     const started = spawning.map((m) => [m, programsStarted(readFileSync(resolve(TEST_DIST, m), "utf-8"))]);
-    expect(started).toEqual([["lib/git.js", ["git"]], ["lib/orchestrator-events.js", ["bin/fusion-identity"]], ["session-start.js", ["bin/fusion-count-sources"]]]);
+    expect(started).toEqual([["lib/git.js", ["git"]], ["lib/orchestrator-events.js", ["bin/fusion-identity"]], ["session-start.js", ["bin/fusion-count-sources", "bin/fusion-claude-md-weight"]]]); // the weight helper: the live CLAUDE.md weight read of plan 261020-0927 step 7 (D3 option 4); it reaches no stubbed helper
   });
 
   /** Per `node:child_process` call, its first argument (a literal, or what a local was declared as) as a program; an unread import matches no call. */

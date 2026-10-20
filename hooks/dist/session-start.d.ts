@@ -96,6 +96,12 @@
  * Nothing due, or any failure, is no line; the line asks nothing and blocks
  * nothing.
  *
+ * After it, while `bin/fusion-claude-md-weight` finds sections over its
+ * threshold, a weight line names the count, the largest section and the route
+ * (issue `261020-0916-claude-md-over-threshold-finding-persists-nowhere.md`,
+ * ruling D3 option 4). The durable trace is the file itself, weighed afresh at
+ * each start, because a stored count can show a file as over after it is lean.
+ *
  * ## The second product: this session's `session_start` row
  *
  * Since the substrate step of the ceremony cut, this hook also appends one

@@ -96,6 +96,12 @@
  * Nothing due, or any failure, is no line; the line asks nothing and blocks
  * nothing.
  *
+ * After it, while `bin/fusion-claude-md-weight` finds sections over its
+ * threshold, a weight line names the count, the largest section and the route
+ * (issue `261020-0916-claude-md-over-threshold-finding-persists-nowhere.md`,
+ * ruling D3 option 4). The durable trace is the file itself, weighed afresh at
+ * each start, because a stored count can show a file as over after it is lean.
+ *
  * ## The second product: this session's `session_start` row
  *
  * Since the substrate step of the ceremony cut, this hook also appends one
@@ -315,11 +321,37 @@ function checksDueLine(root: string | null): string | null {
   }
 }
 
+/**
+ * The weight line, or `null`: no workbench, a lean or absent `CLAUDE.md`, or
+ * any failure of `bin/fusion-claude-md-weight` (missing, non-zero, 2 s timeout,
+ * output without `over=`). Nothing is stored: the file is weighed afresh at
+ * every start, so the line clears at the first start after it is lean.
+ */
+function claudeMdWeightLine(root: string | null): string | null {
+  if (root === null) return null;
+  try {
+    const plugin = pluginRoot();
+    const out = execFileSync(resolve(plugin, "bin", "fusion-claude-md-weight"), ["--root", root], {
+      encoding: "utf-8",
+      timeout: 2_000,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    const over = Number(/(?:^|\s)over=(\d+)/m.exec(out)?.[1] ?? 0);
+    const largest = /^\s+over\s+(\d+)\s+\d+\s+(.+)$/m.exec(out);
+    if (over === 0 || largest === null) return null;
+    const threshold = /(?:^|\s)threshold=(\d+)/m.exec(out)?.[1] ?? "?";
+    const route = resolve(plugin, "rules", "context-lean-claude-md.md");
+    return `fusion: CLAUDE.md has ${over} section${over === 1 ? "" : "s"} over ${threshold} bytes (largest: ${largest[2].trim()}, ${largest[1]} B): /fusion:curate --placement; route: ${route} ### Relocating in a consuming project`;
+  } catch {
+    return null;
+  }
+}
+
 async function main(): Promise<void> {
   const cwd = resolve(process.cwd());
   const root = findWorkbenchRoot(cwd);
 
-  emitEnvelope([subdirectoryWarning(cwd, root), checksDueLine(root)]);
+  emitEnvelope([subdirectoryWarning(cwd, root), checksDueLine(root), claudeMdWeightLine(root)]);
 
   // Everything below is the addendum. No workbench, no log to append to.
   if (root === null) return;

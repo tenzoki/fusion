@@ -242,3 +242,48 @@ describe("SessionStart names the due checks in the same envelope", () => {
     CASE_TIMEOUT,
   );
 });
+
+describe("SessionStart names a CLAUDE.md over threshold until it is lean", () => {
+  const ROUTE = resolve(PLUGIN, "rules", "context-lean-claude-md.md");
+  const heavy = `# t\n\n## big\n${"x".repeat(5000)}\n## small\nx\n`;
+
+  it(
+    "names the count, the largest section and the route while a section is over",
+    () => {
+      withProject((project) => {
+        stamp(project.root, CHECK_SELECTORS);
+        writeFileSync(resolve(project.root, "CLAUDE.md"), heavy);
+        expect(warningFrom(runSessionStart(project.root))).toBe(
+          `fusion: CLAUDE.md has 1 section over 4000 bytes (largest: ## big, 5008 B): /fusion:curate --placement; route: ${ROUTE} ### Relocating in a consuming project`,
+        );
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "says nothing once the file is lean, and nothing when the helper fails",
+    () => {
+      withProject((project) => {
+        stamp(project.root, CHECK_SELECTORS);
+        writeFileSync(resolve(project.root, "CLAUDE.md"), "# t\n");
+        expect(warningFrom(runSessionStart(project.root))).toBeNull();
+
+        // A plugin root whose helper exits non-zero: fail-open, no line.
+        writeFileSync(resolve(project.root, "CLAUDE.md"), heavy);
+        const fake = resolve(project.root, "fake-plugin");
+        mkdirSync(resolve(fake, "bin"), { recursive: true });
+        mkdirSync(resolve(fake, ".claude-plugin"));
+        writeFileSync(resolve(fake, ".claude-plugin", "plugin.json"), JSON.stringify({ version: VERSION }));
+        writeFileSync(resolve(fake, "bin", "fusion-claude-md-weight"), "#!/bin/sh\nexit 3\n", { mode: 0o755 });
+        process.env.CLAUDE_PLUGIN_ROOT = fake;
+        try {
+          expect(warningFrom(runSessionStart(project.root))).toBeNull();
+        } finally {
+          process.env.CLAUDE_PLUGIN_ROOT = PLUGIN;
+        }
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
