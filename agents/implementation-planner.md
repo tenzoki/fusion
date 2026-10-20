@@ -115,6 +115,7 @@ You may receive work in two forms:
 1. **<Step Title>**
    - Executor: one of the executors in the active set (default `code-implementer` | `data-implementer`; `analyst` if named)
    - Files: `path/to/file.ext`
+   - CLAUDE.md: <why every session needs this content; only on a step whose Files names `CLAUDE.md`>
    - Changes: <what to add/modify>
    - Dependencies: <which earlier step(s) this depends on, or "none">
 

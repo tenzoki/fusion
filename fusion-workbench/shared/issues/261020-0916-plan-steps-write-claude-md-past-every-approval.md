@@ -9,3 +9,6 @@ krk since 2026-08-16: 46 of 57 commits touching CLAUDE.md came from paths other 
 Evidence: `261020-0835-why-a-consumers-claude-md-grows-unchecked.md`
 
 **Acceptance:** Either the curator text is corrected to state the actual writers, or edits to CLAUDE.md by executors are routed/gated as the text claims; the prompt and the behaviour agree.
+
+---
+Resolved: on the user's ruling D2 option 1 with D4 option 3, `agents/policy-curator.md` now names two writers of CLAUDE.md (a plan step an implementer executes, behind plan approval, and the curator, behind its ledger), both bounded by `rules/fusion-workbench-conventions.md` `## A project's CLAUDE.md`; the sole-path phrase left `skills/curate/SKILL.md`; the planner's step template carries a `CLAUDE.md:` field and the orchestrator's plan review lists every step whose Files names CLAUDE.md. Plan step 2 of `261020-0927-plan-consumer-claude-md-stays-lean.md`.
