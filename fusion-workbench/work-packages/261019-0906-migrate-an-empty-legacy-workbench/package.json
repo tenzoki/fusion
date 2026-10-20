@@ -3,7 +3,7 @@
   "id": "ffc9f047-2866-40a6-95ce-2eb4fff4373e",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "a legacy workbench holding no record migrates to JSON control (13.2.0, untagged): codec, schemas, fixtures, recorded base E, host tests, docs; Prior accepted request 71 at its 8f59121",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "49de05c8-f667-4396-bd38-82e539c7f3df",
+          "revision": "sha256:053830f70eea041b8b5e4c1c07496511f364bf8010a1b5161b156b1b98a11e4b"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
