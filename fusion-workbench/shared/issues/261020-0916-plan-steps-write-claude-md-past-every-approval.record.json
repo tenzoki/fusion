@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "362c5d53-85fa-4ddb-84d6-60e889599200",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261020-0916-plan-steps-write-claude-md-past-every-approval.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

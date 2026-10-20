@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7daf68ee-2e00-415c-aeba-4f7d9dcbf177",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261020-0916-claude-md-over-threshold-finding-persists-nowhere.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

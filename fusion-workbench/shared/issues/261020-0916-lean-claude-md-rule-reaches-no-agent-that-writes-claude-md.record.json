@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8da666a9-0366-4fd0-8726-3b7572d25b69",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261020-0916-lean-claude-md-rule-reaches-no-agent-that-writes-claude-md.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d7c9d659-103c-4a04-9a2c-e0a468ca470a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261020-0916-claude-md-weight-helper-points-at-a-command-that-cannot-act.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
