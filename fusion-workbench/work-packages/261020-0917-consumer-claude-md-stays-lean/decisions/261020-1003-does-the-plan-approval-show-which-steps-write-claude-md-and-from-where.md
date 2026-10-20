@@ -36,3 +36,6 @@ Byte figures were measured at HEAD `ff93a03d`. Dispatch-path slack: orchestrator
 ## Recommendation
 
 Option 3. The consultant's review names option 1 for reach and option 2 for robustness without an orchestrator. Taken alone, each leaves one half out: option 1 shows the steps but not the reason, and option 2 holds the reason but shows nothing. With both, the orchestrator line quotes the field, so one token connects them and nothing is restated. The cost is about 220 bytes against 5 536 of agents head-room.
+
+---
+Answered: `261020-0927-plan-consumer-claude-md-stays-lean.md` — option 3, a mandatory CLAUDE.md field in the planner's step template, quoted by the orchestrator's plan summary; ruled by user, Kai Stalmann <ks@qantr.com>

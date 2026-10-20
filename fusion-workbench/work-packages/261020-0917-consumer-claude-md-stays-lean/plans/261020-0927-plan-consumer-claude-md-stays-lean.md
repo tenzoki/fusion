@@ -299,3 +299,6 @@ Against the first version: agents +230 (the D4 lines; 100 less if the step 8 fla
 ## Release note (not a step)
 
 The work adds a user-visible flag and new session-start lines, so the next release is a minor bump (13.3.0) by the procedure in `README-agents.md` `## Releasing`. It is not executed by this plan.
+
+---
+Approved 2026-10-20 by the user (Kai Stalmann <ks@qantr.com>) with all recommendations: D1 option 2, D2 option 1, D3 option 4, D4 option 3; Step 8 keeps the 1.5x flag; Step 3 carries no test; Step 7 computes the weight live instead of an event row.

@@ -25,7 +25,16 @@
     "path": "work-packages/261020-0917-consumer-claude-md-stays-lean/261020-0917-consumer-claude-md-stays-lean.md"
   },
   "depends_on": [],
-  "active_documents": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "9a662896-b682-48f5-b700-f81aeb5ab57e"
+      },
+      "role": "plan",
+      "revision": "sha256:718b876d21e291a9d32d3a4f026024870dad84100fd387e349e401eef3b7090c"
+    }
+  ],
   "references": [],
   "evidence": [],
   "outcome": null,

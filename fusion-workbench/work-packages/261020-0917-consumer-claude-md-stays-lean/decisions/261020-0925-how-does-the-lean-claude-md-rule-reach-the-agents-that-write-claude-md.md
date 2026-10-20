@@ -37,3 +37,6 @@ Measured at HEAD `4f17492a` from this repository's root, and unchanged at `ff93a
 ## Recommendation
 
 Option 2, with the revised draft (the `paths:` destination and the `$FUSION_PLUGIN_ROOT/` citation). It is the only option that lands under the bound without a ruling. It reaches every agent, including the ones the issue did not list (analyst, requirements-designer and the orchestrator also propose `CLAUDE.md` text). It also keeps the full criterion where it is authored, with the short section only pointing at it.
+
+---
+Answered: `261020-0927-plan-consumer-claude-md-stays-lean.md` — option 2, a short section in the conventions every agent loads, paid for by removing Rule-file provenance; ruled by user, Kai Stalmann <ks@qantr.com>

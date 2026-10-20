@@ -31,3 +31,6 @@
 ## Recommendation
 
 Option 1, together with decision `261020-1003-does-the-plan-approval-show-which-steps-write-claude-md-and-from-where.md`. The gate that failed in krk was the plan approval. It judged content with no rule to judge it by, and without being shown which steps wrote the file. The conventions section supplies the rule, and the D4 listing supplies the fact. Option 2 buys a sole writer by widening the curator's remit, and that is a larger decision than this issue asks for.
+
+---
+Answered: `261020-0927-plan-consumer-claude-md-stays-lean.md` — option 1, correct the curator's text: two writers, both behind an approval, together with D4; ruled by user, Kai Stalmann <ks@qantr.com>

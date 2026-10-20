@@ -39,3 +39,6 @@ Both facts are decidable from inputs a mechanism can read: `.check-stamps`, the 
 ## Recommendation
 
 Option 4. Every session start passes through this one channel. The issue's acceptance line for the due checks accepts "surfaces one line naming that they are due". It costs no bytes on any bounded prompt surface. It reuses the envelope the existing hook already writes. Its single due computation removes the duplicate that option 1 would read from a skill body. Over option 2 it removes the one way the over line can lie: still showing after the file is lean. That costs a departure from the second issue's literal wording, which the user accepts or refuses here.
+
+---
+Answered: `261020-0927-plan-consumer-claude-md-stays-lean.md` — option 4, a session-start notice in hooks/session-start.ts with the weight computed live; ruled by user, Kai Stalmann <ks@qantr.com>

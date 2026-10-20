@@ -17,8 +17,12 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "9a662896-b682-48f5-b700-f81aeb5ab57e",
+      "display": "261020-0927-plan-consumer-claude-md-stays-lean.md"
+    },
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

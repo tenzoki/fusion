@@ -53,6 +53,12 @@
       }
     ],
     "criteria": [],
-    "acceptance": null
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "2f0b4708-8f99-41d2-bfb3-b071306fb6b5"
+      },
+      "revision": "sha256:718b876d21e291a9d32d3a4f026024870dad84100fd387e349e401eef3b7090c"
+    }
   }
 }
