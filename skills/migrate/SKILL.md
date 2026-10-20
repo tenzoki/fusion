@@ -200,7 +200,7 @@ S="$("$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status)"; E=$?; printf '%s\n' "$S"
 
 Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired: report either and stop. After each applied repair run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
 
-**The question to migrate.** When every `count=` is 0, say the workbench holds no record: nothing is converted or rewritten, and the run writes its frozen plan, its receipt and the manifest. Once `blocking=0`, say first: *every installation that writes this workbench must be on 13.0.0 or later before it writes again; nothing detects a checkout that does not update.* Then ask once:
+**The question to migrate.** When every `count=` is 0, say the workbench holds no record: nothing is converted or rewritten, and the run writes its frozen plan, its receipt and the manifest. Once `blocking=0`, say first: *every installation that writes this workbench must be on 13.0.0 or later (13.2.0 when every `count=` was 0) before it writes again; nothing detects a checkout that does not update.* Then ask once:
 
 > This workbench's records are ready to move to the new JSON format. A full backup outside the workbench, taken before the first repair or now, stands first; the move runs in chunks and can be rolled back.
 > 1. Migrate now.
@@ -210,7 +210,7 @@ Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding
 
 **Interrupted.** On exit 7, or `ROUTE=interrupted`, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status` and ask: 1. continue (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" resume`), 2. undo (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done. A `rollback` refused with exit 8 says on stderr whether its fence stands and, if so, the way out (the same helper's `rollback` again or `rollback --end-fence`): show it and ask which.
 
-**Report.** Close with the receipt and the commit split, in this order: the repairs, only when one was applied; the originals and the record pairs; the rewritten records; the manifest. Then repeat the sentence: every installation that writes this workbench must be on 13.0.0 or later before it writes again, and nothing detects a checkout that does not update, so other checkouts update their installation first, then pull. `bin/fusion-migrate rollback` undoes the migration and `bin/fusion-migrate status` says where it stands.
+**Report.** Close with the receipt and the commit split, in this order: the repairs, only when one was applied; the originals and the record pairs; the rewritten records; the manifest. Then repeat the sentence: every installation that writes this workbench must be on 13.0.0 or later (13.2.0 when every `count=` was 0) before it writes again, and nothing detects a checkout that does not update, so other checkouts update their installation first, then pull. `bin/fusion-migrate rollback` undoes the migration and `bin/fusion-migrate status` says where it stands.
 
 ## Guardrails
 
