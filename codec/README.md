@@ -915,7 +915,8 @@ post-repair input, not the external pre-repair backup, which is the host's
 - **No directory is removed.** A complete rollback leaves the frozen input
   plus exactly these empty directories: `archive/` and `archive/migrations/`
   where the input lacked them, and `archive/migrations/<id>/` with its
-  `chunks/`, `parts/` and `originals/` trees. A later `plan` treats empty
+  `chunks/` and `parts/` trees, and `originals/` where a chunk kept an
+  original (never in a record-less run). A later `plan` treats empty
   directories as no plan.
 
 **`maintenance end` on a legacy store** answers a replay first, from `end`'s

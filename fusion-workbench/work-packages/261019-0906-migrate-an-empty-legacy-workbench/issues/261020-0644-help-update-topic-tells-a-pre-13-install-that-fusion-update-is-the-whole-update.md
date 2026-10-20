@@ -15,3 +15,6 @@ The help update topic at 13.2.0 tells an install older than 13.0.0 that `fusion 
 **Fix direction.** Give each label a lower bound, for example "Coming from 13.0.0 to 13.1.12". Then "Older than that" catches every pre-13 install. Or have "Older than that" name v12 explicitly as needing `/fusion:migrate`. Either is a cut or a re-wording under the `skills/` byte ceiling.
 
 **Acceptance test.** A reader on 12.2.3 who takes the first paragraph whose label matches their install reaches the migration requirement. `cd hooks && npm test` is green, `surface-growth-bound.test.ts` and the reference-resolution pin included.
+
+---
+Resolved: `skills/help/SKILL.md` `### 4. Update`: both open labels now carry a lower bound, "Coming from 13.0.0 to 13.1.12" and "Coming from 13.0.0 to 13.1.11". A v12 install matches none of the three install-from paragraphs and reaches "Older than that", which sends it to the `upgrading-to` notes in `docs/`.

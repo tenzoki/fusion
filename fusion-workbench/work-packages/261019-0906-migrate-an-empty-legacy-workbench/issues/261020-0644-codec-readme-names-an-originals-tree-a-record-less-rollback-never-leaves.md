@@ -17,3 +17,6 @@ After a record-less migration is rolled back, the directories left under `archiv
 **Fix direction.** Make `originals/` conditional ("and `originals/` when the plan backed up a narrative"), or drop "exactly".
 
 **Acceptance test.** The bullet matches the directory set the `migrate.test.ts` case asserts for a record-less run, and is still true for a run with pairs. `cd hooks && npm test` is green (the reference lint reads this file).
+
+---
+Resolved: `codec/README.md` `## \`migration\``, the "No directory is removed" bullet, now names `chunks/` and `parts/` and adds `originals/` only "where a chunk kept an original (never in a record-less run)". Measured in scratch roots with `bin/fusion-migrate run` then `rollback`: a terminal-only tree leaves `chunks/` and `parts/` only, and a tree with one live issue also leaves `originals/shared/issues/`.
