@@ -9,7 +9,7 @@ The user invoked `/fusion:curate`. This is the user-facing surface for the `poli
 
 **It performs this procedure and no other.** No pass runs before it or after it, and nothing here commits: the policy-curator's edits are working-tree edits, and `/fusion:cleanup` is what commits them when the user runs it.
 
-Takes two optional arguments, `--full` (the unbounded evidence pass) and `--edges` (the work-package edge subject), passed through to the survey dispatch in Step 2.
+Takes three optional arguments, `--full` (the unbounded evidence pass), `--edges` (the work-package edge subject) and `--placement` (the placement run, which may propose moving a passage out of a surface), passed through to the survey dispatch in Step 2; `--placement` also reaches the apply dispatch in Step 6.
 
 **This workflow writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the approval leaves all three surfaces byte-identical and still leaves the run file on disk.
 
@@ -39,7 +39,7 @@ Prompt body:
 **Mode:** survey
 ```
 
-Add `**Scope:** full` on its own line when the user passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). Add `**Edges:** on` when the user passed `--edges` (`agents/policy-curator.md` `## Dispatch parameters`). The apply dispatch takes no such line. `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
+Add `**Scope:** full` on its own line when the user passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). Add `**Edges:** on` when the user passed `--edges`, and `**Placement:** on` when the user passed `--placement` (`agents/policy-curator.md` `## Dispatch parameters`). The apply dispatch takes no `**Scope:**` or `**Edges:**` line. `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
 
 ## Step 3 — Read what the survey returned
 
@@ -93,6 +93,8 @@ Use the `Agent` tool with target `fusion:policy-curator`. The first three non-em
 **Ledger:** <the run file path, workbench-relative, exactly as the survey run reported it>
 **Approved:** <all, or the approved entry ids comma-separated>
 ```
+
+When the user passed `--placement`, add `**Placement:** on` after the three lines, so the apply pass reads the ledger's relocation entries as asked for; without it, add nothing.
 
 `**Approved:**` carries either the word `all` or an explicit id list, and nothing else. Do not paraphrase an approval into a sentence, do not write "everything except", and do not translate a group selection into prose — resolve the chosen groups to the ids those groups hold and pass the ids. `agents/policy-curator.md` `## Dispatch parameters` defines the refusals on the agent's side: a ledger path that does not resolve is a halt, and an id the ledger does not carry is a halt naming that id.
 

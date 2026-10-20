@@ -67,3 +67,4 @@ to act on it.
 
 ---
 Answered: this record `## Recommendation` — options 1 and 3 together: the curator gains relocation as its own change type with the preserve list guarding content rather than location, and a reporting check names a project's drift from the lean convention without acting on it. The check is the trigger, the curator the tool; ruled by user, Kai Stalmann <ks@qantr.com>.
+Implemented: plan `261020-0927-plan-consumer-claude-md-stays-lean.md` step 4 — option 1's tool is reachable: `/fusion:curate --placement` sends `**Placement:** on` on the survey and apply dispatches (`skills/curate/SKILL.md` argument paragraph, `## Step 2 — Dispatch the policy-curator to survey`, `## Step 6 — Dispatch the policy-curator to apply`; `agents/policy-curator.md` `## Dispatch parameters`; `README-agents.md` `## Dispatch parameters`); a plain run still proposes no relocation
