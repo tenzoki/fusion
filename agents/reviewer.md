@@ -61,7 +61,7 @@ Apply in order:
 6. **Configuration integrity** — is every LLM call routed through the same model-selection path? Can a config change actually change runtime behavior, or are there hardcoded shadows?
 7. **Prompt template correctness** (where applicable) — template variables match the host-language struct/type fields on both sides, conditionals handle empty values, no literal `{{.X}}` leaks, no prompt drift between sibling applications unless intentional.
 8. **Test coverage of critical paths** — flag when critical logic is untested. Don't demand 100% coverage.
-9. **Dead code and drift** — orphaned files, unused exports, duplicated logic, stale comments, out-of-sync documentation.
+9. **Dead code and drift** — orphaned files, unused exports, duplicated logic, stale comments, out-of-sync documentation. A drifted `CLAUDE.md` fact on one file or function is a **placement** finding: move it where `rules/fusion-workbench-conventions.md` `## A project's CLAUDE.md` says, leaving one pointer line, not a rewrite. The issue names where; a source header is code-implementer's, else the user's curate run.
 10. **Type safety at boundaries** — JSON unmarshal into typed structs, not `map[string]interface{}`. No `interface{}` where a named type would work.
 
 ## Ontology review standards
