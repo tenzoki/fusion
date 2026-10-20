@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7e5e841e-bbad-4601-95ce-9ff792d4fa5e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261019-0906-migrate-an-empty-legacy-workbench/issues/261020-0644-migrate-step-7-keys-the-record-less-notice-and-the-13-2-0-floor-on-every-count-being-0-which-a-terminal-only-workbench-misses.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -35,3 +35,5 @@ Option 1. Every later phase keys on the chunk count being at least one and on ch
 
 ---
 Answered: 261019-0913-plan-migrate-an-empty-legacy-workbench.md `## Open Questions` — option 1, the cut yields one chunk with no write; ruled by user, Kai Stalmann <ks@qantr.com>
+
+Implemented: `codec/src/migration.ts` `cut` and `migrationPlan`, `codec/schemas/migration-plan.schema.json` `$defs/chunk` and `$defs/part_entry` — a proposal naming no record freezes one chunk with no write.

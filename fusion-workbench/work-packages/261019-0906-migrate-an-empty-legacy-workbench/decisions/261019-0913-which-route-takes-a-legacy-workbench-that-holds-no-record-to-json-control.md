@@ -31,3 +31,5 @@ None: the user ruled before this record was filed. Asked how fusion should fix i
 
 ---
 Answered: 261019-0906-migrate-an-empty-legacy-workbench.md `## The user's words` — option 1, the migration accepts a legacy workbench that holds no record; ruled by user, Kai Stalmann <ks@qantr.com>
+
+Implemented: `codec/src/migration.ts` admits a record-less proposal, and `bin/fusion-migrate run` takes a record-less legacy workbench to `json-control` (`hooks/lib/__tests__/migrate.test.ts`, "over a legacy workbench holding no record"); Setup's `initialize` unchanged.

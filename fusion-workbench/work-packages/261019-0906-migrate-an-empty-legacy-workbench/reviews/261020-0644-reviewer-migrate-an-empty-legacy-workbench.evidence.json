@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "0ce2e488-f283-4998-9f9a-94816ac97e76",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "f9a3eef651b5bd3afab4994ac575971a5d3a2611",
+    "git_range": null
+  },
+  "brief_revision": "sha256:e11870f89ca27c24d763d9c1348dd29c7cda2a02b57d1a78e5a6d91d821c9681",
+  "plan_revision": "sha256:556cf8a9e80735e4c16825390c07679acbe2998b4d95cc3b641f5beceb2bfd94",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.1.12"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261019-0906-migrate-an-empty-legacy-workbench/reviews/261020-0644-reviewer-migrate-an-empty-legacy-workbench.md",
+    "sha256": "sha256:b32f9b99e4ff488f4a9f97aec6cffacd459445467da6bd9f8f5ee95dce04db04",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-20T04:46:41Z",
+  "extensions": {}
+}

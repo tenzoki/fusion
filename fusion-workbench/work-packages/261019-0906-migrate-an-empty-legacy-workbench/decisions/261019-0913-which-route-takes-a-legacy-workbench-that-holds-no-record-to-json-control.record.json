@@ -17,9 +17,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "261019-0906-migrate-an-empty-legacy-workbench.md",
-    "implementation_ref": null,
+    "implementation_ref": "a9ac4fe4",
     "superseded_by": null,
     "deferral": null
   }
