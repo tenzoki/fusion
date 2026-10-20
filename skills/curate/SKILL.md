@@ -47,7 +47,7 @@ The agent's report carries three things this workflow needs, and they are the ap
 
 1. **The run file's path**, workbench-relative.
 2. **The count per consequence group** (`agents/policy-curator.md` `### The approval`) plus the number of candidates, which are never offered for approval.
-3. **The blast-radius check** — whether proposed deletions exceed 20 percent of any single surface's bytes.
+3. **The blast-radius check** — whether proposed deletions exceed 20 percent of any single surface's bytes; with it, each surface's net byte delta.
 
 Then read the run file itself with the `Read` tool, at `$WORKBENCH/<run-file path>`. It carries the entry ids, which per-entry approval needs, and the outcomes section this workflow reports from in Step 7.
 
@@ -70,7 +70,7 @@ When the check finds that no surface crossed the threshold, skip this step entir
 
 One `AskUserQuestion`. Keep it inside the eight-line cap in `rules/user-facing-output.md`, including the option list.
 
-**The prompt never contains the ledger.** It names the run file's path, the count per consequence group in the most-consequential-first order `agents/policy-curator.md` `### The approval` sets, the count of candidates as text that says they are not on offer, and the blast-radius check in one clause. Constraint removals appear first in what the user sees, never last.
+**The prompt never contains the ledger.** It names the run file's path, the count per consequence group in the most-consequential-first order `agents/policy-curator.md` `### The approval` sets, the count of candidates as text that says they are not on offer, and the blast-radius check with each surface's net byte delta in one clause. Constraint removals appear first in what the user sees, never last.
 
 Three options:
 
