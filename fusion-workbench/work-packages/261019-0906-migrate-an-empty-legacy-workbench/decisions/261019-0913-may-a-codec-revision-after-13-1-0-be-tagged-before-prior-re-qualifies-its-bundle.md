@@ -34,3 +34,5 @@ Option 2. The new behaviour is a widening the contract has to name, and that is 
 
 ---
 Answered: 261019-0913-plan-migrate-an-empty-legacy-workbench.md `## Open Questions` — option 2, the tag waits only for Prior accepting the shape (request 71); re-pinning may follow the tag; ruled by user, Kai Stalmann <ks@qantr.com>
+
+Implemented: tag `v13.2.0` on fusion `main`, after Prior accepted request 71 (`codec/fixtures/prior/REQUESTS.md`, the hand-over for requests 72 and 73); re-pinning follows under 72 and 73.
