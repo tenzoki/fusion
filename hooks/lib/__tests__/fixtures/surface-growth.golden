@@ -33,7 +33,7 @@
   commit/SKILL.md 6119
   curate/SKILL.md 12587
   discuss/SKILL.md 15700
-  help/SKILL.md 16204
+  help/SKILL.md 16309
   memo/SKILL.md 6824
   migrate/SKILL.md 29377
   news/SKILL.md 8223
@@ -42,7 +42,7 @@
   setup/SKILL.md 15553
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 225406
+  total 225511
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
