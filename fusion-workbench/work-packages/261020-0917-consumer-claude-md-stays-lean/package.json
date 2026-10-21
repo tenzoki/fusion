@@ -3,7 +3,7 @@
   "id": "2f0b4708-8f99-41d2-bfb3-b071306fb6b5",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "session start names an over-threshold CLAUDE.md and due checks; /fusion:curate --placement reaches relocation; curator states net byte delta; review findings fixed",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "7756e966-0fb3-4236-aad3-45af42161063",
+          "revision": "sha256:596d33e802f5185dfb10433494e330919d133ef77b4d67fe9f0561fab60f2550"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
