@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "01bdf220-a2eb-46c2-b5e7-8f5cbd0a5cd8",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261020-0917-consumer-claude-md-stays-lean/issues/261021-0829-relocation-into-a-manifest-loaded-rule-file-is-cut-at-the-source-with-the-manifest-entry-unwritten.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

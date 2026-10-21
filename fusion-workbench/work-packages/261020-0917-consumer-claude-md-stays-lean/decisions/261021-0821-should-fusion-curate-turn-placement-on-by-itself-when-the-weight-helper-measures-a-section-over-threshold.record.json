@@ -1,0 +1,35 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "081d5eab-5653-4f53-b3a7-93330be8e14a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261020-0917-consumer-claude-md-stays-lean/decisions/261021-0821-should-fusion-curate-turn-placement-on-by-itself-when-the-weight-helper-measures-a-section-over-threshold.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "deferred",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": {
+      "target": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "15de682c-a83c-467e-8647-bcb33e0d6da3"
+      },
+      "ruled_by": {
+        "actor": "user",
+        "person": "Kai Stalmann <ks@qantr.com>"
+      }
+    }
+  }
+}

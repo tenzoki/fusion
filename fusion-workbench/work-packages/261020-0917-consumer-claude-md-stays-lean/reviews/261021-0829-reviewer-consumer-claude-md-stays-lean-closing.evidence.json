@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "7756e966-0fb3-4236-aad3-45af42161063",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "da80822964b530d1faf0b1128934fb34a2fb69af",
+    "git_range": null
+  },
+  "brief_revision": "sha256:e4b37cb3dc7f6c351ef8ab7458e29c374a32f8ae1dff7fe2ec1ed6c3b0a859ca",
+  "plan_revision": "sha256:718b876d21e291a9d32d3a4f026024870dad84100fd387e349e401eef3b7090c",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.2.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261020-0917-consumer-claude-md-stays-lean/reviews/261021-0829-reviewer-consumer-claude-md-stays-lean-closing.md",
+    "sha256": "sha256:e18682071fb7b00af9658ae441d12f4684105dca67a34786c16df8db82895145",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-21T06:31:52Z",
+  "extensions": {}
+}
