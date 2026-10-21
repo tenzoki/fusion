@@ -249,7 +249,9 @@ big enough that naming it saves a search.
 The destination is named by kind. A function's or module's invariant goes to
 that module's header, which code-implementer writes, or to
 `.claude/rules/<topic>.md` with a `paths:` glob over the module. A fusion-only
-rule goes to `./rules/<topic>.md` behind the manifest. An unscoped
+rule goes to `./rules/<topic>.md` behind the manifest, and its source is cut
+only once that file is reachable (see *Relocating in a consuming project*
+below). An unscoped
 `.claude/rules/` file is not a relocation: Claude Code loads it at launch with
 the same priority as `CLAUDE.md` (https://code.claude.com/docs/en/memory,
 "Path-specific rules").
@@ -333,11 +335,13 @@ Binding decision: `260916-1006_*_how-does-a-consuming-project-bring-its-claude-m
 `/fusion:curate --placement` proposes the moves and cuts the source; it does not
 finish them alone. The curator writes `./rules/` and `.claude/rules/` files,
 never a module header and never `rules/context-manifest.yaml`. An entry whose
-destination is a header or the manifest stays `stale`, with an issue the curator
-files naming the owner, until a code-implementer step (header) or a
-data-implementer step (manifest) has written it; a second
-`/fusion:curate --placement` then cuts the source. Moves that together exceed a
-fifth of the file's bytes trip the curator's blast-radius pause. A
-`.claude/rules/` file whose name contains a `bin/fusion-rules` pattern word
-(`coding`, `ontology`, `normative`, `verb`, `analyst`) is also emitted to the
-agents that word serves, who read it whole, `paths:` or not.
+destination is a header stays `stale`, with an issue the curator files for
+code-implementer, until that step has written it. An entry whose destination is
+a `./rules/` file no agent reads (its name carries no `bin/fusion-rules` pattern
+word, and no manifest unit names it) has its destination written and its source
+kept: it stays `stale`, with an issue for data-implementer to add the unit. A
+second `/fusion:curate --placement` then cuts the source. Moves that together
+exceed a fifth of the file's bytes trip the curator's blast-radius pause. A
+`./rules/` or `.claude/rules/` file whose name contains a pattern word
+(`coding`, `ontology`, `normative`, `verb`, `analyst`) is emitted to the agents
+that word serves, who read it whole, `paths:` or not.

@@ -13,3 +13,6 @@ Three small contract mismatches came with the move of the due computation into `
 **Scope.** Documentation and the wrapper only. The due semantics are unchanged from setup's former inline block: verified line by line, and by running the shipped block in a scratch workbench.
 
 **Acceptance.** The setup paragraph distinguishes "no node" from the other `unread` reasons and asserts "no hook is running" only for the first. The helper header's exit table matches the wrapper's behaviour: either the wrapper rejects arguments with exit 1, or the usage line and exit 1 are dropped. A node failure either maps to `checks_due=unread (<why>)` with exit 0, or the header names it.
+
+---
+Resolved: the wrapper ignores arguments and maps a node failure to `checks_due=unread (node exited <n>)`, exit 0; the header drops exit 1; setup Step 0 tells `(no node on PATH)` apart from the other reasons; commit "fix: closing-review findings of the lean-CLAUDE.md package", 2026-10-21.

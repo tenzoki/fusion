@@ -92,7 +92,7 @@ console.log("marker=" + (after !== before ? "written" : "unchanged"));
 
 **`marker-version-unresolved` says the version could not be read, which is not the same as the version matching.** The version decides both halves, so an unreadable one leaves no comparison to make and no due list to compute: the block writes nothing and prints that token. Setup is not blocked. A marker is never written with an empty version, because the next run cannot tell an empty one apart from a real one. Report the token together with whichever outcome followed: an existing marker was left exactly as it stands, or the workbench has no marker at all and is therefore not set up here until the session is restarted and Setup run again.
 
-**`checks_due=unread` says no due list was computed, and its parenthesis says why;** usually node is not on this machine's `PATH`. The marker is still written, by the shell fallback, so the workbench is set up; what could not be computed is the due list. Every fusion hook is a node program, so none of them is running either. Report both facts and continue.
+**`checks_due=unread` says no due list was computed, and its parenthesis says why.** On `(no node on PATH)` the marker is still written, by the shell fallback, so the workbench is set up; and every fusion hook is a node program, so none of them is running either. Report both facts and continue. On any other reason node ran and wrote the marker: report the reason alone and continue.
 
 ## Step 0d — Ensure stylometric profiles are present locally
 

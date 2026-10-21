@@ -15,3 +15,6 @@ The curator's net byte delta reads a relocation's After block as the source's ne
 **Scope.** The policy-curator prompt only. `skills/curate/SKILL.md` Step 3 item 3 and Step 5 carry the delta as the curator reports it, so they inherit the error without restating the formula.
 
 **Acceptance.** The net-delta sentence defines the delta per entry kind. A tiered or consolidation entry contributes `After - Before` to its surface, and `(deleted)` counts as 0 bytes. A relocation contributes `Pointer left behind - Before` to the source surface and `+After` to the destination's surface. Edge entries keep `After - Before`. The 1.5x clause states which entries it ranges over. The `surface-growth-bound.test.ts` and dispatch-path bounds stay green with no head-room or baseline edit.
+
+---
+Resolved: `agents/policy-curator.md` `### Blast-radius stop` now defines the net delta per entry kind (relocation: pointer minus Before on the source, After on the destination; `(deleted)` = 0) and limits the 1.5x clause to tiered and consolidation entries; commit "fix: closing-review findings of the lean-CLAUDE.md package", 2026-10-21.

@@ -13,3 +13,6 @@ Step 7 added the weight line to the `## Files` row, but two other descriptions o
 **Scope.** Documentation only.
 
 **Acceptance.** Both passages name the due line and the weight line, or point at the `## Files` row instead of restating the hook's products. `npm test` stays green.
+
+---
+Resolved: the SessionStart tree and the `hooks/` bullet name the due line and the weight line and point at the `## Files` row; commit "fix: closing-review findings of the lean-CLAUDE.md package", 2026-10-21.

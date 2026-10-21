@@ -8,8 +8,9 @@
 #
 #   checks_due=claude-md,upstream    # the due selectors, in /fusion:check's order
 #   checks_due=none                  # nothing is due
-#   checks_due=unread (<why>)        # no due list: no node on PATH, no readable
-#                                    # plugin version, or no workbench above cwd
+#   checks_due=unread (<why>)        # no due list: no node on PATH, no build,
+#                                    # node failed, no readable plugin version,
+#                                    # or no workbench above cwd
 #
 # A selector is due when fusion-workbench/.check-stamps has no entry for it, the
 # entry carries another plugin version, or it is 30 days old or older. The rule
@@ -20,7 +21,8 @@
 # Exit codes:
 #   0  always, `unread` included — a due list is a result, not a failure
 #      (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md).
-#   1  usage error.
+#      Arguments are ignored. A node run that exits non-zero, for example on a
+#      partial dist copy, prints `unread (node exited <n>)` here.
 #
 # The work is hooks/dist/checks-due.js, resolved relative to this script, the
 # pattern bin/fusion-staging-drift uses; the plugin root handed to it is this
@@ -40,4 +42,7 @@ if [ ! -f "$entry" ]; then
   exit 0
 fi
 
-exec node "$entry" "$here/.."
+rc=0
+node "$entry" "$here/.." || rc=$?
+[ "$rc" -eq 0 ] || echo "checks_due=unread (node exited $rc)"
+exit 0

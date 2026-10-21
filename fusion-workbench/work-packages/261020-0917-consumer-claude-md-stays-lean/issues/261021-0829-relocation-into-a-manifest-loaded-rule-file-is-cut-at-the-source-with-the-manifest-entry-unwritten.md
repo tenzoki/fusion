@@ -19,3 +19,6 @@ A relocation into a manifest-loaded `./rules/` file is cut at the source while t
 (b) the destination-by-kind text names only destinations the curator can make reachable by itself (a `paths:`-scoped `.claude/rules/` file, or a `./rules/` file whose name carries the reader's pattern word);
 (c) another ruling recorded in a decision.
 `### Relocating in a consuming project` no longer claims a hold the apply procedure does not perform.
+
+---
+Resolved: option (a). `### Pass 2 — apply` holds a relocation into an unreachable `./rules/` file `stale`, source uncut, and files the manifest unit as an issue for data-implementer; `rules/context-lean-claude-md.md` `### Relocating in a consuming project` states the same mechanism; commit "fix: closing-review findings of the lean-CLAUDE.md package", 2026-10-21.
