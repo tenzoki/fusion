@@ -738,29 +738,16 @@ func (w *workflow) role(ctx context.Context, stepID, runID string, attempt *int,
 	return nil, refusal("refused", "role."+obs.State, runID+" did not reach a settled answer"), nil
 }
 
-// execute observes the run first and acts on what it reads: settled is
-// reused as it stands, accepted is never acted on, answered is completed
-// with the invocation's audit_ref on that one completion, absent is run.
-// The reference is consumed by the first run found at answered, so it is
-// never sent to a run this invocation started (69.3).
+// execute runs the step through steps.Execute, which sends the invocation's
+// audit_ref only to a run first read at answered (69.3), and keeps the
+// bookkeeping one reference for several runs needs: once a completion has
+// consumed it, no later step of this invocation sends it again.
 func (w *workflow) execute(ctx context.Context, request api.RoleRequest) (steps.Observation, error) {
-	response, err := w.client.ReadRole(ctx, request)
-	if err != nil {
-		var refusedBy *api.RoleError
-		if errors.As(err, &refusedBy) {
-			return steps.Observation{State: "refused", Refusal: refusedBy.Code, RefusedCall: api.RoleReadCapability}, nil
-		}
-		return steps.Observation{}, err
-	}
-	switch response.State {
-	case "settled", "accepted":
-		return steps.Observation{State: response.State, Answer: response.Result}, nil
-	case "answered":
-		auditRef := w.auditRef
+	obs, err := steps.Execute(ctx, w.client, request, w.auditRef)
+	if obs.AuditRefConsumed {
 		w.auditRef = ""
-		return steps.Execute(ctx, w.client, request, auditRef)
 	}
-	return steps.Execute(ctx, w.client, request, "")
+	return obs, err
 }
 
 // principal is the principal the evidence holds for a run, "" when the run

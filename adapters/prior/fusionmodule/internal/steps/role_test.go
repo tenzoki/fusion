@@ -85,17 +85,19 @@ func TestExecuteObservesThenActs(t *testing.T) {
 		wantState  string
 		wantRefuse string
 		wantAudits string
+		wantUsed   bool
 		wantErr    bool
 	}{
-		{"absent runs then completes", &script{reads: []string{"absent", "answered", "settled"}}, "", "read,run,read,complete,read", "settled", "", "", false},
-		{"settled is reused", &script{reads: []string{"settled"}}, "", "read", "settled", "", "", false},
-		{"answered completes with the audit", &script{reads: []string{"answered", "settled"}}, "audit-7", "read,complete,read", "settled", "", "audit-7", false},
-		{"accepted is never rerun", &script{reads: []string{"accepted"}}, "", "read", "accepted", "", "", false},
-		{"completion refused", &script{reads: []string{"answered"}, completeEr: &api.RoleError{Code: "recovery-required"}}, "", "read,complete", "answered", "recovery-required", "", false},
-		{"run refused", &script{reads: []string{"absent"}, runErr: &api.RoleError{Code: "permission-denied"}}, "", "read,run", "absent", "permission-denied", "", false},
-		{"read refused", &script{reads: []string{"refused:conflict"}}, "", "read", "refused", "conflict", "", false},
-		{"lost reply on read is an error", &script{reads: []string{"lost"}}, "", "read", "", "", "", true},
-		{"lost reply on run is an error", &script{reads: []string{"absent"}, runErr: api.ErrOutcomeUnknown}, "", "read,run", "", "", "", true},
+		{"absent runs then completes", &script{reads: []string{"absent", "answered", "settled"}}, "", "read,run,read,complete,read", "settled", "", "", false, false},
+		{"absent run is completed without the audit", &script{reads: []string{"absent", "answered", "settled"}}, "audit-7", "read,run,read,complete,read", "settled", "", "", false, false},
+		{"settled is reused", &script{reads: []string{"settled"}}, "audit-7", "read", "settled", "", "", false, false},
+		{"answered completes with the audit", &script{reads: []string{"answered", "settled"}}, "audit-7", "read,complete,read", "settled", "", "audit-7", true, false},
+		{"accepted is never rerun", &script{reads: []string{"accepted"}}, "", "read", "accepted", "", "", false, false},
+		{"completion refused", &script{reads: []string{"answered"}, completeEr: &api.RoleError{Code: "recovery-required"}}, "audit-7", "read,complete", "answered", "recovery-required", "audit-7", true, false},
+		{"run refused", &script{reads: []string{"absent"}, runErr: &api.RoleError{Code: "permission-denied"}}, "", "read,run", "absent", "permission-denied", "", false, false},
+		{"read refused", &script{reads: []string{"refused:conflict"}}, "", "read", "refused", "conflict", "", false, false},
+		{"lost reply on read is an error", &script{reads: []string{"lost"}}, "", "read", "", "", "", false, true},
+		{"lost reply on run is an error", &script{reads: []string{"absent"}, runErr: api.ErrOutcomeUnknown}, "", "read,run", "", "", "", false, true},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -114,6 +116,9 @@ func TestExecuteObservesThenActs(t *testing.T) {
 			}
 			if got := join(c.client.audits); got != c.wantAudits {
 				t.Errorf("audits %q, want %q", got, c.wantAudits)
+			}
+			if obs.AuditRefConsumed != c.wantUsed {
+				t.Errorf("audit consumed %v, want %v", obs.AuditRefConsumed, c.wantUsed)
 			}
 			for _, in := range c.client.inputs {
 				if in != string(request.Input) {

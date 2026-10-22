@@ -40,15 +40,23 @@ type Observation struct {
 	Refusal string
 	// RefusedCall names the capability the refusal came from.
 	RefusedCall string
+	// AuditRefConsumed is true when the first read found the run answered,
+	// so the completion this call sent carried the audit reference. A caller
+	// that holds one reference for several runs drops it once consumed.
+	AuditRefConsumed bool
 }
 
 // Execute runs one step over one durable role, observe then act (Prior
-// answer 67.5): read first; run only on absent; complete only on answered,
-// sending auditRef as the completion's audit reference and nowhere else;
+// answer 67.5): read first; run only on absent; complete only on answered;
 // reuse the stored answer on settled; never rerun accepted. The request,
 // its Input included, is passed to every call unchanged. The observation
 // returned is always a read's result, so after an action the role is read
 // again rather than its state assumed.
+//
+// auditRef goes only to the completion of a run whose first read was
+// answered, a run a previous invocation left before its completion (Prior
+// answer 69.3). A run this call started on absent is completed without it,
+// and the observation reports whether the reference was consumed.
 //
 // A refusal by the host ends the step with the refusal recorded; it is a
 // known outcome. Any other error, a lost reply above all, is returned as is:
@@ -59,6 +67,11 @@ func Execute(ctx context.Context, client RoleClient, request api.RoleRequest, au
 	if err != nil || obs.Refusal != "" {
 		return obs, err
 	}
+	completionAudit := ""
+	consumed := obs.State == "answered"
+	if consumed {
+		completionAudit = auditRef
+	}
 	if obs.State == "absent" {
 		if _, err := client.RunRole(ctx, request); err != nil {
 			return refusalOf(obs, api.RoleRunCapability, err)
@@ -68,12 +81,13 @@ func Execute(ctx context.Context, client RoleClient, request api.RoleRequest, au
 		}
 	}
 	if obs.State == "answered" {
-		if _, err := client.CompleteRole(ctx, request, auditRef); err != nil {
+		if _, err := client.CompleteRole(ctx, request, completionAudit); err != nil {
+			obs.AuditRefConsumed = consumed
 			return refusalOf(obs, api.RoleCompleteCapability, err)
 		}
-		if obs, err = read(ctx, client, request); err != nil || obs.Refusal != "" {
-			return obs, err
-		}
+		obs, err = read(ctx, client, request)
+		obs.AuditRefConsumed = consumed
+		return obs, err
 	}
 	return obs, nil
 }

@@ -151,6 +151,21 @@ func TestMissingRequiredAuditIsRecoveryRequired(t *testing.T) {
 	}
 }
 
+// A run this invocation started is completed without the invocation's
+// audit_ref: the reference belongs to a run a previous process left at
+// answered, never to one first read at absent (Prior answer 69.3).
+func TestAuditRefIsNotSentToARunThisInvocationStarted(t *testing.T) {
+	h := load(t)
+	input := h.roleInput(4)
+	env := h.invoke("op-1", fixture.Invocation(t, "run-1", input, "audit:close-1"))
+	if env.Domain.Status != "completed" || h.host.ModelCalls != 1 || h.host.Count(api.RoleRunCapability) != 1 || h.host.Count(api.RoleCompleteCapability) != 1 {
+		t.Fatalf("envelope %+v, calls %+v", env, h.host.Calls)
+	}
+	if len(h.host.Audits()) != 0 {
+		t.Fatalf("an audit reference was sent to a run this invocation started: %v", h.host.Audits())
+	}
+}
+
 func TestSchemaInvalidAnswerIsRefusedNotCompleted(t *testing.T) {
 	h := load(t)
 	h.host.Model = func(json.RawMessage) json.RawMessage {
