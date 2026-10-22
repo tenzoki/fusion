@@ -470,6 +470,10 @@ func decodePage(reply Reply, previous *Page, expected int64) (Page, []byte, erro
 		if end != page.TotalBytes {
 			return page, nil, reply.violation("next_offset null before the end")
 		}
+	} else if page.PageBytes == 0 {
+		// A page that carries no bytes and names a next page would be asked
+		// for again at the same offset; refusing it keeps assemble finite.
+		return page, nil, reply.violation("page_bytes is zero before the end")
 	} else if *page.NextOffset != end || end >= page.TotalBytes {
 		return page, nil, reply.violation("next_offset is not the byte after this page")
 	}

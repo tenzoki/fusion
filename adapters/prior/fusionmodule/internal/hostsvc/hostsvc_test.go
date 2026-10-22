@@ -220,6 +220,25 @@ func TestAPageThatDoesNotAddUpIsAnError(t *testing.T) {
 	}
 }
 
+func TestAPageThatMakesNoProgressIsAnError(t *testing.T) {
+	handle := strings.Repeat("d", 64)
+	empty := completed(`{"handle":"` + handle + `","sha256":"` + Digest([]byte("0123456789")) + `","total_bytes":10,"offset":0,"page_bytes":0,"data_base64":"","next_offset":0}`)
+	// The host answers the same empty page however often it is asked; an
+	// assembler that followed next_offset here would never stop.
+	host := &scripted{replies: map[string]string{
+		api.RepairOperationID(api.WorkbenchCapability, workflowID, "close"):             empty,
+		api.RepairOperationID(api.WorkbenchCapability, workflowID, "page:"+handle+":0"): empty,
+	}}
+	c := Client{Host: host, Identity: fixture.Identity, WorkflowID: workflowID}
+	_, err := c.Close(context.Background(), "run-audit")
+	if !errors.Is(err, ErrReply) {
+		t.Fatalf("err %v", err)
+	}
+	if len(host.calls) > 2 {
+		t.Fatalf("assembler made %d calls, more than one page call", len(host.calls))
+	}
+}
+
 func TestCloseIsInlineOrPaged(t *testing.T) {
 	closure := `{"record":"issues/one.record.json","before":"7","after":"8","reconciled":true}`
 	inline := &scripted{replies: map[string]string{api.RepairOperationID(api.WorkbenchCapability, workflowID, "close"): completed(closure)}}
