@@ -39,6 +39,6 @@
   "notes": [
     "An unmet condition blocks dispatch of the dependant; it changes no state on either side.",
     "legacy-completed never satisfies succeeded: it marks a done package imported without a bound evidence record.",
-    "Cycle detection runs over the whole depends_on graph of the workbench at set-dependencies time and again at validate/reconcile; a cycle found later is reported, never silently cut."
+    "Cycle detection runs over the whole depends_on graph of the workbench in two places (codec/src/cli/ops.ts): set-dependencies refuses a list that would close a cycle through the package it sets, and reconcile reports every cycle through a package in its scope. validate does not look for cycles. A cycle found later is reported, never silently cut."
   ]
 }
