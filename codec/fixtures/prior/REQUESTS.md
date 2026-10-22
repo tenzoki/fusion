@@ -5602,3 +5602,115 @@ Both pins hold this file at `893e823f7dae622f90da79211d9397c3a8e0da8fca386c4aaf8
 | 73 | **complete** at Prior `d372bc0`, for `ec76d4fd`; `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f` qualified, 699 094 bytes, now `QualifiedCodecDigest`; 744 pinned entries, 238 exchanges, `go test ./...` and `go vet ./...` passed; answered at `3c29dcf` | the same document, `## 73 — Runtime snapshot and replay` |
 
 These rows supersede the rows of `### Requests 64 and 67 to 73, as they stand` above.
+
+## Dependency evaluation and module follow-ups (request 74)
+
+**Written against:** fusion `a69220dc` on `main` (2026-10-22 20:04, "docs(codec): record Prior's answer to requests 72 and 73"), `v13.3.0-19-ga69220dc`. `.claude-plugin/plugin.json` there names 13.3.0. It holds the three codec steps of fusion's work package `261022-1604-prior-bundle-closing-review-follow-ups` (plan `261022-1611-plan-prior-bundle-closing-review-follow-ups.md`, steps 4, 5 and 13) and the two module steps 74(b) asks about (steps 1 and 3). Outside `fusion-workbench/` the working tree differs from `a69220dc` in this section alone (`git status --porcelain`). At `a69220dc` this file is 5 604 lines, `sha256:588f819c2d71aa808694a4ba2ade2f16945b0f3b2064e72b2dc76d312788b63a`. Prior was read at `dbe6f80` (2026-10-22 16:54, "feat(supervisor): child-role dispatch on the parent's route"), the head of its `main`. Both pin files were read with `git show 3c29dcf:<path>`, the commit of Prior's answer to 72 and 73. `git diff --stat 3c29dcf dbe6f80 -- tests/testdata/fusion-codec tests/testdata/fusion-fj01` prints nothing, and `QualifiedCodecDigest` at `dbe6f80` is `dfab3f21…`, line 22 of `Prior: internal/fusionhost/workbench.go`.
+
+**The base is the qualified bundle:** `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, 699 094 bytes, blob `27a6973d`, at fusion `ec76d4fd`, qualified by request 73 and `QualifiedCodecDigest` since Prior `d372bc0` (`### Prior's answer to 72 and 73 at 3c29dcf`, above). Both pins name `ec76d4fd`.
+
+**The bundle:** `codec/dist/fusion-record.js` at `a69220dc` is 699 729 bytes, `sha256:d6fc9da0b948cb9c8d014d17e2d799b9a4e1c53a9feea428288fb718ff388d97`, blob `7f557847`. `shasum -a 256` and `wc -c` over the working tree's file and `git show a69220dc:codec/dist/fusion-record.js | shasum -a 256` print the same digest. `git log ec76d4fd..a69220dc -- codec/dist codec/src codec/schemas codec/contract codec/package.json bin/fusion-record` names three commits. Two of them move the bundle: `e46c6634` to `sha256:081242f020ba96bb676a552a45517cb750d72321aa4acf3800e9a56e8e1dd960`, 699 301 bytes, and `e2312078` to `d6fc9da0…`. `695e1f84` leaves it at `081242f0…`. Prior's runtime refuses `d6fc9da0…` today, as it refuses any digest other than `QualifiedCodecDigest`. This request asks for acceptance of the contract delta, not for a re-pin.
+
+This section is request 74, in two parts. 74(a) puts the codec delta to Prior. 74(b) asks Prior to confirm two readings for the next module bundle, which this request does not deliver. No line above is edited. Where this section disagrees with a section above, this section governs.
+
+### What landed, and at which commits
+
+| Commit | Plan step | What it carries |
+|---|---|---|
+| `04ea51ad` | 1 | `adapters/prior/fusionmodule/internal/repair/repair.go`: a completed close with `reconciled: false` ends `recovery-required` with violation `closure.unreconciled`. New test `TestAnUnreconciledCloseIsRecoveryRequired`. Module only, in no codec pin |
+| `3e8c212a` | 3 | `adapters/prior/fusionmodule/internal/steps/role.go`: `steps.Execute` sends `audit_ref` only to the completion of a run whose first read was `answered`; repair and explorer both call it. New test `TestAuditRefIsNotSentToARunThisInvocationStarted`. Module only, in no codec pin |
+| `e46c6634` | 4 | `codec/src/transitions.ts` (`dependencySatisfied`), `codec/src/cli/ops.ts` (`edgeEntries`, `schemaFinding`), their tests, the bundle `081242f0…` |
+| `695e1f84` | 5 | `codec/src/prior/` (the Prior importers check their input against `GO_STRUCTS`, validate every block they produce and recompute `charter_hash`, each `Revision` and each `evidence_hash`; `gojson` admits only Go's RFC 3339 output and writes a lone surrogate as U+FFFD) and `prior-mapping.test.ts`. `codec/src/prior/` is outside the bundle and both pins, so no pinned byte moves |
+| `e2312078` | 13 | `codec/contract/dependencies.json` (`notes`), `codec/schemas/package.schema.json` and `codec/schemas/campaign.schema.json` (`description`), the bundle `d6fc9da0…`, since the schemas are inlined |
+
+Every hash above was checked with `git show --stat`. The package's other commits between `ec76d4fd` and `a69220dc` touch no path either pin holds, as the count below shows. The module bundle Prior accepted at answer 70, and the `v13.1.0` tag that carries it, stay as they are. Steps 1 and 3 move the module's build identity. No module bundle is built for delivery here.
+
+### What changed for Prior's two pins, at `a69220dc`
+
+Both pin files name fusion `ec76d4fd` at `3c29dcf`. The counts come from the command of request 72's section, under its heading "What changed for Prior's two pins" at `ec76d4fd`, with `ec76d4fd` replaced by `a69220dc` and the pin read from `3c29dcf` where it read `8f59121`:
+
+```
+for pin in fusion-codec:codec/ fusion-fj01:; do n=0; m=0; while read p h; do n=$((n+1)); [ "$(git show "a69220dc:${pin#*:}$p" 2>/dev/null | shasum -a 256 | cut -c1-64)" = "$h" ] || { m=$((m+1)); echo "  moved ${pin%%:*} $p"; }; done < <(git -C "$PRIOR" show 3c29dcf:tests/testdata/${pin%%:*}/UPSTREAM.json | jq -r '.files|to_entries[]|"\(.key) \(.value)"'); echo "${pin%%:*}: $m of $n moved"; done
+```
+
+It prints, verbatim:
+
+```
+  moved fusion-codec contract/dependencies.json
+  moved fusion-codec fixtures/prior/REQUESTS.md
+  moved fusion-codec schemas/campaign.schema.json
+  moved fusion-codec schemas/package.schema.json
+fusion-codec: 4 of 418 moved
+  moved fusion-fj01 codec/dist/fusion-record.js
+  moved fusion-fj01 codec/fixtures/prior/REQUESTS.md
+fusion-fj01: 2 of 744 moved
+```
+
+No pinned path is missing at `a69220dc`.
+
+`Prior: tests/testdata/fusion-codec/UPSTREAM.json` (418 files): four differ.
+
+| Path | `sha256` at `a69220dc` | Change |
+|---|---|---|
+| `contract/dependencies.json` | `e67797e8d0e7a76cfc1367932ad310cfc586eefd96e287ddbeec7ac533f3d416` | the third `notes` string: cycle detection runs in `set-dependencies`, which refuses a list closing a cycle through the package it sets, and in `reconcile`, which reports every cycle through a package in its scope; "validate does not look for cycles" |
+| `schemas/campaign.schema.json` | `4911cc5ba855f6bad548e4f627c49c52b84b0f9682c9f55eddf998954b299453` | `description`: a formation package's dependencies name package ids present in `formation.packages`, not candidates; the state mapping is "`prior-mapping.json` `state_mapping`, every row confirmed" and is applied by no importer, where the text said "unconfirmed" |
+| `schemas/package.schema.json` | `68137721a5faa6cdff5673a1db9f0a21ea02468a6068dd9c0d7b0fcd857341d9` | `description`: the rules JSON Schema cannot check name the code that enforces each; distinct and acyclic `depends_on` targets, never the package itself, are credited to `setDependenciesPlan` in `codec/src/cli/ops.ts` and to `reconcile`, not to `transitions.ts` |
+| `fixtures/prior/REQUESTS.md` | `588f819c2d71aa808694a4ba2ade2f16945b0f3b2064e72b2dc76d312788b63a` | the sections since `ec76d4fd`; this section changes it again |
+
+`git diff ec76d4fd a69220dc -- codec/contract codec/schemas` changes the three strings above and nothing else: no keyword, no `$id`, no contract value. The other seven pinned schemas, the two other contract files and the 13 goldens are unchanged. No fixture was added: the files under `codec/fixtures`, `codec/schemas` and `codec/contract` that the pin does not hold are the five of `fixtures/prior-handback/`, the same five at `ec76d4fd` and at `a69220dc`. The pin stays at 418 files, and `fixtures/manifest.json` at 375 entries.
+
+`Prior: tests/testdata/fusion-fj01/UPSTREAM.json` (744 files, bundle `dfab3f21…`): two differ.
+
+| Path | `sha256` at `a69220dc` | Change |
+|---|---|---|
+| `codec/dist/fusion-record.js` | `d6fc9da0b948cb9c8d014d17e2d799b9a4e1c53a9feea428288fb718ff388d97` | `dependencySatisfied` and `edgeEntries` as 74(a) states; the three description and note strings, inlined |
+| `codec/fixtures/prior/REQUESTS.md` | `588f819c…b63a` | as above |
+
+`bin/fusion-record` and `codec/package.json` are unchanged. **No response delta.** `git diff --name-status ec76d4fd a69220dc -- codec/fixtures` names this file alone, so every recorded request and response of the seven sessions, every seed, every delta file, `codec/fixtures/legacy-v12/` and `codec/fixtures/workbench/` hash equal to the pin. No recorded exchange carries a dependency entry the delta changes. No recorded response names `dependency-unmet` (`grep -rl` over `codec/fixtures`, this file aside). Eight recorded responses carry a `dependencies` list: seven `reconcile` answers of the archive and takeover sessions hold it empty, and `protocol-session-fj02/15-reconcile.response.json` holds one `succeeded` edge, `satisfied`, which `round-trip-cli-fj02.test.ts` replays byte for byte through `d6fc9da0…`.
+
+### 74. Does Prior accept the dependency-evaluation delta, and two readings for the next module bundle?
+
+**Closes:** the condition of fusion's release tag on any commit holding plan step 4, under the user's ruling in `261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md` (option 2): the tag waits for Prior's acceptance of 74(a), and a re-snapshot and re-pin of `d6fc9da0…`, asked in a later request as 72 and 73 followed 71, may follow the tag. 74(b) closes no tag condition: it settles the module's behaviour before the next module bundle is built, and that bundle needs Prior's acceptance on its own (`261014-0830-does-a-shipped-file-change-after-a-release-tag-take-a-version-bump-when-the-bump-changes-the-prior-bundle-digest.md`, option 1). Preferred form, as for 71: a Prior response document at a Prior commit that gives each of 74(a) and 74(b)(1) and (2) one verdict, accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for).
+
+#### 74(a) The codec delta
+
+Three changes, one in each of two functions and one in text.
+
+1. **One accepted binding satisfies `succeeded`, beside a dangling one.** `codec/contract/dependencies.json` defines `succeeded` with `min_accepted: 1`: "its outcome binds at least one evidence record with verdict accept" at the binding's current revision. At `ec76d4fd` `dependencySatisfied` in `codec/src/transitions.ts` refused the whole edge `unresolved-reference` as soon as one binding named an evidence record the caller did not supply, even when another binding was accepted. At `a69220dc` a binding with no supplied record counts as not accepted, and nothing more. With one accepted binding at a current revision the edge is `satisfied`; with none it is `missing-evidence`, the contract's `succeeded_without_accepted_evidence`. The dangling binding stays a finding on the target package, where `reconcile`'s evidence section already reports it (`stale unresolved-reference/record-not-found` at `/outcome/evidence/<i>`), so no second report is added on the edge. One answer changes as a consequence: an edge whose only binding dangles answered `unresolved-reference` with the detail "the outcome binds evidence …, which was not supplied", and now answers `missing-evidence`, "0 accepted evidence binding(s) at a current revision, 1 required". `missing_target`, an edge whose target package does not resolve, stays `unresolved-reference`.
+2. **A schema-invalid target is `unmet`.** At `ec76d4fd` `edgeEntries` in `codec/src/cli/ops.ts` read the target package's `status` and `outcome` without validating the target's control data. At `a69220dc` it validates the target against its schema first. A target the schema refuses is an `unmet` entry carrying the schema finding's class and reason (`schema-invalid`/`schema`, or `unsupported-format`/`unknown-schema`) and a detail naming the target's path, whatever its `status` says. A valid target is evaluated as before. The finding is the one `findingsOf` already reports for that file, factored into `schemaFinding` and shared.
+3. **The text corrections**, the three strings of the pin table above. Each brings a description or note in line with the code: where cycle detection runs, which function enforces distinct and acyclic `depends_on`, what a formation package's dependencies name, and that the state mapping is confirmed and applied by no importer.
+
+`ops.test.ts` holds the two cases: "one accepted binding satisfies succeeded beside a dangling one, which stays the target's evidence finding" and "a schema-invalid target is unmet with the schema's finding, whatever its status says". `transitions.test.ts` holds the binding cases in either order and the dangling-only case.
+
+Plan step 5 (`695e1f84`) is part of the same package and changes no byte either pin holds. It is named here for completeness and is not asked.
+
+**Asked:** Does Prior accept the two evaluation changes and the three text corrections as the whole delta between `dfab3f21…` and `d6fc9da0…`? Does any assertion in Prior's harness or host expect `unresolved-reference` for a `succeeded` edge whose target binds a dangling evidence record, or read a dependency entry of a schema-invalid target as anything other than `unmet`?
+
+#### 74(b) Two readings for the next module bundle
+
+Neither reading is in a bundle Prior holds. Both are in the module source at `a69220dc`, tested against fusion's fake host on macOS arm64 and nowhere else. The next module bundle will carry them, and it is not handed over here.
+
+1. **A completed close with `reconciled: false` answers `recovery-required` with `closure.unreconciled`** (plan step 1, `04ea51ad`). Answer 69 defines `reconciled` as true "only when post-image, codec receipts, host journal and integration commit agree" (`Prior: docs/design/fusion-repair-contract-prior-response.md`). The accepted module answered `completed` for any completed close, whatever `reconciled` said. It now splits on it: `true` stays `completed` with the closure in `result`; `false` ends `recovery-required`, non-terminal, with violation `closure.unreconciled`, and the closure the host answered is kept in the violation's detail, because the frozen `repair-result.v1.json` admits only a null `result` on that status. No frozen schema or workflow byte moved. Prior said on 2026-10-14 that its qualified close answers a failed reconciliation with an error, never with a completed close carrying `reconciled: false`. Read that way the branch guards a case Prior does not produce, and fusion keeps it as a guard.
+2. **The explorer sends `audit_ref` only to a run whose first read was `answered`** (plan step 3, `3e8c212a`): the 69.3 rule applied to 67.5. 69.3 says the outer `audit_ref` "must name that exact role in the host's recovery record, is sent only to its completion". The repair workflow followed it. The explorer did not: with an `audit_ref` in the invocation and its run `absent`, it started the run and then sent the reference to the completion of the run it had just started. `steps.Execute` now holds the rule for both workflows. It reads first, runs on `absent` and completes that run with no audit reference, and it sends the reference only to the completion of a run found `answered` on that first read, a run a previous invocation left before its completion. `settled` reuses the stored answer and `accepted` is never rerun, as 67.5 has it.
+
+**Asked:** (1) Does Prior read a completed close with `reconciled: false` as `recovery-required` with violation `closure.unreconciled`, or does another status fit, `refused` for one? (2) Does Prior read 69.3 as binding the explorer as it binds repair, so that a run the invocation starts on `absent` is completed without `audit_ref`? Does Prior's host do anything other than refuse or ignore an `audit_ref` that names no recorded recovery?
+
+### What fusion does with the answer
+
+- **74(a) accepted:** a release tag may carry plan step 4, and the answer is recorded here by question with the Prior commit that holds it. The re-snapshot of the four codec-pin paths and the re-pin of `d6fc9da0…` with its two fj01 paths may follow the tag, asked in a later request. Until Prior re-pins, its runtime keeps `dfab3f21…` and refuses `d6fc9da0…`.
+- **74(a) corrected:** the correction lands before any tag carries step 4.
+- **74(a) refused or deferred:** no tag carries step 4, and the user rules.
+- **74(b) confirmed:** the next module bundle carries both readings as they stand at `a69220dc`.
+- **74(b) corrected:** the change lands in the module before the next bundle is built, filed as a new fusion issue. The two issues closed by steps 1 and 3 are not reopened. 74(b) holds back no tag.
+
+### Requests 64 and 67 to 74, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, replaced as `QualifiedCodecDigest` by `dfab3f21…` at `d372bc0` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 and 73 | **complete** at Prior `01cf2fd` and `d372bc0`, for `ec76d4fd`; `dfab3f21…` qualified; answered at `3c29dcf` | `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md` |
+| 74 | **asked**: this section, 74(a) the codec delta to `d6fc9da0…`, 74(b) two readings for the next module bundle | — |
+
+These rows supersede the rows of `#### Requests 64 and 67 to 73, as they stand` above. Request 74 is the one open request.
