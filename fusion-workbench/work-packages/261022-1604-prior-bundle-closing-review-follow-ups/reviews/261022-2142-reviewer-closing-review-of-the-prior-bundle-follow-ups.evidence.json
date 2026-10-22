@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "a160350d-9b1d-4681-b7c2-3e60b11c64a0",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "8cb8ba01886d6db6c6456b510402350963ad501a",
+    "git_range": null
+  },
+  "brief_revision": "sha256:4e0bd52fd5d854f39c5cd2d45e723cf59cc2626a26648949e4c14ae3ca45e3a2",
+  "plan_revision": "sha256:c49922a91c80badb3b7a61f2ece87cf46eef0d06292b3ff221a568ca473ecba6",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261022-1604-prior-bundle-closing-review-follow-ups/reviews/261022-2142-reviewer-closing-review-of-the-prior-bundle-follow-ups.md",
+    "sha256": "sha256:07700f013e61d6a597b9e81f2fd586bcc0dafac4ba9e738ef7be7815caa488d4",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-22T19:52:26Z",
+  "extensions": {}
+}

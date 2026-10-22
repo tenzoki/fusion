@@ -3,7 +3,7 @@
   "id": "034f53b4-2f27-4f8a-9891-be3456280e03",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "All 12 follow-up issues of the Prior module bundle closed by plan steps 1-15; Prior answers to 72/73 and 74 recorded, request 74 put and accepted (steps 16-17). Closing review accept.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "a160350d-9b1d-4681-b7c2-3e60b11c64a0",
+          "revision": "sha256:af9913b61ffbeaa57a19a7faf792abaa09ad09334a6b833f1273fa14001f1744"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
