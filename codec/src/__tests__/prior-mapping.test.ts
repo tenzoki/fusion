@@ -31,7 +31,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { exportCampaignState, importCampaignState } from "../prior/campaign.js";
 import { exportRegister, importRegister } from "../prior/candidates.js";
-import { priorMapping, proposedPackageStatus } from "../prior/common.js";
+import { emptyToNull, guarded, nonEmpty, priorMapping, proposedPackageStatus } from "../prior/common.js";
 import {
   GO_STRUCTS,
   GoMarshalError,
@@ -40,6 +40,7 @@ import {
   computePriorRevision,
   computeSnapshotHash,
   goMarshal,
+  goQuote,
   goStructType,
   priorAggregateKind,
   walkGoFields,
@@ -418,6 +419,16 @@ function fixture<T>(aggregate: string, name: string): T {
   return structuredClone(c.prior) as T;
 }
 
+/**
+ * Re-stamps an aggregate a test has changed, as Prior's own write would: the
+ * importer recomputes `Revision` and refuses a stale one, so a case that means
+ * to test something else must hand it a value Prior could have stored.
+ */
+function restamp<T extends PriorRegister | PriorPlan | PriorCampaignState>(aggregate: T): T {
+  if (aggregate.Revision !== "") aggregate.Revision = computePriorRevision(aggregate);
+  return aggregate;
+}
+
 describe("typed refusals, never defaults", () => {
   it("an unknown Package.State is schema-invalid, naming the path", () => {
     const plan = fixture<PriorPlan>("plan", "dependency-cycle-is-deferred");
@@ -542,6 +553,112 @@ describe("typed refusals, never defaults", () => {
   });
 });
 
+// --- the input checked against GO_STRUCTS, the blocks against the schemas, the hashes recomputed ---
+
+describe("an import refuses what its schemas refuse, with the Go path, and never throws", () => {
+  const ADMITTED = "admission-persists-stable-item-and-current-attempt";
+  const SELECTED = "frozen-selection-replays-explanation-and-stale-prevents-admission";
+  const CAMPAIGN = "revocation-amendment-and-terminal-outcomes";
+  const PLAN = "failed-package-does-not-block-unrelated-package";
+
+  it("a candidate lacking MergeInto is refused at that field (GO_STRUCTS)", () => {
+    const reg = fixture<PriorRegister>("register", SELECTED);
+    delete (reg.Candidates!["c1"] as Partial<PriorCandidate>).MergeInto;
+    const r = importRegister(reg);
+    expect(r).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].MergeInto" });
+    expect((r as { reason: string }).reason).toMatch(/missing/);
+  });
+
+  it("a candidate with Source null is refused at Source, not with a TypeError (GO_STRUCTS)", () => {
+    const reg = fixture<PriorRegister>("register", SELECTED);
+    (reg.Candidates!["c1"] as unknown as Record<string, unknown>)["Source"] = null;
+    expect(importRegister(reg)).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Source" });
+  });
+
+  it("a field Go does not have, a mistyped field and a mistyped side input are refused with their Go paths", () => {
+    const reg = fixture<PriorRegister>("register", SELECTED);
+    (reg.Candidates!["c1"] as unknown as Record<string, unknown>)["Extra"] = 1;
+    expect(importRegister(reg)).toMatchObject({ ok: false, path: "Candidates[c1].Extra" });
+    const reg2 = fixture<PriorRegister>("register", SELECTED);
+    (reg2 as unknown as Record<string, unknown>)["IntakeClosed"] = "yes";
+    expect(importRegister(reg2)).toMatchObject({ ok: false, path: "IntakeClosed" });
+    const plan = fixture<PriorPlan>("plan", PLAN);
+    expect(importPlan(plan, { policy: { Version: "v", MaxRisk: 1, MaxValidationCost: 1, MaxSize: 1 } as never })).toMatchObject({ ok: false, path: "Policy.Budget" });
+    const st = fixture<PriorCampaignState>("campaign", CAMPAIGN);
+    (st.Counters as unknown as Record<string, unknown>)["Attempts"] = "3";
+    expect(importCampaignState(st)).toMatchObject({ ok: false, path: "Counters.Attempts" });
+  });
+
+  it("an admitted candidate with no qualification is refused at Qualification (the candidate schema)", () => {
+    const reg = fixture<PriorRegister>("register", ADMITTED);
+    reg.Candidates!["c1"]!.Qualification = null;
+    const r = importRegister(restamp(reg));
+    expect(r).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Qualification" });
+    expect((r as { reason: string }).reason).toMatch(/candidate block/);
+  });
+
+  it("an admitted candidate with no work item is refused at Disposition (the candidate schema)", () => {
+    const reg = fixture<PriorRegister>("register", ADMITTED);
+    reg.Candidates!["c1"]!.Disposition!.WorkItemID = "";
+    reg.Candidates!["c1"]!.Disposition!.CurrentAttempt = 0;
+    expect(importRegister(restamp(reg))).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Disposition" });
+  });
+
+  it("a policy-evaluated outcome without a policy version is refused at Disposition.PolicyVersion (the candidate schema)", () => {
+    const reg = fixture<PriorRegister>("register", SELECTED);
+    reg.Candidates!["c1"]!.Disposition!.PolicyVersion = "";
+    expect(importRegister(restamp(reg))).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Disposition.PolicyVersion" });
+  });
+
+  it("an admitted package carrying an accepted revision is refused at that package's field (the formation schema)", () => {
+    const plan = fixture<PriorPlan>("plan", "admission-crash-requires-observation-before-dispatch");
+    const [key, pkg] = Object.entries(plan.Packages ?? {}).find(([, p]) => ["formed", "admitting", "admitted"].includes(p.State)) ?? [];
+    expect(pkg, "a fixture package in formed, admitting or admitted").toBeDefined();
+    pkg!.AcceptedRevision = "rev-x";
+    expect(importPlan(restamp(plan))).toMatchObject({ ok: false, class: "schema-invalid", path: `Packages[${key}].AcceptedRevision` });
+  });
+
+  it("a wrong CharterHash is refused (computeCharterHash)", () => {
+    const st = fixture<PriorCampaignState>("campaign", CAMPAIGN);
+    st.CharterHash = "0".repeat(64);
+    const r = importCampaignState(restamp(st));
+    expect(r).toMatchObject({ ok: false, class: "schema-invalid", path: "CharterHash" });
+    expect((r as { reason: string }).reason).toContain(computeCharterHash(st.Charter));
+  });
+
+  it("a changed charter under its old CharterHash is refused", () => {
+    const st = fixture<PriorCampaignState>("campaign", CAMPAIGN);
+    st.Charter.Objective = st.Charter.Objective + " (amended)";
+    expect(importCampaignState(restamp(st))).toMatchObject({ ok: false, path: "CharterHash" });
+  });
+
+  it("a stale Revision is refused on each aggregate (computePriorRevision)", () => {
+    const reg = fixture<PriorRegister>("register", SELECTED);
+    reg.Candidates!["c1"]!.Severity += 1;
+    expect(importRegister(reg)).toMatchObject({ ok: false, class: "schema-invalid", path: "Revision" });
+    const plan = fixture<PriorPlan>("plan", PLAN);
+    expect(plan.Revision, "the plan fixture stores a revision").not.toBe("");
+    plan.RemainingBudget += 1;
+    expect(importPlan(plan)).toMatchObject({ ok: false, class: "schema-invalid", path: "Revision" });
+    const st = fixture<PriorCampaignState>("campaign", CAMPAIGN);
+    st.Counters.Reviews += 1;
+    expect(importCampaignState(st)).toMatchObject({ ok: false, class: "schema-invalid", path: "Revision" });
+  });
+
+  it("a qualification whose EvidenceHash is not evidenceHash over the candidate is refused (computeEvidenceHash)", () => {
+    const reg = fixture<PriorRegister>("register", SELECTED);
+    reg.Candidates!["c1"]!.Reproduction = [...(reg.Candidates!["c1"]!.Reproduction ?? []), "one more step"];
+    expect(importRegister(restamp(reg))).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Qualification.EvidenceHash" });
+  });
+
+  it("nonEmpty and emptyToNull refuse a non-string with the path they are given", () => {
+    expect(guarded(() => nonEmpty("Candidates[c1].ID", 7 as never))).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].ID" });
+    expect(guarded(() => emptyToNull("Candidates[c1].MergeInto", undefined as never))).toMatchObject({ ok: false, path: "Candidates[c1].MergeInto" });
+    expect(guarded(() => emptyToNull("Reason", null as never))).toMatchObject({ ok: false, path: "Reason" });
+    expect(guarded(() => emptyToNull("Reason", ""))).toEqual({ ok: true, value: null });
+  });
+});
+
 // --- the corrections Prior ruled (FJ00 response 2) ------------------------------
 
 describe("corrections Prior ruled", () => {
@@ -558,7 +675,7 @@ describe("corrections Prior ruled", () => {
     c1.Severity = -1;
     c1.EstimatedScope = -2;
     c1.Disposition!.Score = -3;
-    const imported = must(importRegister(reg));
+    const imported = must(importRegister(restamp(reg)));
     const cand = imported.candidates[0]!;
     expect(cand.candidate).toMatchObject({ severity: -1, estimated_scope: -2, selection: { score: -3 } });
     expectValid("urn:fusion:schema:fusion.record/v1", issueRecord(0, cand.candidate, cand.provenance), "signed ratings");
@@ -575,7 +692,7 @@ describe("corrections Prior ruled", () => {
     const c1 = reg.Candidates!["c1"]!;
     c1.Evidence = [{ ...c1.Evidence![0]! }, { ...c1.Evidence![0]! }];
     c1.Qualification!.EvidenceHash = computeEvidenceHash(c1);
-    const imported = must(importRegister(reg));
+    const imported = must(importRegister(restamp(reg)));
     const cand = imported.candidates[0]!;
     expect(cand.candidate.evidence).toHaveLength(2);
     expect(cand.candidate.evidence[0]).toEqual(cand.candidate.evidence[1]);
@@ -595,7 +712,7 @@ describe("corrections Prior ruled", () => {
     c1.Qualification!.Passed = false;
     c1.Qualification!.Reasons = ["evidence reference is empty"];
     c1.Qualification!.EvidenceHash = computeEvidenceHash(c1);
-    const imported = must(importRegister(reg));
+    const imported = must(importRegister(restamp(reg)));
     const cand = imported.candidates[0]!;
     expect(cand.candidate.evidence).toEqual([
       { ref: null, revision: "prior-opaque:rev-1" },
@@ -616,7 +733,7 @@ describe("corrections Prior ruled", () => {
     st.Charter.ItemKinds = [...st.Charter.ItemKinds!, st.Charter.ItemKinds![0]!];
     st.Charter.DataBoundary = ["scope", "scope"];
     st.CharterHash = computeCharterHash(st.Charter);
-    const imported = must(importCampaignState(st));
+    const imported = must(importCampaignState(restamp(st)));
     expect(imported.charter.item_kinds).toEqual(st.Charter.ItemKinds);
     expect(imported.charter.data_boundary).toEqual(["scope", "scope"]);
     expectValid("urn:fusion:schema:fusion.campaign/v1", campaignRecord({ charter: imported.charter, state: imported.state }, imported.provenance), "charter duplicates");
@@ -635,7 +752,7 @@ describe("corrections Prior ruled", () => {
     expect(p1.State).toBe("failed");
     p1.State = "stale";
     p1.Risk = -1; // the signed formation metric, on the same package
-    const imported = must(importPlan(plan));
+    const imported = must(importPlan(restamp(plan)));
     const stale = imported.formation.packages.find((p) => p.id === "package-1")!;
     expect(stale).toMatchObject({ state: "stale", failure_reason: p1.FailureReason, risk: -1 });
     expectValid("urn:fusion:schema:fusion.campaign/v1", campaignRecord({ formation: imported.formation }, imported.provenance), "stale with reason");
@@ -688,6 +805,39 @@ describe("gojson reproduces encoding/json", () => {
     expect(() => goMarshal({ Field: "x", Operator: "eq", Value: 1, Extra: 1 }, goStructType("candidates.Predicate"))).toThrow(/not a field/);
     const q = { CandidateVersion: 1, SourceRevision: "r", EvidenceHash: "h", Passed: true, Reasons: [], CheckedAt: "2026-09-28 12:00" };
     expect(() => goMarshal(q, goStructType("candidates.Qualification"))).toThrow(/RFC 3339/);
+  });
+
+  it("admits only the times Go writes: no trailing-zero fraction, Z rather than +00:00", () => {
+    const at = (CheckedAt: string) => () =>
+      goMarshal({ CandidateVersion: 1, SourceRevision: "r", EvidenceHash: "h", Passed: true, Reasons: null, CheckedAt }, goStructType("candidates.Qualification"));
+    for (const refused of ["2026-09-28T00:00:00.10Z", "2026-09-28T00:00:00.0Z", "2026-09-28T00:00:00.000000000Z", "2026-09-28T00:00:00+00:00", "2026-09-28T00:00:00-00:00", "2026-09-28T00:00:00.1234567891Z"]) {
+      expect(at(refused), refused).toThrow(/RFC 3339/);
+    }
+    for (const admitted of ["2026-09-28T00:00:00Z", "2026-09-28T00:00:00.1Z", "2026-09-28T00:00:00.000000001Z", "2026-09-28T00:00:00.105-05:30", "2026-09-28T00:00:00+02:00"]) {
+      expect(at(admitted), admitted).not.toThrow();
+    }
+  });
+
+  it("refuses a lone surrogate in a string or a map key, and goQuote writes one as U+FFFD", () => {
+    const lone = "a" + ch(0xd800) + "b";
+    expect(() => goMarshal({ Ref: lone, Revision: "r" }, goStructType("candidates.Evidence"))).toThrow(/surrogate/);
+    expect(() => goMarshal({ Ref: ch(0xdc00), Revision: "r" }, goStructType("candidates.Evidence"))).toThrow(GoMarshalError);
+    expect(() => goMarshal({ Watermark: "w", Versions: { [lone]: 1 }, SourceRevisions: null }, goStructType("candidates.Snapshot"))).toThrow(/surrogate/);
+    expect(goQuote(lone)).toBe('"a' + ch(0xfffd) + 'b"');
+    expect(goQuote(ch(0xdc00))).toBe('"' + ch(0xfffd) + '"');
+    // A pair is one code point, written raw as Go writes it.
+    const pair = ch(0xd83d) + ch(0xde00);
+    expect(goQuote(pair)).toBe('"' + pair + '"');
+    expect(goMarshal({ Ref: pair, Revision: "r" }, goStructType("candidates.Evidence"))).toBe('{"Ref":"' + pair + '","Revision":"r"}');
+  });
+
+  it("an import refuses a lone surrogate or a non-Go time with the Go path", () => {
+    const reg = fixture<PriorRegister>("register", "frozen-selection-replays-explanation-and-stale-prevents-admission");
+    reg.Candidates!["c1"]!.Statement = "x" + ch(0xd800);
+    expect(importRegister(reg)).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Statement" });
+    const reg2 = fixture<PriorRegister>("register", "frozen-selection-replays-explanation-and-stale-prevents-admission");
+    reg2.Candidates!["c1"]!.Qualification!.CheckedAt = "2026-09-28T00:00:00.10Z";
+    expect(importRegister(reg2)).toMatchObject({ ok: false, class: "schema-invalid", path: "Candidates[c1].Qualification.CheckedAt" });
   });
 
   it("names the aggregate by its own fields and refuses anything else", () => {

@@ -12,13 +12,30 @@
 // The vocabularies are the table's, not this file's: `verbatim_vocabularies`
 // and `state_mapping.rows` are read once at load, so the set of package states
 // an importer accepts is exactly the set the Prior side is asked to confirm.
+//
+// Every importer runs three checks around its mapping, all of them ending in
+// the same refusal with a Go path, none of them a thrown TypeError:
+//
+//  1. `goShape` before mapping: the input against its struct in `GO_STRUCTS`,
+//     through `goMarshal`, so a missing, extra or mistyped field, a time Go
+//     would not write and a lone surrogate are refused by the same rules the
+//     revision hash is computed under.
+//  2. `checkBlock` on every block produced: the codec's own schemas, compiled
+//     by `compileSchemas` from the documents of the default set, so a
+//     conditional rule the schema states (an admitted selection carries an
+//     admission, a failed package a reason) is enforced by the schema rather
+//     than restated in the mapper. The schema finding's instance path is
+//     translated back into the Go path through the table's `fusion_path`.
+//  3. The stored hashes, recomputed by the helpers in `gojson.ts`, in each
+//     importer: a mismatch is refused, never re-stamped.
 // ---------------------------------------------------------------------------
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { strictParse } from "../strict-json.js";
+import { compileSchemas, schemas, type SchemaDocument, type SchemaSet, type ValidationError } from "../validate.js";
 import type { LegacyFields, PriorJsonSha256, PriorOpaque } from "./blocks.js";
-import { compareGoStrings } from "./gojson.js";
+import { GO_STRUCTS, GoMarshalError, compareGoStrings, goMarshal, goStructType, sortedGoKeys, type GoType } from "./gojson.js";
 
 export const CONTRACT_DIR = fileURLToPath(new URL("../../contract/", import.meta.url));
 
@@ -92,7 +109,7 @@ export function guarded<T>(fn: () => T): PriorResult<T> {
 interface MappingTable {
   verbatim_vocabularies: Record<string, string[] | string>;
   state_mapping: { rows: Array<{ prior_value: string; fusion_status: string | null; outcome_class: string | null; confirmed: boolean }> };
-  rows: Array<{ aggregate: string; prior_key: string; null_vs_empty: string; revision_encoding: string | null; confirmed: boolean }>;
+  rows: Array<{ aggregate: string; prior_key: string; fusion_path: string; null_vs_empty: string; revision_encoding: string | null; confirmed: boolean }>;
 }
 
 function loadMapping(): MappingTable {
@@ -141,12 +158,16 @@ export const POLICY_OPERATORS: ReadonlySet<string> = new Set(["gte", "lte", "eq"
 
 /** `empty-string-refused`. */
 export function nonEmpty(path: string, v: string): string {
+  if (typeof v !== "string") invalid(path, `must be a string, got ${JSON.stringify(v)}`);
   if (v === "") invalid(path, "Prior requires a non-empty value; an empty one is refused");
   return v;
 }
 
 /** `empty-string-to-null` on import. */
-export const emptyToNull = (v: string): string | null => (v === "" ? null : v);
+export function emptyToNull(path: string, v: string): string | null {
+  if (typeof v !== "string") invalid(path, `must be a string, got ${JSON.stringify(v)}`);
+  return v === "" ? null : v;
+}
 
 /** `empty-string-to-null` on export. */
 export const nullToEmpty = (v: string | null): string => v ?? "";
@@ -330,4 +351,162 @@ export function trackerFrom(legacy: LegacyFields | undefined, path: string): Emp
     invalid(`${path}.provenance.legacy_fields.empty_collections`, "must be an array of Go paths");
   }
   return new EmptyTracker(list);
+}
+
+// --- the input against GO_STRUCTS -------------------------------------------
+
+/**
+ * Refuses `value` unless it is what `encoding/json` writes for the Go struct
+ * `struct`: every field present and no other, each of its Go type. `prefix` is
+ * the Go path the value sits at (`""` for the aggregate, `Policy` for a side
+ * input), so the refusal names `Candidates[c1].MergeInto`, not `$`.
+ */
+export function goShape(value: unknown, struct: string, prefix: string): void {
+  try {
+    goMarshal(value, goStructType(struct), "$");
+  } catch (e) {
+    if (!(e instanceof GoMarshalError)) throw e;
+    invalid(joinGoPath(prefix, e.path.replace(/^\$\.?/, "")), e.detail);
+  }
+}
+
+const joinGoPath = (prefix: string, rest: string): string => (prefix === "" ? rest || "$" : rest === "" ? prefix : rest.startsWith("[") ? prefix + rest : `${prefix}.${rest}`);
+
+// --- every block against the codec's schemas --------------------------------
+
+/** The blocks an importer produces, each a `$defs` entry of a codec schema, and where the table's `fusion_path` puts it. */
+const BLOCKS = {
+  candidate: { ref: "urn:fusion:schema:fusion.record/v1#/$defs/candidate", at: "fusion.record/v1:/control/candidate" },
+  register: { ref: "urn:fusion:schema:fusion.campaign/v1#/$defs/register", at: "fusion.campaign/v1:/register" },
+  formation: { ref: "urn:fusion:schema:fusion.campaign/v1#/$defs/formation", at: "fusion.campaign/v1:/formation" },
+  charter: { ref: "urn:fusion:schema:fusion.campaign/v1#/$defs/charter", at: "fusion.campaign/v1:/charter" },
+  state: { ref: "urn:fusion:schema:fusion.campaign/v1#/$defs/state", at: "fusion.campaign/v1:/state" },
+} as const;
+
+export type BlockName = keyof typeof BLOCKS;
+
+const blockId = (name: BlockName): string => `urn:fusion:prior-import:${name}`;
+
+let blockSet: SchemaSet | undefined;
+
+/**
+ * The default schema set's own documents, compiled once more with one wrapper
+ * per block that `$ref`s its `$defs` entry: the validator can then be asked
+ * about a block on its own, without inventing the envelope around it.
+ */
+function blockSchemas(): SchemaSet {
+  if (blockSet !== undefined) return blockSet;
+  const base = schemas();
+  const documents: SchemaDocument[] = base.ids().map((id) => ({ source: id, value: base.document(id) }));
+  for (const name of Object.keys(BLOCKS) as BlockName[]) {
+    documents.push({ source: `prior import block ${name}`, value: { $id: blockId(name), $ref: BLOCKS[name].ref } });
+  }
+  return (blockSet = compileSchemas(documents));
+}
+
+/** A Go value an import reads, and the Go path it sits at: the aggregate, or a side input. */
+export interface GoRoot {
+  struct: string;
+  path: string;
+  value: unknown;
+}
+
+/**
+ * Refuses `block` unless the codec's schema for it admits it. The refusal
+ * names the Go path of the deepest finding, translated through `roots`; the
+ * first root is where a finding at the block itself is reported.
+ */
+export function checkBlock(name: BlockName, block: unknown, roots: readonly GoRoot[]): void {
+  const r = blockSchemas().validate(blockId(name), block);
+  if (r.ok) return;
+  if (r.class !== "schema-invalid") throw new Error(`the ${name} block schema is not loaded: ${r.schemaId}`);
+  const deepest = r.errors.reduce<ValidationError | undefined>((best, e) => (best === undefined || pointerOf(e).length > pointerOf(best).length ? e : best), undefined);
+  if (deepest === undefined) invalid(roots[0]?.path || "$", `the ${name} block does not satisfy its schema`);
+  const at = [...tokensOf(BLOCKS[name].at), ...pointerOf(deepest)];
+  const path = roots.reduce<string | undefined>((found, root) => found ?? locate(root.struct, root.path, root.value, at), undefined) ?? (roots[0]?.path || "$");
+  invalid(path, `the ${name} block does not satisfy its schema at ${deepest.instancePath || "/"}: ${deepest.message} (${deepest.keyword})`);
+}
+
+const pointerOf = (e: ValidationError): string[] =>
+  e.instancePath === "" ? [] : e.instancePath.slice(1).split("/").map((s) => s.replace(/~1/g, "/").replace(/~0/g, "~"));
+
+/** `fusion.record/v1:/control/candidate/evidence[]/ref` as tokens, `[]` standing for one array index. */
+function tokensOf(fusionPath: string): string[] {
+  const colon = fusionPath.indexOf(":/");
+  const out = [fusionPath.slice(0, colon)];
+  for (const seg of fusionPath.slice(colon + 2).split("/")) {
+    if (seg === "") continue;
+    if (seg.endsWith("[]")) out.push(seg.slice(0, -2), "[]");
+    else out.push(seg);
+  }
+  return out;
+}
+
+let fusionPaths: Map<string, string[][]> | undefined;
+
+/** `<aggregate>.<prior_key>` to the token lists of its `fusion_path` (a row may name two, joined by " and "). */
+function fusionPathsOf(struct: string, field: string): string[][] {
+  fusionPaths ??= new Map(
+    priorMapping().rows.map((row) => [
+      `${row.aggregate}.${row.prior_key}`,
+      row.fusion_path
+        .split(" and ")
+        .filter((alt) => alt.includes(":/"))
+        .map(tokensOf),
+    ]),
+  );
+  return fusionPaths.get(`${struct}.${field}`) ?? [];
+}
+
+/** How many tokens of `at` the pattern matches as a prefix, and the index its trailing `[]` bound; undefined when it does not match. */
+function matchPrefix(pattern: string[], at: string[]): { length: number; index: number | undefined } | undefined {
+  if (pattern.length > at.length) return undefined;
+  for (let i = 0; i < pattern.length; i++) {
+    if (pattern[i] === "[]" ? !/^\d+$/.test(at[i]!) : pattern[i] !== at[i]) return undefined;
+  }
+  const last = pattern[pattern.length - 1] === "[]" ? Number(at[pattern.length - 1]) : undefined;
+  return { length: pattern.length, index: last };
+}
+
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+
+/**
+ * The Go path of the schema finding at `at`, walking the struct `struct` read
+ * at `path` with value `value`: the field whose `fusion_path` matches the
+ * longest prefix, then into its element by index (a slice keeps its order; a
+ * map's entries are sorted by key, as the import sorts them) and into its
+ * struct. Undefined when no field of `struct` names the finding.
+ */
+function locate(struct: string, path: string, value: unknown, at: string[]): string | undefined {
+  const s = GO_STRUCTS.get(struct);
+  if (s === undefined) return undefined;
+  let hit: { field: string; type: GoType; length: number; index: number | undefined } | undefined;
+  for (const [field, type] of s.fields) {
+    for (const pattern of fusionPathsOf(struct, field)) {
+      const m = matchPrefix(pattern, at);
+      if (m !== undefined && (hit === undefined || m.length > hit.length)) hit = { field, type, ...m };
+    }
+  }
+  if (hit === undefined) return undefined;
+  let goPath = joinGoPath(path, hit.field);
+  let v: unknown = isRecord(value) ? value[hit.field] : undefined;
+  let t = hit.type.kind === "ptr" ? hit.type.elem : hit.type;
+  let consumed = hit.length;
+  let index = hit.index;
+  if (index === undefined && (t.kind === "slice" || t.kind === "map") && consumed < at.length && /^\d+$/.test(at[consumed]!)) index = Number(at[consumed++]);
+  if (index !== undefined && (t.kind === "slice" || t.kind === "map")) {
+    if (t.kind === "slice") {
+      goPath += `[${index}]`;
+      v = Array.isArray(v) ? v[index] : undefined;
+    } else {
+      const key = isRecord(v) ? sortedGoKeys(v)[index] : undefined;
+      if (key === undefined) return goPath;
+      goPath += `[${key}]`;
+      v = (v as Record<string, unknown>)[key];
+    }
+    t = t.elem;
+  }
+  if (consumed >= at.length) return goPath;
+  if (t.kind === "ptr") t = t.elem;
+  return t.kind === "struct" ? (locate(t.name, goPath, v, at) ?? goPath) : goPath;
 }

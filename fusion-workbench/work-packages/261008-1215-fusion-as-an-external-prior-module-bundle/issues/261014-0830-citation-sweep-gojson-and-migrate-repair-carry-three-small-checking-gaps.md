@@ -12,3 +12,6 @@ Three Low defects, reported by the delegated pass over the carried 13.0.0 files 
 Fix direction: deduplicate explicit paths through the same `inCorpus` set; tighten `GO_TIME` to Go's RFC 3339 output and refuse lone surrogates; give exit 9 only to a failed backup verification and another code to other exceptions.
 
 Acceptance: a sweep census with `fusion-workbench/x.md` passed explicitly counts it once; `gojson` tests refuse `…T00:00:00.10Z` and a lone surrogate; a thrown I/O error in `applyRepair` exits with a code other than 9.
+
+---
+Progress: 2026-10-22, plan step 5 of `261022-1611-plan-prior-bundle-closing-review-follow-ups.md` closes item 2, the gojson half. Items 1 and 3 stay open for plan step 7, which closes this issue. `GO_TIME` (`codec/src/prior/gojson.ts`) now admits only what Go's RFC3339Nano writes: a fraction whose last digit is not 0, and `Z` or a non-zero offset. `…T00:00:00.10Z`, `…T00:00:00.0Z` and `+00:00` are refused. `goMarshal` refuses a lone UTF-16 surrogate in a string or a map key as a value no Go string holds. `goQuote` writes a lone surrogate as U+FFFD raw, which is what Go writes after its decoder has read the escape. Tests in `codec/src/__tests__/prior-mapping.test.ts` (`gojson reproduces encoding/json`); `cd codec && CODEC_REQUIRE_GOLDENS=1 npm test` exit 0.

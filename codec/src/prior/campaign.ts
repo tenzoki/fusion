@@ -16,6 +16,11 @@
 // over the original slice, so a repeated entry is carried, not refused.
 // `Charter.Validate` still requires `ItemKinds`, `CandidateSources` and
 // `WorkflowTemplates` non-empty.
+//
+// Around the mapping (common.ts): the state and its completion evidence are
+// checked against `GO_STRUCTS` first, the charter and state blocks are
+// validated against the codec's schema, and `CharterHash` and a stored
+// `Revision` are recomputed and a mismatch refused.
 // ---------------------------------------------------------------------------
 
 import type { CampaignStateBlock, CharterBlock, ImportedCampaignState } from "./blocks.js";
@@ -24,7 +29,9 @@ import {
   VOCABULARY,
   atLeastOne,
   boolean,
+  checkBlock,
   emptyToNull,
+  goShape,
   guarded,
   invalid,
   jsonSha,
@@ -42,6 +49,7 @@ import {
   unOpaque,
   type PriorResult,
 } from "./common.js";
+import { computeCharterHash, computePriorRevision } from "./gojson.js";
 import type { PriorCampaignState, PriorCharter, PriorCompletionEvidence } from "./types.js";
 
 export interface CampaignInputs {
@@ -61,19 +69,24 @@ const PREVIOUS_TERMINAL: ReadonlySet<string> = new Set(["completed", "bounded", 
 
 export function importCampaignState(s: PriorCampaignState, inputs: CampaignInputs = {}): PriorResult<ImportedCampaignState> {
   return guarded(() => {
+    goShape(s, "campaign.State", "");
+    if (inputs.completionEvidence != null) goShape(inputs.completionEvidence, "campaign.CompletionEvidence", "CompletionEvidence");
     const t = new EmptyTracker();
     const charter = importCharter(s.Charter, t);
+    const roots = [
+      { struct: "campaign.State", path: "", value: s },
+      { struct: "campaign.CompletionEvidence", path: "CompletionEvidence", value: inputs.completionEvidence ?? null },
+    ];
+    checkBlock("charter", charter, roots);
 
     const campaign_id = nonEmpty("CampaignID", s.CampaignID);
     if (campaign_id !== charter.campaign_id) invalid("CampaignID", `differs from Charter.CampaignID "${charter.campaign_id}"`);
 
     const state = oneOf("State", nonEmpty("State", s.State), VOCABULARY.campaignState());
-    const previous_terminal = emptyToNull(s.PreviousTerminal);
+    // Set exactly when the state is archived: the state schema's rule.
+    const previous_terminal = emptyToNull("PreviousTerminal", s.PreviousTerminal);
     if (previous_terminal !== null) oneOf("PreviousTerminal", previous_terminal, PREVIOUS_TERMINAL);
-    if ((state === "archived") !== (previous_terminal !== null)) {
-      invalid("PreviousTerminal", "set exactly when the state is archived");
-    }
-    const requested_outcome = emptyToNull(s.RequestedOutcome);
+    const requested_outcome = emptyToNull("RequestedOutcome", s.RequestedOutcome);
     if (requested_outcome !== null) oneOf("RequestedOutcome", requested_outcome, VOCABULARY.requestedOutcome());
 
     const ce = inputs.completionEvidence;
@@ -82,7 +95,7 @@ export function importCampaignState(s: PriorCampaignState, inputs: CampaignInput
       revision: jsonShaOrNull("Revision", s.Revision),
       state,
       previous_terminal,
-      reason: emptyToNull(s.Reason),
+      reason: emptyToNull("Reason", s.Reason),
       charter_hash: jsonSha("CharterHash", nonEmpty("CharterHash", s.CharterHash)),
       counters: {
         attempts: nonNegative("Counters.Attempts", s.Counters.Attempts),
@@ -109,10 +122,17 @@ export function importCampaignState(s: PriorCampaignState, inputs: CampaignInput
               intake_closed: boolean("CompletionEvidence.IntakeClosed", ce.IntakeClosed),
               all_attempts_terminal: boolean("CompletionEvidence.AllAttemptsTerminal", ce.AllAttemptsTerminal),
               final_audit_passed: boolean("CompletionEvidence.FinalAuditPassed", ce.FinalAuditPassed),
-              watermark: emptyToNull(ce.Watermark),
-              audit_ref: emptyToNull(ce.AuditRef),
+              watermark: emptyToNull("CompletionEvidence.Watermark", ce.Watermark),
+              audit_ref: emptyToNull("CompletionEvidence.AuditRef", ce.AuditRef),
             },
     };
+    checkBlock("state", block, roots);
+    const charterHash = computeCharterHash(s.Charter);
+    if (charterHash !== s.CharterHash) invalid("CharterHash", `differs from charterHash over the charter, ${charterHash}`);
+    if (s.Revision !== "") {
+      const recomputed = computePriorRevision(s);
+      if (recomputed !== s.Revision) invalid("Revision", `differs from stateRevision over the state, ${recomputed}`);
+    }
     return { charter, state: block, provenance: { source: "imported", legacy_fields: legacyFields(t) } };
   });
 }

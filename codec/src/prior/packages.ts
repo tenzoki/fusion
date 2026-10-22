@@ -5,9 +5,11 @@
 // `packages.*`). The Plan is kept whole: its four maps become arrays of keyed
 // entries sorted by key, its `Revision` is typed, and every `Package` is
 // carried verbatim with Prior's own state vocabulary. What a Prior package
-// state means as a fusion package status is the `state_mapping` proposal in
-// the table, applied by no importer while its rows are unconfirmed; here an
-// unknown state is a refusal, never a default.
+// state means as a fusion package status is the table's `state_mapping`,
+// every row of it confirmed by Prior's ruling (`prior_review_commit`); its
+// rows say which fusion package an importer would additionally create, and
+// no importer here creates one: that is FJ04's question. An unknown state is
+// a refusal, never a default.
 //
 // `FormationPolicy` is a `Form` input at 12d8424; only its Version persists.
 // The import takes it as an optional side input and writes `null` otherwise.
@@ -22,6 +24,11 @@
 // The ruling's corrections (FJ00 response 2): the three metrics on a
 // formation candidate and on a package are signed, and `FailureReason`
 // occurs on `stale` as well as on `failed`.
+//
+// Around the mapping (common.ts): the plan and its formation policy are
+// checked against `GO_STRUCTS` first, the formation block is validated
+// against the codec's schema, and a stored `Revision` is recomputed and a
+// mismatch refused.
 // ---------------------------------------------------------------------------
 
 import type { FormationAdmissionBlock, FormationBlock, FormationCandidateBlock, FormationPackageBlock, ImportedPlan } from "./blocks.js";
@@ -29,8 +36,10 @@ import {
   EmptyTracker,
   VOCABULARY,
   boolean,
+  checkBlock,
   distinct,
   emptyToNull,
+  goShape,
   guarded,
   integer,
   inventoryOf,
@@ -53,6 +62,7 @@ import {
   type ImportResult,
   type PriorResult,
 } from "./common.js";
+import { computePriorRevision } from "./gojson.js";
 import type { PriorAdmission, PriorFormationCandidate, PriorFormationPolicy, PriorPackage, PriorPlan } from "./types.js";
 
 export interface PlanInputs {
@@ -72,6 +82,8 @@ export interface ExportedPlan {
 export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): ImportResult<ImportedPlan> {
   const inventory = inventoryOf(inputs.workItems);
   const result = guarded<ImportedPlan>(() => {
+    goShape(plan, "packages.Plan", "");
+    if (inputs.policy != null) goShape(inputs.policy, "packages.FormationPolicy", "Policy");
     const t = new EmptyTracker();
 
     const candidates: FormationCandidateBlock[] = t.entries("Candidates", plan.Candidates).map(([key, c]) => {
@@ -142,6 +154,14 @@ export function importPlan(plan: PriorPlan, inputs: PlanInputs = {}): ImportResu
       admissions,
       active_items,
     };
+    checkBlock("formation", formation, [
+      { struct: "packages.Plan", path: "", value: plan },
+      { struct: "packages.FormationPolicy", path: "Policy", value: inputs.policy ?? null },
+    ]);
+    if (plan.Revision !== "") {
+      const recomputed = computePriorRevision(plan);
+      if (recomputed !== plan.Revision) invalid("Revision", `differs from planRevision over the plan, ${recomputed}`);
+    }
     return { formation, provenance: { source: "imported", legacy_fields: legacyFields(t) } };
   });
   return { ...result, inventory };
@@ -167,11 +187,12 @@ function importFormationCandidate(c: PriorFormationCandidate, path: string, t: E
 function importPackage(p: PriorPackage, path: string, t: EmptyTracker): FormationPackageBlock {
   const at = (f: string): string => `${path}.${f}`;
   const state = oneOf(at("State"), nonEmpty(at("State"), p.State), VOCABULARY.packageState());
-  const failure_reason = emptyToNull(p.FailureReason);
   // `failed` is the one state that requires a reason (Complete(false) writes
   // it). `stale` is the other state that carries one (RefreshCandidate writes
-  // "candidate source/evidence changed"), admitted, never required.
-  if (state === "failed" && failure_reason === null) invalid(at("FailureReason"), "state failed carries a failure reason");
+  // "candidate source/evidence changed"), admitted, never required. Both
+  // rules, and the null reason and accepted revision of formed, admitting and
+  // admitted, are the formation_package schema's.
+  const failure_reason = emptyToNull(at("FailureReason"), p.FailureReason);
   return {
     id: nonEmpty(at("ID"), p.ID),
     members: stringSet(at("Members"), t.list(`${path}.Members`, p.Members)),
@@ -209,7 +230,7 @@ function importAdmission(
     id: nonEmpty(at("ID"), a.ID),
     package_id: namesPackage(at("PackageID"), a.PackageID),
     status: oneOf(at("Status"), nonEmpty(at("Status"), a.Status), VOCABULARY.admissionStatus()),
-    lease_ref: emptyToNull(a.LeaseRef),
+    lease_ref: emptyToNull(at("LeaseRef"), a.LeaseRef),
     workbench_revision: opaqueOrNull(at("WorkbenchRevision"), a.WorkbenchRevision),
     attempts,
   };

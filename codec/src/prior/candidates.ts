@@ -26,6 +26,12 @@
 // its duplicates; an empty `Evidence.Ref` or `Revision` is null here and `""`
 // again on export; a `MergeInto` without the outcome merged is a legacy
 // inconsistency reported for reconciliation, never repaired.
+//
+// Around the mapping (common.ts): the register and its side inputs are checked
+// against `GO_STRUCTS` first; each candidate block and the register block are
+// validated against the codec's schemas; and each qualification's
+// `EvidenceHash` and the register's `Revision` are recomputed and a mismatch
+// refused.
 // ---------------------------------------------------------------------------
 
 import type {
@@ -44,7 +50,9 @@ import {
   POLICY_OPERATORS,
   VOCABULARY,
   boolean,
+  checkBlock,
   emptyToNull,
+  goShape,
   guarded,
   integer,
   inventoryOf,
@@ -69,6 +77,7 @@ import {
   type ImportResult,
   type PriorResult,
 } from "./common.js";
+import { computeEvidenceHash, computePriorRevision } from "./gojson.js";
 import type { PriorCandidate, PriorDisposition, PriorPolicy, PriorQualification, PriorRegister, PriorSnapshot } from "./types.js";
 
 export interface RegisterInputs {
@@ -91,6 +100,9 @@ export interface ExportedRegister {
 export function importRegister(register: PriorRegister, inputs: RegisterInputs = {}): ImportResult<ImportedRegister> {
   const inventory = inventoryOf(inputs.workItems);
   const result = guarded<ImportedRegister>(() => {
+    goShape(register, "candidates.Register", "");
+    if (inputs.policy != null) goShape(inputs.policy, "candidates.Policy", "Policy");
+    if (inputs.snapshot != null) goShape(inputs.snapshot, "candidates.Snapshot", "Snapshot");
     const t = new EmptyTracker();
     const id = nonEmpty("ID", register.ID);
     const revision = jsonShaOrNull("Revision", register.Revision);
@@ -114,20 +126,26 @@ export function importRegister(register: PriorRegister, inputs: RegisterInputs =
       watermark: nonEmpty(`Watermarks[${source_id}]`, watermark),
     }));
 
-    const intake_closed = boolean("IntakeClosed", register.IntakeClosed);
-    const closed_watermark = emptyToNull(register.ClosedWatermark);
-    if (intake_closed && closed_watermark === null) invalid("ClosedWatermark", "IntakeClosed is true but ClosedWatermark is empty");
-
     const block: RegisterBlock = {
       id,
       revision,
       stable,
       watermarks,
-      intake_closed,
-      closed_watermark,
+      intake_closed: boolean("IntakeClosed", register.IntakeClosed),
+      // IntakeClosed requires a ClosedWatermark: the register schema's rule.
+      closed_watermark: emptyToNull("ClosedWatermark", register.ClosedWatermark),
       policy: inputs.policy == null ? null : importPolicy(inputs.policy, t),
       snapshot: inputs.snapshot == null ? null : importSnapshot(inputs.snapshot, t),
     };
+    checkBlock("register", block, [
+      { struct: "candidates.Register", path: "", value: register },
+      { struct: "candidates.Policy", path: "Policy", value: inputs.policy ?? null },
+      { struct: "candidates.Snapshot", path: "Snapshot", value: inputs.snapshot ?? null },
+    ]);
+    if (register.Revision !== "") {
+      const recomputed = computePriorRevision(register);
+      if (recomputed !== register.Revision) invalid("Revision", `differs from registerRevision over the register, ${recomputed}`);
+    }
     return { register: block, candidates, provenance: { source: "imported", legacy_fields: legacyFields(t) } };
   });
   return { ...result, inventory };
@@ -143,7 +161,7 @@ function importCandidate(c: PriorCandidate, path: string, workItems: ReadonlySet
   // failed qualification rather than refusing the candidate, so both are
   // carried as null and the failure is carried as `passed: false`.
   const evidence = t.list("Evidence", c.Evidence).map((e, i) => ({
-    ref: emptyToNull(e.Ref),
+    ref: emptyToNull(`${at("Evidence")}[${i}].Ref`, e.Ref),
     revision: opaqueOrNull(`${at("Evidence")}[${i}].Revision`, e.Revision),
   }));
 
@@ -175,16 +193,24 @@ function importCandidate(c: PriorCandidate, path: string, workItems: ReadonlySet
     qualification: c.Qualification === null ? null : importQualification(c.Qualification, at("Qualification"), t),
     selection,
     admission,
-    merge_into: emptyToNull(c.MergeInto),
+    merge_into: emptyToNull(at("MergeInto"), c.MergeInto),
   };
-  const merged = selection?.outcome === "merged";
-  if (block.merge_into !== null && !merged) {
+  // The schema refuses this too; the mapper names it first because the reason
+  // is a classification the schema cannot give. The reverse (merged without a
+  // target) is the schema's rule alone.
+  if (block.merge_into !== null && selection?.outcome !== "merged") {
     invalid(
       at("MergeInto"),
       "legacy-inconsistency: MergeInto is set while the disposition outcome is not merged (Qualify on a merged candidate clears Disposition without clearing MergeInto); a migration finding to reconcile, not repaired here",
     );
   }
-  if (merged && block.merge_into === null) invalid(at("MergeInto"), "the disposition outcome merged names a merge target");
+  checkBlock("candidate", block, [{ struct: "candidates.Candidate", path, value: c }]);
+  if (c.Qualification !== null) {
+    const recomputed = computeEvidenceHash(c);
+    if (recomputed !== c.Qualification.EvidenceHash) {
+      invalid(at("Qualification.EvidenceHash"), `differs from evidenceHash over the candidate's version, source revision, evidence and reproduction, ${recomputed}`);
+    }
+  }
   return {
     candidate: block,
     provenance: { source: "imported", legacy_fields: legacyFields(t, { Statement: c.Statement, Purpose: c.Purpose }) },
@@ -212,7 +238,7 @@ function splitDisposition(
   if (d === null) return { selection: null, admission: null };
   const selection: SelectionBlock = {
     candidate_version: positive(`${path}.CandidateVersion`, d.CandidateVersion),
-    policy_version: emptyToNull(d.PolicyVersion),
+    policy_version: emptyToNull(`${path}.PolicyVersion`, d.PolicyVersion),
     snapshot_hash: jsonShaOrNull(`${path}.SnapshotHash`, d.SnapshotHash),
     outcome: oneOf(`${path}.Outcome`, nonEmpty(`${path}.Outcome`, d.Outcome), VOCABULARY.dispositionOutcome()),
     score: integer(`${path}.Score`, d.Score), // signed: evaluate sums signed weights

@@ -25,10 +25,13 @@
 //     reproduced and is refused rather than rounded.
 //  5. Booleans are `true`/`false`.
 //  6. `time.Time` marshals as `time.RFC3339Nano` in quotes: fractional seconds
-//     only when non-zero and trimmed of trailing zeros, `Z` for UTC and
-//     `+HH:MM` otherwise. Prior stores `CheckedAt` as `checkedAt.UTC()`. The
-//     on-disk string is that output, and parsing then formatting it in Go
-//     yields the same string again, so it is carried and re-emitted verbatim.
+//     only when non-zero and trimmed of trailing zeros, `Z` for a zero offset
+//     and `+HH:MM` or `-HH:MM` for any other. Prior stores `CheckedAt` as
+//     `checkedAt.UTC()`. The on-disk string is that output, and parsing then
+//     formatting it in Go yields the same string again, so it is carried and
+//     re-emitted verbatim; a string Go would not have written (a trailing-zero
+//     fraction, `+00:00` for UTC) is refused, since Go would re-emit it
+//     differently and the hash over it would not be Prior's.
 //  7. Strings are quoted with `"` and `\\` escaped, `\b \f \n \r \t` as those
 //     two-character escapes, every other control character below 0x20 as
 //     the six-character escape with lowercase hex, and, because
@@ -39,7 +42,11 @@
 //     written raw as UTF-8. Invalid UTF-8 in the Go string becomes the escape
 //     for fffd; a JavaScript string read from such output holds U+FFFD and
 //     would be written raw, so a source string that was not valid UTF-8 is the
-//     one case this reproduction does not cover.
+//     one case this reproduction does not cover. A lone UTF-16 surrogate has
+//     no UTF-8 encoding and no Go string holds one: Go's decoder reads the
+//     escape for one as U+FFFD, so `goQuote` writes U+FFFD raw where
+//     `JSON.stringify` would write the escape, and `goMarshal`, which
+//     reproduces values Go holds, refuses a string or map key carrying one.
 //  8. No whitespace anywhere.
 //
 // `computePriorRevision` clears `Revision` before hashing exactly as the three
@@ -292,7 +299,7 @@ export const GO_STRUCTS: ReadonlyMap<string, GoStruct> = new Map<string, GoStruc
 export class GoMarshalError extends Error {
   constructor(
     readonly path: string,
-    detail: string,
+    readonly detail: string,
   ) {
     super(`${path}: ${detail}`);
     this.name = "GoMarshalError";
@@ -312,9 +319,20 @@ function structOf(name: string, path: string): GoStruct {
 // turns the escape into the raw character (U+2028 is a line terminator to tsc).
 const HTML_UNSAFE = new RegExp("[<>&" + String.fromCharCode(0x2028, 0x2029) + "]", "g");
 
-/** Fact 7: `JSON.stringify` agrees with Go on everything but the HTML-safe set. */
+// A UTF-16 code unit in D800-DFFF that is not half of a pair: with the `u`
+// flag a paired surrogate is one code point and only a lone one is `Cs`.
+const LONE_SURROGATE = /\p{Cs}/gu;
+
+/** Whether `s` holds a lone surrogate, which no Go string can (fact 7). */
+export const hasLoneSurrogate = (s: string): boolean => /\p{Cs}/u.test(s);
+
+/**
+ * Fact 7: `JSON.stringify` agrees with Go on everything but the HTML-safe set
+ * and a lone surrogate, which it escapes where Go, having decoded it as
+ * U+FFFD, writes U+FFFD raw.
+ */
 export function goQuote(s: string): string {
-  return JSON.stringify(s).replace(HTML_UNSAFE, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+  return JSON.stringify(s.replace(LONE_SURROGATE, "\uFFFD")).replace(HTML_UNSAFE, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
 }
 
 /** Fact 2: Go compares map keys byte-wise on their UTF-8 encoding. */
@@ -326,8 +344,10 @@ export function sortedGoKeys(o: Record<string, unknown>): string[] {
   return Object.keys(o).sort(compareGoStrings);
 }
 
-// Go's own RFC3339Nano output, which is the only form fact 6 admits verbatim.
-const GO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})$/;
+// Go's own RFC3339Nano output, which is the only form fact 6 admits verbatim:
+// a fraction of one to nine digits whose last is not 0, and `Z` or an offset
+// other than 00:00.
+const GO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,8}[1-9])?(Z|[+-](?!00:00)\d{2}:\d{2})$/;
 
 // --- the marshaller ---------------------------------------------------------
 
@@ -342,6 +362,7 @@ export function goMarshal(value: unknown, type: GoType, path = "$"): string {
   switch (type.kind) {
     case "string":
       if (typeof value !== "string") throw new GoMarshalError(path, `expected a string, got ${describe(value)}`);
+      if (hasLoneSurrogate(value)) throw new GoMarshalError(path, "holds a lone UTF-16 surrogate, which no Go string holds");
       return goQuote(value);
     case "int":
       if (typeof value !== "number" || !Number.isInteger(value)) {
@@ -368,7 +389,10 @@ export function goMarshal(value: unknown, type: GoType, path = "$"): string {
     case "map": {
       if (value === null) return "null";
       if (!isRecord(value)) throw new GoMarshalError(path, `expected an object or null, got ${describe(value)}`);
-      const parts = sortedGoKeys(value).map((k) => goQuote(k) + ":" + goMarshal(value[k], type.elem, `${path}[${k}]`));
+      const parts = sortedGoKeys(value).map((k) => {
+        if (hasLoneSurrogate(k)) throw new GoMarshalError(`${path}[${k}]`, "map key holds a lone UTF-16 surrogate, which no Go string holds");
+        return goQuote(k) + ":" + goMarshal(value[k], type.elem, `${path}[${k}]`);
+      });
       return "{" + parts.join(",") + "}";
     }
     case "struct": {
