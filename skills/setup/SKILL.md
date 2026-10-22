@@ -54,7 +54,7 @@ mkdir -p ./fusion-workbench && "$FUSION_PLUGIN_ROOT/bin/fusion-write" initialize
 
 - **`result=initialized` or `result=reused`, `exit=0`**: the workbench is JSON-controlled (a new one, or one whose earlier run stopped before the marker). Continue.
 - **`result=legacy`, `exit=0`**: a workbench set up before the JSON cutover, marked by its `.fusion-setup` or holding a fusion store (`work-packages`, `circles`, `shared`) whose marker was lost; the marker block below writes it again. `/fusion:migrate` converts its Markdown control data. Continue exactly as before, and say nothing about it.
-- **Any other exit: stop Setup here and create nothing more.** Say the `fusion-write:` line to the user. On `exit=6` name every entry the codec named: `.DS_Store` and `.gitkeep` count like any file. The directory holds no fusion store, so it is no workbench: the user moves those entries away, or runs Setup where the workbench should be. On `exit=7` the outcome is unknown: run Setup again, and it finishes the intent `inspect` names. Never resend or retry by hand.
+- **Any other exit: stop Setup here and create nothing more.** Say the `fusion-write:` line to the user. On `exit=6` the line names a reason. With `target-not-empty`, name every entry the codec named: `.DS_Store` and `.gitkeep` count like any file. The directory holds no fusion store, so it is no workbench: the user moves those entries away, or runs Setup where the workbench should be. With `manifest-present`, say the directory already holds a JSON-controlled workbench, which the codec never replaces; Setup run again reuses it. On `exit=7` the outcome is unknown: run Setup again, and it finishes the intent `inspect` names. Never resend or retry by hand.
 
 Then the stores, in this order before the marker:
 
@@ -84,7 +84,7 @@ delete o.checks;
 const after = JSON.stringify(o);
 if (after !== before) fs.writeFileSync(m, after + "\n");
 console.log("marker=" + (after !== before ? "written" : "unchanged"));
-' "$M" "$V"; else [ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; fi
+' "$M" "$V"; elif [ ! -f "$M" ]; then printf '{"setup_at":"%s","plugin_version":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%S)" "$V" > "$M"; elif ! grep -qF "\"plugin_version\":\"$V\"" "$M"; then if grep -q '"plugin_version"' "$M"; then S="s/(\"plugin_version\" *: *\")[^\"]*\"/\1$V\"/"; else S="1s/^\{/{\"plugin_version\":\"$V\",/;1s/,\}/}/"; fi; sed -E "$S" "$M" > "$M.tmp" && mv "$M.tmp" "$M"; fi
 "$FUSION_PLUGIN_ROOT/bin/fusion-checks-due"
 ```
 
@@ -92,7 +92,7 @@ console.log("marker=" + (after !== before ? "written" : "unchanged"));
 
 **`marker-version-unresolved` says the version could not be read, which is not the same as the version matching.** The version decides both halves, so an unreadable one leaves no comparison to make and no due list to compute: the block writes nothing and prints that token. Setup is not blocked. A marker is never written with an empty version, because the next run cannot tell an empty one apart from a real one. Report the token together with whichever outcome followed: an existing marker was left exactly as it stands, or the workbench has no marker at all and is therefore not set up here until the session is restarted and Setup run again.
 
-**`checks_due=unread` says no due list was computed, and its parenthesis says why.** On `(no node on PATH)` the marker is still written, by the shell fallback, so the workbench is set up; and every fusion hook is a node program, so none of them is running either. Report both facts and continue. On any other reason node ran and wrote the marker: report the reason alone and continue.
+**`checks_due=unread` says no due list was computed, and its parenthesis says why.** On `(no node on PATH)` the shell fallback writes a missing marker, or sets `plugin_version` in place and keeps every other key, so the workbench is set up; and every fusion hook is a node program, so none of them is running either. Report both facts and continue. On any other reason node ran and wrote the marker: report the reason alone and continue.
 
 ## Step 0d — Ensure stylometric profiles are present locally
 

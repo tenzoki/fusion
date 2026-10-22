@@ -24,7 +24,9 @@
  * rename staged in the index and not yet committed. The person
  * is `%an <%ae>` as written, with no mailmap. A file git does not track (every
  * file, before the first commit), a workbench in no repository and a shallow
- * history each give no person, with that reason as evidence. The run's own
+ * history each give no person, with that reason as evidence. `repair --list`
+ * offers the same person on a person question's `ask=` line (its seventh
+ * field, `-` when there is none), never as an answer. The run's own
  * identity is never read. Whether a repository exists is the filesystem's
  * answer, not git's: a `.git` entry (a directory, or a worktree's or
  * submodule's file) at or above the workbench. Without one git is never run

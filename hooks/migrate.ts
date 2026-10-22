@@ -24,7 +24,9 @@
  * rename staged in the index and not yet committed. The person
  * is `%an <%ae>` as written, with no mailmap. A file git does not track (every
  * file, before the first commit), a workbench in no repository and a shallow
- * history each give no person, with that reason as evidence. The run's own
+ * history each give no person, with that reason as evidence. `repair --list`
+ * offers the same person on a person question's `ask=` line (its seventh
+ * field, `-` when there is none), never as an answer. The run's own
  * identity is never read. Whether a repository exists is the filesystem's
  * answer, not git's: a `.git` entry (a directory, or a worktree's or
  * submodule's file) at or above the workbench. Without one git is never run
@@ -97,7 +99,7 @@ import { homedir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { blocking, buildInventory, composeProposal, inventoryFromSurvey, type Derived, type Finding, type FirstAdd, type Proposal, type SurveyEntry } from "./lib/legacy-import.js";
-import { actorsFromLog, applyRepair, BackupUnverified, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash } from "./lib/legacy-repair.js";
+import { actorsFromLog, applyRepair, BackupUnverified, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash, type Offers } from "./lib/legacy-repair.js";
 import { ask, type CodecRequest } from "./lib/record-client.js";
 import { CONTAINER_STORE, V11_STORE_NAMES } from "./lib/stores.js";
 
@@ -246,9 +248,25 @@ function firstAdds(wb: string, untracked: ReadonlySet<string>): (path: string) =
   };
 }
 
-function compose(wb: string, session: string, entries: SurveyEntry[], migrationId = "migration-00000000-survey"): Proposal {
+interface GitPass {
+  untracked: string[];
+  ignored: string[];
+  firstAdd: (path: string) => FirstAdd;
+}
+
+function gitPass(wb: string): GitPass {
   const g = gitLists(wb);
-  return composeProposal({ root: wb, inventory: inventoryFromSurvey(entries), migrationId, newId: randomUUID, untracked: g.untracked, ignored: g.ignored, actors: actorsFromLog(readRepairLog(session)), firstAdd: firstAdds(wb, new Set([...g.untracked, ...g.ignored])) });
+  return { untracked: g.untracked, ignored: g.ignored, firstAdd: firstAdds(wb, new Set([...g.untracked, ...g.ignored])) };
+}
+
+function compose(wb: string, session: string, entries: SurveyEntry[], migrationId = "migration-00000000-survey", g: GitPass = gitPass(wb)): Proposal {
+  return composeProposal({ root: wb, inventory: inventoryFromSurvey(entries), migrationId, newId: randomUUID, untracked: g.untracked, ignored: g.ignored, actors: actorsFromLog(readRepairLog(session)), firstAdd: g.firstAdd });
+}
+
+/** What a repair may offer for a finding: the person of its file's first add, the one the composer would carry; never the run's identity. */
+function offersFor(g: GitPass, f: Finding): Offers {
+  const at = g.firstAdd(f.path);
+  return "person" in at ? { person: at.person } : {};
 }
 
 const findingId = (wb: string, f: Finding): string => {
@@ -785,7 +803,8 @@ function surveyOut(wb: string, session: string): string[] {
 }
 
 function repair(wb: string, session: string, flags: Map<string, string[]>): string[] {
-  const p = compose(wb, session, survey(wb).entries);
+  const g = gitPass(wb);
+  const p = compose(wb, session, survey(wb).entries, undefined, g);
   const blocks = blocking(p);
   // A reported finding of a class the repair module holds: the owner may still fix its Markdown first.
   const optional = p.findings.filter((f) => f.severity === "reported" && REPAIRS[f.class] !== undefined);
@@ -794,12 +813,13 @@ function repair(wb: string, session: string, flags: Map<string, string[]>): stri
     const lines = [`${flags.has("--optional") ? "optional" : "blocking"}=${listed.length}`];
     for (const f of listed) {
       const id = findingId(wb, f);
-      const r = proposeRepair(wb, f);
+      const r = proposeRepair(wb, f, offersFor(g, f));
       lines.push(`finding=${id}\t${f.class}\t${f.path}\t${f.detail}`);
       if (!r.repairable) lines.push(`unrepairable=${id}\t${r.reason}`);
       else {
         lines.push(`edit=${id}\t${r.edit}`, ...r.listed.map((l) => `listed=${id}\t${l}`));
-        for (const q of r.questions) lines.push(`ask=${id}\t${q.key}\t${q.form}\t${q.ask}\t${q.choices?.join("|") ?? "-"}\t${q.when ? `${q.when.key}=${q.when.value}` : "-"}`);
+        // The seventh field, `offered`, last so that a reader of the first six reads them unchanged.
+        for (const q of r.questions) lines.push(`ask=${id}\t${q.key}\t${q.form}\t${q.ask}\t${q.choices?.join("|") ?? "-"}\t${q.when ? `${q.when.key}=${q.when.value}` : "-"}\t${q.offered?.length ? q.offered.join("|") : "-"}`);
       }
     }
     return lines;
@@ -815,7 +835,7 @@ function repair(wb: string, session: string, flags: Map<string, string[]>): stri
   }
   let r;
   try {
-    r = applyRepair({ root: wb, session, proposal: proposeRepair(wb, f), consent: flags.has("--consent"), answers });
+    r = applyRepair({ root: wb, session, proposal: proposeRepair(wb, f, offersFor(g, f)), consent: flags.has("--consent"), answers });
   } catch (e) {
     // only a backup that does not verify is exit 9; an I/O error is a fault, and may follow a write
     if (e instanceof BackupUnverified) throw new Stop(EXIT.backup, `${e.message}; nothing was repaired`);

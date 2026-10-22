@@ -187,6 +187,8 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect(opt.filter((l) => l.startsWith(`ask=${id}\t`)).map((l) => l.split("\t")[3].split(" line ")[0])).toEqual([BENCH, TRIVIA]);
     // Decision 261003-2045: a reported filer finding, answered with consent, reaches the frozen plan as reported.
     const filer = opt.find((l) => l.endsWith(`\tfiled-by-not-owed\t${SPEC}\tnull`))!.slice(8).split("\t")[0];
+    // The seventh field offers the person of the file's first add, through both renames; the actor offers nothing.
+    expect(opt.filter((l) => l.startsWith(`ask=${filer}\t`)).map((l) => [l.split("\t")[1], ...l.split("\t").slice(4)])).toEqual([["actor", "-", "-", "-"], ["person", "-", "-", "t <t@example.invalid>"]]);
     const answered = { actor: "implementation-planner", person: "Fixture Person <fixture@example.invalid>" };
     expect(mig(root, home, "repair", "--apply", filer, "--value", `actor=${answered.actor}`, "--value", `person=${answered.person}`, "--consent").status).toBe(0);
     const stores = () => sha(buildInventory(wb).files.filter((f) => /^(work-packages|shared)\//.test(f.path)).map((f) => `${f.path} ${f.sha256}`).join("\n"));

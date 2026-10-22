@@ -24,7 +24,9 @@
  * rename staged in the index and not yet committed. The person
  * is `%an <%ae>` as written, with no mailmap. A file git does not track (every
  * file, before the first commit), a workbench in no repository and a shallow
- * history each give no person, with that reason as evidence. The run's own
+ * history each give no person, with that reason as evidence. `repair --list`
+ * offers the same person on a person question's `ask=` line (its seventh
+ * field, `-` when there is none), never as an answer. The run's own
  * identity is never read. Whether a repository exists is the filesystem's
  * answer, not git's: a `.git` entry (a directory, or a worktree's or
  * submodule's file) at or above the workbench. Without one git is never run
@@ -218,9 +220,17 @@ function firstAdds(wb, untracked) {
         return hit ?? { unknown: "untracked" };
     };
 }
-function compose(wb, session, entries, migrationId = "migration-00000000-survey") {
+function gitPass(wb) {
     const g = gitLists(wb);
-    return composeProposal({ root: wb, inventory: inventoryFromSurvey(entries), migrationId, newId: randomUUID, untracked: g.untracked, ignored: g.ignored, actors: actorsFromLog(readRepairLog(session)), firstAdd: firstAdds(wb, new Set([...g.untracked, ...g.ignored])) });
+    return { untracked: g.untracked, ignored: g.ignored, firstAdd: firstAdds(wb, new Set([...g.untracked, ...g.ignored])) };
+}
+function compose(wb, session, entries, migrationId = "migration-00000000-survey", g = gitPass(wb)) {
+    return composeProposal({ root: wb, inventory: inventoryFromSurvey(entries), migrationId, newId: randomUUID, untracked: g.untracked, ignored: g.ignored, actors: actorsFromLog(readRepairLog(session)), firstAdd: g.firstAdd });
+}
+/** What a repair may offer for a finding: the person of its file's first add, the one the composer would carry; never the run's identity. */
+function offersFor(g, f) {
+    const at = g.firstAdd(f.path);
+    return "person" in at ? { person: at.person } : {};
 }
 const findingId = (wb, f) => {
     const p = join(wb, f.path);
@@ -805,7 +815,8 @@ function surveyOut(wb, session) {
     return [`layout=${sv.layout}`, `eligible=${sv.eligible}`, `pending=${sv.local.intents.length}`, ...Object.entries(p.counts).map(([k, v]) => `count=${k}\t${v}`), ...[...by].map(([k, v]) => `findings=${k}\t${v}`), ...[...derived].sort().map(([k, v]) => `derived=${k}\t${v}`), ...blocking(p).map((f) => `blocking=${findingId(wb, f)}\t${f.class}\t${f.path}\t${f.detail}`)];
 }
 function repair(wb, session, flags) {
-    const p = compose(wb, session, survey(wb).entries);
+    const g = gitPass(wb);
+    const p = compose(wb, session, survey(wb).entries, undefined, g);
     const blocks = blocking(p);
     // A reported finding of a class the repair module holds: the owner may still fix its Markdown first.
     const optional = p.findings.filter((f) => f.severity === "reported" && REPAIRS[f.class] !== undefined);
@@ -814,14 +825,15 @@ function repair(wb, session, flags) {
         const lines = [`${flags.has("--optional") ? "optional" : "blocking"}=${listed.length}`];
         for (const f of listed) {
             const id = findingId(wb, f);
-            const r = proposeRepair(wb, f);
+            const r = proposeRepair(wb, f, offersFor(g, f));
             lines.push(`finding=${id}\t${f.class}\t${f.path}\t${f.detail}`);
             if (!r.repairable)
                 lines.push(`unrepairable=${id}\t${r.reason}`);
             else {
                 lines.push(`edit=${id}\t${r.edit}`, ...r.listed.map((l) => `listed=${id}\t${l}`));
+                // The seventh field, `offered`, last so that a reader of the first six reads them unchanged.
                 for (const q of r.questions)
-                    lines.push(`ask=${id}\t${q.key}\t${q.form}\t${q.ask}\t${q.choices?.join("|") ?? "-"}\t${q.when ? `${q.when.key}=${q.when.value}` : "-"}`);
+                    lines.push(`ask=${id}\t${q.key}\t${q.form}\t${q.ask}\t${q.choices?.join("|") ?? "-"}\t${q.when ? `${q.when.key}=${q.when.value}` : "-"}\t${q.offered?.length ? q.offered.join("|") : "-"}`);
             }
         }
         return lines;
@@ -839,7 +851,7 @@ function repair(wb, session, flags) {
     }
     let r;
     try {
-        r = applyRepair({ root: wb, session, proposal: proposeRepair(wb, f), consent: flags.has("--consent"), answers });
+        r = applyRepair({ root: wb, session, proposal: proposeRepair(wb, f, offersFor(g, f)), consent: flags.has("--consent"), answers });
     }
     catch (e) {
         // only a backup that does not verify is exit 9; an I/O error is a fault, and may follow a write
