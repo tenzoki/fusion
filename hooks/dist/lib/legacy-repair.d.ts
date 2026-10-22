@@ -135,7 +135,10 @@ export declare function actorsFromLog(log: readonly RepairLogEntry[]): Record<st
     actor: string;
     person: string | null;
 }>;
-/** Copies the workbench into `session/backup/` once, verified by tree hash; a copy that does not verify throws, and nothing is repaired. */
+/** The one failure `bin/fusion-migrate` reports as exit 9: a backup copy whose tree hash is not the workbench's. */
+export declare class BackupUnverified extends Error {
+}
+/** Copies the workbench into `session/backup/` once, verified by tree hash; a copy that does not verify throws `BackupUnverified`, and nothing is repaired. */
 export declare function ensureBackup(root: string, session: string): void;
 /** Applies one consented repair. Without consent, a full answer or unchanged files it writes nothing at all. */
 export declare function applyRepair(input: {

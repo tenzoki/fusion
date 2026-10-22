@@ -95,6 +95,20 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
     expect([r.status, r.stderr, treeHash(wb), existsSync(join(session, "repair-log.jsonl"))]).toEqual([9, expect.stringContaining("does not verify"), before, false]);
   }, CASE_TIMEOUT);
 
+  // issue 261014-0830-citation-sweep-gojson-and-migrate-repair-carry-three-small-checking-gaps.md, item 3
+  it("an I/O error inside a repair is exit 3 with its message, never the backup's exit 9", () => {
+    const { root, wb, home } = project();
+    const session = join(home, "s");
+    const [id, , path] = mig(root, home, "repair", "--list", "--optional", "--session", session).stdout.split("\n").find((l) => l.includes("\tcircle-deferred\t"))!.slice(8).split("\t");
+    chmodSync(join(wb, path), 0o444);
+    try {
+      const r = mig(root, home, "repair", "--apply", id, "--value", "status=paused", "--consent", "--session", session);
+      expect([r.status, r.stderr, existsSync(join(session, "backup.sha256")), existsSync(join(session, "repair-log.jsonl"))]).toEqual([3, expect.stringMatching(new RegExp(`applying ${id} failed: EACCES`)), true, false]);
+    } finally {
+      chmodSync(join(wb, path), 0o644);
+    }
+  }, CASE_TIMEOUT);
+
   it("takes the person from git's first add, through a staged rename too, else carries it unknown with the reason, and run prints its reported lines before refusing", () => {
     const { root, wb, home } = project();
     const person = (cwd: string) => mig(cwd, home, "survey").stdout.split("\n").filter((l) => l.startsWith("derived=/filed_by/person"));

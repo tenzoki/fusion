@@ -897,12 +897,22 @@ function main(argv: string[]): number {
   // guard and the run from disagreeing about which files will be written; a
   // migration's kept originals are in neither, their bytes being the receipt's
   const files = workbenchMarkdownFiles(root).map((f) => f.abs);
+  // by the filesystem's own spelling: `--root` may name the workbench by a path
+  // an explicit or declared path spells differently, and a file swept twice
+  // would be counted twice
+  const inCorpus = new Set(files.map(real));
+  const admit = (abs: string): void => {
+    const key = real(abs);
+    if (inCorpus.has(key)) return;
+    inCorpus.add(key);
+    files.push(abs);
+  };
   for (const p of extra) {
     const abs = resolve(p);
     if (!existsSync(abs)) usage(`${p} does not exist`);
-    if (statSync(abs).isDirectory()) files.push(...markdownFilesUnder(abs).map((f) => f.abs));
+    if (statSync(abs).isDirectory()) for (const f of markdownFilesUnder(abs)) admit(f.abs);
     else if (json && isCodecFile(root, abs)) usage(`${p} is a file only the codec writes (Prior's spec, section 1.5); the sweep never rewrites one`);
-    else files.push(abs);
+    else admit(abs);
   }
   // the declared paths join the corpus here, before guard (a) reads it
   const config = loadConfig({ projectRoot });
@@ -910,13 +920,9 @@ function main(argv: string[]): number {
   for (const line of [...config.diagnostics, ...declaredCitationNotes(declared)]) {
     process.stderr.write(`${NAME}: ${line}\n`);
   }
-  // by the filesystem's own spelling: `--root` may name the workbench by a path
-  // the declared half would spell differently, and a file swept twice would be
-  // counted twice
-  const inCorpus = new Set(files.map(real));
   for (const f of declared.files) {
     if (json && isCodecFile(root, f.abs)) process.stderr.write(`${NAME}: declared ${relOf(projectRoot, f.abs)} is a file only the codec writes; left out of the corpus\n`);
-    else if (!inCorpus.has(real(f.abs))) files.push(f.abs);
+    else admit(f.abs);
   }
 
   if (opts.write) {

@@ -198,7 +198,7 @@ S="$("$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status)"; E=$?; printf '%s\n' "$S"
 > 1. Apply this repair.
 > 2. Skip it: the migration stays blocked until it is fixed.
 
-Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired: report either and stop. After each applied repair run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
+Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired; exit 3 is any other fault, named on stderr: report it and stop. After each applied repair run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
 
 **The question to migrate.** When the four cut rows (`package-live`, `package-terminal`, `record-live`, `record-closure`) are all 0, say no record is converted: terminal records stay as they are, nothing is rewritten, and the run writes its frozen plan, its receipt and the manifest. Once `blocking=0`, say first: *every installation that writes this workbench must be on 13.0.0 or later before it writes again (13.2.0 to roll back or re-run a migration that converts no record); nothing detects a checkout that does not update.* Then ask once:
 

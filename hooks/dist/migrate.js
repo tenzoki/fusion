@@ -96,7 +96,7 @@ import { homedir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { blocking, buildInventory, composeProposal, inventoryFromSurvey } from "./lib/legacy-import.js";
-import { actorsFromLog, applyRepair, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash } from "./lib/legacy-repair.js";
+import { actorsFromLog, applyRepair, BackupUnverified, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash } from "./lib/legacy-repair.js";
 import { ask } from "./lib/record-client.js";
 import { CONTAINER_STORE, V11_STORE_NAMES } from "./lib/stores.js";
 const EXIT = { done: 0, usage: 2, fault: 3, precondition: 5, blocking: 6, unknown: 7, refused: 8, backup: 9 };
@@ -842,7 +842,10 @@ function repair(wb, session, flags) {
         r = applyRepair({ root: wb, session, proposal: proposeRepair(wb, f), consent: flags.has("--consent"), answers });
     }
     catch (e) {
-        throw new Stop(EXIT.backup, `${e.message}; nothing was repaired`);
+        // only a backup that does not verify is exit 9; an I/O error is a fault, and may follow a write
+        if (e instanceof BackupUnverified)
+            throw new Stop(EXIT.backup, `${e.message}; nothing was repaired`);
+        throw new Stop(EXIT.fault, `applying ${id} failed: ${e.message}`);
     }
     if (!r.applied)
         throw new Stop(EXIT.blocking, `${id} not applied: ${r.refusal}: ${r.detail}. Nothing was written.`);

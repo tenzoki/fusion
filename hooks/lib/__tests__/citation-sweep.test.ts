@@ -73,6 +73,16 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     expect(out.at(-1)).toBe("files=1 rewrites=2 residual=2 record=1 package-record=0 package-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
   }, CASE_TIMEOUT);
 
+  // issue 261014-0830-citation-sweep-gojson-and-migrate-repair-carry-three-small-checking-gaps.md, item 1
+  it("an explicit path already in the workbench corpus is counted once", () => {
+    const wb = scratch();
+    writeFileSync(join(wb, "x.md"), DIRTY_DOC);
+    const run = sweep(dirname(wb), wb, "--dry-run", "fusion-workbench/x.md");
+    rmSync(dirname(wb), { recursive: true, force: true });
+    expect(run.status, run.stderr).toBe(0);
+    expect(last(run)).toMatch(/^files=1 rewrites=1 .* mode=dry-run$/);
+  }, CASE_TIMEOUT);
+
   it("a truncated citation, a head-field date and a word-marked filename are each one token and never chained", () => {
     const wb = scratch();
     const doc = join(wb, "shared/history/260505-0505-coder-log.md");

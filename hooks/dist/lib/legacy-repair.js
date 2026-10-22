@@ -323,7 +323,10 @@ export function readRepairLog(session) {
 export function actorsFromLog(log) {
     return Object.fromEntries(log.filter((e) => e.control_only).map((e) => [e.finding.path, { actor: e.answers.actor, person: e.answers.person || null }]));
 }
-/** Copies the workbench into `session/backup/` once, verified by tree hash; a copy that does not verify throws, and nothing is repaired. */
+/** The one failure `bin/fusion-migrate` reports as exit 9: a backup copy whose tree hash is not the workbench's. */
+export class BackupUnverified extends Error {
+}
+/** Copies the workbench into `session/backup/` once, verified by tree hash; a copy that does not verify throws `BackupUnverified`, and nothing is repaired. */
 export function ensureBackup(root, session) {
     if (existsSync(join(session, BACKUP_HASH)))
         return;
@@ -331,7 +334,7 @@ export function ensureBackup(root, session) {
     cpSync(root, join(session, BACKUP), { recursive: true, verbatimSymlinks: true });
     const [a, b] = [treeHash(root), treeHash(join(session, BACKUP))];
     if (a !== b)
-        throw new Error(`the backup does not verify: ${a} != ${b}`);
+        throw new BackupUnverified(`the backup does not verify: ${a} != ${b}`);
     writeFileSync(join(session, BACKUP_HASH), `${a}\n`);
 }
 const count = (root, f, actors = {}) => {

@@ -97,7 +97,7 @@ import { homedir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { blocking, buildInventory, composeProposal, inventoryFromSurvey, type Derived, type Finding, type FirstAdd, type Proposal, type SurveyEntry } from "./lib/legacy-import.js";
-import { actorsFromLog, applyRepair, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash } from "./lib/legacy-repair.js";
+import { actorsFromLog, applyRepair, BackupUnverified, ensureBackup, proposeRepair, readRepairLog, REPAIRS, treeHash } from "./lib/legacy-repair.js";
 import { ask, type CodecRequest } from "./lib/record-client.js";
 import { CONTAINER_STORE, V11_STORE_NAMES } from "./lib/stores.js";
 
@@ -817,7 +817,9 @@ function repair(wb: string, session: string, flags: Map<string, string[]>): stri
   try {
     r = applyRepair({ root: wb, session, proposal: proposeRepair(wb, f), consent: flags.has("--consent"), answers });
   } catch (e) {
-    throw new Stop(EXIT.backup, `${(e as Error).message}; nothing was repaired`);
+    // only a backup that does not verify is exit 9; an I/O error is a fault, and may follow a write
+    if (e instanceof BackupUnverified) throw new Stop(EXIT.backup, `${e.message}; nothing was repaired`);
+    throw new Stop(EXIT.fault, `applying ${id} failed: ${(e as Error).message}`);
   }
   if (!r.applied) throw new Stop(EXIT.blocking, `${id} not applied: ${r.refusal}: ${r.detail}. Nothing was written.`);
   return [`applied=${id}\t${f.class}\t${f.path}`, `logged=${readRepairLog(session).length}`];
