@@ -613,6 +613,55 @@ func TestPagedCloseIsAssembled(t *testing.T) {
 	}
 }
 
+// unreconciled wraps a caller and answers the completed close with the same
+// closure carrying reconciled false, as a host whose post-image, receipts,
+// journal and commit disagree would.
+type unreconciled struct{ base api.HostCaller }
+
+func (u unreconciled) CallHost(ctx context.Context, inv api.Invocation) (json.RawMessage, error) {
+	out, err := u.base.CallHost(ctx, inv)
+	if err != nil || inv.Capability != api.WorkbenchCapability {
+		return out, err
+	}
+	if _, slot, derr := api.DecodeRepairCall(inv); derr != nil || slot != "close" {
+		return out, err
+	}
+	var reply struct {
+		State  string         `json:"state"`
+		Result map[string]any `json:"result"`
+		Code   string         `json:"code"`
+	}
+	if jerr := json.Unmarshal(out, &reply); jerr != nil || reply.State != "completed" {
+		return out, err
+	}
+	reply.Result["reconciled"] = false
+	return json.Marshal(reply)
+}
+
+func TestAnUnreconciledCloseIsRecoveryRequired(t *testing.T) {
+	h := load(t)
+	env, err := h.invokeWith(unreconciled{base: h.host.Caller()}, "op-1", h.input(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.host.Effects[api.WorkbenchCapability+"/close"] != 1 {
+		t.Fatalf("effects %v: the close did not run", h.host.Effects)
+	}
+	if env.Domain.Status == "completed" {
+		t.Fatalf("an unreconciled close answered completed: %+v", env)
+	}
+	if env.Domain.Status != "recovery-required" || code(env) != "closure.unreconciled" || string(env.Domain.Result) != "null" {
+		t.Fatalf("envelope %+v", env)
+	}
+	detail := env.Domain.Violations[0].Detail
+	if !strings.Contains(detail, `"reconciled":false`) || !strings.Contains(detail, `"record":"`+fixture.RecordPath+`"`) {
+		t.Fatalf("the closure is not kept in the detail: %s", detail)
+	}
+	if got := evidenceLine(env); got != "explore[-]:run-explore:settled implement[i]:run-impl-0:settled review[i]:run-review-0:settled audit[-]:run-audit:settled" {
+		t.Fatalf("evidence %s", got)
+	}
+}
+
 func TestASharedPrincipalIsRefused(t *testing.T) {
 	h := load(t)
 	h.host.Principal = func(string, string) string { return "principal:one" }

@@ -24,7 +24,8 @@
 // frozen request on the same operation id, so a restart never starts a
 // second workspace, check, integration or closure because this process
 // received no answer: the host answers from its journal or asks for
-// recovery, and the module never infers.
+// recovery, and the module never infers. A completed close whose reconciled
+// is false is recovery-required with closure.unreconciled, never completed.
 package repair
 
 import (
@@ -614,11 +615,23 @@ func (w *workflow) run(ctx context.Context) (*outcome, error) {
 	if stop, err := w.service(reply, err, "close"); err != nil || stop != nil {
 		return stop, err
 	}
-	if _, err := reply.Closure(); err != nil {
+	closure, err := reply.Closure()
+	if err != nil {
 		return nil, err
 	}
-	w.closure = reply.Result
-	return nil, nil
+	// Answer 69 defines reconciled as true only when the post-image, the
+	// codec receipts, the host's journal and the integration commit agree.
+	// A completed close that says they do not is a disagreement, never a
+	// success: it stays recovery-required (non-terminal), and since the
+	// frozen envelope admits no result there, the closure the host answered
+	// is kept in the violation's detail.
+	switch closure.Reconciled {
+	case true:
+		w.closure = reply.Result
+		return nil, nil
+	default:
+		return refusal("recovery-required", "closure.unreconciled", reply.Capability+" "+reply.Slot+": "+string(reply.Result)), nil
+	}
 }
 
 var null = json.RawMessage("null")
