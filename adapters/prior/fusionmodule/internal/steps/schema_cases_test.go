@@ -1,0 +1,82 @@
+package steps
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/fixture"
+)
+
+// schemaCase is one row of catalog/testdata/repair-schema-cases.v1.json.
+type schemaCase struct {
+	Name     string          `json:"name"`
+	Schema   string          `json:"schema"`
+	Pointer  string          `json:"pointer"`
+	Document json.RawMessage `json:"document"`
+	Valid    *bool           `json:"valid"`
+}
+
+// The shared repair-schema contract cases, asserted by this validator: the
+// catalog's ajv suite (catalog/src/__tests__/schema-cases.test.ts) asserts the
+// same rows, so a keyword this subset validator reads differently from a full
+// draft 2020-12 validator turns one of the two suites red.
+func TestSharedSchemaCases(t *testing.T) {
+	dir := fixture.CatalogDir(t)
+	body, err := os.ReadFile(filepath.Join(dir, "testdata", "repair-schema-cases.v1.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var table struct {
+		Schema string       `json:"schema"`
+		Cases  []schemaCase `json:"cases"`
+	}
+	if err := json.Unmarshal(body, &table); err != nil {
+		t.Fatalf("table: %v", err)
+	}
+	if table.Schema != "fusion.schema-cases/v1" {
+		t.Fatalf("table schema %q, want fusion.schema-cases/v1", table.Schema)
+	}
+	if len(table.Cases) == 0 {
+		t.Fatal("table holds no cases")
+	}
+
+	compiled := map[string]*Schema{}
+	seen := map[string]bool{}
+	for _, c := range table.Cases {
+		if c.Name == "" || seen[c.Name] {
+			t.Fatalf("case name %q is empty or repeated", c.Name)
+		}
+		seen[c.Name] = true
+		t.Run(c.Name, func(t *testing.T) {
+			if c.Valid == nil {
+				t.Fatal("case carries no boolean valid")
+			}
+			// CompileSchema compiles a root document only; a pointer into
+			// $defs would be asserted by ajv alone.
+			if c.Pointer != "" {
+				t.Fatalf("pointer %q: only the root pointer is supported", c.Pointer)
+			}
+			s, ok := compiled[c.Schema]
+			if !ok {
+				raw, err := os.ReadFile(filepath.Join(dir, "schemas", c.Schema))
+				if err != nil {
+					t.Fatal(err)
+				}
+				if s, err = CompileSchema(raw); err != nil {
+					t.Fatalf("%s: %v", c.Schema, err)
+				}
+				compiled[c.Schema] = s
+			}
+			doc, err := Parse(c.Document)
+			if err != nil {
+				t.Fatalf("document: %v", err)
+			}
+			verr := s.Validate(doc)
+			if got := verr == nil; got != *c.Valid {
+				t.Errorf("%s: valid=%v, want %v (violation: %v)", c.Schema, got, *c.Valid, verr)
+			}
+		})
+	}
+}
