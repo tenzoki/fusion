@@ -19,29 +19,40 @@
 # <out> must be outside both repositories and empty or absent. The build
 # refuses a dirty fusion tree: any modified, deleted or untracked path outside
 # fusion-workbench/, whose event log and record files a live session keeps
-# modified. FUSION_BUILD_ALLOW_DIRTY=1 overrides the refusal and marks the
-# fusion revision `<sha>+dirty` in build-identity.json and handover.json, so
-# such a build never passes as one from a revision.
+# modified, and any git-ignored path under adapters/prior/fusionmodule/ or
+# adapters/prior/launcher/ (a .DS_Store, an editor swap file), because
+# build-identity.json inventories every file there and an ignored one would
+# move the digest of a build that reports a clean revision.
+# FUSION_BUILD_ALLOW_DIRTY=1 overrides the refusal and marks the fusion
+# revision `<sha>+dirty` in build-identity.json and handover.json, so such a
+# build never passes as one from a revision.
 #
 # Every Go command runs through stage.sh in a disposable clone of Prior at
 # PRIOR_PIN: the assembler cmd/fusion-bundle is built natively there and runs
 # the three target builds in Prior's exact form (see its header). Nothing is
 # written into either repository.
 #
-# Environment: PRIOR_REPO and TMPDIR as stage.sh reads them; FUSION_BUILD_KEEP=1
-# keeps the render work directory and prints its path.
+# Environment: PRIOR_REPO (required; the Prior repository to clone, with no
+# default: unset, the script prints its usage and exits 2) and TMPDIR as
+# stage.sh reads them; FUSION_BUILD_KEEP=1 keeps the render work directory and
+# prints its path.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 fusion_root=$(cd "$here/../.." && pwd)
 catalog_dir="$fusion_root/catalog"
 pin=$(tr -d '[:space:]' < "$here/PRIOR_PIN")
-prior_repo=${PRIOR_REPO:-/Users/kai/Projects/productive/F09-Prior}
+prior_repo=${PRIOR_REPO:-}
 
 usage() {
-  echo "usage: build.sh build [<out>] | build.sh verify <out> | build.sh deliver" >&2
+  echo "usage: PRIOR_REPO=<prior-repository> build.sh build [<out>] | build.sh verify <out> | build.sh deliver" >&2
   exit 2
 }
+
+if [ -z "$prior_repo" ]; then
+  echo "build.sh: PRIOR_REPO is not set; it names the Prior repository to clone" >&2
+  usage
+fi
 
 die() {
   echo "build.sh: $*" >&2
@@ -61,9 +72,14 @@ outside_repos() {
 }
 
 # fusion_revision: HEAD, suffixed +dirty under the override, refused otherwise.
+# Dirt is a tracked-tree change outside fusion-workbench/ or an ignored path
+# (`!!`) under the two directories build-identity.json inventories; the
+# identity itself is unchanged, only the guard sees the ignored files too.
 fusion_revision() {
   head=$(git -C "$fusion_root" rev-parse HEAD)
-  dirty=$(git -C "$fusion_root" status --porcelain --untracked-files=all -- . ':(exclude)fusion-workbench')
+  changed=$(git -C "$fusion_root" status --porcelain --untracked-files=all -- . ':(exclude)fusion-workbench')
+  ignored=$(git -C "$fusion_root" status --porcelain --ignored --untracked-files=all -- adapters/prior/fusionmodule adapters/prior/launcher | grep '^!! ' || true)
+  dirty=$(printf '%s\n%s\n' "$changed" "$ignored" | sed '/^$/d')
   if [ -n "$dirty" ]; then
     if [ "${FUSION_BUILD_ALLOW_DIRTY:-0}" = "1" ]; then
       echo "build.sh: fusion tree is dirty outside fusion-workbench/; building $head+dirty under FUSION_BUILD_ALLOW_DIRTY=1" >&2

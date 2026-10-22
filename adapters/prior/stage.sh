@@ -15,8 +15,9 @@
 #   stage.sh run -- <command...>  run <command...> from the clone root, same environment
 #
 # Environment:
-#   PRIOR_REPO          the Prior repository to clone (default below, never baked
-#                       into a shipped artefact: the clone is a build input only)
+#   PRIOR_REPO          the Prior repository to clone; required, with no default
+#                       (unset, the script prints its usage and exits 2). Never
+#                       baked into a shipped artefact: the clone is a build input
 #   FUSION_STAGE_KEEP   when set to 1, the clone is kept and its path printed
 #   FUSION_BUNDLE_DIR   passed through to the tests (plan step 9's conformance)
 #   TMPDIR              where the scratch clone is created (mktemp -d)
@@ -27,13 +28,18 @@ set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
 pin=$(tr -d '[:space:]' < "$here/PRIOR_PIN")
-prior_repo=${PRIOR_REPO:-/Users/kai/Projects/productive/F09-Prior}
+prior_repo=${PRIOR_REPO:-}
 catalog_dir=$(cd "$here/../../catalog" && pwd)
 
 usage() {
-  echo "usage: stage.sh test | stage.sh run -- <command...>" >&2
+  echo "usage: PRIOR_REPO=<prior-repository> stage.sh test | stage.sh run -- <command...>" >&2
   exit 2
 }
+
+if [ -z "$prior_repo" ]; then
+  echo "stage.sh: PRIOR_REPO is not set; it names the Prior repository to clone" >&2
+  usage
+fi
 
 [ $# -ge 1 ] || usage
 command=$1
