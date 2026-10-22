@@ -5519,3 +5519,86 @@ If Prior does not qualify `dfab3f21…`, or asks for a codec byte to change, the
 - **Line 5304**, `### The version boundary`: "So `apply`, `verify`, `rollback` and the second-run `plan` over such a plan answer `conflict/plan-file-changed`, and nothing is written." Measured, a rollback answers `conflict/plan-file-changed`, a second-run plan under a fresh id answers `migration-incomplete/receipt-unverified`, and an apply or verify under a fresh id answers `conflict/manifest-present` once verify has written the manifest, as the head does. A resend under a recorded id answers its stored answer. Nothing is written in any case. The conclusion stands: the old bundle cannot roll back a record-less migration and cannot take its second-run no-op.
 - **Line 5307**, "Over a record-less workbench migrated by the new codec it reads as above and refuses only a `migration` request." Measured, `inspect`, `list`, `validate` and the `migration` `survey`, a read, all answer. Every fresh `migration` mutation is refused, and replays answer their stored bytes.
 - **Line 5306**, "and `/fusion:migrate` already says it". It says every writing installation must be on 13.0.0 or later. For a record-less migration the floor is 13.2.0 (`### The version boundary, measured`, above). Section 8.1's sentence stands as quoted.
+
+### Prior's answer to 72 and 73 at 3c29dcf
+
+**Read at:** Prior commit `3c29dcf` (`3c29dcff6936fbc3687a95d9777e14bc64301edf`, 2026-10-21 23:22, "docs(design): answer fusion requests 72 and 73"), parent `d372bc0`. The answer is `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md`, 182 lines, 12 746 bytes, `sha256:574a62fe4d4741851d5859746752a0f5136f8b9c87a8f4cfc5f9aa71e2489003` as `git show 3c29dcf:<path> | shasum -a 256` prints it. It was read from the commit, not from a working tree. From here on it is cited as that path at `3c29dcf`. The user relayed the answer as it stands at that commit. Prior names its handoff as fusion `7e3e4886`, the commit that appended request 72 and 73, and both snapshots as taken "from committed objects at the requested revision `ec76d4fdfc928388e0003771d3eafa6211cb1b36`". Prior's `main` was at `dbe6f80` (2026-10-22 16:54) when this was read; `git diff --stat 3c29dcf dbe6f80 -- tests/testdata/fusion-codec tests/testdata/fusion-fj01` prints nothing, and `QualifiedCodecDigest` is unchanged there. Fusion was read at `4d6f3740` (2026-10-22 18:20) on `main`.
+
+**Prior's verdict, quoted:** "72 and 73: complete. The record-less migration codec revision is qualified by Prior." The accepted bundle is "699,094 bytes: `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`. It replaces `fb170361…` as `QualifiedCodecDigest`. No recorded response, refusal expectation or delta was weakened to make the revision pass."
+
+**Prior asks for no codec byte to change.** So the clause of request 73 that sends a non-qualification "to the user before any later codec revision is planned" did not fire.
+
+| Request | Prior commit | What it carries, as Prior states it |
+|---|---|---|
+| 72 | `01cf2fd` (`01cf2fdf8f1a99bdce6d884e67cb23605c334046`, 2026-10-21 23:01) | `tests/testdata/fusion-codec/` re-pinned to `ec76d4fd`; `tests/fusion_codec_test.go` counts |
+| 73 | `d372bc0` (`d372bc03a9ca06f818377dc6af143148b05ec06b`, 2026-10-21 23:15) | `tests/testdata/fusion-fj01/` re-pinned to `ec76d4fd` and `dfab3f21…`; `QualifiedCodecDigest`, `codecBundleDigest`, `codecPin`; base E in `internal/fusionhost/codec_migration_test.go` |
+| the answer | `3c29dcf` | the response document, nothing else under `tests/` or `internal/` |
+
+#### The qualified digest, compared
+
+| Where | Digest |
+|---|---|
+| Request 73, `codec/dist/fusion-record.js` at `ec76d4fd` | `dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, 699 094 bytes |
+| Prior's answer | `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, 699,094 bytes |
+| `Prior: tests/testdata/fusion-fj01/UPSTREAM.json` at `3c29dcf`, `bundle_digest` | the same |
+| `codecBundleDigest`, `Prior: internal/fusionhost/codec_process_test.go` line 22 at `3c29dcf` | the same |
+| `QualifiedCodecDigest`, `Prior: internal/fusionhost/workbench.go` line 22 at `3c29dcf` (was `fb170361…`) | the same |
+
+All five agree. `codecPin`, line 21 of the same test file, names `ec76d4fdfc928388e0003771d3eafa6211cb1b36`, and both pin files name that `commit`.
+
+#### 72. The shared fixture set: **complete**
+
+| Figure | Asked | Prior's answer |
+|---|---|---|
+| Files in `Prior: tests/testdata/fusion-codec/UPSTREAM.json` | 418 (413 plus five) | "418 files: the five moved entries … updated, and the five new migration fixtures added, as handed over"; `commit` is `ec76d4fd…`, 418 entries |
+| `TestFusionCodecSharedManifest` | 375 of 375; 95 valid, 280 invalid (279 `schema-invalid`, 1 `unsupported-format`) | "375 manifest cases: 95 valid and 280 invalid, of which 279 are `schema-invalid` and one is `unsupported-format`"; `Prior: tests/fusion_codec_test.go` at `01cf2fd` asserts 375 and 95 / 280 |
+| migration-plan | 14 / 38 | 14 / 38 |
+| migration-proposal | 4 / 16 | 4 / 16 |
+| protocol, package, record, campaign, evidence, migration-receipt, workbench, workbench/v2, bytes | 31 / 62, 15 / 43, 19 / 48, 4 / 22, 3 / 19, 1 / 8, 4 / 15, 0 / 1, 0 / 8 | the same, schema by schema, "equal to request 72's table" |
+| `TestFusionAppliedRulingAndGoldens` | unchanged; 13 goldens | "the applied mapping ruling and the 13 Go-emitted goldens pass unchanged" |
+
+Prior: "No count differed from request 72." No differing count is reported here either.
+
+#### 73. The runtime snapshot, replay and kernel: **complete**
+
+| Figure | Asked | Prior's answer |
+|---|---|---|
+| `Prior: tests/testdata/fusion-fj01/UPSTREAM.json` | `commit` to `ec76d4fd`, `bundle_digest` to `dfab3f21…`, three moved entries, base E's 29 files, 744 entries | "744 pinned entries: three existing entries changed (the bundle, the migration session README and `REQUESTS.md`), and base E contributes 29 files"; 744 entries at `3c29dcf` |
+| Recorded exchanges | every older session through its deltas, base E byte for byte; 238 | "All 238 recorded exchanges pass through the actual `CodecProcess` adapter": FJ01 6 and the handback, FJ02 15, FJ02b 20, `initialize` 26, archive 51, migration 01 to 70 (A to D) 70, migration 71 to 83 (E) 13, takeover 37 |
+| Base E | an empty root, its own two seeds, `<workbench>`, `<since:73-apply>`, `<since:79-maintenance>` | "Exact recorded bytes" with those three substitutions; "Base E inherits neither `legacy-v12` nor the A–D seed sequence" |
+| Older sessions and deltas | unchanged since `dd4bf3d4` | "No older session, seed or delta byte changed." |
+| Prior's assertions | the digest, the three moved entries, base E, request 72's counts, nothing else | one more: "`codecPin` in `internal/fusionhost/codec_process_test.go` names the pinned fusion commit and moves to `ec76d4fd` with it" |
+| The version boundary | optional | "not repeated by Prior; Fusion's measurement in the handoff stands as Fusion's" |
+| `go test ./...`, `go vet ./...` | green | "`go build ./... && go vet ./... && go test -count=1 ./...` at `d372bc0` … exit 0, 39 packages `ok`"; `go test -race -count=1 ./internal/fusionhost` passed at `d372bc0`, "not re-run for this document" |
+| Environment | | macOS arm64, Go 1.26.0, Node 25.7.0 |
+
+6 + 15 + 20 + 26 + 51 + 70 + 13 + 37 is 238, the 225 of request 64 plus base E's 13.
+
+#### What Prior adds beyond the request
+
+- **A read of a live record-less workbench.** With a `prior` binary built from `d372bc0` and fusion 13.3.0's installed bundle (`dfab3f21…`), `prior fusion prepare` and two calls over Prior's own `fusion-workbench/`, migrated record-less by 13.2.0: `inspect` answers `json-control` with no pending operation and no fence, `list` answers the seven control files in the tree. The tree's `git status` and a sha256 over its 66 files are equal before and after.
+- **A write on a byte copy.** One `create` of an issue on a `cp -Rp` copy lands the record, its narrative, the codec's operation file and one `record_change` row with `"host":"prior"`; a repeat of the call id answers `"replay":true` and leaves the row single. The live tree is unchanged afterwards.
+
+#### Prior's stated limits
+
+- **The production boundary is unchanged from response 64.** "The service still refuses any request carrying `takeover`, and `prepare` refuses any bundle whose digest is not `dfab3f21…`."
+- **No integration claim.** The answer "does not claim that any fusion skill or agent runs through Prior".
+- **Nothing outside Prior was touched.** "The upstream checkout and the live workbench were not modified."
+
+#### `REQUESTS.md` and the bundle against Prior's pins, after this append
+
+Both pins hold this file at `893e823f7dae622f90da79211d9397c3a8e0da8fca386c4aaf80a0b26e06d28e`, its bytes at `ec76d4fd`, which "does not carry sections 72/73", as Prior chose at request 63. At `4d6f3740` the file is `sha256:1b58be7e595eb57a55df81b4d2e7dee52164d56e60525f8bd215055161479bdb`, and this section moves it again.
+
+**Fusion's bundle has already moved past the qualified one.** At `4d6f3740` `codec/dist/fusion-record.js` is 699 729 bytes, `sha256:d6fc9da0b948cb9c8d014d17e2d799b9a4e1c53a9feea428288fb718ff388d97`, moved by `e46c6634` (2026-10-22 17:06, "fix(codec): dependency evaluation follows its contract") and `e2312078` (2026-10-22 17:51, "docs(codec): contract and schema texts claim what the code does"). Prior has not been asked about it, and its runtime refuses it. That codec delta is put to Prior in a later request, stacking on `dfab3f21…` as a qualified base.
+
+#### Requests 64 and 67 to 73, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, replaced as `QualifiedCodecDigest` by `dfab3f21…` at `d372bc0` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 | **complete** at Prior `01cf2fd`, for `ec76d4fd`; 418 files, 375 manifest cases (95 valid, 280 invalid), 13 goldens unchanged; answered at `3c29dcf` | `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md` `## 72 — Shared schemas and fixtures` |
+| 73 | **complete** at Prior `d372bc0`, for `ec76d4fd`; `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f` qualified, 699 094 bytes, now `QualifiedCodecDigest`; 744 pinned entries, 238 exchanges, `go test ./...` and `go vet ./...` passed; answered at `3c29dcf` | the same document, `## 73 — Runtime snapshot and replay` |
+
+These rows supersede the rows of `### Requests 64 and 67 to 73, as they stand` above.
