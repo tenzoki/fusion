@@ -19,6 +19,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -548,15 +549,36 @@ func killingAt(host *fixture.RepairHost, at boundary, proc **session, fired *ato
 func TestKillAtEveryPersistedBoundaryThenResumeRunsNoModel(t *testing.T) {
 	b := openBundle(t)
 	f := loadRepairFixture(t)
+	// The record is read in more than one page in every run here, so that
+	// a page read is itself a boundary; recordPageBytes is the page size and
+	// the offset of the first page call.
+	const recordPageBytes = 96
+	newHost := func(t *testing.T) *fixture.RepairHost {
+		h := f.host(t, b)
+		h.PageBytes = recordPageBytes
+		return h
+	}
 	// The envelope a clean run answers; every resumed run must answer the
 	// same bytes.
-	reference := f.host(t, b)
+	reference := newHost(t)
 	clean := connectRepair(t, b, reference, nil)
 	env, want := clean.mustInvokeRepair("op-1", reference.Invocation(t, ""))
 	clean.close()
 	if env.Domain.Status != "completed" {
 		t.Fatalf("the clean run did not complete: %+v", env)
 	}
+	pages := 0
+	for _, c := range reference.Calls {
+		if strings.HasPrefix(c.Slot, "page:") {
+			pages++
+		}
+	}
+	if pages < 2 {
+		t.Fatalf("the clean run read the record in %d page calls", pages+1)
+	}
+	// The slot of the first page call after the read: the fake host's handle
+	// for this workflow's record, at the first page's end.
+	firstPage := "page:" + fixture.Sha256Hex([]byte(repairWorkflowID+":read:"+f.recordPath)) + ":" + strconv.Itoa(recordPageBytes)
 	boundaries := []boundary{
 		{"after the explorer was composed", api.RoleComposeCapability, "run-explore"},
 		{"after the explorer answered", api.RoleRunCapability, "run-explore"},
@@ -566,18 +588,21 @@ func TestKillAtEveryPersistedBoundaryThenResumeRunsNoModel(t *testing.T) {
 		{"after the implementer answered", api.RoleRunCapability, "run-impl-0"},
 		{"after the implementer settled", api.RoleCompleteCapability, "run-impl-0"},
 		{"after the capture receipt", api.CaptureCapability, "run-impl-0"},
+		{"after the reviewer was composed", api.RoleComposeCapability, "run-review-0"},
 		{"after the reviewer answered", api.RoleRunCapability, "run-review-0"},
 		{"after the review settled", api.RoleCompleteCapability, "run-review-0"},
 		{"after the integrate receipt", api.IntegrateCapability, "integration"},
 		{"after the snapshot receipt", api.SnapshotCapability, "post-integration"},
 		{"after the record was read", api.WorkbenchCapability, "record"},
+		{"after a page of the record was read", api.WorkbenchCapability, firstPage},
+		{"after the auditor was composed", api.RoleComposeCapability, "run-audit"},
 		{"after the auditor answered", api.RoleRunCapability, "run-audit"},
 		{"before close, the audit settled", api.RoleCompleteCapability, "run-audit"},
 		{"after the close receipt", api.WorkbenchCapability, "close"},
 	}
 	for _, at := range boundaries {
 		t.Run(at.name, func(t *testing.T) {
-			host := f.host(t, b)
+			host := newHost(t)
 			var first *session
 			var fired atomic.Bool
 			first = connectRepair(t, b, host, killingAt(host, at, &first, &fired))
