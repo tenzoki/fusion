@@ -42,7 +42,10 @@
  *                      `## C.`). A live `status` (`open`, `claimed`, `paused`)
  *                      is a node, a terminal one (`done`, `dropped`) is a
  *                      target and no node. Then each `dependencies` entry of a
- *                      node is placed by the table below.
+ *                      node is placed by the table below, and each `cycle`
+ *                      entry, whatever packages it runs through, is a cycle
+ *                      of the report unless a component Tarjan finds over the
+ *                      live nodes already holds all its members.
  *
  * ## The table one edge entry falls in, and it is disjoint and complete
  *
@@ -273,6 +276,27 @@ export function orderOf(input) {
             });
         }
     }
+    // --- the cycles the codec reported ----------------------------------------
+    // The graph spans live nodes only, so a cycle through a terminal or
+    // unreadable package, or over an edge the codec could not resolve, is the
+    // codec's to see; `dependencies.json` says a cycle is "never silently cut".
+    // One whose members all sit in one component found above is that component.
+    const foundIn = new Map();
+    cycles.forEach((c, k) => c.members.forEach((m) => foundIn.set(m, k)));
+    const added = new Set();
+    const reported = input.reportedCycles
+        .map((ids) => [...new Set(ids)].sort(ascending))
+        .filter((m) => m.length > 0)
+        .sort((a, b) => ascending(a.join(" "), b.join(" ")));
+    for (const m of reported) {
+        const k = foundIn.get(m[0]);
+        if (k !== undefined && m.every((x) => foundIn.get(x) === k))
+            continue;
+        if (added.has(m.join(" ")))
+            continue;
+        added.add(m.join(" "));
+        cycles.push({ members: m });
+    }
     const verdict = nodes.length === 0 ? "empty" : cycles.length > 0 ? "cyclic" : "acyclic";
     return {
         items: nodes.length,
@@ -339,9 +363,19 @@ export function readWorkGraph(workbench, ask = askCodec) {
     const edges = [];
     const unmet = [];
     const unresolved = [];
+    const reportedCycles = [];
     const entries = new Map([...nodes.keys()].map((p) => [p, []]));
     for (const e of dependencies.list) {
-        if (!isObject(e) || typeof e.path !== "string" || e.status === "cycle")
+        if (isObject(e) && e.status === "cycle") {
+            // Read whatever packages it runs through: a cycle is "never silently cut".
+            const ids = Array.isArray(e.ids) ? e.ids : [];
+            if (ids.length === 0 || !ids.every((id) => typeof id === "string")) {
+                return failed({ cause: "unanswered", op: "reconcile", how: "unparseable", detail: "a cycle entry of reconcile names no ids" });
+            }
+            reportedCycles.push(ids.map((id) => dirOf.get(id) ?? id));
+            continue;
+        }
+        if (!isObject(e) || typeof e.path !== "string")
             continue;
         const from = nodes.get(e.path);
         if (from === undefined)
@@ -376,6 +410,7 @@ export function readWorkGraph(workbench, ask = askCodec) {
             unresolved,
             unreadable,
             noDependsOnField: [...entries.values()].filter((t) => t.length === 0).length,
+            reportedCycles,
         }),
     };
 }

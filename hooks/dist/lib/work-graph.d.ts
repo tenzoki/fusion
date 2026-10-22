@@ -42,7 +42,10 @@
  *                      `## C.`). A live `status` (`open`, `claimed`, `paused`)
  *                      is a node, a terminal one (`done`, `dropped`) is a
  *                      target and no node. Then each `dependencies` entry of a
- *                      node is placed by the table below.
+ *                      node is placed by the table below, and each `cycle`
+ *                      entry, whatever packages it runs through, is a cycle
+ *                      of the report unless a component Tarjan finds over the
+ *                      live nodes already holds all its members.
  *
  * ## The table one edge entry falls in, and it is disjoint and complete
  *
@@ -135,9 +138,12 @@ export interface Unreadable {
     dir: string;
     problem: Refusal;
 }
-/** One strongly connected component of size above one, or a self-edge. */
+/**
+ * One strongly connected component of size above one, or a self-edge, or a
+ * cycle the codec reported that no such component already covers.
+ */
 export interface CycleGroup {
-    /** Container names, ascending. */
+    /** Container names, ascending; a record id where no package row named it. */
     members: string[];
 }
 export interface ItemFigures {
@@ -158,6 +164,8 @@ export interface OrderInput {
     unresolved: UnresolvedEdge[];
     unreadable: Unreadable[];
     noDependsOnField: number;
+    /** Each `cycle` entry of `reconcile`, its ids named as `UnmetEdge.to` names a target. */
+    reportedCycles: string[][];
 }
 export interface WorkGraphReport {
     /** Nodes: live packages only. */
@@ -174,7 +182,7 @@ export interface WorkGraphReport {
     unreadable: Unreadable[];
     /** `unreadable.length`, the figure the caller prints beside `noDependsOnField`. */
     unreadableHead: number;
-    /** `empty` when there are no nodes; `cyclic` when any cycle was found. */
+    /** `empty` when there are no nodes; `cyclic` when any cycle was found or reported. */
     verdict: "acyclic" | "cyclic" | "empty";
 }
 /** Why no report could be read; each member names its cause, and none is an empty store. */

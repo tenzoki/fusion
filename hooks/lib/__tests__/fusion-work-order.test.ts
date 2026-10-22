@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
-import { createPackage, must, place, setDependencies, transition, withJsonProject, type JsonProject, type Package } from "./helpers/json-workbench.js";
+import { claim, createPackage, must, place, setDependencies, transition, withJsonProject, type JsonProject, type Package } from "./helpers/json-workbench.js";
 
 // Drives the real `bin/fusion-work-order` over workbenches the kernel wrote. Pinned here and only
 // here: no exit code carries the verdict, so a cycle is exit 0 with `verdict=cyclic`
@@ -72,6 +72,22 @@ describe("bin/fusion-work-order over a JSON-controlled store", () => {
       expect([md[0], md[2], ...md.slice(4)]).toEqual([MARK, `**Note:** ${value(r.stdout, "note")}`, "**Cycles**", `- 1: ${stems[6]}, ${stems[7]}`, "**Unmet**", `- ${stems[4]} wants ${stems[3]} under succeeded: ${UNMET.detail}\n`]);
     });
   }, CASE_TIMEOUT * 3);
+
+  it("prints a cycle the codec reports through a done package, which no live edge closes", () => {
+    withJsonProject((p) => {
+      const [a, d] = stems.slice(0, 2).map((s) => createPackage(p, s));
+      claim(p, d, "a1b2c3d4");
+      transition(p, d, "done", { outcome: { class: "completed", reason: "a test finished it", evidence: [] } });
+      setDependencies(p, a, [{ target: d, condition: "terminal" }]); // satisfied: no edge
+      // d -> a closes the cycle on a terminal package, which `set-dependencies` refuses: placed by hand.
+      const control = JSON.parse(readFileSync(resolve(p.workbench, d.path), "utf-8")) as { depends_on: unknown[] };
+      control.depends_on = [{ target: { workbench_id: must(p, { op: "inspect" }).result.id, record_id: a.id }, condition: "terminal" }];
+      place(p, d.path, JSON.stringify(control, null, 2) + "\n");
+      const r = run(p.root);
+      expect([r.status, value(r.stdout, "items"), value(r.stdout, "edges"), value(r.stdout, "cycles"), value(r.stdout, "verdict")], r.stderr).toEqual([0, "1", "0", "1", "cyclic"]);
+      expect(rows(r.stdout, "cycle")).toEqual([`cycle=${stems[0]}, ${stems[1]}`]);
+    });
+  }, CASE_TIMEOUT);
 
   it("prints unresolved= for an entry the codec resolves to nothing, with the note, and names a row that does not read", () => {
     withJsonProject((p) => {

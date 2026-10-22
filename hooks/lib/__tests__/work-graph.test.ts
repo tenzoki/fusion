@@ -19,6 +19,8 @@ const INPUT: OrderInput = {
   unresolved: [{ from: dangle, target: "f03a0000-0000-4000-8000-999999999999", reason: "unresolved-reference/record-not-found" }],
   unreadable: [{ dir: garbage, problem: { class: "schema-invalid", reason: "conflict-markers" } }],
   noDependsOnField: 2,
+  // The codec's own: one a component above already holds, one through the terminal `closed`, twice.
+  reportedCycles: [[cycB, cycA, cycB], [waits, closed, waits], [closed, waits]],
 };
 const report = orderOf(INPUT);
 
@@ -36,8 +38,10 @@ describe("orderOf", () => {
   });
 
   it("names each cycle's members, consecutive in the rows", () => {
-    expect(report.cycles).toEqual([{ members: [cycA, cycB] }, { members: [self] }]);
+    expect(report.cycles).toEqual([{ members: [cycA, cycB] }, { members: [self] }, { members: [closed, waits] }]);
     expect(report.rows.slice(5, 7).map((r) => r.dir)).toEqual([cycA, cycB]);
+    // A reported cycle the live graph cannot see is never cut: the verdict follows it.
+    expect(orderOf({ ...INPUT, nodes: [open(waits)], edges: [], unmet: [], reportedCycles: [[waits, closed]] }).verdict).toBe("cyclic");
   });
 
   it("blocks a dependent on an unmet row without making the terminal target a node", () => {
@@ -51,7 +55,7 @@ describe("orderOf", () => {
 
   it("is pure: an equal input gives an equal report, an empty one verdict=empty, and an edge off the node set throws", () => {
     expect(JSON.stringify(orderOf({ ...INPUT, nodes: [...INPUT.nodes].reverse() }))).toBe(JSON.stringify(report));
-    expect(orderOf({ nodes: [], edges: [], unmet: [], unresolved: [], unreadable: [], noDependsOnField: 0 })).toMatchObject({ items: 0, verdict: "empty" });
+    expect(orderOf({ nodes: [], edges: [], unmet: [], unresolved: [], unreadable: [], noDependsOnField: 0, reportedCycles: [] })).toMatchObject({ items: 0, verdict: "empty" });
     expect(() => orderOf({ ...INPUT, edges: [{ from: base, to: closed }] })).toThrow(closed);
   });
 });
@@ -104,7 +108,7 @@ describe("readWorkGraph through an injected ask", () => {
       inspect, list,
       reconcile: reconciled(
         [unmet(mid, "1"), edge(base, "3", "satisfied"), { ...unmet(tip, "3", "succeeded: the target is dropped, not done"), condition: "succeeded" }, unmet(fanA, "6"), edge(closed, "1", "unmet", { reason: "x" }),
-          edge(mid, "9", "unmet", { class: "unresolved-reference", reason: "record-not-found" }), unmet(fanB, "6"), { status: "cycle", ids: [] }],
+          edge(mid, "9", "unmet", { class: "unresolved-reference", reason: "record-not-found" }), unmet(fanB, "6"), { status: "cycle", ids: ["1", "5", "9", "1"] }],
         [{ path: path(fanA), class: "schema-invalid", reason: "schema", detail: "bad" }, { path: path(closed), class: "unresolved-reference", reason: "narrative-missing", detail: "" }],
       ),
     });
@@ -119,6 +123,9 @@ describe("readWorkGraph through an injected ask", () => {
     expect(read.report.unresolvedEdges).toEqual([{ from: mid, target: "9", reason: "unresolved-reference/record-not-found" }]);
     expect(read.report.unreadable.map((u) => [u.dir, u.problem.reason])).toEqual([[fanA, "schema"], [closed, "narrative-missing"], [garbage, "status-unreadable"]]);
     expect([read.report.edges, read.report.noDependsOnField]).toEqual([1, 0]);
+    // The codec's cycle through an unreadable row and an unlisted id: named by container, else by id.
+    expect([read.report.cycles, read.report.verdict]).toEqual([[{ members: [base, garbage, "9"] }], "cyclic"]);
+    expect(readWorkGraph("/wb", asking({ inspect, list, reconcile: reconciled([{ status: "cycle", ids: [] }]) }).ask)).toMatchObject({ kind: "failed", cause: "unanswered", op: "reconcile", how: "unparseable" });
     expect(calls).toEqual({ inspect: 1, list: 1, reconcile: 1 });
     // No live node: the report is empty, and a terminal row reported against is still named.
     const none = asking({ inspect, list: listing([row(closed, "3", "dropped")]), reconcile: reconciled([], [{ path: path(closed), class: "schema-invalid", reason: "schema" }]) });

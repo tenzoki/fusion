@@ -42,7 +42,10 @@
  *                      `## C.`). A live `status` (`open`, `claimed`, `paused`)
  *                      is a node, a terminal one (`done`, `dropped`) is a
  *                      target and no node. Then each `dependencies` entry of a
- *                      node is placed by the table below.
+ *                      node is placed by the table below, and each `cycle`
+ *                      entry, whatever packages it runs through, is a cycle
+ *                      of the report unless a component Tarjan finds over the
+ *                      live nodes already holds all its members.
  *
  * ## The table one edge entry falls in, and it is disjoint and complete
  *
@@ -145,9 +148,12 @@ export interface Unreadable {
   problem: Refusal;
 }
 
-/** One strongly connected component of size above one, or a self-edge. */
+/**
+ * One strongly connected component of size above one, or a self-edge, or a
+ * cycle the codec reported that no such component already covers.
+ */
 export interface CycleGroup {
-  /** Container names, ascending. */
+  /** Container names, ascending; a record id where no package row named it. */
   members: string[];
 }
 
@@ -171,6 +177,8 @@ export interface OrderInput {
   unresolved: UnresolvedEdge[];
   unreadable: Unreadable[];
   noDependsOnField: number;
+  /** Each `cycle` entry of `reconcile`, its ids named as `UnmetEdge.to` names a target. */
+  reportedCycles: string[][];
 }
 
 export interface WorkGraphReport {
@@ -188,7 +196,7 @@ export interface WorkGraphReport {
   unreadable: Unreadable[];
   /** `unreadable.length`, the figure the caller prints beside `noDependsOnField`. */
   unreadableHead: number;
-  /** `empty` when there are no nodes; `cyclic` when any cycle was found. */
+  /** `empty` when there are no nodes; `cyclic` when any cycle was found or reported. */
   verdict: "acyclic" | "cyclic" | "empty";
 }
 
@@ -378,6 +386,26 @@ export function orderOf(input: OrderInput): WorkGraphReport {
     }
   }
 
+  // --- the cycles the codec reported ----------------------------------------
+  // The graph spans live nodes only, so a cycle through a terminal or
+  // unreadable package, or over an edge the codec could not resolve, is the
+  // codec's to see; `dependencies.json` says a cycle is "never silently cut".
+  // One whose members all sit in one component found above is that component.
+  const foundIn = new Map<string, number>();
+  cycles.forEach((c, k) => c.members.forEach((m) => foundIn.set(m, k)));
+  const added = new Set<string>();
+  const reported = input.reportedCycles
+    .map((ids) => [...new Set(ids)].sort(ascending))
+    .filter((m) => m.length > 0)
+    .sort((a, b) => ascending(a.join(" "), b.join(" ")));
+  for (const m of reported) {
+    const k = foundIn.get(m[0]);
+    if (k !== undefined && m.every((x) => foundIn.get(x) === k)) continue;
+    if (added.has(m.join(" "))) continue;
+    added.add(m.join(" "));
+    cycles.push({ members: m });
+  }
+
   const verdict: WorkGraphReport["verdict"] =
     nodes.length === 0 ? "empty" : cycles.length > 0 ? "cyclic" : "acyclic";
 
@@ -452,9 +480,19 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
   const edges: ResolvedEdge[] = [];
   const unmet: UnmetEdge[] = [];
   const unresolved: UnresolvedEdge[] = [];
+  const reportedCycles: string[][] = [];
   const entries = new Map<string, string[]>([...nodes.keys()].map((p) => [p, []]));
   for (const e of dependencies.list) {
-    if (!isObject(e) || typeof e.path !== "string" || e.status === "cycle") continue;
+    if (isObject(e) && e.status === "cycle") {
+      // Read whatever packages it runs through: a cycle is "never silently cut".
+      const ids = Array.isArray(e.ids) ? e.ids : [];
+      if (ids.length === 0 || !ids.every((id) => typeof id === "string")) {
+        return failed({ cause: "unanswered", op: "reconcile", how: "unparseable", detail: "a cycle entry of reconcile names no ids" });
+      }
+      reportedCycles.push(ids.map((id: string) => dirOf.get(id) ?? id));
+      continue;
+    }
+    if (!isObject(e) || typeof e.path !== "string") continue;
     const from = nodes.get(e.path);
     if (from === undefined) continue; // a terminal or unreadable package's entries are never read
     const target = typeof e.target === "string" ? e.target : JSON.stringify(e.target);
@@ -484,6 +522,7 @@ export function readWorkGraph(workbench: string, ask: Ask = askCodec): Read {
       unresolved,
       unreadable,
       noDependsOnField: [...entries.values()].filter((t) => t.length === 0).length,
+      reportedCycles,
     }),
   };
 }
