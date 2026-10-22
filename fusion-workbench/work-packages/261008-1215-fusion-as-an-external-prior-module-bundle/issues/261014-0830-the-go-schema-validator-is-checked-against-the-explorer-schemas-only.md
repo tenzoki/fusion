@@ -15,3 +15,5 @@ Evidence:
 Fix direction: one shared table of contract cases (JSON documents with an expected valid or invalid verdict per repair schema), asserted by ajv in `catalog/src/__tests__/` and by `steps.CompileSchema` in a Go test that reads the same file through `FUSION_CATALOG_DIR`.
 
 Acceptance: both suites run the shared table, it holds at least the five verification-form cases above and the four `repair-result` status branches, and both are green.
+
+Progress (261022, plan 261022-1611 step 11): the shared table `catalog/testdata/repair-schema-cases.v1.json` holds 37 cases (implementer-result 14, repair-result 23), every verdict checked with ajv 2020; both validators run it at step 12.

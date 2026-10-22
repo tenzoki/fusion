@@ -1,0 +1,1392 @@
+{
+  "schema": "fusion.schema-cases/v1",
+  "cases": [
+    {
+      "name": "ir-done-exit-0",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "exit",
+            "command": "npm test",
+            "exit_code": 0
+          }
+        ],
+        "result": "done"
+      },
+      "valid": true
+    },
+    {
+      "name": "ir-exit-with-detail",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "exit",
+            "command": "npm test",
+            "exit_code": 0,
+            "detail": "ran"
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-done-with-did-not-finish",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "did-not-finish",
+            "command": "npm test",
+            "detail": "timed out"
+          }
+        ],
+        "result": "done"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-none-with-command",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "none",
+            "command": "npm test",
+            "detail": "not run"
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-escalated-stopped-at-null",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": null
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-completed",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": null
+          },
+          "violations": []
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "rr-refused",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "refused",
+          "result": null,
+          "violations": [
+            {
+              "code": "schema",
+              "detail": "the request failed its schema"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": true
+    },
+    {
+      "name": "rr-recovery-required",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "recovery-required",
+          "result": null,
+          "violations": [
+            {
+              "code": "closure.unreconciled",
+              "detail": "the close did not reconcile"
+            }
+          ]
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "rr-escalated",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": "implement"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "ir-blocked-did-not-finish",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "did-not-finish",
+            "command": "npm test",
+            "detail": "timed out"
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": true
+    },
+    {
+      "name": "ir-blocked-none",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "none",
+            "detail": "no process.check granted"
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": true
+    },
+    {
+      "name": "ir-did-not-finish-with-exit-code",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "did-not-finish",
+            "command": "npm test",
+            "detail": "timed out",
+            "exit_code": 1
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-none-with-exit-code",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "none",
+            "detail": "not run",
+            "exit_code": 0
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-exit-without-exit-code",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "exit",
+            "command": "npm test"
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-did-not-finish-without-detail",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "did-not-finish",
+            "command": "npm test"
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-done-exit-1",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "exit",
+            "command": "npm test",
+            "exit_code": 1
+          }
+        ],
+        "result": "done"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-blocked-exit-1",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "exit",
+            "command": "npm test",
+            "exit_code": 1
+          }
+        ],
+        "result": "blocked"
+      },
+      "valid": true
+    },
+    {
+      "name": "ir-done-mixed-entries",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [
+          {
+            "check": "unit",
+            "status": "exit",
+            "command": "npm test",
+            "exit_code": 0
+          },
+          {
+            "check": "lint",
+            "status": "none",
+            "detail": "not run"
+          }
+        ],
+        "result": "done"
+      },
+      "valid": false
+    },
+    {
+      "name": "ir-done-empty-verification",
+      "schema": "implementer-result.v1.json",
+      "pointer": "",
+      "document": {
+        "files_changed": [
+          "/work/src/a.ts"
+        ],
+        "verification": [],
+        "result": "done"
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-completed-with-violations",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": null
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-completed-result-null",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": null,
+          "violations": []
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-completed-host-evidence-null",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": null
+          },
+          "violations": []
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-completed-stopped-at-close",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": "close"
+          },
+          "violations": []
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-escalated-closure-object",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": "implement"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-escalated-result-null",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": null,
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-refused-result-object",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "refused",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": "implement"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-recovery-required-result-object",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "recovery-required",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": "implement"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-status-outside-enum",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "aborted",
+          "result": null,
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-attempts-empty",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": "implement"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-result-extra-property",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": "implement",
+            "extra": true
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-result-missing-closure",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "stopped_at": "implement"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-capture-bad-sha",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:abc",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": null
+          },
+          "violations": []
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-integration-short-commit",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "abc123",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": true
+            },
+            "stopped_at": null
+          },
+          "violations": []
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-stopped-at-outside-enum",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "escalated",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "none",
+                      "detail": "no process.check granted"
+                    }
+                  ],
+                  "result": "blocked"
+                },
+                "capture": null,
+                "review": null
+              }
+            ],
+            "integration": null,
+            "audit": null,
+            "closure": null,
+            "stopped_at": "explore"
+          },
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": null
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-ref-closure-reconciled-not-boolean",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "completed",
+          "result": {
+            "exploration": {
+              "answer": "the defect is in a.ts",
+              "findings": [],
+              "uncertainties": []
+            },
+            "attempts": [
+              {
+                "attempt": 0,
+                "implementation": {
+                  "files_changed": [
+                    "/work/src/a.ts"
+                  ],
+                  "verification": [
+                    {
+                      "check": "unit",
+                      "status": "exit",
+                      "command": "npm test",
+                      "exit_code": 0
+                    }
+                  ],
+                  "result": "done"
+                },
+                "capture": {
+                  "tree": "t1",
+                  "diff_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                  "validations": []
+                },
+                "review": {
+                  "decision": "accept",
+                  "material_objections": [],
+                  "evidence": [],
+                  "findings": []
+                }
+              }
+            ],
+            "integration": {
+              "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "reference": "refs/heads/main",
+              "tree": "t1"
+            },
+            "audit": {
+              "agreements": [],
+              "discrepancies": [],
+              "unknowns": [],
+              "coherence": {}
+            },
+            "closure": {
+              "record": "issues/x.md",
+              "before": "rev-1",
+              "after": "rev-2",
+              "reconciled": "yes"
+            },
+            "stopped_at": null
+          },
+          "violations": []
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "settled"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-host-evidence-empty-array",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "recovery-required",
+          "result": null,
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": []
+      },
+      "valid": false
+    },
+    {
+      "name": "rr-host-evidence-bad-role-state",
+      "schema": "repair-result.v1.json",
+      "pointer": "",
+      "document": {
+        "domain": {
+          "status": "recovery-required",
+          "result": null,
+          "violations": [
+            {
+              "code": "blocked",
+              "detail": "the implementer reported blocked"
+            }
+          ]
+        },
+        "host_evidence": [
+          {
+            "step": "explore",
+            "attempt": null,
+            "run_id": "run-1",
+            "principal_id": "p1",
+            "observed_at": "2026-10-22T10:00:00Z",
+            "role_state": "accepted"
+          }
+        ]
+      },
+      "valid": false
+    }
+  ]
+}
