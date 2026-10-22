@@ -7,11 +7,18 @@ interprets live in `catalog/`; this directory holds only what runs. Nothing
 here reaches a Claude Code install: `install.sh` copies a fixed list of
 entries and `adapters/` is not on it.
 
-The contract is Prior's answer to fusion's request 67 and its two follow-ups
-of 2026-10-11 (`Prior: docs/design/fusion-module-bundle-prior-response.md`),
-on top of the module API (`Prior: docs/design/prior-module-api-v1.md`) and
-the installed-bundle contract (`Prior: docs/design/prior-installed-module-bundles.md`).
-The host side that calls this module is `Prior: internal/fusionhost/external_explorer.go`.
+The contract is two of Prior's answers: answer 67, to fusion's request 67
+and its two follow-ups of 2026-10-11, for the bundle and the explorer
+(`Prior: docs/design/fusion-module-bundle-prior-response.md`), and answer
+69, for the repair workflow and its six host services
+(`Prior: docs/design/fusion-repair-contract-prior-response.md`). Both sit on
+top of the module API (`Prior: docs/design/prior-module-api-v1.md`) and the
+installed-bundle contract (`Prior: docs/design/prior-installed-module-bundles.md`).
+The host side, read from Prior at `PRIOR_PIN`, is two files:
+`Prior: internal/fusionhost/external_explorer.go` calls the explorer, and
+`Prior: internal/fusionhost/repair_journal.go` holds the repair host's
+preparation record and the receipt journal its services are guarded by. At
+the pin that file advertises no service yet.
 
 ## Layout
 
@@ -43,13 +50,17 @@ have no `go.mod` and compile nowhere in fusion's tree (Prior answer 67.4,
 route a).
 
 ```
-adapters/prior/stage.sh test
-adapters/prior/stage.sh run -- <command...>
+PRIOR_REPO=<prior-repository> adapters/prior/stage.sh test
+PRIOR_REPO=<prior-repository> adapters/prior/stage.sh run -- <command...>
 ```
 
-`stage.sh` clones the local Prior repository (`PRIOR_REPO`, default
-`/Users/kai/Projects/productive/F09-Prior`; a parameter of the build machine,
-never part of any artefact) with `--no-checkout`, checks out `PRIOR_PIN`
+`PRIOR_REPO` is required by `stage.sh` and `build.sh` alike and has no
+default: it names the local Prior repository to clone, a parameter of the
+build machine and never part of any artefact. Unset, either script prints
+its usage line naming `PRIOR_REPO` and exits 2. The examples below leave it
+out for brevity; every one of them needs it.
+
+`stage.sh` clones that repository with `--no-checkout`, checks out `PRIOR_PIN`
 detached, prints the clone's `git rev-parse HEAD` and refuses a HEAD that is
 not the pin or a clone that is not clean. It copies `fusionmodule/` to
 `integrationbuild/fusionmodule/` in the clone, refuses if that staging holds a
@@ -138,6 +149,17 @@ and no `PATH`. The executable:
    workflow's contract is Prior's answer 69 and the header of
    `fusionmodule/internal/repair/repair.go`.
 
+Repair shares the explorer's step executor, so the audit placement under
+`### One invocation` holds for its roles too. Its last step, the workbench
+close, branches on the closure the host answers. With `reconciled: true`
+the envelope is `completed` and its result carries the closure. With
+`reconciled: false` the host says the post-image, the codec receipts, its
+journal and the integration commit do not agree, and that is never a
+success: the envelope is `recovery-required` with violation
+`closure.unreconciled`, the closure kept in that violation's detail because
+the frozen `repair-result.v1.json` admits only a null result under that
+status.
+
 No service preflight is performed: the SDK's `HostCaller` exposes `CallHost`
 only, and Prior compares the definition's `requires` with its service map
 before the process starts (67.6).
@@ -153,8 +175,12 @@ host's `project_context` and `output_contract`; it is validated against
 on every role call as the bytes the host placed there, never re-encoded, with
 nothing added and nothing stripped. The host refuses a role call whose input
 differs from the frozen one, so the immutability is checked on both sides.
-`audit_ref` is read from the invocation's top level and sent only as the
-completion's `RoleCall.audit_ref`.
+`audit_ref` is read from the invocation's top level and sent only as a
+completion's `RoleCall.audit_ref`, and only to a run whose first read in
+this invocation was `answered`: a run a previous invocation left before its
+completion (69.3). A run this invocation started on `absent` is completed
+without it. The rule is `steps.Execute`'s own, so the explorer and repair
+hold it through the same call.
 
 Before the first host call, every role call the step can make is checked
 against the 1 MiB frame bound; an input that would not fit is refused with no
@@ -163,7 +189,7 @@ effect. Then the step runs, observe then act (67.5):
 | Read reports | The module |
 |---|---|
 | `absent` | calls `host.role.run.v1`, then reads again |
-| `answered` | calls `host.role.complete.v1` with the invocation's `audit_ref` (empty when absent), then reads again |
+| `answered` | calls `host.role.complete.v1`, then reads again; the completion carries the invocation's `audit_ref` (empty when absent) only when this was the first read, never after a run this invocation started |
 | `settled` | reuses the stored answer; no run, no completion |
 | `accepted` | answers `recovery-required` with `host_evidence: null`; never reruns |
 | `refused` | answers `recovery-required` on code `recovery-required`, else `refused` with the host's code |
@@ -199,24 +225,35 @@ evidence.
 
 - `internal/steps`: the strict parser against what Prior refuses; every
   keyword of the validator, and the refusal of every keyword it does not
-  implement; the four shipped schemas compiled and exercised on the
-  contract's cases; the bundle reader serving declared files only, refusing a
-  missing or oversize one, and locating the root above the executable; the
-  catalog resolving the explorer and refusing every planned, unsupported and
-  aliased name; the step executor's call sequence, audit placement and
-  immutable input on nine scripted hosts;
+  implement; the four explorer schemas compiled and exercised on the
+  contract's cases; the repair schemas exercised by the shared case table
+  `catalog/testdata/repair-schema-cases.v1.json` (`TestSharedSchemaCases`,
+  read through `FUSION_CATALOG_DIR`, each schema compiled with
+  `CompileSchema`), whose every row's verdict the catalog's ajv test
+  (`catalog/src/__tests__/schema-cases.test.ts`) asserts too, so the two
+  validators are held to one table; the bundle reader serving declared files
+  only, refusing a missing or oversize one, and locating the root above the
+  executable; the catalog resolving the four roles supported on Prior
+  (explorer, code-implementer, reviewer and state-auditor), the reviewer
+  also through its two aliases `code-reviewer` and `data-reviewer` with
+  their domains, and refusing every other role and a name outside the
+  catalog; the step executor's call sequence, audit placement (the
+  reference sent only to a run first read `answered`) and immutable input on
+  ten scripted hosts;
 - `internal/explorer`: the workflow over the fake durable host: a valid answer
   completed with the evidence copied; a restart that reuses the persisted
   answer with zero model calls; `settled` reused on one read; `accepted` as
   `recovery-required` with null evidence; a required audit missing, wrong and
-  right; a schema-invalid answer and five findings against four refused and
+  right; an invocation's `audit_ref` not sent to a run that invocation
+  started; a schema-invalid answer and five findings against four refused and
   not completed; invalid invocations and an oversize input refused before any
   host call; an oversize answer refused within the frame; a host conflict
   reported; a lost reply returned as an error; and the handler behind
   `api.Server` over pipes against `api.ConnectWithServices`;
 - `cmd/fusion-module`: the exits before the handshake, nothing on stdout;
 - `internal/hostsvc` and `internal/repair`: the six service clients and the
-  repair workflow over scripted hosts.
+  repair workflow over scripted hosts, among them a close answering
+  `reconciled: false` that ends `recovery-required`, not `completed`.
 
 ### Conformance against a built bundle
 
@@ -250,10 +287,17 @@ durable `host.role.*` services and the six repair services. Seventeen cases:
   the test copies it, runs `git init` and one fixed commit, and takes `HEAD`
   as `base_revision`, so no `.git` enters fusion's tree. A reviewed repair
   runs to audited close; a `revise` verdict loops once within the bound on
-  distinct run ids, then `escalate` stops at review; a kill at each of
-  sixteen persisted boundaries from the explorer's compose to the workbench
-  close, then a resume under a fresh operation id, reproduces the byte-equal
-  envelope with zero further model calls; a corrupted review binding is
+  distinct run ids, then `escalate` stops at review; a kill at each
+  persisted boundary, then a resume under a fresh operation id, reproduces
+  the byte-equal envelope with zero further model calls. Every run in that
+  test, the clean reference included, reads the record in 96-byte pages, and
+  the boundaries are nineteen: after the explorer was composed, answered and
+  settled; after the workspace receipt; after the implementer was composed,
+  answered and settled; after the capture receipt; after the reviewer was
+  composed and answered, and after the review settled; after the integrate
+  and the snapshot receipts; after the record was read and after a page of
+  it was read; after the auditor was composed and answered, and before close
+  with the audit settled; and after the close receipt. A corrupted review binding is
   refused with `review.binding`; an attempt map short of the bound is refused
   before any role call; and the explorer's results still decode under the
   frozen schemas.
