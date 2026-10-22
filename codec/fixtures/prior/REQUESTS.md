@@ -5714,3 +5714,79 @@ Neither reading is in a bundle Prior holds. Both are in the module source at `a6
 | 74 | **asked**: this section, 74(a) the codec delta to `d6fc9da0…`, 74(b) two readings for the next module bundle | — |
 
 These rows supersede the rows of `#### Requests 64 and 67 to 73, as they stand` above. Request 74 is the one open request.
+
+### Prior's answer to 74 at b711b62
+
+**Read at:** Prior commit `b711b62` (`b711b629f13655b8fb82a56733eaf15038c7d57a`, 2026-10-22 20:40, "docs(design): answer fusion request 74"), parent `56221f8`. The answer is `Prior: docs/design/fusion-dependency-evaluation-request74-prior-response.md`, 305 lines, 18 998 bytes, `sha256:8612fad1fdb3b4652af544a49674a1acc9d9112752f27a26dbf93e03f56e10bc` as `git show b711b62:<path> | shasum -a 256` prints it. It was read from the commit, not from a working tree, and is cited from here on as that path at `b711b62`. The user relayed the answer as it stands at that commit. Prior names its handoff as fusion `9ec788e1` (`9ec788e1eb085517a5cd4b01e29cd7b8f3c5a173`), the commit that appended request 74, with this file at `sha256:51243d83d0d3190892acde1e65a51873a3c24dc07cef39a00087a1debadab23e`, and states that it read its own side at `70a4507` (`70a45072b362d395c3490addebb8237f65ac2497`, 2026-10-22 20:13), the head of its `main` then. The commit between, `56221f8` (2026-10-22 20:39), is a Prior plan and touches no pinned path. Fusion was read at `9ec788e1` on `main`; at that commit this file is the same `51243d83…` Prior names.
+
+**Nothing pinned moved on Prior's side.** Prior: "Between the two commits no pinned path moved", for `dbe6f80`, which request 74 read, and `70a4507`; `git diff --stat 70a4507 b711b62 -- tests/testdata/fusion-codec tests/testdata/fusion-fj01 internal` prints nothing. At `b711b62` `QualifiedCodecDigest` (`Prior: internal/fusionhost/workbench.go` line 22) and `codecBundleDigest` (`Prior: internal/fusionhost/codec_process_test.go` line 22) are `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, and `codecPin` (line 21) is `ec76d4fdfc928388e0003771d3eafa6211cb1b36`.
+
+**Prior's verdict, quoted:** "**74(a): accepted. 74(b)(1): accepted. 74(b)(2): accepted.** No correction is asked of fusion. This answer accepts a contract delta. It does not qualify a codec digest: Prior's runtime keeps `dfab3f21…` and refuses `d6fc9da0…` until a later request re-snapshots and re-pins it, as request 74 itself foresees."
+
+| Question | Prior's verdict | Rests on, as Prior states it |
+|---|---|---|
+| 74(a) the codec delta `dfab3f21…` → `d6fc9da0…` | **accepted**, no correction | fusion diff `ec76d4fd..9ec788e1`; a Prior grep over Go, testdata and docs |
+| 74(b)(1) `reconciled: false` → `recovery-required` / `closure.unreconciled` | **accepted** | `Prior: internal/fusionhost/repair_records.go`, `repair_journal.go`, `repair_assembly.go`, the frozen `repair-result.v1.json` |
+| 74(b)(2) 69.3 binds the explorer; an unrecorded `audit_ref` | **accepted** | `Prior: internal/fusionhost/repair_role_runtime.go`, `internal/supervisor/module_roles.go`, `internal/store/role_completion.go` |
+
+The answer commit carries the response document, one Prior issue record (below) and Prior's own event log, and nothing under `tests/`, `cmd/` or `internal/`.
+
+#### 74(a) The codec delta: **accepted**
+
+| Figure | Request 74 | Prior's answer |
+|---|---|---|
+| Bundle at `ec76d4fd` | `dfab3f21…`, 699 094 bytes | `dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, 699094 |
+| Bundle at `a69220dc` and at `9ec788e1` | `d6fc9da0…`, 699 729 bytes | `d6fc9da0b948cb9c8d014d17e2d799b9a4e1c53a9feea428288fb718ff388d97`, 699729, at both; "request 74's commit moved no codec byte" |
+| Codec commits `ec76d4fd..9ec788e1` | `e46c6634`, `695e1f84`, `e2312078` | the same three, "as the request says"; `695e1f84` "touches only `codec/src/prior/` and its test", outside the bundle and both pins |
+| `codec/fixtures` moved | this file alone | "`codec/fixtures/prior/REQUESTS.md` alone. So no recorded exchange, seed, delta or fixture moved." |
+| Bundle diff | the two functions and three strings | `14 9` lines in seven hunks (`dependencySatisfied`, the new `schemaFinding`, `findingsOf`, `edgeEntries`, `dependencies_default`, `campaign_schema_default`, `package_schema_default`), each "the compiled form of one source change"; "There is no other bundle change." |
+| The whole delta | the two evaluation changes and the three text corrections | "So this is the whole delta between `dfab3f21…` and `d6fc9da0…`, as the request states it." |
+
+**Nothing in Prior expects the old answers.** Prior: "Prior has no Go code that interprets a `dependencies` entry." Its two Go hits are the error-class list of the transport (`Prior: internal/fusionhost/codec_process.go:162`), which governs error envelopes and gains no class, and a `depends_on` count on a `set-dependencies` row (`Prior: internal/fusionhost/record_events.go:108-109`), which reads no evaluated edge. Of the eight recorded responses with a `dependencies` list, seven are empty, and the edge in `protocol-session-fj02/15-reconcile.response.json` is `satisfied`, which "evaluates the same under both versions". Prior's FJ03c and FJ00 answers agree with the new behaviour. Prior's answer to the second question, quoted: "no assertion in Prior's harness or host expects `unresolved-reference` for a `succeeded` edge whose target binds a dangling evidence record, and none reads a dependency entry of a schema-invalid target as anything other than `unmet`."
+
+**Not run: the replay against `d6fc9da0…`.** Prior's harness binds the pinned digest: `prepareCodec` checks the snapshot against `UPSTREAM.json`, installs the bundle from it and binds `codecBundleDigest`, and `NewWorkbenchService` refuses any digest other than `QualifiedCodecDigest`; no environment override exists. Prior: "As instructed, no machinery was built for an alternate-bundle run." "The only replay evidence for `d6fc9da0…` is therefore fusion's": `round-trip-cli-fj02.test.ts` replays `15-reconcile` byte for byte. Prior replays all 238 exchanges through `d6fc9da0…` in "the re-snapshot and re-pin request that follows the tag". Prior's runs for this answer, at `70a4507` (`go build ./... && go vet ./...` exit 0; targeted `go test` runs over `internal/fusionhost`, `internal/supervisor` and `tests`, ok), "show the harness still green at `dfab3f21…`. They are not a replay of `d6fc9da0…`."
+
+**A side effect request 74 did not name.** The `graph` check of migration `verify` (`codec/src/migration.ts` `runChecks`, line 1647 at `9ec788e1`) lists every dependency entry carrying a `class` and a `reason` other than `dependency-unmet`. After change 2 an edge to a schema-invalid target carries `reason: "schema"`, so `verify` now reports it in `graph` as well as in `validate`, where before it reported it in `validate` alone. `verify` fails either way, since `validate` already reports the invalid file, and no recorded `verify` answer differs. Prior "notes this as part of change 2, not as a fourth change, and asks no correction." Fusion records it as such and changes nothing for it.
+
+#### 74(b)(1) A completed close with `reconciled: false`: **accepted**
+
+Prior: "**Prior never answers a completed close with `reconciled: false`.**" The one place its host builds a close result sets `"reconciled": true` as a literal (`Prior: internal/fusionhost/repair_records.go:445-446`); the post-image `verify`, the `reconcile` of the bound record, the codec receipts and the integration commit each return earlier, and the journal turns any effect error into `recovery-required` with code `operation-unknown` and stores no completion (`Prior: internal/fusionhost/repair_journal.go:92-94`, `:168-170`). "**`recovery-required` with `closure.unreconciled` is the right reading. `refused` is not.**" `refused` is for a schema or bound violation, and `escalated` with `stopped_at: "close"` for a closure conflict found before writing. The module's envelope validates as sent: a null `result` on `recovery-required`, an open violation `code`, the closure in `detail`, and the host stores no terminal verdict for it (`Prior: internal/fusionhost/repair_assembly.go:364-366`). Prior: "Fusion keeps the branch as a guard. Prior agrees that this is a guard for a case Prior does not produce."
+
+#### 74(b)(2) 69.3 binds the explorer as it binds repair: **accepted**
+
+Prior: "**Prior reads 69.3 as binding both workflows.**" The rule concerns the role completion service, and the explorer completes through the same `role.complete`; "A run that the invocation itself starts on `absent` has no recovery record. Completing it with an `audit_ref` is therefore exactly the blind use 69.3 forbids." `steps.Execute` at fusion `3e8c212a` "is the behaviour Prior's own host expects". To the last question, Prior: "What Prior's host does with an `audit_ref` that names no recorded recovery: it refuses or ignores it, nothing else. It never records it, never treats it as authority and never lets it start a run."
+
+| Route and call | Run state | Prior's answer |
+|---|---|---|
+| any route, `role.run` or `role.read` with `audit_ref` | any | refused, `invalid-request` |
+| repair, `role.complete` | any | refused, `permission-denied` |
+| explorer, `role.complete` | `recovery-required` | refused, `recovery-required` |
+| explorer, `role.complete` | any other, e.g. a run this invocation started | **ignored**: neither checked nor stored |
+
+**Prior's own issue, not fusion's.** The last row is, in Prior's words, "a gap on Prior's side, not fusion's": the explorer route checks the reference only on a run in `recovery-required` and accepts it unchecked otherwise, where the repair route refuses the same call. "This is why fusion's explorer behaviour before `3e8c212a` (a reference sent to a run it had just started) would have passed Prior's explorer route without any error." It grants no authority, since the reference is never stored or used. Prior filed it in its own workbench at `b711b62` as `Prior: fusion-workbench/work-packages/261021-2241-full-fusion-surface-on-prior/issues/261022-2050-explorer-route-accepts-an-unchecked-audit-ref-on-a-healthy-run.md`, state `open`, owner unassigned; "no code was changed for this answer". It changes no verdict and asks nothing of fusion, and under the module at `3e8c212a` the case no longer occurs. Fusion files nothing for it.
+
+#### What Prior did not repeat
+
+- **The optional version-boundary run of request 73.** Prior "did not repeat" it, as in its answer to 72 and 73: "Fusion's measurement stands as fusion's. No new run was made for this answer."
+
+#### What follows from this record
+
+- **74(a)'s acceptance is recorded here.** The condition of `## Where this work stops` in plan `261022-1611-plan-prior-bundle-closing-review-follow-ups.md`, a release tag on a commit holding step 4 waits for "Prior's acceptance of request 74(a), recorded in `codec/fixtures/prior/REQUESTS.md`", is met by this section (`261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md`, option 2). No correction lands first.
+- **Re-pinning waits.** The re-snapshot of the four codec-pin paths, the re-pin of `d6fc9da0…` with its two fj01 paths and Prior's replay of the 238 exchanges through `d6fc9da0…` are asked in a later fusion request, under a number fusion assigns. Until then Prior's runtime keeps `dfab3f21…` and refuses `d6fc9da0…`.
+- **74(b) confirmed.** The next module bundle carries both readings as they stand at `a69220dc`. That bundle needs Prior's acceptance on its own, and is not built here.
+
+#### `REQUESTS.md` and the bundle against Prior's pins, after this append
+
+Both pins still hold this file at `893e823f…`, its bytes at `ec76d4fd`. At `9ec788e1` it is `sha256:51243d83d0d3190892acde1e65a51873a3c24dc07cef39a00087a1debadab23e`, the digest Prior's answer names, and this section moves it again. The bundle at `9ec788e1` is `d6fc9da0…`, as request 74 put it.
+
+#### Requests 64 and 67 to 74, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, replaced as `QualifiedCodecDigest` by `dfab3f21…` at `d372bc0` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 and 73 | **complete** at Prior `01cf2fd` and `d372bc0`, for `ec76d4fd`; `dfab3f21…` qualified; answered at `3c29dcf` | `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md` |
+| 74 | **accepted** at Prior `b711b62`, for `9ec788e1`: 74(a) the delta `dfab3f21…` → `d6fc9da0…` as the whole delta, no correction, not replayed against `d6fc9da0…`; 74(b)(1) and 74(b)(2) accepted. `QualifiedCodecDigest` stays `dfab3f21…` | `Prior: docs/design/fusion-dependency-evaluation-request74-prior-response.md` |
+
+These rows supersede the rows of `### Requests 64 and 67 to 74, as they stand` above. No request is open.
