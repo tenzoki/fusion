@@ -745,6 +745,13 @@ export interface Finding {
   detail: string;
 }
 
+/** The schema's finding against a pair's control data, or null when its schema admits it. */
+function schemaFinding(pair: Pair): Omit<Finding, "path"> | null {
+  const v = validate(pair.schemaId, pair.control);
+  if (v.ok) return null;
+  return v.class === "schema-invalid" ? { class: "schema-invalid", reason: "schema", detail: describeErrors(v.errors) } : { class: "unsupported-format", reason: "unknown-schema", detail: `no schema ${v.schemaId}` };
+}
+
 /**
  * The findings against one pair: the strict reader's, the schema's, the
  * state rules', the narrative's, the workbench id's. An evidence record names
@@ -757,9 +764,9 @@ function findingsOf(wb: Workbench, path: string): Finding[] {
   if (!r.ok) return [{ path, class: r.error.class, reason: r.error.reason, detail: r.error.detail }];
   const pair = r.value;
   const findings: Finding[] = [];
-  const v = validate(pair.schemaId, pair.control);
-  if (!v.ok) {
-    findings.push(v.class === "schema-invalid" ? { path, class: "schema-invalid", reason: "schema", detail: describeErrors(v.errors) } : { path, class: "unsupported-format", reason: "unknown-schema", detail: `no schema ${v.schemaId}` });
+  const schema = schemaFinding(pair);
+  if (schema !== null) {
+    findings.push({ path, ...schema });
     return findings; // the state rules read fields the schema just refused
   }
   const state = stateOf(pair);
@@ -2323,7 +2330,7 @@ function evidenceEntries(ctx: ReadContext, pkg: Pair): EvidenceEntry[] {
   );
 }
 
-/** The evidence records an outcome binds, as `dependencySatisfied` reads them; one that does not resolve to an evidence record is left out, and the condition reports it. */
+/** The evidence records an outcome binds, as `dependencySatisfied` reads them; one that does not resolve to an evidence record is left out, counts as not accepted there, and is reported by `evidenceEntries` on the target. */
 function evidenceRecords(ctx: ReadContext, outcome: Outcome | null): Record<string, { verdict: string; revision: string }> {
   const out: Record<string, { verdict: string; revision: string }> = {};
   for (const b of outcome?.evidence ?? []) {
@@ -2336,13 +2343,20 @@ function evidenceRecords(ctx: ReadContext, outcome: Outcome | null): Record<stri
   return out;
 }
 
-/** Every `depends_on` edge of a package against its target's live JSON: a target that does not resolve to a package here is unmet. */
+/**
+ * Every `depends_on` edge of a package against its target's live JSON: a
+ * target that does not resolve to a package here is unmet, and so is one whose
+ * control data its schema refuses, with the schema's finding, whatever its
+ * `status` says: what an invalid record says is not decided.
+ */
 function edgeEntries(ctx: ReadContext, pkg: Pair): EdgeEntry[] {
   const edges = pkg.control.depends_on as SetDependenciesRequest["depends_on"];
   return edges.map((edge, i): EdgeEntry => {
     const base = { path: pkg.path, at: `/depends_on/${i}`, target: edge.target.record_id, condition: edge.condition };
     const target = resolvePackage(ctx, edge.target, "dependency target");
     if (!target.ok) return { ...base, status: "unmet", class: target.error.class, reason: target.error.reason };
+    const invalid = schemaFinding(target.value);
+    if (invalid !== null) return { ...base, status: "unmet", class: invalid.class, reason: invalid.reason, detail: `${target.value.path}: ${invalid.detail}` };
     const t = target.value.control;
     const outcome = isObject(t.outcome) ? (t.outcome as unknown as Outcome) : null;
     const rule = dependencySatisfied(edge.condition, { status: String(t.status), outcome, evidence_records: evidenceRecords(ctx, outcome) });

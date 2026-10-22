@@ -19,9 +19,9 @@
 // admit, a decision edge without the reference it requires, an issue closed
 // without a disposition). For a dependency: `schema-invalid` for a condition
 // the table does not know, `conflict` while the target has not reached the
-// condition's status, `missing-evidence` when `succeeded` finds no accepted
-// evidence at the binding's revision, `unresolved-reference` when a binding
-// names an evidence record the caller could not supply.
+// condition's status, `missing-evidence` when `succeeded` finds fewer accepted
+// bindings at a current revision than it requires; a binding whose evidence
+// record the caller could not supply counts as not accepted.
 //
 // The package matrix is applied to packages only; the record kinds carry
 // their own vocabularies. Nothing here reads a file system beyond the tables,
@@ -299,9 +299,11 @@ export function dependencySatisfied(condition: string, target: DependencyTarget)
   let accepted = 0;
   for (const b of bindings) {
     const record = target.evidence_records?.[b.ref.record_id];
-    if (record === undefined) {
-      return refuse("unresolved-reference", `${condition}: the outcome binds evidence ${b.ref.record_id}, which was not supplied`);
-    }
+    // A binding with no supplied record is not accepted, and nothing more: the
+    // contract asks for min_accepted bindings, not for every binding to resolve.
+    // The dangling binding is the target's own finding, reported by
+    // `reconcile`'s evidence section, not this edge's.
+    if (record === undefined) continue;
     if (!means.verdict.includes(record.verdict)) continue;
     if (means.revision_matches && record.revision !== b.ref.revision) continue; // stale: bound at another revision
     accepted++;

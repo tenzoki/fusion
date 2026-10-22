@@ -3404,7 +3404,8 @@ describe("reconcile", () => {
     okResult(await setDeps(p1, [{ target: refTo(DONE_ID), condition: "terminal" }]));
     const edges = async (): Promise<Array<Record<string, unknown>>> => (await reconcile()).dependencies;
     expect(await edges()).toEqual([
-      { path: OPEN, at: "/depends_on/0", target: DONE_ID, condition: "succeeded", status: "unmet", class: "unresolved-reference", reason: "dependency-unmet", detail: `succeeded: the outcome binds evidence ${MISSING_EVIDENCE}, which was not supplied` },
+      // DONE's only binding names a record that exists nowhere: not accepted, so none is, and the dangling binding is DONE's own evidence finding.
+      { path: OPEN, at: "/depends_on/0", target: DONE_ID, condition: "succeeded", status: "unmet", class: "missing-evidence", reason: "dependency-unmet", detail: "succeeded: 0 accepted evidence binding(s) at a current revision, 1 required" },
       { path: OPEN, at: "/depends_on/1", target: P1, condition: "terminal", status: "unmet", class: "conflict", reason: "dependency-unmet", detail: "terminal: the target is open, not done or dropped" },
       { path: OPEN, at: "/depends_on/2", target: P2, condition: "succeeded", status: "satisfied" },
       { path: p1, at: "/depends_on/0", target: DONE_ID, condition: "terminal", status: "satisfied" },
@@ -3417,6 +3418,40 @@ describe("reconcile", () => {
     rewrite(p1, (c) => ({ ...c, depends_on: [{ target: refTo("99999999-0000-4000-8000-000000000009"), condition: "terminal" }] }));
     expect((await edges())[3]).toEqual({ path: p1, at: "/depends_on/0", target: "99999999-0000-4000-8000-000000000009", condition: "terminal", status: "unmet", class: "unresolved-reference", reason: "record-not-found" });
     expect(parsed(p1).depends_on, "nothing repaired").toEqual([{ target: refTo("99999999-0000-4000-8000-000000000009"), condition: "terminal" }]);
+  });
+
+  it("dependencies: one accepted binding satisfies succeeded beside a dangling one, which stays the target's evidence finding", async () => {
+    const P2 = "22222222-2222-4222-8222-222222222222";
+    const p2 = await newPackage(P2, "260929-1102-second");
+    okResult(await move(p2, "claimed", { claim: CLAIM }));
+    const ev = await seedEvidence(root, { package: p2, id: "e7e7e7e7-0000-4000-8000-000000000601", basename: "260929-1601-review" });
+    okResult(await move(p2, "done", { outcome: { class: "completed", reason: "all criteria met", evidence: [ev.binding] } }));
+    // A second binding, naming a record no control file carries, as a merge or a hand edit would leave it.
+    const dangling = { ...ev.binding, ref: { ...ev.binding.ref, record_id: MISSING_EVIDENCE } };
+    rewrite(p2, (c) => ({ ...c, outcome: { ...(c.outcome as Record<string, unknown>), evidence: [dangling, ev.binding] } }));
+    okResult(await setDeps(OPEN, [{ target: refTo(P2), condition: "succeeded" }]));
+
+    const report = await reconcile();
+    expect(report.records.filter((f) => f.path === p2 && f.class === "schema-invalid"), "the target stays schema-valid").toEqual([]);
+    expect(report.dependencies.filter((d) => "path" in d && d.path === OPEN)).toEqual([{ path: OPEN, at: "/depends_on/0", target: P2, condition: "succeeded", status: "satisfied" }]);
+    expect(report.evidence.filter((e) => e.path === p2 && e.at.startsWith("/outcome/")).map((e) => `${e.at} ${e.record_id} ${e.status} ${e.class}/${e.reason}`)).toEqual([
+      `/outcome/evidence/0 ${MISSING_EVIDENCE} stale unresolved-reference/record-not-found`,
+      `/outcome/evidence/1 ${ev.id} fresh undefined/undefined`,
+    ]);
+  });
+
+  it("dependencies: a schema-invalid target is unmet with the schema's finding, whatever its status says", async () => {
+    okResult(await setDeps(OPEN, [{ target: refTo(DONE_ID), condition: "terminal" }]));
+    const edge = async (): Promise<Record<string, unknown> | undefined> => (await reconcile()).dependencies.find((d) => "path" in d && d.path === OPEN);
+    expect(await edge(), "a valid done target satisfies terminal").toMatchObject({ status: "satisfied" });
+
+    rewrite(DONE, (c) => ({ ...c, unexpected: true }));
+    expect(parsed(DONE).status).toBe("done");
+    const report = await reconcile();
+    expect(report.records.filter((f) => f.path === DONE).map((f) => `${f.class}/${f.reason}`), "reported under records too").toContain("schema-invalid/schema");
+    const unmet = await edge();
+    expect(unmet).toEqual({ path: OPEN, at: "/depends_on/0", target: DONE_ID, condition: "terminal", status: "unmet", class: "schema-invalid", reason: "schema", detail: expect.any(String) });
+    expect(String(unmet?.detail).startsWith(`${DONE}: `), "the detail names the target and the schema's errors").toBe(true);
   });
 
   it("dependencies: a cycle no set-dependencies closed (a merge or a hand edit) is reported with its ids; it blocks no other set-dependencies; scope reports it only when a package of the scope is on it", async () => {

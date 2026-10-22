@@ -21,3 +21,5 @@ The same delegated pass also reported two overstatements, not re-read by the rev
 Fix direction: count the resolvable bindings and report the dangling one as a separate finding, or state in the contract that one dangling binding blocks the edge; validate the target in `edgeEntries` and return `unmet` with the schema finding; surface cycle entries in the work graph; correct the two descriptions.
 
 Acceptance: a codec test with one accepted and one dangling binding gives `satisfied`, or the contract says otherwise. A schema-invalid `done` target gives `unmet`. A cycle through a terminal package appears in `bin/fusion-work-order`'s output.
+
+Progress (261022, plan 261022-1611 step 4): the codec half landed: `dependencySatisfied` (`codec/src/transitions.ts`) counts a binding with no supplied record as not accepted, so one accepted binding satisfies `succeeded` beside a dangling one, and `edgeEntries` (`codec/src/cli/ops.ts`) answers a schema-invalid target `unmet` with the schema finding; defects 1 and 2 hold no longer, defect 3 waits for step 6 and the two descriptions for step 13.

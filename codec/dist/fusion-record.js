@@ -11012,9 +11012,7 @@ function dependencySatisfied(condition, target) {
   let accepted = 0;
   for (const b of bindings) {
     const record = target.evidence_records?.[b.ref.record_id];
-    if (record === void 0) {
-      return refuse3("unresolved-reference", `${condition}: the outcome binds evidence ${b.ref.record_id}, which was not supplied`);
-    }
+    if (record === void 0) continue;
     if (!means.verdict.includes(record.verdict)) continue;
     if (means.revision_matches && record.revision !== b.ref.revision) continue;
     accepted++;
@@ -11402,14 +11400,19 @@ function show(wb, req, view) {
   if (narrativeBlocked !== void 0) return fromStore(recoveryBlocked(narrativeBlocked));
   return { ok: true, result: { path, kind, control, revision, narrative, ...kind === "evidence" ? { report } : {} } };
 }
+function schemaFinding(pair) {
+  const v = validate(pair.schemaId, pair.control);
+  if (v.ok) return null;
+  return v.class === "schema-invalid" ? { class: "schema-invalid", reason: "schema", detail: describeErrors(v.errors) } : { class: "unsupported-format", reason: "unknown-schema", detail: `no schema ${v.schemaId}` };
+}
 function findingsOf(wb, path) {
   const r = readPair(wb, path);
   if (!r.ok) return [{ path, class: r.error.class, reason: r.error.reason, detail: r.error.detail }];
   const pair = r.value;
   const findings = [];
-  const v = validate(pair.schemaId, pair.control);
-  if (!v.ok) {
-    findings.push(v.class === "schema-invalid" ? { path, class: "schema-invalid", reason: "schema", detail: describeErrors(v.errors) } : { path, class: "unsupported-format", reason: "unknown-schema", detail: `no schema ${v.schemaId}` });
+  const schema = schemaFinding(pair);
+  if (schema !== null) {
+    findings.push({ path, ...schema });
     return findings;
   }
   const state = stateOf(pair);
@@ -12391,6 +12394,8 @@ function edgeEntries(ctx, pkg) {
     const base = { path: pkg.path, at: `/depends_on/${i}`, target: edge.target.record_id, condition: edge.condition };
     const target = resolvePackage(ctx, edge.target, "dependency target");
     if (!target.ok) return { ...base, status: "unmet", class: target.error.class, reason: target.error.reason };
+    const invalid2 = schemaFinding(target.value);
+    if (invalid2 !== null) return { ...base, status: "unmet", class: invalid2.class, reason: invalid2.reason, detail: `${target.value.path}: ${invalid2.detail}` };
     const t = target.value.control;
     const outcome = isObject5(t.outcome) ? t.outcome : null;
     const rule = dependencySatisfied(edge.condition, { status: String(t.status), outcome, evidence_records: evidenceRecords(ctx, outcome) });

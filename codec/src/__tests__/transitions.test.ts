@@ -304,8 +304,16 @@ describe("dependencySatisfied over both conditions", () => {
     expectResult(dependencySatisfied("succeeded", target("done", { evidence: [binding(REV)], records: revised })), false, "missing-evidence");
   });
 
-  it("succeeded: a binding whose evidence record was not supplied is unresolved-reference", () => {
-    expectResult(dependencySatisfied("succeeded", target("done", { evidence: [binding(REV)] })), false, "unresolved-reference");
+  it("succeeded: a binding whose evidence record was not supplied counts as not accepted, so alone it is missing-evidence", () => {
+    expectResult(dependencySatisfied("succeeded", target("done", { evidence: [binding(REV)] })), false, "missing-evidence");
+  });
+
+  it("succeeded: one accepted binding satisfies it beside a dangling one, as min_accepted: 1 says, in either order", () => {
+    expect(d.conditions["succeeded"]!.evidence!.min_accepted).toBe(1);
+    const DANGLING = "00000000-0000-4000-8000-000000000043";
+    const dangling = { ref: { ...binding(REV).ref, record_id: DANGLING }, policy: "prior-enforced" };
+    expectResult(dependencySatisfied("succeeded", target("done", { evidence: [dangling, binding(REV)], records: accepted })), true);
+    expectResult(dependencySatisfied("succeeded", target("done", { evidence: [binding(REV), dangling], records: accepted })), true);
   });
 
   it("terminal reads no evidence at all", () => {
