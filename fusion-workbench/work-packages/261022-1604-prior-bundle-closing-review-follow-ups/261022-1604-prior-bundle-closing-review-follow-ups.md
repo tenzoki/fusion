@@ -14,7 +14,7 @@ Mode, 261022, the user's words at the approval of plan `261022-1611-plan-prior-b
 
 Closed `done`, outcome `completed`, over commits `bad32587..59992f23` (19 commits). All twelve issues are closed; plan `261022-1611-plan-prior-bundle-closing-review-follow-ups.md` closed with its 17 steps done. Prior's answers to requests 72/73 (Prior `3c29dcf`) and 74 (Prior `b711b62`, 74(a) accepted) are recorded in `codec/fixtures/prior/REQUESTS.md`, so the plan's tag clause is met; re-pinning `d6fc9da0…` and Prior's replay against it wait for a later fusion request.
 
-Closing review `reviews/261022-2142-reviewer-closing-review-of-the-prior-bundle-follow-ups.md`: verdict accept, `uncovered=0`, Not-opened none. It filed two Low issues in this container's issue store, left open for follow-up work beside the two filed during the steps (`261022-1712-…` catalog render test, `261022-1806-…` migrate run exit 9).
+Closing review `261022-2142-reviewer-closing-review-of-the-prior-bundle-follow-ups.md`: verdict accept, `uncovered=0`, Not-opened none. It filed two Low issues in this container's issue store, left open for follow-up work beside the two filed during the steps (`261022-1712-…` catalog render test, `261022-1806-…` migrate run exit 9).
 
 Stop conditions, not put to the user under `mode` `autonomous`; carried verbatim, none marked failing by the dispatcher, with the reviewer's mechanical results where it took one:
 1. "The work is finished when each of the twelve issues in the table above stands `closed`, either fixed with its step's acceptance passed or closed with a disposition the user accepted." All twelve closed `fixed`.
