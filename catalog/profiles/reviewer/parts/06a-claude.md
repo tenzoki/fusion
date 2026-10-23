@@ -1,0 +1,1 @@
+ A drifted `CLAUDE.md` fact on one file or function is a **placement** finding: move it where `rules/fusion-workbench-conventions.md` `## A project's CLAUDE.md` says, leaving one pointer line, not a rewrite. The issue names where; a source header is code-implementer's, else the user's curate run.

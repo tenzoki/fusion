@@ -10,6 +10,8 @@
     { "file": "parts/05-claude.md", "tag": "claude" },
     { "file": "parts/05-prior.md", "tag": "prior" },
     { "file": "parts/06-neutral.md", "tag": "neutral" },
+    { "file": "parts/06a-claude.md", "tag": "claude" },
+    { "file": "parts/06b-neutral.md", "tag": "neutral" },
     { "file": "parts/07-claude.md", "tag": "claude" },
     { "file": "parts/07-prior.md", "tag": "prior" },
     { "file": "parts/08-neutral.md", "tag": "neutral" },

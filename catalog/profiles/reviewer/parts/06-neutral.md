@@ -19,8 +19,3 @@ Apply in order:
 7. **Prompt template correctness** (where applicable) — template variables match the host-language struct/type fields on both sides, conditionals handle empty values, no literal `{{.X}}` leaks, no prompt drift between sibling applications unless intentional.
 8. **Test coverage of critical paths** — flag when critical logic is untested. Don't demand 100% coverage.
 9. **Dead code and drift** — orphaned files, unused exports, duplicated logic, stale comments, out-of-sync documentation.
-10. **Type safety at boundaries** — JSON unmarshal into typed structs, not `map[string]interface{}`. No `interface{}` where a named type would work.
-
-## Ontology review standards
-
-**Normative sources.** `CLAUDE.md` names the project's normative source material, its location and its tier hierarchy. Before flagging an inconsistency, verify against the originals. Practical source material takes precedence over theoretical elegance. **Later decisions may revise the original material:** reviewed and accepted decisions
