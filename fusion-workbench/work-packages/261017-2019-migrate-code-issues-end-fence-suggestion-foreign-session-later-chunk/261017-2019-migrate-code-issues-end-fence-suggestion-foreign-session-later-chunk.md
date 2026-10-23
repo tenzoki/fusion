@@ -15,3 +15,7 @@ Each is reproduced by a test before it is fixed; one that does not reproduce is 
 ## Set aside
 
 On 2026-10-17 the user stopped the session before approving the plan ("ja, abschließen, ich würde diese fusion version gern mal mit prior und mit claude ausprobieren."). The plan `261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md` stays filed and unapproved; nothing was implemented. The item is released, back to open, for whoever takes it up.
+
+## Taken up
+
+On 2026-10-23 checkout `114caf11` (teal-jetty) claimed the item on the user's word in chat: "übernimm 1 im automode". Mode autonomous on that word: the plan approval, the claim and the finish once the plan is complete are answered by the field.

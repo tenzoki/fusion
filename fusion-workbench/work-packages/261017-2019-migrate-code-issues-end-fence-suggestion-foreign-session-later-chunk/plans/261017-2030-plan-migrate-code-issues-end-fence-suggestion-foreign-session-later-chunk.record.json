@@ -61,6 +61,12 @@
       }
     ],
     "criteria": [],
-    "acceptance": null
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "6701b085-42df-4911-8d9d-b03b4d841cf7"
+      },
+      "revision": "sha256:50aac5e9ac6e27ca4693c1c029e5e416103d61f7113439e1c7bf8c5e17b72df7"
+    }
   }
 }

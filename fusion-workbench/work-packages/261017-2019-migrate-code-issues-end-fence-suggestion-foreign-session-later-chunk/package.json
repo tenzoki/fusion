@@ -3,11 +3,22 @@
   "id": "6701b085-42df-4911-8d9d-b03b4d841cf7",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "open",
-  "claim": null,
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-23T10:33:14Z"
+  },
   "mode": {
-    "value": "ordinary",
-    "source": null
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "path": "work-packages/261017-2019-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk/261017-2019-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md",
+        "sha256": "sha256:25ac434a6f0a6eb934350bd4026bbb47b22d25a2857f8d6bef3560cd5d34a2eb",
+        "kind": "other"
+      }
+    }
   },
   "origin": {
     "kind": "user-request",
@@ -21,7 +32,16 @@
     "path": "work-packages/261017-2019-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk/261017-2019-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md"
   },
   "depends_on": [],
-  "active_documents": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "c9698401-cd9d-424a-b76f-a7a99ca43582"
+      },
+      "role": "plan",
+      "revision": "sha256:50aac5e9ac6e27ca4693c1c029e5e416103d61f7113439e1c7bf8c5e17b72df7"
+    }
+  ],
   "references": [],
   "evidence": [],
   "outcome": null,
