@@ -7,3 +7,5 @@ Plan step 7 of `261022-1611-plan-prior-bundle-closing-review-follow-ups.md` gave
 ## Fix direction
 
 Map only `BackupUnverified` to 9 in `run()` as `repair` now does, and any other `ensureBackup` exception to `EXIT.fault` (3) with its message; add a test whose copy fails with an I/O error and asserts exit 3. Executor: code-implementer.
+
+Resolved: 2026-10-23 by code-implementer (plan 261022-2234-plan-four-issues-left-by-the-prior-follow-ups.md step 2). `run()` in `hooks/migrate.ts` now maps only `BackupUnverified` to exit 9 and any other `ensureBackup` error to exit 3 ("backing up the workbench failed: <error>; nothing was migrated, and <session> may hold a partial copy"), matching `repair`. New case in `hooks/lib/__tests__/migrate.test.ts`: a read-only session directory makes the copy fail with EACCES; it asserts exit 3, that message, no `backup.sha256` and an unchanged tree hash. The `bin/fusion-migrate` exit table already fits rows 3 and 9 and is unchanged.

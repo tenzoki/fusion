@@ -498,7 +498,10 @@ function run(wb, session) {
         ensureBackup(wb, session);
     }
     catch (e) {
-        throw new Stop(EXIT.backup, `${e.message}; nothing was repaired or migrated, and ${session} holds the copy that failed`);
+        // only a backup that does not verify is exit 9; an I/O error while copying is a fault, as in `repair`
+        if (e instanceof BackupUnverified)
+            throw new Stop(EXIT.backup, `${e.message}; nothing was repaired or migrated, and ${session} holds the copy that failed`);
+        throw new Stop(EXIT.fault, `backing up the workbench failed: ${e.message}; nothing was migrated, and ${session} may hold a partial copy`);
     }
     const sv = survey(wb);
     let n = 1;

@@ -109,6 +109,21 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
     }
   }, CASE_TIMEOUT);
 
+  // issue 261022-1806: a copy that cannot be written is a fault, not a backup that does not verify
+  it("an I/O error while run copies the backup is exit 3 with its message, never the backup's exit 9", () => {
+    const { root, wb, home } = project();
+    const session = join(home, "s");
+    mkdirSync(session);
+    chmodSync(session, 0o555);
+    const before = treeHash(wb);
+    try {
+      const r = mig(root, home, "run", "--session", session);
+      expect([r.status, r.stderr, existsSync(join(session, "backup.sha256")), treeHash(wb)]).toEqual([3, expect.stringMatching(/backing up the workbench failed: EACCES.*may hold a partial copy/), false, before]);
+    } finally {
+      chmodSync(session, 0o755);
+    }
+  }, CASE_TIMEOUT);
+
   it("takes the person from git's first add, through a staged rename too, else carries it unknown with the reason, and run prints its reported lines before refusing", () => {
     const { root, wb, home } = project();
     const person = (cwd: string) => mig(cwd, home, "survey").stdout.split("\n").filter((l) => l.startsWith("derived=/filed_by/person"));
