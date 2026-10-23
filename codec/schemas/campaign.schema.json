@@ -343,7 +343,7 @@
     },
     "formation_package": {
       "type": "object",
-      "description": "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here. Its three metrics are signed, as on the formation candidate. failure_reason occurs on stale as well as failed (required on failed, admitted on stale, null on formed, admitting and admitted). baseline_hash is set by Dispatch; a successful completion clears it on the other formed packages while rebasing them, and a failure does not execute that branch (Prior's FJ00 response 2).",
+      "description": "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is named in codec/contract/prior-mapping.json state_mapping (every row confirmed, applied by no importer), not a field here. Its three metrics are signed, as on the formation candidate. failure_reason occurs on stale as well as failed (required on failed, admitted on stale, null on formed, admitting and admitted). baseline_hash is set by Dispatch; a successful completion clears it on the other formed packages while rebasing them, and a failure does not execute that branch (Prior's FJ00 response 2).",
       "additionalProperties": false,
       "required": ["accepted_revision", "base_revision", "baseline_hash", "dependencies", "estimated_size", "failure_reason", "id", "members", "reasons", "resources", "risk", "state", "validation_cost"],
       "properties": {

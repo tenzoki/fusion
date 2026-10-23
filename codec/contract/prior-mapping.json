@@ -38,7 +38,7 @@
     "import_stamps": "Every imported record carries provenance.source imported, the raw aggregate revision as a prior_revision, and the removed or split original fields verbatim in provenance.legacy_fields; an import never invents a value, an unmapped field or unknown enum value is a typed refusal."
   },
   "state_mapping": {
-    "description": "Proposed correspondence of packages.Package.State to a fusion.package/v1 status, from plan FJ00 step 6. The Package itself is always kept verbatim in campaign.formation.packages[]; these rows say which fusion package, if any, an importer would additionally create. Unknown values are never reduced to dropped.",
+    "description": "Confirmed correspondence of packages.Package.State to a fusion.package/v1 status, from plan FJ00 step 6. The Package itself is always kept verbatim in campaign.formation.packages[]; these rows say which fusion package, if any, an importer would additionally create. Unknown values are never reduced to dropped.",
     "rows": [
       {
         "prior_value": "formed",

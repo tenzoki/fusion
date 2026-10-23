@@ -12556,7 +12556,7 @@ var dependencies_default = {
   notes: [
     "An unmet condition blocks dispatch of the dependant; it changes no state on either side.",
     "legacy-completed never satisfies succeeded: it marks a done package imported without a bound evidence record.",
-    "Cycle detection runs over the whole depends_on graph of the workbench in two places (codec/src/cli/ops.ts): set-dependencies refuses a list that would close a cycle through the package it sets, and reconcile reports every cycle through a package in its scope. validate does not look for cycles. A cycle found later is reported, never silently cut."
+    "Cycle detection runs over the whole depends_on graph of the workbench in two places (codec/src/cli/ops.ts): set-dependencies refuses a list that would close a cycle through the package it sets, and reconcile reports, for each package id in sorted order that lies on a cycle no reported cycle passes through yet, the first cycle through it in edge order, and keeps those that pass through a package in its scope. So every package in its scope that lies on a cycle lies on a reported one, but a cycle whose packages earlier reported cycles already cover is not reported, so not all cycles are. validate does not look for cycles. A cycle found later is reported, never silently cut."
   ]
 };
 
@@ -13220,7 +13220,7 @@ var campaign_schema_default = {
     },
     formation_package: {
       type: "object",
-      description: "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here. Its three metrics are signed, as on the formation candidate. failure_reason occurs on stale as well as failed (required on failed, admitted on stale, null on formed, admitting and admitted). baseline_hash is set by Dispatch; a successful completion clears it on the other formed packages while rebasing them, and a failure does not execute that branch (Prior's FJ00 response 2).",
+      description: "packages.Package kept verbatim. Its state is Prior's vocabulary; the fusion package status it may correspond to is named in codec/contract/prior-mapping.json state_mapping (every row confirmed, applied by no importer), not a field here. Its three metrics are signed, as on the formation candidate. failure_reason occurs on stale as well as failed (required on failed, admitted on stale, null on formed, admitting and admitted). baseline_hash is set by Dispatch; a successful completion clears it on the other formed packages while rebasing them, and a failure does not execute that branch (Prior's FJ00 response 2).",
       additionalProperties: false,
       required: ["accepted_revision", "base_revision", "baseline_hash", "dependencies", "estimated_size", "failure_reason", "id", "members", "reasons", "resources", "risk", "state", "validation_cost"],
       properties: {
