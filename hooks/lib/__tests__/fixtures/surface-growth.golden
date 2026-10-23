@@ -33,16 +33,16 @@
   commit/SKILL.md 6119
   curate/SKILL.md 12587
   discuss/SKILL.md 15700
-  help/SKILL.md 16591
+  help/SKILL.md 16843
   memo/SKILL.md 6824
-  migrate/SKILL.md 29752
+  migrate/SKILL.md 29643
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6792
   setup/SKILL.md 16017
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 226632
+  total 226775
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
@@ -93,7 +93,7 @@
   legacy-import.test.ts 178
   legacy-repair.test.ts 100
   marker-format-lint.test.ts 163
-  migrate.test.ts 595
+  migrate.test.ts 727
   monitor-warnings-panel.test.ts 1315
   path-literal-lint.test.ts 325
   paths.test.ts 31
@@ -118,4 +118,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 25633
+  total 25765
