@@ -550,7 +550,7 @@ function run(wb: string, session: string): string[] {
   const previous = readState(session);
   if (previous) current(wb, session, previous);
   if (previous?.done && !previous.rolled_back) return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: the session records this migration as verified"];
-  if (previous && !previous.rolled_back) throw new Stop(EXIT.precondition, `a run of ${previous.migration_id} is recorded in ${session}; \`resume\` finishes it or \`rollback\` undoes it`);
+  if (previous && !previous.rolled_back) throw new Stop(EXIT.precondition, `a run of ${previous.migration_id} is recorded in ${session}; ${command(wb, session, "resume")} finishes it or ${command(wb, session, "rollback")} undoes it`);
   const lines = preconditions(wb, session);
   try {
     ensureBackup(wb, session);

@@ -319,6 +319,10 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     const cut = spawnSync(join(plugin, "bin", "fusion-migrate"), ["run", "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
     kill(null);
     expect([cut.status, commands(cut.stderr).length > 0, commands(cut.stderr).filter((c) => !c.endsWith(` --session ${session}\``))], cut.stderr).toEqual([7, true, []]);
+
+    // A second run over the cut session refuses with "a run of ... is recorded"; its resume and rollback carry the flag too.
+    const again = spawnSync(join(plugin, "bin", "fusion-migrate"), ["run", "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    expect([again.status, again.stderr.includes("is recorded in"), commands(again.stderr).length, commands(again.stderr).filter((c) => !c.endsWith(` --session ${session}\``))], again.stderr).toEqual([5, true, 2, []]);
   }, 4 * CASE_TIMEOUT);
 
   // Resume, rollback and run refuse without a write, and set-aside --consent is the way out; Step 7's route over this tree is store-name-migration.test.ts case (i).

@@ -100,8 +100,9 @@
 #   5  a precondition refused, named on stderr.
 #   6  blocking findings remain, or a repair was not applied (no consent, an
 #      unanswered question, a file changed).
-#   7  an outcome is unknown: the codec gave no answer. `resume` (or
-#      `rollback`) sends the same request again.
+#   7  an outcome is unknown: the codec gave no answer. Nothing is lost;
+#      `resume` (or `rollback`, if that was the command), with the same
+#      --session, sends the same request again, and stderr names both.
 #   8  the codec refused a request; its class and reason are on stderr.
 #   9  the backup does not verify; nothing was repaired or restored.
 #
