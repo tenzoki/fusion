@@ -13,3 +13,6 @@ Two refusal texts in `hooks/migrate.ts` spell a full `bin/fusion-migrate …` co
 **Fix direction:** route both texts through `command(wb, session, …)`. For `send`, which has no session, pass it in or let the caller word the retry. Exit codes stay unchanged.
 
 **Acceptance test:** a `migrate.test.ts` case runs `run`/`rollback` with a non-default `--session <dir>` into (1) a refused first rollback chunk with no work since the plan (the existing refused-first-chunk construction) and (2) an exit-7 cut (the existing `killPlugin()` rule). It expects each stderr to name `--session <dir>` in every `bin/fusion-migrate` command it spells. Running the named command then gets past `recorded`.
+
+---
+Resolved: `refusedFirstChunk` builds both rollback commands with `command(wb, session, …)`; `send` ends its unknown-outcome text at "Nothing is lost" and `main` appends the retry through `command(wb, session, "resume")` / `"rollback"` on exit 7. New `migrate.test.ts` case under a non-default `--session` was red before, green after; full hook suite green. Not covered here: the "a run of … is recorded in …" message of `run` still names `resume`/`rollback` bare, and the `bin/fusion-migrate` header comment keeps the old retry wording.

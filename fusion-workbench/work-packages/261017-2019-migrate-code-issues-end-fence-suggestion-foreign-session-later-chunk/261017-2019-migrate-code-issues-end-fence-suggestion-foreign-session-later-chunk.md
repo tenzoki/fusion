@@ -42,4 +42,4 @@ The plan's `## Where this work stops` clauses were not put to the user: under mo
 14. The tag `v13.3.2` is on the pushed fusion `main` commit, and the fusion push happened before the marketplace push.
 15. After both pushes, the marketplace cache clone has been pulled.
 
-Left open: `issues/261023-1403-migrate-unknown-outcome-and-refused-first-chunk-messages-spell-commands-without-the-session-flag.md` (Low, pre-existing, filed by the closing review) and `issues/261017-2028-migrate-repair-apply-and-restore-backup-use-a-session-recorded-for-another-workbench-path.md` (out of this plan's scope).
+Left open: `261023-1403-migrate-unknown-outcome-and-refused-first-chunk-messages-spell-commands-without-the-session-flag.md` (Low, pre-existing, filed by the closing review) and `261017-2028-migrate-repair-apply-and-restore-backup-use-a-session-recorded-for-another-workbench-path.md` (out of this plan's scope).

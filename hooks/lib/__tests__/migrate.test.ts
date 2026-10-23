@@ -303,6 +303,24 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect([done.status, value(done.stdout, "result"), existsSync(join(wb, "workbench.json"))], done.stderr).toEqual([0, "json-control", true]);
   }, 4 * CASE_TIMEOUT);
 
+  it("under a non-default --session, a refused first rollback chunk and an exit-7 cut name that --session in every command they spell (issue 261023-1403)", () => {
+    const commands = (stderr: string) => stderr.match(/`bin\/fusion-migrate [^`]*`/g) ?? [];
+    const edited = project();
+    const own = join(edited.home, "own");
+    expect(mig(edited.root, edited.home, "run", "--session", own).status).toBe(0);
+    writeFileSync(join(edited.wb, BENCH), `${read(edited.wb, BENCH)}\nA hand edit, no codec operation.\n`);
+    const refused = mig(edited.root, edited.home, "rollback", "--session", own);
+    expect([refused.status, refused.stderr.includes("stands"), commands(refused.stderr).length > 0, commands(refused.stderr).filter((c) => !c.endsWith(` --session ${own}\``))], refused.stderr).toEqual([8, true, true, []]);
+
+    const { plugin, kill } = killPlugin();
+    const { root, home } = project();
+    const session = join(home, "own");
+    kill({ phase: "apply", chunk: 1 });
+    const cut = spawnSync(join(plugin, "bin", "fusion-migrate"), ["run", "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill(null);
+    expect([cut.status, commands(cut.stderr).length > 0, commands(cut.stderr).filter((c) => !c.endsWith(` --session ${session}\``))], cut.stderr).toEqual([7, true, []]);
+  }, 4 * CASE_TIMEOUT);
+
   // Resume, rollback and run refuse without a write, and set-aside --consent is the way out; Step 7's route over this tree is store-name-migration.test.ts case (i).
   it("a done session over a tree reset with git: resume, rollback and run refuse it unchanged, set-aside --consent moves it aside, and run then migrates (issue 261015-2223)", () => {
     const { root, wb, home } = project();

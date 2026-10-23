@@ -141,11 +141,11 @@ const say = (line: string): void => void process.stderr.write(`fusion-migrate: $
 
 // --- the codec ---------------------------------------------------------------------
 
-/** One request; a refusal or no answer stops the run with the code a caller acts on. */
+/** One request; a refusal or no answer stops the run with the code a caller acts on. `main` words the retry of an unanswered one, as only it knows the session. */
 function send(wb: string, request: CodecRequest): Record<string, any> {
   const a = ask(wb, request);
   const what = `${request.op}${request.phase ? ` ${request.phase}` : ""}${request.chunk !== undefined ? ` chunk ${request.chunk}` : ""}${request.action ? ` ${request.action}` : ""}`;
-  if (a.kind === "unanswered") throw new Stop(EXIT.unknown, `the outcome of ${what} (operation ${String(request.operation_id ?? "-")}) is unknown: ${a.detail}. Nothing is lost; \`bin/fusion-migrate resume\` (or \`rollback\`, if that was the command) sends the same request again.`);
+  if (a.kind === "unanswered") throw new Stop(EXIT.unknown, `the outcome of ${what} (operation ${String(request.operation_id ?? "-")}) is unknown: ${a.detail}. Nothing is lost`);
   if (a.kind === "refused") throw new Stop(EXIT.refused, `${what} refused: ${a.class}/${a.reason}${a.detail ? `: ${a.detail}` : ""}`);
   return a.result as Record<string, any>;
 }
@@ -647,7 +647,7 @@ function refusedFirstChunk(wb: string, session: string, s: State, refusal: Stop)
   const fence = s.rollback!.begin_id;
   const work = workSincePlan(wb, s);
   if (work === null || work.length === 0) {
-    return new Stop(EXIT.refused, `${refusal.message}. The fence ${fence} this rollback began stands, so the store takes no writes. ${work === null ? "The plan's baseline could not be read, so whether work since the plan blocks this rollback is undecided" : "No operation stored since the plan blocks this rollback, so a retry or a restore clears this refusal"}: put back what it names and run \`bin/fusion-migrate rollback\` again, or run \`bin/fusion-migrate rollback --end-fence\` to end the fence and stay under JSON control, after which the codec refuses every later rollback of this migration`);
+    return new Stop(EXIT.refused, `${refusal.message}. The fence ${fence} this rollback began stands, so the store takes no writes. ${work === null ? "The plan's baseline could not be read, so whether work since the plan blocks this rollback is undecided" : "No operation stored since the plan blocks this rollback, so a retry or a restore clears this refusal"}: put back what it names and run ${command(wb, session, "rollback")} again, or run ${command(wb, session, "rollback --end-fence")} to end the fence and stay under JSON control, after which the codec refuses every later rollback of this migration`);
   }
   try {
     endRollbackFence(wb, session, s);
@@ -914,15 +914,21 @@ function main(argv: string[]): number {
   if (!lstatSync(given).isDirectory()) throw new Stop(EXIT.usage, `${given} is not a directory`);
   const wb = realpathSync(given);
   const session = sessionDir(wb, flags.get("--session")?.[0]);
-  const lines =
-    sub === "survey" ? surveyOut(wb, session)
-    : sub === "repair" ? repair(wb, session, flags)
-    : sub === "run" ? run(wb, session)
-    : sub === "resume" ? resumeRun(wb, session)
-    : sub === "rollback" ? rollback(wb, session, flags.has("--end-fence"))
-    : sub === "restore-backup" ? restoreBackup(wb, session, flags.has("--consent"))
-    : sub === "set-aside" ? setAside(wb, session, flags.has("--consent"))
-    : status(wb, session);
+  let lines: string[];
+  try {
+    lines =
+      sub === "survey" ? surveyOut(wb, session)
+      : sub === "repair" ? repair(wb, session, flags)
+      : sub === "run" ? run(wb, session)
+      : sub === "resume" ? resumeRun(wb, session)
+      : sub === "rollback" ? rollback(wb, session, flags.has("--end-fence"))
+      : sub === "restore-backup" ? restoreBackup(wb, session, flags.has("--consent"))
+      : sub === "set-aside" ? setAside(wb, session, flags.has("--consent"))
+      : status(wb, session);
+  } catch (e) {
+    if (e instanceof Stop && e.code === EXIT.unknown) throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, "resume")} (or ${command(wb, session, "rollback")}, if that was the command) sends the same request again.`);
+    throw e;
+  }
   out(lines);
   return EXIT.done;
 }
