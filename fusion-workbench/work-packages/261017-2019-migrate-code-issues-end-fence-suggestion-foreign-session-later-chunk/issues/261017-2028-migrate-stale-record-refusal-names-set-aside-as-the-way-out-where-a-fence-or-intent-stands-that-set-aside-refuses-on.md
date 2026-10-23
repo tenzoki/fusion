@@ -16,3 +16,6 @@
 **Reach.** Each refusal is accurate and writes nothing; only the way out named is wrong. Cell D needs a foreign fence begun after a migration, then a reset.
 
 **Acceptance.** No refusal from `current` names `set-aside --consent` while `standing(i)` holds, unless the same message first names a step that ends what stands, and that step's own checks pass on the record it names. Cell D's `run` refusal is pinned by a test.
+
+---
+Resolved: 2026-10-23 by code-implementer (plan 261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md, steps 5 and 6). `current` in `hooks/migrate.ts` names `set-aside --consent` only where nothing stands, or after an end-fence step that `endFenceEnds` admits; for a fence this record did not begin it says that set-aside refuses while the fence stands and points to `status`. Cell D reproduced red before the fix and is pinned in `hooks/lib/__tests__/migrate.test.ts` by "cell D: run, resume and rollback name no set-aside --consent while the fence stands, and set-aside refuses".

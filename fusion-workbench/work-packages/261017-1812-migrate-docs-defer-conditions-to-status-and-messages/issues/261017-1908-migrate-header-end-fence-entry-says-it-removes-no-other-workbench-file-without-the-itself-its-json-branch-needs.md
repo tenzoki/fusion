@@ -16,3 +16,6 @@ The 13.1.12 `bin/fusion-migrate` header says of `rollback --end-fence`: "It ends
 **Fix direction.** Add "itself" to the header sentence: "It ends no other fence and itself removes no other file of the workbench". No new path, anchor or stamp token, so `reference-resolution-lint` stays at its `BASELINE`. Comment line only. No code change.
 
 **Acceptance.** The header's removal claim for `rollback --end-fence` carries the same "itself" qualifier as the README row and the Undo paragraph, and `bin/fusion-migrate` differs only in that comment line.
+
+---
+Resolved: 2026-10-23 by code-implementer (plan 261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md, step 7). The `rollback --end-fence` entry of the `bin/fusion-migrate` header now reads "It ends no other fence and itself removes no other file of the workbench"; the three comment lines after it are rewrapped to the header width, wording otherwise unchanged.

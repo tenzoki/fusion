@@ -56,10 +56,10 @@
  * recorded id; an unknown outcome is answered by the same id, never a fresh
  * one. Every request names the workbench by its `realpath`, because the codec
  * rebuilds the exempt `maintenance` requests from that spelling (W5). The
- * session is keyed by machine and path, not by tree: a record whose last write
- * the tree does not carry (`stale`) is refused by `run`, `resume` and
- * `rollback`, and `set-aside --consent` renames its directory aside, never
- * while a fence or pending intent stands that `run` would refuse on.
+ * session is keyed by machine and path, not by tree. `set-aside --consent`
+ * renames no record that reads as current and nothing while the codec reports
+ * a fence or an intent; which subcommand refuses a record `stale` reads as
+ * stale is said by its message.
  *
  * ## Ending a fence over a legacy tree
  *

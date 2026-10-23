@@ -18,3 +18,6 @@ The last sentence of `## The session` in the `hooks/migrate.ts` header comment s
 **Fix direction.** Cut the sentence down to what holds on every path, as the 13.1.12 docs do: `set-aside` renames no record that reads as current and nothing while the codec reports a fence or an intent; refusals are the messages'. The comment is in a compiled entry, so `hooks/dist/migrate.js` is rebuilt and `committed-dist` must stay green. That is why the 13.1.12 package, which changes no code file, leaves it.
 
 **Acceptance.** No sentence of the `hooks/migrate.ts` header claims that `run`, `resume` and `rollback` refuse every stale record, and `hooks/dist/migrate.js` matches its build.
+
+---
+Resolved: 2026-10-23 by code-implementer (plan 261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md, step 7). The last sentence of the `hooks/migrate.ts` header section `## The session` now reads "The session is keyed by machine and path, not by tree. `set-aside --consent` renames no record that reads as current and nothing while the codec reports a fence or an intent; which subcommand refuses a record `stale` reads as stale is said by its message." Header comment only; `hooks/dist/migrate.js` rebuilt.

@@ -17,3 +17,6 @@ The `bin/fusion-migrate` header's exit table says of 5 "Nothing was written by t
 **Fix direction.** Say what holds: no workbench file was written by the call (the session backup aside). Or drop the clause and leave it to the messages, most of which already say what they did not write. Keep new words unbackticked. No code change. The 13.1.12 package (`261017-1823-plan-migrate-docs-defer-conditions-to-status-and-messages.md`) cuts the refusal list on the exit-5 line but leaves this sentence unchanged, so it can be decided on its own.
 
 **Acceptance.** Neither the exit-5 line nor the exit-6 line claims that nothing was written where `run` has written the session backup.
+
+---
+Resolved: 2026-10-23 by code-implementer (plan 261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md, step 7). The exit table of `bin/fusion-migrate` drops the clause: exit 5 reads "a precondition refused, named on stderr." and exit 6 ends after "a file changed).", so neither line claims that nothing was written. Comment lines only; `bash -n bin/fusion-migrate` exits 0 and the usage block is unchanged.

@@ -16,3 +16,6 @@
 **Fix direction.** Either the skill sentence stops promising a way out ("shows what stderr says about the fence"), which is a cut, or the message names one. The skill stands at 28 997 bytes against its 29 000 cap, so the wording must not grow. Not part of 13.1.12.
 
 **Acceptance.** No sentence of `skills/migrate/SKILL.md` promises a way out for an exit-8 rollback where the message names none, and the skill does not grow.
+
+---
+Resolved: 2026-10-23 by code-implementer (plan 261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md, step 7). The last sentence of `**Interrupted.**` in `skills/migrate/SKILL.md` is cut to "On a `rollback` refused with exit 8, show its stderr and ask how to go on.", which promises no way out; the file shrank from 29 752 to 29 643 bytes.

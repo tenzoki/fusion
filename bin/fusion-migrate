@@ -67,10 +67,10 @@
 #                   as legacy Markdown again (a git reset is one way there),
 #                   where the codec cannot, by removing
 #                   .json-state/maintenance.json itself. It ends no other
-#                   fence and removes no other file of the workbench, and it
-#                   removes that one only where no rollback chunk of the
-#                   record is stored. Whether the file may be deleted by hand
-#                   is said only by the helper's own message.
+#                   fence and itself removes no other file of the workbench,
+#                   and it removes that one only where no rollback chunk of
+#                   the record is stored. Whether the file may be deleted by
+#                   hand is said only by the helper's own message.
 #   restore-backup  the pre-repair backup back over a legacy store with no
 #                   fence and no plan files, checked by tree hash; .json-state/
 #                   stays. Never calls the codec.
@@ -81,8 +81,8 @@
 #                   nothing else; it renames no record that reads as current,
 #                   nothing while the codec reports a fence or a pending
 #                   intent, and nothing where the new name exists.
-#   status          where the recorded run stands, and with record= whether
-#                   the tree carries the record's last write.
+#   status          where the recorded run stands, and with record=stale that
+#                   the session's record and the tree disagree.
 #
 # Output on stdout, `KEY=value`, fields separated by a tab; every reason on
 # stderr, prefixed `fusion-migrate:`.
@@ -97,9 +97,9 @@
 #      ownership, killed) is an exit 3 naming the call and the reason.
 #   4  Node is missing or older than codec/package.json's engines; nothing
 #      was read or written.
-#   5  a precondition refused, named on stderr. Nothing was written by this call.
+#   5  a precondition refused, named on stderr.
 #   6  blocking findings remain, or a repair was not applied (no consent, an
-#      unanswered question, a file changed); nothing was written.
+#      unanswered question, a file changed).
 #   7  an outcome is unknown: the codec gave no answer. `resume` (or
 #      `rollback`) sends the same request again.
 #   8  the codec refused a request; its class and reason are on stderr.

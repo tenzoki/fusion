@@ -17,3 +17,6 @@ The `bin/fusion-migrate` header's `status` entry was not changed in 13.1.12. It 
 **Fix direction.** Word the entry in the direction `stale` decides, for example: "where the recorded run stands, and with record=stale that the session's record and the tree disagree." Keep the new words unbackticked so `reference-resolution-lint` stays at its `BASELINE`. Comment line only.
 
 **Acceptance.** No text in the `bin/fusion-migrate` header says that `record=current` means the tree carries the record's last write, and the `status` entry uses the same wording for `record=stale` as the README rows and the Undo paragraph.
+
+---
+Resolved: 2026-10-23 by code-implementer (plan 261017-2030-plan-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk.md, step 7). The `status` entry of the `bin/fusion-migrate` header now reads "where the recorded run stands, and with record=stale that the session's record and the tree disagree.", so no header text reads `record=current` as the tree carrying the last write. Comment lines only.

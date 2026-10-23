@@ -300,7 +300,7 @@ describe("Step 7 as shipped: the survey block routes every cell of session by st
     expect(text).not.toContain('"$M"'); expect(text).not.toContain("Set `M=");
     const step7 = text.split("## Step 7")[1].split("## Guardrails")[0];
     expect(step7.match(/run `(survey|repair|run|resume|rollback|status|set-aside)\b[^`]*`/gi)).toBeNull();
-    expect(step7.split("**Interrupted.**")[1].split("\n")[0]).toContain("the same helper");
+    expect(step7.split("**Interrupted.**")[1].split("\n")[0]).toContain('"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" rollback');
     const step1 = extractBashBlock(text, "## Step 1 — Locate the workbench");
     expect(step1).toContain('cd "$ROOT"'); expect(text.split(step1).join("")).not.toContain("$ROOT");
   });
