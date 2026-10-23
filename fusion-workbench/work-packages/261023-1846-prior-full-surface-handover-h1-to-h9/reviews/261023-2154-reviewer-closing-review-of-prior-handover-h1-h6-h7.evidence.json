@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "4503fa03-fd5a-4cef-8e74-2a0ebc3659d6",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "5353ea19ba0dd0e47fd6972c224d81711004178a",
+    "git_range": null
+  },
+  "brief_revision": "sha256:493120f62f607217eabbcb56384ae6efc365c9b02041279480508c651e17c8af",
+  "plan_revision": "sha256:99be3b57d363731f804f2bb8b117e7e0e7f402cd0c68df42adfd6a689b74b1f3",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.3"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/reviews/261023-2154-reviewer-closing-review-of-prior-handover-h1-h6-h7.md",
+    "sha256": "sha256:0a7be7f7132a1563c2470cc7dd3700fd03f06c82255060d3685d71f7a4dc4c8b",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-23T19:56:40Z",
+  "extensions": {}
+}

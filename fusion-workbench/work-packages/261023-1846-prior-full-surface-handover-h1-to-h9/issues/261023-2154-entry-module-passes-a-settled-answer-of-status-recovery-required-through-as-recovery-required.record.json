@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5bcd421e-25ef-4509-8676-dd4c4977b43b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/issues/261023-2154-entry-module-passes-a-settled-answer-of-status-recovery-required-through-as-recovery-required.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
