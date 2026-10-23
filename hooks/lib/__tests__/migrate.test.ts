@@ -581,6 +581,88 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([fresh.status, value(fresh.stdout, "result")], fresh.stderr).toEqual([0, "json-control"]);
     expect(readFileSync(join(value(mig(moved, mhome, "status").stdout, "session")!, "backup.sha256"), "utf-8").trim()).toBe(tree);
   }, 4 * CASE_TIMEOUT);
+
+  // A refusal names `rollback --end-fence` as ending a fence, or `set-aside --consent` as a way out, only where that command acts; every case runs the old suggestion and sees it refuse, the fence byte-identical.
+  const endsIt = /--end-fence(?: --session \S+)?` ends it/;
+  const named = (r: { stderr: string }) => [endsIt.test(r.stderr), r.stderr.includes("`bin/fusion-migrate status")];
+
+  // `261017-1708-migrate-messages-name-end-fence-as-ending-a-fence-it-then-refuses-to-end.md`: cell C's project moved on disk; rollback --end-fence refuses the session at its recorded path.
+  it("a moved session over its own idle fence: set-aside and run name no end-fence, run no set-aside, and rollback --end-fence refuses", () => {
+    const { root, wb, session, fence } = cellC();
+    const moved = `${root}-moved`;
+    renameSync(root, moved);
+    const [mwb, ms] = [join(moved, "fusion-workbench"), `${moved}${session.slice(root.length)}`];
+    const at = (...a: string[]) => mig(moved, join(moved, "home"), ...a, "--session", ms);
+    const aside = at("set-aside", "--consent");
+    const run = at("run");
+    const end = at("rollback", "--end-fence");
+    expect([aside.status, ...named(aside), run.status, ...named(run), run.stderr.includes("set-aside --consent"), end.status, end.stderr.includes(`records ${wb}`), existsSync(ms), read(mwb, FENCE)], `${aside.stderr}${run.stderr}`).toEqual([5, false, true, 5, false, true, false, 5, true, true, fence]);
+  }, 6 * CASE_TIMEOUT);
+
+  /** Cell A (rollback cut after chunk 2), or a rollback left with chunk 2's intent pending and the tree reset; the session is then set aside by hand. */
+  function asideSibling(pending: boolean): { root: string; wb: string; home: string; aside: string; fence: string } {
+    const { plugin, kill } = killPlugin();
+    const { root, wb, home } = project();
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), a, { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
+    kill(null);
+    expect(cut("run").status).toBe(0);
+    const session = value(cut("status").stdout, "session")!;
+    const s = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
+    if (pending) {
+      [["add", "-A"], ["commit", "-qm", "migrated"]].forEach((a) => git(root, ...a));
+      const writes = JSON.parse(read(wb, `archive/migrations/${s.migration_id}/chunks/2.json`)).writes as { kind: string; path: string }[];
+      const dir = join(wb, dirname(writes.find((w) => w.kind === "control")!.path));
+      chmodSync(dir, 0o555);
+      const r = cut("rollback");
+      chmodSync(dir, 0o755);
+      const chunk2 = s.schedule.rollback.find((x: { chunk: number }) => x.chunk === 2).operation_id;
+      expect([r.status, existsSync(join(wb, ".json-state/journal", chunk2))], r.stderr).toEqual([7, true]);
+      expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
+    } else {
+      kill({ phase: "rollback", chunk: 2 });
+      expect(cut("rollback").status).toBe(7);
+      kill(null);
+    }
+    const aside = `${session}.stale-20261017T000000Z`;
+    renameSync(session, aside);
+    return { root, wb, home, aside, fence: read(wb, FENCE) };
+  }
+
+  // `261017-1708-migrate-messages-name-end-fence-as-ending-a-fence-it-then-refuses-to-end.md`: the sibling run's refusal names reads as current, and rollback --end-fence refuses on it.
+  it("a set-aside sibling that reads as current: run names no end-fence, and rollback --end-fence refuses on it", () => {
+    const { root, wb, home, aside, fence } = asideSibling(false);
+    expect(value(mig(root, home, "status", "--session", aside).stdout, "record")).toBe("current");
+    const run = mig(root, home, "run");
+    const end = mig(root, home, "rollback", "--end-fence", "--session", aside);
+    expect([run.status, ...named(run), end.status, read(wb, FENCE)], `${run.stderr}${end.stderr}`).toEqual([5, false, true, 5, fence]);
+  }, 4 * CASE_TIMEOUT);
+
+  // `261017-1708-migrate-messages-name-end-fence-as-ending-a-fence-it-then-refuses-to-end.md`: the sibling's rollback left an intent pending before the reset.
+  it("a set-aside sibling with an intent pending: run names no end-fence, and rollback --end-fence refuses on it", () => {
+    const { root, wb, home, aside, fence } = asideSibling(true);
+    const run = mig(root, home, "run");
+    const end = mig(root, home, "rollback", "--end-fence", "--session", aside);
+    expect([run.status, ...named(run), end.status, read(wb, FENCE)], `${run.stderr}${end.stderr}`).toEqual([5, false, true, 5, fence]);
+  }, 4 * CASE_TIMEOUT);
+
+  // `261017-2028-migrate-stale-record-refusal-names-set-aside-as-the-way-out-where-a-fence-or-intent-stands-that-set-aside-refuses-on.md`: cell D's refusals name no set-aside, which refuses while the foreign fence stands.
+  it("cell D: run, resume and rollback name no set-aside --consent while the fence stands, and set-aside refuses", () => {
+    const { root, wb, home } = project();
+    writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
+    expect(mig(root, home, "run").status).toBe(0);
+    [["add", "-A"], ["commit", "-qm", "migrated"]].forEach((a) => git(root, ...a));
+    const begin = spawnSync(resolve(REPO_ROOT, "bin", "fusion-record"), [], { cwd: wb, encoding: "utf-8", env: { PATH, HOME: home }, input: JSON.stringify({ op: "maintenance", operation_id: randomUUID(), action: "begin" }) });
+    expect(begin.status, begin.stdout + begin.stderr).toBe(0);
+    const fence = read(wb, FENCE);
+    expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
+    for (const sub of ["run", "resume", "rollback"]) {
+      const r = mig(root, home, sub);
+      expect([sub, r.status, ...named(r), r.stderr.includes("set-aside --consent"), read(wb, FENCE)], r.stderr).toEqual([sub, 5, false, true, false, fence]);
+    }
+    const session = value(mig(root, home, "status").stdout, "session")!;
+    expect([mig(root, home, "set-aside", "--consent").status, existsSync(session), read(wb, FENCE)]).toEqual([5, true, fence]);
+  }, 4 * CASE_TIMEOUT);
 });
 
 // Package 261019-0906: a legacy workbench holding no record migrates as one chunk with no write, and the record a refused plan left has two ways out.
