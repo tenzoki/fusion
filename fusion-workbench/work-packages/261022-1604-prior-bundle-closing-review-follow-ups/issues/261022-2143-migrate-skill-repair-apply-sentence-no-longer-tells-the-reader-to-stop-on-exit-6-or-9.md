@@ -27,3 +27,5 @@ Code-implementer. One instruction covering all three exits, for example "Exit 6 
 
 - The sentence gives exits 6, 9 and 3 each the instruction to report and stop.
 - `cd hooks && npm test` green, the growth bounds included.
+
+Resolved: 2026-10-23 by code-implementer (plan 261022-2234-plan-four-issues-left-by-the-prior-follow-ups.md step 3). `skills/migrate/SKILL.md`: the `repair --apply` sentence now reads "Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired; exit 3 is any other fault, named on stderr, and a file may already be written: report whichever it is and stop.", so all three exits carry the instruction and exit 3 says what `repair` in `hooks/migrate.ts` marks it as. With the user's approval of the plan's Open Question 4, the `**Run.**` sentence now reads "Exit 5, 8, 9 or 3: show the reason and stop.", since after step 2 `run` exits 9 for an unverified backup and 3 for any other backup fault. `hooks/lib/__tests__/fixtures/surface-growth.golden` regenerated; no baseline or head-room constant changed; `cd hooks && npm test` exit 0.

@@ -198,7 +198,7 @@ S="$("$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status)"; E=$?; printf '%s\n' "$S"
 > 1. Apply this repair.
 > 2. Skip it: the migration stays blocked until it is fixed.
 
-Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired; exit 3 is any other fault, named on stderr: report it and stop. After each applied repair run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
+Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding> --value <key>=<answer> … --consent`, one `--value` per answer. Exit 6 means it was not applied (stderr says why); exit 9 means the backup did not verify and nothing was repaired; exit 3 is any other fault, named on stderr, and a file may already be written: report whichever it is and stop. After each applied repair run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --list` again, because a finding's id binds its file's bytes, and put the next one. On 2, stop.
 
 **The question to migrate.** When the four cut rows (`package-live`, `package-terminal`, `record-live`, `record-closure`) are all 0, say no record is converted: terminal records stay as they are, nothing is rewritten, and the run writes its frozen plan, its receipt and the manifest. Once `blocking=0`, say first: *every installation that writes this workbench must be on 13.0.0 or later before it writes again (13.2.0 to roll back or re-run a migration that converts no record); nothing detects a checkout that does not update.* Then ask once:
 
@@ -206,7 +206,7 @@ Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" repair --apply <finding
 > 1. Migrate now.
 > 2. Not now: nothing changes, and `/fusion:migrate` can run again at any time.
 
-**Run.** Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" run`. Show every `reported=`, `untracked=` and `ignored=` line, then the receipt (`verified=`, `migrated=`). `result=no-op` means it had already run and nothing was sent. Exit 6 means a finding came back: return to the repairs. Exit 5 or 8: show the reason and stop.
+**Run.** Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" run`. Show every `reported=`, `untracked=` and `ignored=` line, then the receipt (`verified=`, `migrated=`). `result=no-op` means it had already run and nothing was sent. Exit 6 means a finding came back: return to the repairs. Exit 5, 8, 9 or 3: show the reason and stop.
 
 **Interrupted.** On exit 7, or `ROUTE=interrupted`, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status` and ask: 1. continue (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" resume`), 2. undo (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done. A `rollback` refused with exit 8 says on stderr whether its fence stands and, if so, the way out (the same helper's `rollback` again or `rollback --end-fence`): show it and ask which.
 
