@@ -1,0 +1,65 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "b49d6666-63a0-4d1d-bde0-1d4fef0a86e9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "open",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "package",
+    "ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "0a501ca7-aaa5-4867-882c-947aabd9612d"
+    }
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/261023-1915-prior-handover-f-release-and-request-76.md"
+  },
+  "depends_on": [
+    {
+      "target": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "0a501ca7-aaa5-4867-882c-947aabd9612d"
+      },
+      "condition": "terminal"
+    },
+    {
+      "target": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "62168220-9db5-46e8-8bb9-c0be22e895d1"
+      },
+      "condition": "terminal"
+    },
+    {
+      "target": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "4cc6a058-1397-4820-82e7-b67d64ad2322"
+      },
+      "condition": "terminal"
+    },
+    {
+      "target": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "ceb3b13f-44bf-44f7-a563-311f39a66774"
+      },
+      "condition": "terminal"
+    }
+  ],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

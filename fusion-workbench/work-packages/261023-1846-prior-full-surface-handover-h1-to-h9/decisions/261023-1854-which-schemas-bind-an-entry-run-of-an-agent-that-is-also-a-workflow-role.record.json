@@ -1,0 +1,30 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e3162c07-8578-4c18-81e0-c80f31ad5eab",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role.md",
+      "sha256": "sha256:34281a20bc312080611753bb5088ed3c130ba6a2f27bb2c9d26bf7c51369141d",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

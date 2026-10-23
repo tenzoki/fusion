@@ -25,7 +25,16 @@
     "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/261023-1846-prior-full-surface-handover-h1-to-h9.md"
   },
   "depends_on": [],
-  "active_documents": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "8307709c-61d6-4dc1-8cd8-861794214c5d"
+      },
+      "role": "plan",
+      "revision": "sha256:99be3b57d363731f804f2bb8b117e7e0e7f402cd0c68df42adfd6a689b74b1f3"
+    }
+  ],
   "references": [],
   "evidence": [],
   "outcome": null,

@@ -1,0 +1,30 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "3de8b429-c97e-4199-bd6a-874d2b405353",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-how-does-a-skill-become-a-profile-when-its-body-carries-claude-mechanics.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-how-does-a-skill-become-a-profile-when-its-body-carries-claude-mechanics.md",
+      "sha256": "sha256:fa79850dac894214a4038e851ed3cb0dc727115cc66bde8b0a81032ad4847780",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

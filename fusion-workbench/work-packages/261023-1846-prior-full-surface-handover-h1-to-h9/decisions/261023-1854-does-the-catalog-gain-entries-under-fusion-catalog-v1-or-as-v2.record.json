@@ -1,0 +1,30 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "65e8c909-3d4a-47cb-a264-aefe508c1ca4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md",
+      "sha256": "sha256:3250e76b9a565e29570b255f4540f6c87ee955649812cc3e6b5204b3d4c8887e",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

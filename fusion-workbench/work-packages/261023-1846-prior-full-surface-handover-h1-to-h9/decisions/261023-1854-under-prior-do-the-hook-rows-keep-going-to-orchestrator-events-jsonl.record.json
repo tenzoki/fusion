@@ -1,0 +1,30 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0fae5ccd-aab6-4227-88c7-ec60da2f5415",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-under-prior-do-the-hook-rows-keep-going-to-orchestrator-events-jsonl.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/decisions/261023-1854-under-prior-do-the-hook-rows-keep-going-to-orchestrator-events-jsonl.md",
+      "sha256": "sha256:bcb8b28e365d47cdb1da63156bb2e3ef3f0f1fad19804fc5d4a6cfff640951be",
+      "kind": "decision"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
