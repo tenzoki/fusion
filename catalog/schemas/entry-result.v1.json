@@ -1,0 +1,169 @@
+{
+  "$id": "urn:fusion:schema:fusion.entry-result/v1",
+  "title": "fusion.entry-result/v1",
+  "description": "fusion's proposal in request 76, not yet accepted by Prior: the result of the run step of fusion.entry.v1 and the module's envelope for the invocation, bound by workflows/entry.v1.json whatever the entry's profile declares (decision 261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role, option 1). status takes four values: completed, the run ended in success and every step after it completed; refused, the invocation, admission, an answer or a host step refused, with the reason in violations; recovery-required, a role or host effect is unknown or in flight, never a fabricated answer and never a terminal refusal written to end the run; ended, the run stopped, the user having ended the session through a question (Prior's question outcome ended) or by the stop the entry offers, which is neither a success nor an interruption that discards the workspace. ending is how the run ended in the class and reason form of Prior's fusion-surface comparison (internal/qualification/fusionsurface Ending), null only on recovery-required, which is no ending. questions are the run's host.question.v1 calls with their answers, in call order; commits the integration's commits; both are read from the host's receipts and copied, never composed by the model. Settlement is not acceptance: a settled run whose answer was refused stays settled, and a retry is a new invocation with a new workflow_id and run_id. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "ending", "questions", "commits", "violations"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["completed", "refused", "recovery-required", "ended"]
+    },
+    "ending": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "reason"],
+          "properties": {
+            "class": {
+              "description": "success, the role produced its final answer; refusal, the run or a step refused; stop, the run stopped before its final answer.",
+              "type": "string",
+              "enum": ["success", "refusal", "stop"]
+            },
+            "reason": {
+              "description": "A reason category, lowercase and hyphenated, such as stopped-by-user; never free model text.",
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
+          }
+        }
+      ]
+    },
+    "questions": {
+      "description": "One entry per host.question.v1 call of the run, in call order; empty when the run asked nothing.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["call_id", "question", "options", "channel", "outcome", "selected", "text"],
+        "properties": {
+          "call_id": {
+            "description": "The call's slot within the run.",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192
+          },
+          "options": {
+            "description": "The call's options; empty on the chat-text channel.",
+            "type": "array",
+            "maxItems": 16,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["ask-user-question", "chat-text"]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": ["answered", "no-terminal", "interrupted", "ended"]
+          },
+          "selected": {
+            "description": "The options chosen, each among options; empty unless outcome is answered on ask-user-question.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "text": {
+            "description": "The answer's text; empty unless outcome is answered.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "commits": {
+      "description": "The commits the integrate step put on the accepted reference, oldest first; empty when the capture was empty or the run did not reach integration.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["commit", "reference", "subject", "changes"],
+        "properties": {
+          "commit": {
+            "type": "string",
+            "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+          },
+          "reference": {
+            "description": "The accepted local reference the commit advanced.",
+            "type": "string",
+            "minLength": 1
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changes": {
+            "description": "One per changed path, \"<status>\\t<path>\" in git's name-status form, from the snapshot's changed_paths.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "violations": {
+      "description": "Why the answer is not completed; empty on completed.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "detail"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": { "type": "string" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "object", "properties": { "class": { "const": "success" } } },
+          "violations": { "type": "array", "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "refused" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "object", "properties": { "class": { "const": "refusal" } } },
+          "violations": { "type": "array", "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "ended" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "object", "properties": { "class": { "const": "stop" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "recovery-required" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "null" },
+          "violations": { "type": "array", "minItems": 1 }
+        }
+      }
+    }
+  ]
+}

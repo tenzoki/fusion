@@ -1,0 +1,100 @@
+{
+  "$id": "urn:fusion:schema:fusion.entry-request/v1",
+  "title": "fusion.entry-request/v1",
+  "description": "fusion's proposal in request 76, not yet accepted by Prior: the invocation input of fusion.entry.v1 and the role input of its run step, both bound by workflows/entry.v1.json whatever the entry's profile declares (decision 261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role, option 1). Composition is trusted host code: workflow_id is the host-minted identity of this invocation, which every host service call carries beside identity (request 69's common pair, and the binding of Prior's entry calls); run_id is the one host-provisioned run, revise_bound being 0; entry names the catalog entry and the profile the run takes its role from; arguments are the values admission checked against the entry's argument declaration; project_context is host-added as in the explorer role input. The host freezes the composed object through host.role.compose.v1 and the same bytes travel as RoleCall.input on every role call of the run. audit_ref is the host's recovery overlay: absent at preparation and in every frozen role input, set on a fresh outer operation after a recorded recovery, and sent by the module only as RoleCall.audit_ref to host.role.complete.v1. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workflow_id", "run_id", "entry", "arguments", "project_context"],
+  "properties": {
+    "workflow_id": {
+      "description": "Host-minted, the identity of this invocation; the operation id of every request-69 service call is derived from it.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
+    "run_id": {
+      "description": "The host-provisioned run; the module creates none. Bounded to 64 characters so that the role operation id, capability + \":\" + run_id, fits the SDK's limit.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
+    "entry": {
+      "description": "The catalog entry this run serves. id and kind equal the catalog entry's; profile equals its profile, the role the run step takes from the invocation. The module checks all three against the catalog before any call.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "profile"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,63}$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["agent", "skill"]
+        },
+        "profile": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "arguments": {
+      "description": "The admitted arguments, in the order given; each name is one the entry's argument declaration lists, which JSON Schema cannot state and admission checks (unknown-argument). A flag's value is the empty string, its presence being the flag. Empty when the entry was started without arguments.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "value"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "value": { "type": "string" }
+        }
+      }
+    },
+    "project_context": {
+      "description": "Host-added: the project instruction files the host selected, root AGENTS.md falling back to CLAUDE.md, empty when neither exists; the shape of the explorer role input's project_context.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instructions"],
+      "properties": {
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "text"],
+            "properties": {
+              "path": {
+                "description": "Repository-relative, no traversal, each path once.",
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "description": "Over the supplied UTF-8 bytes of text, in the host's sha256:<hex> form.",
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "text": {
+                "description": "The whole file; never truncated.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "route": {
+      "description": "The route the run is admitted on, when the operator named one; a route the entry is not qualified on is refused at admission (route-not-qualified). A dispatched child runs on its parent's route and carries none of its own.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
+    "audit_ref": {
+      "description": "A host-recorded recovery audit reference for the run standing at answered; sent only to its completion. Its presence never changes the frozen role input, which never carries it.",
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

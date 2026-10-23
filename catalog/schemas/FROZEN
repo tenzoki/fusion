@@ -13,3 +13,7 @@ d9d98627201af82b64a568cb0ebace557f466814bc0ae4a76670ecc869e61031  schemas/review
 0d62e44446a996bf9e96e0024f8396cddc176ca366acc869942fb9fe49ee4a0e  schemas/review-response.v1.json
 91141b018a6fc0f053d147274efb2ab83a90f7877a66706956e33c2e7c9f7ad6  workflows/explorer.v1.json
 2f1f30c0c75eb3ebb63967d61e5b472b348c6130f676441b2057b93002ac6488  workflows/repair.v1.json
+# added at plan step 3 of 261023-1854-plan-prior-full-surface-handover-h1-to-h9: fusion's proposal in request 76, not yet accepted by Prior
+132866eaa330c0f753c3c57053755099c36d69b6a50651a5b6d2b3e90e4afa5f  schemas/entry-request.v1.json
+32bd64e1449f8df0ab1b37371ec76642a90cc1089a3da2c4e2fa99aab43d53f5  schemas/entry-result.v1.json
+bae94eef716d90ec230a468acf19107b10b39b78ed1e9a222ad120e082d92041  workflows/entry.v1.json

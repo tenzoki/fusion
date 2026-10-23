@@ -37,7 +37,7 @@
       "pattern": "^host\\.[a-z][a-z0-9.-]*\\.v[0-9]+$"
     },
     "step": {
-      "description": "Exactly one of role (a catalog role the step dispatches) and host_service (a host capability the step calls).",
+      "description": "Exactly one of role (a catalog role the step dispatches) and host_service (a host capability the step calls). A host_service step may take its role from the invocation: workflows/entry.v1.json's run step calls host.role.run.v1 and names its role in input_from as the invocation's entry profile, resolved through the catalog's entries, because a generic workflow has no fixed role.",
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "input_from", "completion"],

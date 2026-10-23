@@ -1,0 +1,160 @@
+{
+  "id": "entry",
+  "capability": "fusion.entry.v1",
+  "steps": [
+    {
+      "id": "compose",
+      "host_service": "host.role.compose.v1",
+      "input_from": {
+        "invocation_schema": "schemas/entry-request.v1.json",
+        "host_services": {
+          "status": "fusion's proposal in request 76, not yet accepted by Prior. The six request-69 services are called under the common contract stated once in workflows/repair.v1.json, explore step, input_from.host_services, unchanged: the common pair identity and workflow_id, closed requests, the envelope, the stable codes, the refusal rule, the frame bound and replay; the operation id is derived with capability fusion.entry.v1. The three entry services host.question.v1, host.exec.v1 and host.dispatch.v1 are model tools of the role run (Prior's moduleapi/v1/entry_wire.go): the module calls none of them, and requires names them so that Prior grants them to the run.",
+          "preflight": "Prior compares requires with its service map and finds all twelve services before module startup; the module performs no preflight of its own"
+        },
+        "request": {
+          "run_id": "the invocation's run_id",
+          "profile": "the invocation's entry.profile, which the module checks against the catalog's entry of that id before the call",
+          "task": "the invocation's entry, arguments and route, with no run_id, project_context or audit_ref, which the host adds or keeps"
+        },
+        "slot": "run_id",
+        "reply": {
+          "run_id": "the request's",
+          "profile": "the request's",
+          "role_input": "the composed object, valid against schemas/entry-request.v1.json and carrying no audit_ref",
+          "role_input_sha256": "sha256:<hex> over the exact compact JSON bytes the host froze"
+        },
+        "admission": "the host admits the entry before composition: an argument the entry's declaration does not name is unknown-argument, a route the entry is not qualified on is route-not-qualified, an open gap issue is open-gap-issue (Prior's admission_refusal); the invocation then ends refused and no role call is made"
+      },
+      "completion": {
+        "answer": "the reply above; a repeated identical composition answers the same bytes and a changed task conflicts before any model call",
+        "then": "workspace"
+      }
+    },
+    {
+      "id": "workspace",
+      "host_service": "host.workspace.v1",
+      "input_from": {
+        "request": {
+          "run_id": "the invocation's run_id"
+        },
+        "slot": "the run id",
+        "derived_by_host": "base_revision, the read scope, the writable scope and the executor mounts come from the prepared workflow, never from the request"
+      },
+      "completion": {
+        "answer": {
+          "root": "a host-selected label for the isolated workspace, never a path the module submits to acquire authority",
+          "base_revision": "the head the host froze at preparation"
+        },
+        "bound": "one workspace for the one run, as in repair's workspace step; host.exec.v1 runs inside it and host.dispatch.v1 children share it; a repeated call answers the same workspace and recovery reopens it, never a second",
+        "then": "run"
+      }
+    },
+    {
+      "id": "run",
+      "host_service": "host.role.run.v1",
+      "input_from": {
+        "role": "the invocation's entry.profile: the role is taken from the invocation, not fixed by this definition; the module resolves it through the catalog's entries (entry.id names the entry, its profile the role) and refuses an entry whose prior support is unsupported",
+        "run": "the invocation's run_id",
+        "role_input": "the compose step's role_input",
+        "role_input_schema": "schemas/entry-request.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref",
+        "services": "the role run may call host.question.v1, host.exec.v1 and host.dispatch.v1 as tools, each under the entry's own requires in the catalog, which is a subset of this definition's"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/entry-result.v1.json",
+        "schemas_bind": "this definition's two schemas bind the run whatever the profile's own input_schema and result_schema declare (decision 261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role, option 1)",
+        "on_ending": {
+          "success": "capture",
+          "refusal": "end: the envelope with status refused",
+          "stop": "capture when the workspace changed, else end: the envelope with status ended"
+        }
+      }
+    },
+    {
+      "id": "capture",
+      "host_service": "host.capture.v1",
+      "input_from": {
+        "request": {
+          "run_id": "the invocation's run_id"
+        },
+        "slot": "the run id",
+        "precondition": "the run settled; the host stops its writes before it observes"
+      },
+      "completion": {
+        "answer": "repair's capture answer, without the review binding: base_revision, tree, diff, diff_sha256 and validations",
+        "on_diff": {
+          "empty": "end: the envelope with the run's status and commits empty; integrate, snapshot and workbench are not called",
+          "non-empty": "integrate"
+        },
+        "bound": "as repair's capture step: a changed path outside the writable scope is scope-violation and a diff that does not fit is frame.oversize or context.limit, each ending the envelope refused; nothing is truncated"
+      }
+    },
+    {
+      "id": "integrate",
+      "host_service": "host.integrate.v1",
+      "input_from": {
+        "request": {
+          "run_id": "the invocation's run_id"
+        },
+        "slot": "integration",
+        "from_host_receipts": "the capture comes from the host's durable receipt, never from a caller copy; there is no review step, revise_bound being 0"
+      },
+      "completion": {
+        "answer": "repair's thirteen-field integration answer, reviewer empty",
+        "push": "only when the entry declares a remote; no catalog entry declares one and no push service is among the twelve this definition requires, so no step pushes, as in repair (no remote push, the user's current branch never changes); a push step comes with a later definition version and its service",
+        "bound": "as repair's integrate step: once per workflow run, compare-and-swap of the accepted reference from the frozen base; correction-required ends the envelope refused, an uncertain effect is recovery-required and recovery never repeats a reference update",
+        "then": "snapshot"
+      }
+    },
+    {
+      "id": "snapshot",
+      "host_service": "host.snapshot.v1",
+      "input_from": {
+        "request": "the common pair only",
+        "slot": "post-integration"
+      },
+      "completion": {
+        "answer": "repair's eleven-field snapshot answer for the one run",
+        "projection": "schemas/entry-result.v1.json commits carries the integration commit with its subject and the snapshot's changed_paths",
+        "bound": "read-only, as repair's snapshot step; the call answers its frozen observation on replay",
+        "then": "workbench"
+      }
+    },
+    {
+      "id": "workbench",
+      "host_service": "host.workbench.v1",
+      "input_from": {
+        "request": {
+          "action": "read",
+          "record": "each workbench control path among the snapshot's changed_paths, one call each"
+        },
+        "slot": "record:<control path>",
+        "page_request": "repair's read-record page request, slot page:<handle>:<offset>",
+        "when": "only when the snapshot's changed_paths name a workbench control record; otherwise the envelope ends after snapshot"
+      },
+      "completion": {
+        "answer": "repair's read-record answer: the record and its own revision, hash-verified by the codec",
+        "bound": "read-only: no close action is taken, there being no audit; a record the codec refuses to read is the violation record-conflict and ends the envelope refused, the integration standing",
+        "envelope_schema": "schemas/entry-result.v1.json",
+        "then": "end: the envelope with status completed when the run's ending is success, ended when it is stop"
+      }
+    }
+  ],
+  "revise_bound": 0,
+  "requires": [
+    "host.role.read.v1",
+    "host.role.run.v1",
+    "host.role.complete.v1",
+    "host.role.compose.v1",
+    "host.workspace.v1",
+    "host.capture.v1",
+    "host.integrate.v1",
+    "host.snapshot.v1",
+    "host.workbench.v1",
+    "host.question.v1",
+    "host.exec.v1",
+    "host.dispatch.v1"
+  ]
+}
