@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "61830d6f-1df5-4f9c-be24-7d6e48ed54cd",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "d23b5c3937971d4dffd21df109e2d6d745c6da22",
+    "git_range": null
+  },
+  "brief_revision": "sha256:25ac434a6f0a6eb934350bd4026bbb47b22d25a2857f8d6bef3560cd5d34a2eb",
+  "plan_revision": "sha256:50aac5e9ac6e27ca4693c1c029e5e416103d61f7113439e1c7bf8c5e17b72df7",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.1"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261017-2019-migrate-code-issues-end-fence-suggestion-foreign-session-later-chunk/reviews/261023-1403-reviewer-closing-pass-over-the-migrate-code-issues-package.md",
+    "sha256": "sha256:b9d0be6f5d1e1058d3d02304effa034171509d93372d050f385c5eca8a51275f",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-23T12:04:23Z",
+  "extensions": {}
+}
