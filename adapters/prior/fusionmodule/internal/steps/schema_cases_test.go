@@ -9,7 +9,7 @@ import (
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/fixture"
 )
 
-// schemaCase is one row of catalog/testdata/repair-schema-cases.v1.json.
+// schemaCase is one row of a shared case table under catalog/testdata/.
 type schemaCase struct {
 	Name     string          `json:"name"`
 	Schema   string          `json:"schema"`
@@ -18,13 +18,21 @@ type schemaCase struct {
 	Valid    *bool           `json:"valid"`
 }
 
-// The shared repair-schema contract cases, asserted by this validator: the
-// catalog's ajv suite (catalog/src/__tests__/schema-cases.test.ts) asserts the
-// same rows, so a keyword this subset validator reads differently from a full
-// draft 2020-12 validator turns one of the two suites red.
+// The shared schema contract cases, asserted by this validator: the catalog's
+// ajv suite (catalog/src/__tests__/schema-cases.test.ts) asserts the same rows
+// of the same tables, so a keyword this subset validator reads differently
+// from a full draft 2020-12 validator turns one of the two suites red. The
+// repair table covers the frozen repair schemas, the entry table the two
+// entry.v1 schemas.
 func TestSharedSchemaCases(t *testing.T) {
+	for _, table := range []string{"repair-schema-cases.v1.json", "entry-schema-cases.v1.json"} {
+		t.Run(table, func(t *testing.T) { runSchemaCases(t, table) })
+	}
+}
+
+func runSchemaCases(t *testing.T, file string) {
 	dir := fixture.CatalogDir(t)
-	body, err := os.ReadFile(filepath.Join(dir, "testdata", "repair-schema-cases.v1.json"))
+	body, err := os.ReadFile(filepath.Join(dir, "testdata", file))
 	if err != nil {
 		t.Fatal(err)
 	}

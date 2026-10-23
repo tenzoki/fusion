@@ -11,7 +11,8 @@
 // again. The operation id is api.RepairOperationID over the slot the answer
 // assigns: the run id for compose, workspace and capture, `integration` for
 // integrate, `post-integration` for snapshot, `record`, `page:<handle>:<offset>`
-// and `close` for the workbench. The reply is decoded by
+// and `close` for the workbench, and for entry.v1's reads
+// `record:<control path>`, one slot per record. The reply is decoded by
 // api.DecodeRepairResponse into the closed envelope {state, result, code}; a
 // reply the host answers, refused or recovery-required included, is a Reply
 // the workflow routes on, and a reply that violates the wire contract is an
@@ -261,6 +262,33 @@ func (r Reply) Capture() (Capture, error) {
 	return out, nil
 }
 
+// UnboundCapture is a completed capture of a run no review binds (entry.v1's
+// capture step): repair's capture without criteria_sha256, inputs_sha256 and
+// binding. An empty diff is a run that changed nothing.
+type UnboundCapture struct {
+	BaseRevision string          `json:"base_revision"`
+	Tree         string          `json:"tree"`
+	Diff         string          `json:"diff"`
+	DiffSHA256   string          `json:"diff_sha256"`
+	Validations  json.RawMessage `json:"validations"`
+}
+
+// UnboundCapture decodes a completed capture reply of five members, checking
+// the diff digest the host states against the diff it sent.
+func (r Reply) UnboundCapture() (UnboundCapture, error) {
+	var out UnboundCapture
+	if err := r.decode(api.CaptureCapability, &out, []string{"base_revision", "tree", "diff", "diff_sha256", "validations"}); err != nil {
+		return out, err
+	}
+	if out.BaseRevision == "" || out.Tree == "" || !isArray(out.Validations) {
+		return out, r.violation("base_revision, tree or validations")
+	}
+	if Digest([]byte(out.Diff)) != out.DiffSHA256 {
+		return out, r.violation("diff_sha256 does not cover diff")
+	}
+	return out, nil
+}
+
 // Integration is a completed integrate reply: the thirteen fields of the
 // audit-request integration object, checks and validations as the host's
 // bytes.
@@ -290,12 +318,25 @@ func (c Client) Integrate(ctx context.Context, reviewerRunID string) (Reply, err
 }
 
 // Integration decodes a completed integrate reply.
-func (r Reply) Integration() (Integration, error) {
+func (r Reply) Integration() (Integration, error) { return r.integration(true) }
+
+// UnreviewedIntegration decodes a completed integrate reply of a workflow with
+// no review step (entry.v1, revise_bound 0): the same thirteen members, the
+// reviewer empty.
+func (r Reply) UnreviewedIntegration() (Integration, error) { return r.integration(false) }
+
+func (r Reply) integration(reviewed bool) (Integration, error) {
 	var out Integration
 	if err := r.decode(api.IntegrateCapability, &out, IntegrationFields); err != nil {
 		return out, err
 	}
-	for name, value := range map[string]string{"id": out.ID, "state": out.State, "reference": out.Reference, "base": out.Base, "tree": out.Tree, "commit": out.Commit, "record_name": out.RecordName, "record_revision": out.RecordRevision, "author": out.Author, "reviewer": out.Reviewer} {
+	named := map[string]string{"id": out.ID, "state": out.State, "reference": out.Reference, "base": out.Base, "tree": out.Tree, "commit": out.Commit, "record_name": out.RecordName, "record_revision": out.RecordRevision, "author": out.Author}
+	if reviewed {
+		named["reviewer"] = out.Reviewer
+	} else if out.Reviewer != "" {
+		return out, r.violation("reviewer is not empty on an unreviewed integration")
+	}
+	for name, value := range named {
 		if value == "" {
 			return out, r.violation(name + " empty")
 		}
@@ -359,7 +400,14 @@ type Closure struct {
 // completed reply's Result is the object assembled from the host's pages.
 // A page the host refuses is returned as that page's reply.
 func (c Client) ReadRecord(ctx context.Context, record string) (Reply, error) {
-	reply, err := c.call(ctx, api.WorkbenchCapability, "record", api.RepairCall{Action: "read", Record: record})
+	return c.ReadRecordAt(ctx, "record", record)
+}
+
+// ReadRecordAt is ReadRecord under a slot the caller names, for a workflow
+// that reads more than one record: entry.v1 reads each control record under
+// `record:<control path>`, so that two reads never share an operation id.
+func (c Client) ReadRecordAt(ctx context.Context, slot, record string) (Reply, error) {
+	reply, err := c.call(ctx, api.WorkbenchCapability, slot, api.RepairCall{Action: "read", Record: record})
 	if err != nil || !reply.Completed() {
 		return reply, err
 	}

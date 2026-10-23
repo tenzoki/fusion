@@ -694,20 +694,12 @@ func (w *workflow) role(ctx context.Context, stepID, runID string, attempt *int,
 	if err := step.input.Validate(parsed); err != nil {
 		return nil, refusal("refused", "role_input.invalid", err.Error()), nil
 	}
-	if err := carries(parsed, taskBytes); err != nil {
+	if err := steps.Carries(parsed, taskBytes, "project_context", "output_contract"); err != nil {
 		return nil, refusal("refused", "role_input.invalid", err.Error()), nil
 	}
 	request := api.RoleRequest{RunID: runID, ModuleID: w.id.ModuleID, ModuleVersion: w.id.Version, Profile: step.Role, Input: composed.RoleInput, BundleDigest: w.id.BundleDigest}
-	// Every role call this step can make is checked against the frame bound
-	// before the first one is sent.
-	for _, capability := range steps.RoleCapabilities {
-		call := api.RoleCall{Identity: w.id, RunID: runID, Profile: step.Role, Input: composed.RoleInput}
-		if capability == api.RoleCompleteCapability {
-			call.AuditRef = w.auditRef
-		}
-		if err := steps.CheckFrame("host.invoke", api.Invocation{OperationID: capability + ":" + runID, Capability: capability, Input: marshal(call)}); err != nil {
-			return nil, refusal("refused", "frame.oversize", err.Error()), nil
-		}
+	if err := steps.CheckRoleCalls(w.id, runID, step.Role, composed.RoleInput, w.auditRef); err != nil {
+		return nil, refusal("refused", "frame.oversize", err.Error()), nil
 	}
 	obs, err := w.execute(ctx, request)
 	if err != nil {
@@ -759,35 +751,6 @@ func (w *workflow) principal(runID string) string {
 		}
 	}
 	return ""
-}
-
-// carries checks that the frozen role input is the module's task with the
-// two host members added and nothing else changed (69.1: the host verifies
-// the task; the module verifies that what it forwards is what it composed).
-func carries(roleInput any, taskBytes []byte) error {
-	input, ok := roleInput.(map[string]any)
-	if !ok {
-		return errors.New("role_input is not an object")
-	}
-	parsedTask, err := steps.Parse(taskBytes)
-	if err != nil {
-		return err
-	}
-	task := parsedTask.(map[string]any)
-	for key, value := range task {
-		if !steps.Equal(input[key], value) {
-			return fmt.Errorf("role_input.%s is not the composed task's", key)
-		}
-	}
-	for key := range input {
-		if _, ok := task[key]; ok {
-			continue
-		}
-		if key != "project_context" && key != "output_contract" {
-			return fmt.Errorf("role_input.%s is neither the task's nor the host's", key)
-		}
-	}
-	return nil
 }
 
 // echoes checks the review's binding echo against the capture's binding and

@@ -1,8 +1,9 @@
 // Package fixture serves the adapter's tests: a payload directory built from
 // fusion's catalog, a fake host whose three host.role.* services are durable
-// in memory, and, in repair.go, a fake host that adds the six repair services
-// of Prior's answer 69 over it. Nothing here is linked into the module
-// executable.
+// in memory, in repair.go a fake host that adds the six repair services of
+// Prior's answer 69 over it, and in entry.go a fake host for entry.v1 that
+// serves those six to the module and the three entry services to a scripted
+// role run. Nothing here is linked into the module executable.
 package fixture
 
 import (
@@ -37,17 +38,17 @@ func CatalogDir(t *testing.T) string {
 // rendered profile in the payload.
 var Profiles = []string{"explorer", "code-implementer", "reviewer", "state-auditor"}
 
-// Workflows are the two definitions the payload carries.
-var Workflows = []string{"explorer", "repair"}
+// Workflows are the definitions the payload carries.
+var Workflows = []string{"explorer", "repair", "entry"}
 
-// Schemas are the twelve published schemas, as catalog/schemas/FROZEN lists
-// them.
+// Schemas are the published schemas, as catalog/schemas/FROZEN lists them.
 var Schemas = []string{
 	"explorer-request", "explorer-role-input", "explorer-envelope", "explorer-result",
 	"repair-request", "repair-result",
 	"implementer-request", "implementer-result",
 	"review-request", "review-response",
 	"audit-request", "audit-result",
+	"entry-request", "entry-result",
 }
 
 // DataFiles are the payload entries the fixture declares, in manifest order:
@@ -69,12 +70,23 @@ func dataFiles() []string {
 }
 
 // Bundle writes a payload under a fresh temp directory from the catalog:
-// catalog.json, the two workflows and the twelve schemas copied unchanged,
-// each supported profile reduced to the seven keys Prior reads (as
-// render.ts's priorProfileJson does), a placeholder profile text and a
-// module.json that declares them. The executable the manifest names is not
-// written: the tests never start a process.
+// catalog.json, the workflows and the schemas copied unchanged, each
+// supported profile reduced to the seven keys Prior reads (as render.ts's
+// priorProfileJson does), a placeholder profile text and a module.json that
+// declares them. The executable the manifest names is not written: the tests
+// never start a process.
 func Bundle(t *testing.T, catalogDir string) string {
+	t.Helper()
+	return EntryBundle(t, catalogDir)
+}
+
+// EntryBundle is Bundle with the named catalog entries made supported on prior
+// and, for each whose profile the payload does not carry yet, a profile that
+// names the two entry schemas (decision D5 of the H1-H9 hand-over), with a
+// placeholder text. It stands in for what plan steps 6 to 15 deliver, profiles
+// for the entries and their support on prior, so the module's entry.v1 support
+// is driven before they land; the live catalog is read, never written.
+func EntryBundle(t *testing.T, catalogDir string, supported ...string) string {
 	t.Helper()
 	root := t.TempDir()
 	write := func(rel string, body []byte) {
@@ -93,7 +105,14 @@ func Bundle(t *testing.T, catalogDir string) string {
 		}
 		write(rel, body)
 	}
-	copyFile("catalog.json", "catalog.json")
+	catalog, entryProfiles := supportEntries(t, catalogDir, supported)
+	write("catalog.json", catalog)
+	data := append([]string(nil), DataFiles...)
+	for _, id := range entryProfiles {
+		write("profiles/"+id+".json", EntryProfile(id))
+		write("profiles/"+id+".md", []byte("fixture entry profile text\n"))
+		data = append(data, "profiles/"+id+".json", "profiles/"+id+".md")
+	}
 	for _, id := range Workflows {
 		copyFile("workflows/"+id+".v1.json", "workflows/"+id+".v1.json")
 	}
@@ -117,13 +136,78 @@ func Bundle(t *testing.T, catalogDir string) string {
 		write("profiles/"+id+".json", reduced)
 		write("profiles/"+id+".md", []byte("fixture profile text\n"))
 	}
-	manifest := map[string]any{"schema_version": 1, "module_id": Identity.ModuleID, "version": Identity.Version, "runtime_api": "1", "executable": "bin/fusion-module", "data": DataFiles}
+	manifest := map[string]any{"schema_version": 1, "module_id": Identity.ModuleID, "version": Identity.Version, "runtime_api": "1", "executable": "bin/fusion-module", "data": data}
 	manifestBytes, err := json.Marshal(manifest)
 	if err != nil {
 		t.Fatal(err)
 	}
 	write("module.json", manifestBytes)
 	return root
+}
+
+// supportEntries reads the live catalog.json and returns it with each named
+// entry's prior support set to supported, unchanged when none is named, and
+// the profiles of those entries that are not among Profiles, each once.
+func supportEntries(t *testing.T, catalogDir string, supported []string) ([]byte, []string) {
+	t.Helper()
+	body, err := os.ReadFile(filepath.Join(catalogDir, "catalog.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(supported) == 0 {
+		return body, nil
+	}
+	var doc map[string]json.RawMessage
+	var entries []map[string]json.RawMessage
+	if err := json.Unmarshal(body, &doc); err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(doc["entries"], &entries); err != nil {
+		t.Fatal(err)
+	}
+	carried := map[string]bool{}
+	for _, id := range Profiles {
+		carried[id] = true
+	}
+	var profiles []string
+	for _, want := range supported {
+		found := false
+		for _, e := range entries {
+			var id, profile string
+			_ = json.Unmarshal(e["id"], &id)
+			_ = json.Unmarshal(e["profile"], &profile)
+			if id != want {
+				continue
+			}
+			found = true
+			e["support"] = json.RawMessage(`{"claude-code":"supported","prior":"supported"}`)
+			if !carried[profile] {
+				carried[profile] = true
+				profiles = append(profiles, profile)
+			}
+		}
+		if !found {
+			t.Fatalf("catalog.json has no entry %q", want)
+		}
+	}
+	doc["entries"] = mustJSON(t, entries)
+	return mustJSON(t, doc), profiles
+}
+
+// EntryProfile is the profile an entry runs under in the fixture payload: the
+// seven keys Prior reads, the two entry schemas, and execution_policy as every
+// profile has it.
+func EntryProfile(id string) []byte {
+	body, _ := json.Marshal(map[string]any{
+		"id":               id,
+		"input_schema":     "schemas/entry-request.v1.json",
+		"result_schema":    "schemas/entry-result.v1.json",
+		"tools_ceiling":    []string{"read", "list", "search", "create", "write", "process"},
+		"may_delegate":     false,
+		"writes_workbench": map[string]bool{"claude-code": true, "prior": true},
+		"execution_policy": map[string]string{"claude-code": "claude-guided", "prior": "prior-enforced"},
+	})
+	return body
 }
 
 // RoleInput is a role input as the host composes it: the three caller

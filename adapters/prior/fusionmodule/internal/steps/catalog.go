@@ -113,6 +113,18 @@ func (c *Catalog) Entries() []Entry {
 	return append([]Entry(nil), c.entries...)
 }
 
+// Entry returns the entry with an id, false when the catalog has none. It
+// resolves whatever the entry's support: refusing an entry unsupported on prior
+// is the workflow's decision, which names it in its own violation.
+func (c *Catalog) Entry(id string) (Entry, bool) {
+	for _, e := range c.entries {
+		if e.ID == id {
+			return e, true
+		}
+	}
+	return Entry{}, false
+}
+
 // LoadCatalog decodes catalog.json with Prior's checks: unique canonical ids,
 // two support states each from the three words, every prior id either the
 // canonical id or a declared alias, no alias shadowing a role or another alias;

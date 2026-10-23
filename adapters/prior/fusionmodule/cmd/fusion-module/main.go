@@ -4,9 +4,10 @@
 //
 // It decodes its identity from PRIOR_MODULE_IDENTITY and the connection secret
 // from PRIOR_MODULE_CONNECTION_SECRET, finds its payload above its own path,
-// reads the data files the manifest declares, loads the explorer and the
-// repair definitions, and serves fusion.explorer.v1 and fusion.repair.v1
-// over stdin and stdout through the module API v1 server. It writes nothing
+// reads the data files the manifest declares, loads the explorer, repair and
+// entry definitions, and serves fusion.explorer.v1, fusion.repair.v1 and
+// fusion.entry.v1 over stdin and stdout through the module API v1 server. It
+// writes nothing
 // to stdout before the handshake: a failure before Serve exits with a code
 // and a line on stderr, which the host discards.
 //
@@ -21,6 +22,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/entry"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/explorer"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/repair"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/steps"
@@ -31,7 +33,7 @@ func main() {
 	os.Exit(run())
 }
 
-// workflows loads the two definitions from the payload and binds each to
+// workflows loads the three definitions from the payload and binds each to
 // its capability under the module's identity; two definitions claiming one
 // capability is a refused payload.
 func workflows(bundle *steps.Bundle, id api.Identity) (map[string]api.WorkflowHandler, error) {
@@ -43,13 +45,25 @@ func workflows(bundle *steps.Bundle, id api.Identity) (map[string]api.WorkflowHa
 	if err != nil {
 		return nil, err
 	}
-	if explore.Capability == fix.Capability {
-		return nil, fmt.Errorf("%w: both definitions claim %s", steps.ErrBundle, fix.Capability)
+	run, err := entry.Load(bundle)
+	if err != nil {
+		return nil, err
 	}
-	return map[string]api.WorkflowHandler{
-		explore.Capability: explore.Handler(id, explorer.RemoteRoles(id)),
-		fix.Capability:     fix.Handler(id, repair.RemoteRoles(id)),
-	}, nil
+	handlers := map[string]api.WorkflowHandler{}
+	for _, w := range []struct {
+		capability string
+		handler    api.WorkflowHandler
+	}{
+		{explore.Capability, explore.Handler(id, explorer.RemoteRoles(id))},
+		{fix.Capability, fix.Handler(id, repair.RemoteRoles(id))},
+		{run.Capability, run.Handler(id, entry.RemoteRoles(id))},
+	} {
+		if handlers[w.capability] != nil {
+			return nil, fmt.Errorf("%w: two definitions claim %s", steps.ErrBundle, w.capability)
+		}
+		handlers[w.capability] = w.handler
+	}
+	return handlers, nil
 }
 
 func run() int {

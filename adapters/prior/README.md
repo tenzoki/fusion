@@ -14,6 +14,10 @@ and its two follow-ups of 2026-10-11, for the bundle and the explorer
 (`Prior: docs/design/fusion-repair-contract-prior-response.md`). Both sit on
 top of the module API (`Prior: docs/design/prior-module-api-v1.md`) and the
 installed-bundle contract (`Prior: docs/design/prior-installed-module-bundles.md`).
+The generic entry workflow, `fusion.entry.v1`, has no Prior answer yet: its
+definition and two schemas are fusion's proposal in request 76 (plan step 3
+of the H1-H9 hand-over), and `### The entry workflow` names where it reaches
+past the wire at the pin.
 The host side, read from Prior at `PRIOR_PIN`, is two files:
 `Prior: internal/fusionhost/external_explorer.go` calls the explorer, and
 `Prior: internal/fusionhost/repair_journal.go` holds the repair host's
@@ -29,13 +33,14 @@ the pin that file advertises no service yet.
 | `build.sh` | The reproducible build, its verification with Prior's own inspector and its delivery; see `## Building the bundle`. |
 | `check-imports.sh` | The import discipline, checked with `find`, `grep` and `awk`: no `go.mod`, `go.work`, `go.sum` or `vendor/` under this directory; no import under Prior's `internal/` or `modules/`; every non-standard import is the SDK or an own package. |
 | `launcher/fusion-module.sh` | The `/bin/sh` launcher shipped as the bundle's `executable`, `bin/fusion-module`: maps `/usr/bin/uname -s -m` to one of the three binaries beside it and execs it, nothing through `PATH`, nothing on stdout; exit 4 for a host it has no binary for. |
-| `fusionmodule/cmd/fusion-module/` | The executable: identity and secret from the two environment variables, the payload located above its own path, the explorer and the repair workflow served over stdin and stdout. |
+| `fusionmodule/cmd/fusion-module/` | The executable: identity and secret from the two environment variables, the payload located above its own path, the explorer, repair and entry workflows served over stdin and stdout. |
 | `fusionmodule/cmd/fusion-bundle/` | The assembler `build.sh` builds and runs inside the staged clone, never shipped: the three target builds, the payload, its identity by Prior's index algorithm, the deterministic tarball, the sidecar and `handover.json`. |
 | `fusionmodule/internal/steps/` | The floor: bundle reader, catalog, profile and workflow decoders with exactly Prior's key sets, a strict JSON parser, a JSON Schema validator over the keyword subset the shipped schemas use, the observe-then-act executor over one durable role, and the frame-bound check. |
 | `fusionmodule/internal/explorer/` | The explorer workflow: interprets `workflows/explorer.v1.json` on the step executor and serves `fusion.explorer.v1`. |
-| `fusionmodule/internal/hostsvc/` | The client of the six repair host services of Prior's answer 69 (`host.role.compose.v1`, `host.workspace.v1`, `host.capture.v1`, `host.integrate.v1`, `host.snapshot.v1`, `host.workbench.v1`), one method each over the workflow's `HostCaller`, every request an `api.RepairCall` marshalled once per slot so a replay sends the same bytes. |
+| `fusionmodule/internal/hostsvc/` | The client of the six repair host services of Prior's answer 69 (`host.role.compose.v1`, `host.workspace.v1`, `host.capture.v1`, `host.integrate.v1`, `host.snapshot.v1`, `host.workbench.v1`), one method each over the workflow's `HostCaller`, every request an `api.RepairCall` marshalled once per slot so a replay sends the same bytes; for entry.v1 also a capture without a review binding, an integration without a reviewer, and a read under a slot of its own. No client for the three entry services: they are the role run's tools, not the module's calls. |
 | `fusionmodule/internal/repair/` | The repair workflow: interprets `workflows/repair.v1.json` over the step executor and the host service client and serves `fusion.repair.v1`; ten steps, the attempt map validated before any role call, every role read before it is run on restart. |
-| `fusionmodule/internal/fixture/` | Test support only: a payload built from `catalog/`, and a fake host with in-memory durable `host.role.*` services and the six repair services. Not linked into the executable. |
+| `fusionmodule/internal/entry/` | The entry workflow: interprets `workflows/entry.v1.json` over the same executor and client and serves `fusion.entry.v1`; seven steps, the run's role taken from the invocation's entry through the catalog's entries, the run read before it is run on restart; see `### The entry workflow`. |
+| `fusionmodule/internal/fixture/` | Test support only: a payload built from `catalog/` (optionally with named entries made supported on prior and given a profile), a fake host with in-memory durable `host.role.*` services and the six repair services, and an entry fake host that serves those six to the module and `host.question.v1`, `host.exec.v1` and `host.dispatch.v1` to a scripted role run. Not linked into the executable. |
 | `fusionmodule/conformance/` | The conformance suite: starts the launcher from a bundle `build.sh` wrote and drives both workflows through `moduleapi/v1` against the fake host; see `### Conformance against a built bundle`. |
 | `testdata/repair-fixture/` | The repair conformance's toy repository and `task.json`; see the same section. |
 
@@ -143,11 +148,16 @@ and no `PATH`. The executable:
    something this executor does not do is refused at load;
 4. loads the repair definition, `workflows/repair.v1.json`, the same way,
    with the roles of its ten steps and their schemas (`internal/repair`);
-5. serves `fusion.explorer.v1` and `fusion.repair.v1` through `api.Server`,
-   which performs the authenticated handshake and advertises both
-   capabilities. The rest of this section describes the explorer; the repair
-   workflow's contract is Prior's answer 69 and the header of
-   `fusionmodule/internal/repair/repair.go`.
+5. loads the entry definition, `workflows/entry.v1.json`, its four schema
+   paths, and the catalog's entries: every entry's `requires` must be among
+   the definition's, and every entry supported on prior must have its
+   profile in the payload (`internal/entry`);
+6. serves `fusion.explorer.v1`, `fusion.repair.v1` and `fusion.entry.v1`
+   through `api.Server`, which performs the authenticated handshake and
+   advertises the three capabilities. The rest of this section describes the
+   explorer; the repair workflow's contract is Prior's answer 69 and the
+   header of `fusionmodule/internal/repair/repair.go`, the entry workflow's is
+   `### The entry workflow` below.
 
 Repair shares the explorer's step executor, so the audit placement under
 `### One invocation` holds for its roles too. Its last step, the workbench
@@ -219,6 +229,61 @@ schema and checked against the frame bound before it is returned; one that
 would not fit is replaced by a `frame.oversize` refusal that keeps the
 evidence.
 
+### The entry workflow
+
+The invocation is `schemas/entry-request.v1.json`: `{workflow_id, run_id,
+entry: {id, kind, profile}, arguments, project_context, route?, audit_ref?}`.
+Before any host call the module resolves the run step's role from it: the
+entry must be the catalog's (`entry.unknown`), with its kind and profile
+(`entry.invalid`), and supported on prior (`entry.unsupported`). Argument
+admission is the host's and is not repeated. Then, in order:
+
+1. `compose`: the task `{entry, arguments, route?}` through
+   `host.role.compose.v1` under the entry's profile; the frozen input must
+   validate against the definition's role input schema and be the task with
+   only `workflow_id`, `run_id` and `project_context` added, the first two the
+   invocation's (`role_input.invalid`);
+2. `workspace`: the run's one workspace;
+3. `run`: `steps.Execute` over the run with the frozen bytes, observe then
+   act, the audit reference on a completion of a run first read `answered`
+   only; the settled answer must validate against
+   `schemas/entry-result.v1.json` whatever the profile declares (decision
+   D5), and every option a question's `selected` names must be among its
+   `options`, the one rule that schema cannot state (`result.invalid`). An
+   ending of class `refusal` ends the envelope `refused` with the run's
+   ending and violations; `success` and `stop` go on, since only the capture
+   can say whether a stopped run changed anything;
+4. `capture`: an empty diff ends the envelope, `completed` on success and
+   `ended` on stop, with no commits;
+5. `integrate`, `snapshot`: the integration of the captured tree from the
+   workspace's base, the snapshot of that integration; the commit enters the
+   envelope as soon as the integration stands;
+6. `workbench`: one read per control record among the snapshot's changed
+   paths (a path under `fusion-workbench/` ending in `.json`, read relative
+   to the workbench), each under slot `record:<path>`.
+
+Every host refusal refuses the invocation with `host.<code>` (entry.v1 has
+no review, so nothing escalates); `recovery-required` stays so, with a null
+ending. A module refusal carries an ending of class `refusal` whose reason
+is the violation code hyphenated (`host.scope-violation` is
+`host-scope-violation`). The questions are the settled answer's; the module
+holds no client for `host.question.v1`, `host.exec.v1` or `host.dispatch.v1`.
+
+Where the module reaches past the wire at the pin, each a point for request 76:
+
+- `api.DecodeRepairCall` at `08c57fb` admits a compose for the four repair
+  roles only; an entry profile such as `skill-memo` is refused there;
+- the same decoder derives every workbench read's operation id from slot
+  `record`, so a second read in one workflow would conflict; entry.v1 reads
+  under `record:<path>`;
+- the integration receipt carries no commit subject, so `commits[].subject`
+  is `integration <id>`, the integration the host recorded, and
+  `commits[].changes` is the snapshot's `changed_paths` as given, not git's
+  name-status form.
+
+The fake host of `internal/fixture` accepts both request forms, through a
+decoder that falls back to them only where the pinned one refuses.
+
 ## Testing
 
 `stage.sh test` runs, inside the clone:
@@ -226,8 +291,9 @@ evidence.
 - `internal/steps`: the strict parser against what Prior refuses; every
   keyword of the validator, and the refusal of every keyword it does not
   implement; the four explorer schemas compiled and exercised on the
-  contract's cases; the repair schemas exercised by the shared case table
-  `catalog/testdata/repair-schema-cases.v1.json` (`TestSharedSchemaCases`,
+  contract's cases; the repair and the entry schemas exercised by the shared
+  case tables `catalog/testdata/repair-schema-cases.v1.json` and
+  `catalog/testdata/entry-schema-cases.v1.json` (`TestSharedSchemaCases`,
   read through `FUSION_CATALOG_DIR`, each schema compiled with
   `CompileSchema`), whose every row's verdict the catalog's ajv test
   (`catalog/src/__tests__/schema-cases.test.ts`) asserts too, so the two
@@ -250,10 +316,28 @@ evidence.
   host call; an oversize answer refused within the frame; a host conflict
   reported; a lost reply returned as an error; and the handler behind
   `api.Server` over pipes against `api.ConnectWithServices`;
-- `cmd/fusion-module`: the exits before the handshake, nothing on stdout;
+- `cmd/fusion-module`: the exits before the handshake, nothing on stdout,
+  and the three capabilities registered;
 - `internal/hostsvc` and `internal/repair`: the six service clients and the
   repair workflow over scripted hosts, among them a close answering
-  `reconciled: false` that ends `recovery-required`, not `completed`.
+  `reconciled: false` that ends `recovery-required`, not `completed`;
+- `internal/entry`: the entry workflow over a fixture payload in which
+  `help` (plain), `reconcile` (dispatches) and `memo` (asks) are supported on
+  prior, each run scripted to make its class's entry service calls inside
+  the run against the fake host, which decodes them with Prior's own
+  decoders: help changes nothing and integrates nothing, reconcile's
+  dispatched child changes a work package whose record is then read in
+  pages, memo asks and writes a memo; the module sends none of the three
+  services. A kill after each persisted boundary (every call but a role
+  read: five for help, seven for memo, eleven for reconcile with its pages)
+  and a resume under a fresh operation reproduce the byte-equal envelope
+  with one model call in all and no second effect. Also: a lost run reply
+  settled under the audit reference on its completion alone, an `accepted`
+  run never rerun, a question answered `ended`, a stopped run that changed
+  the workspace, a refusing run, a selected option outside its options,
+  entries unknown, mismatched or unsupported refused before any host call,
+  host refusals and recovery, a frozen input naming another workflow, and
+  the handler over pipes.
 
 ### Conformance against a built bundle
 

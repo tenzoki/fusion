@@ -2,10 +2,66 @@ package steps
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 
 	api "github.com/kai/prior/moduleapi/v1"
 )
+
+// CheckRoleCalls checks every role call one step can make for a run against
+// the frame bound before the first one is sent: read, run and complete, the
+// completion carrying the audit reference it may send.
+func CheckRoleCalls(id api.Identity, runID, profile string, input json.RawMessage, auditRef string) error {
+	for _, capability := range RoleCapabilities {
+		call := api.RoleCall{Identity: id, RunID: runID, Profile: profile, Input: input}
+		if capability == api.RoleCompleteCapability {
+			call.AuditRef = auditRef
+		}
+		body, err := json.Marshal(call)
+		if err != nil {
+			return err
+		}
+		if err := CheckFrame("host.invoke", api.Invocation{OperationID: capability + ":" + runID, Capability: capability, Input: body}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Carries checks that a role input the host froze through
+// host.role.compose.v1 is the module's task with only the named host members
+// added and nothing else changed (69.1: the host verifies the task; the module
+// verifies that what it forwards is what it composed).
+func Carries(roleInput any, task []byte, hostMembers ...string) error {
+	input, ok := roleInput.(map[string]any)
+	if !ok {
+		return errors.New("role_input is not an object")
+	}
+	parsedTask, err := Parse(task)
+	if err != nil {
+		return err
+	}
+	members, ok := parsedTask.(map[string]any)
+	if !ok {
+		return errors.New("the task is not an object")
+	}
+	for key, value := range members {
+		if !Equal(input[key], value) {
+			return fmt.Errorf("role_input.%s is not the composed task's", key)
+		}
+	}
+	added := map[string]bool{}
+	for _, key := range hostMembers {
+		added[key] = true
+	}
+	for key := range input {
+		if _, ok := members[key]; !ok && !added[key] {
+			return fmt.Errorf("role_input.%s is neither the task's nor the host's", key)
+		}
+	}
+	return nil
+}
 
 // RoleClient is the durable role service as the SDK exposes it in-process:
 // api.RemoteRoles over a HostCaller in the module, a fake in tests.

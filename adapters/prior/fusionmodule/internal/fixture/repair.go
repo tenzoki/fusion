@@ -548,10 +548,11 @@ func (h *RepairHost) compose(call api.RepairCall) (json.RawMessage, string) {
 	return marshal(map[string]any{"run_id": call.RunID, "profile": call.Profile, "role_input": json.RawMessage(roleInput), "role_input_sha256": "sha256:" + Sha256Hex(roleInput)}), ""
 }
 
-func (h *RepairHost) settled(runID string) *api.RoleAnswer {
-	h.Host.mu.Lock()
-	defer h.Host.mu.Unlock()
-	run := h.Host.Runs[runID]
+// settled is a run's stored answer once the run is settled, else nil.
+func (h *Host) settled(runID string) *api.RoleAnswer {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	run := h.Runs[runID]
 	if run == nil || run.State != "settled" || run.Answer == nil {
 		return nil
 	}
@@ -693,7 +694,12 @@ func (h *RepairHost) snapshotResult() (json.RawMessage, string) {
 }
 
 func (h *RepairHost) descriptor(handle string, object []byte, offset int) json.RawMessage {
-	size := h.PageBytes
+	return pageDescriptor(h.PageBytes, handle, object, offset)
+}
+
+// pageDescriptor is the workbench page of object at offset, cut at size bytes,
+// zero being the 65536 bound.
+func pageDescriptor(size int, handle string, object []byte, offset int) json.RawMessage {
 	if size <= 0 {
 		size = 65536
 	}

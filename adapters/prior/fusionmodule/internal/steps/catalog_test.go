@@ -95,4 +95,12 @@ func TestCatalogEntriesDecode(t *testing.T) {
 	if c.Entries()[0].ID != "alpha" {
 		t.Error("Entries returned the catalog's own slice")
 	}
+	// Entry resolves by id whatever the support: refusing an unsupported
+	// entry is the workflow's decision.
+	if e, ok := c.Entry("note"); !ok || e.Profile != "skill-note" || e.Support["prior"] != "unsupported" {
+		t.Errorf("Entry(note) = %+v, %v", e, ok)
+	}
+	if _, ok := c.Entry("skill-note"); ok {
+		t.Error("Entry resolved a profile id as an entry id")
+	}
 }

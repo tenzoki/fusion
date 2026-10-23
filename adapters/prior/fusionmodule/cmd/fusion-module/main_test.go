@@ -54,9 +54,9 @@ func TestExitsBeforeTheHandshakeWithoutIdentity(t *testing.T) {
 	}
 }
 
-// The payload's two definitions are both registered, each under its own
+// The payload's definitions are all registered, each under its own
 // capability, from a fixture bundle built off the catalog.
-func TestWorkflowsRegisterBothCapabilities(t *testing.T) {
+func TestWorkflowsRegisterEveryCapability(t *testing.T) {
 	bundle, err := steps.OpenBundle(fixture.Bundle(t, fixture.CatalogDir(t)))
 	if err != nil {
 		t.Fatal(err)
@@ -65,12 +65,13 @@ func TestWorkflowsRegisterBothCapabilities(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, capability := range []string{"fusion.explorer.v1", "fusion.repair.v1"} {
+	want := []string{"fusion.explorer.v1", "fusion.repair.v1", "fusion.entry.v1"}
+	for _, capability := range want {
 		if handlers[capability] == nil {
 			t.Errorf("%s is not registered", capability)
 		}
 	}
-	if len(handlers) != 2 {
-		t.Fatalf("%d workflows registered", len(handlers))
+	if len(handlers) != len(want) {
+		t.Fatalf("%d workflows registered, want %v", len(handlers), want)
 	}
 }
