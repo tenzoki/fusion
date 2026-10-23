@@ -1,0 +1,52 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "40eddd8b-9cf6-4cfc-a4e2-4e8c6e558c54",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261022-2229-four-issues-left-by-the-prior-follow-ups/plans/261022-2234-plan-four-issues-left-by-the-prior-follow-ups.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "bbd780d2-fa09-4a23-afc8-70535ef77893"
+      },
+      "revision": "sha256:79fa5d4d4deb1ca76770d7a9d6a2fd40ea087cf5a5f7a1cdf81d3008aa26797b"
+    }
+  }
+}

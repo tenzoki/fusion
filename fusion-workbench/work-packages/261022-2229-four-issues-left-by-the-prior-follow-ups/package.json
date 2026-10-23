@@ -1,0 +1,53 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "bbd780d2-fa09-4a23-afc8-70535ef77893",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-22T20:29:31Z"
+  },
+  "mode": {
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "path": "work-packages/261022-2229-four-issues-left-by-the-prior-follow-ups/261022-2229-four-issues-left-by-the-prior-follow-ups.md",
+        "sha256": "sha256:f25f224194433a9c917b6073adbf5ecce7b93e02e27045b6a3593e5ae1bdcc0b",
+        "kind": "other"
+      }
+    }
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261022-2229-four-issues-left-by-the-prior-follow-ups/261022-2229-four-issues-left-by-the-prior-follow-ups.md"
+  },
+  "depends_on": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "40eddd8b-9cf6-4cfc-a4e2-4e8c6e558c54"
+      },
+      "role": "plan",
+      "revision": "sha256:79fa5d4d4deb1ca76770d7a9d6a2fd40ea087cf5a5f7a1cdf81d3008aa26797b"
+    }
+  ],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}
