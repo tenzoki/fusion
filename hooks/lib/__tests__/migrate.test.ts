@@ -558,6 +558,29 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const back = cut("rollback");
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
+
+  // `261017-1717-migrate-run-reuses-a-rolled-back-session-recorded-for-another-workbench-path.md`: the project moved on disk after a rollback; its home moves with it.
+  it("run refuses a rolled-back session recorded for another workbench path, unchanged, and after set-aside a fresh run backs up this tree", () => {
+    const { root, wb, home } = project();
+    expect(mig(root, home, "run").status).toBe(0);
+    const back = mig(root, home, "rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+    const old = value(mig(root, home, "status").stdout, "session")!;
+    const moved = `${root}-moved`;
+    renameSync(root, moved);
+    const [mwb, mhome, session] = [join(moved, "fusion-workbench"), join(moved, "home"), `${moved}${old.slice(root.length)}`];
+    writeFileSync(join(mwb, BENCH), `${read(mwb, BENCH)}\nA line written after the move.\n`);
+    const snap = () => [readFileSync(join(session, "state.json"), "utf-8"), readFileSync(join(session, "backup.sha256"), "utf-8"), treeHash(mwb)];
+    const before = snap();
+    const run = mig(moved, mhome, "run", "--session", session);
+    expect([run.status, run.stderr.includes(wb), run.stderr.includes(`\`bin/fusion-migrate set-aside --consent --session ${session}\``), ...snap()], run.stderr).toEqual([5, true, true, ...before]);
+    const aside = mig(moved, mhome, "set-aside", "--consent", "--session", session);
+    expect(aside.status, aside.stderr).toBe(0);
+    const tree = treeHash(mwb);
+    const fresh = mig(moved, mhome, "run");
+    expect([fresh.status, value(fresh.stdout, "result")], fresh.stderr).toEqual([0, "json-control"]);
+    expect(readFileSync(join(value(mig(moved, mhome, "status").stdout, "session")!, "backup.sha256"), "utf-8").trim()).toBe(tree);
+  }, 4 * CASE_TIMEOUT);
 });
 
 // Package 261019-0906: a legacy workbench holding no record migrates as one chunk with no write, and the record a refused plan left has two ways out.

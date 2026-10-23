@@ -512,7 +512,7 @@ function preconditions(wb: string, session: string): string[] {
 
 function run(wb: string, session: string): string[] {
   const previous = readState(session);
-  if (previous && !previous.rolled_back) current(wb, session, previous);
+  if (previous) current(wb, session, previous);
   if (previous?.done && !previous.rolled_back) return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: the session records this migration as verified"];
   if (previous && !previous.rolled_back) throw new Stop(EXIT.precondition, `a run of ${previous.migration_id} is recorded in ${session}; \`resume\` finishes it or \`rollback\` undoes it`);
   const lines = preconditions(wb, session);
@@ -755,10 +755,12 @@ function current(wb: string, session: string, s: State): void {
   const shows = stale(wb, s, i.state);
   if (shows === null) return;
   const claim = s.rollback !== null ? "a rollback in flight" : s.done ? "done" : "a run in flight";
+  // `stale` reads a rolled-back record as stale only when it is kept for another path, so that is what its opening says.
+  const head = s.rolled_back ? `${session} records ${s.migration_id} as rolled back, kept for ${s.workbench}, not this workbench` : null;
   const reset = landedFence(wb, s, i);
-  if (reset !== null) throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it. Nothing was sent or written. ${landedThenReset(wb, session, s, reset, shows).replace(/^a/, "A")}.`);
+  if (reset !== null) throw new Stop(EXIT.precondition, `${head ?? `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it`}. Nothing was sent or written. ${landedThenReset(wb, session, s, reset, shows).replace(/^a/, "A")}.`);
   const fence = idleFence(wb, s, i);
-  throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}. Nothing was sent or written. The way out: ${fence === null ? "" : `first, ${endFenceWay(wb, session, fence)}; then `}${command(wb, session, "set-aside --consent")} renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
+  throw new Stop(EXIT.precondition, `${head ?? `${session} records ${s.migration_id} as ${claim}, and this tree does not carry it: ${shows}`}. Nothing was sent or written. The way out: ${fence === null ? "" : `first, ${endFenceWay(wb, session, fence)}; then `}${command(wb, session, "set-aside --consent")} renames that directory to ${session}.stale-<UTC stamp>, deleting nothing, so its backup, repair log and operation ids stay recoverable through \`--session ${session}.stale-…\`; then this tree has no record.`);
 }
 
 /** `set-aside --consent`: moves a stale record's session directory aside, never a current one and never past a fence or intent `run` refuses on, and deletes nothing. */
