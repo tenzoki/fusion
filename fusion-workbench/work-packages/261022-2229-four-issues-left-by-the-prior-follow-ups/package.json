@@ -3,7 +3,7 @@
   "id": "bbd780d2-fa09-4a23-afc8-70535ef77893",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "The four issues left open by 261022-1604 closed fixed by plan steps 1-4; request 75 put to Prior and both 75(a) and 75(b) answered and recorded, b4047458 qualified. Closing review accept.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "a6590e7c-4917-4f10-89f0-275d4d4d9562",
+          "revision": "sha256:9f8463b05cfa3226498147183b3520e988325a27765fe42241a3697a7a793574"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}

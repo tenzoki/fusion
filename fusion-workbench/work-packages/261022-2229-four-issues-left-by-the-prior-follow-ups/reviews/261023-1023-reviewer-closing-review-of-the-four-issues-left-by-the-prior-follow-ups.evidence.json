@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "a6590e7c-4917-4f10-89f0-275d4d4d9562",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "6239b28822a9d7e68d1f962ec4cb309bceb1cc71",
+    "git_range": null
+  },
+  "brief_revision": "sha256:73f32ceb3df5b6a648b24e7b98fed0d1d4405113b3ae258bc1fc20aab0519157",
+  "plan_revision": "sha256:79fa5d4d4deb1ca76770d7a9d6a2fd40ea087cf5a5f7a1cdf81d3008aa26797b",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261022-2229-four-issues-left-by-the-prior-follow-ups/reviews/261023-1023-reviewer-closing-review-of-the-four-issues-left-by-the-prior-follow-ups.md",
+    "sha256": "sha256:a97bb62b21fa9dff47550d15f89fcf52ee69ca4c13d23250a8e0085de72231e5",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-23T08:30:33Z",
+  "extensions": {}
+}
