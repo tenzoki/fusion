@@ -5790,3 +5790,120 @@ Both pins still hold this file at `893e823f…`, its bytes at `ec76d4fd`. At `9e
 | 74 | **accepted** at Prior `b711b62`, for `9ec788e1`: 74(a) the delta `dfab3f21…` → `d6fc9da0…` as the whole delta, no correction, not replayed against `d6fc9da0…`; 74(b)(1) and 74(b)(2) accepted. `QualifiedCodecDigest` stays `dfab3f21…` | `Prior: docs/design/fusion-dependency-evaluation-request74-prior-response.md` |
 
 These rows supersede the rows of `### Requests 64 and 67 to 74, as they stand` above. No request is open.
+
+## Text delta and re-pin (request 75)
+
+**Written against:** fusion `aa4277d8` on `main` (`aa4277d8c10f8fc86b0bdf6b0934bda55d35c1fd`, 2026-10-23 08:58, "docs(codec): three pinned texts claim what the code and the table do"), `v13.3.0-28-gaa4277d8`, called `C` below. `.claude-plugin/plugin.json` there names 13.3.0. `C` holds step 4 of fusion's work package `261022-2229-four-issues-left-by-the-prior-follow-ups` (plan `261022-2234-plan-four-issues-left-by-the-prior-follow-ups.md`), the codec revision this request puts to Prior. Outside `fusion-workbench/` the working tree differs from `C` in this section alone (`git status --porcelain`). At `C` this file is 5 792 lines, `sha256:36947f8edc6d42e9d41e6d7eb875c01921da72c98613921343fde557a201b3f9`. Prior was read at `5f4d1ef` (`5f4d1ef5054b1a38a4b9ce3904c669c82aa6f049`, 2026-10-23 08:41, "fix(store): refuse an unrecorded audit_ref on a healthy run's completion"), the head of its `main`, from committed objects only. Both pin files were read with `git show b711b62:<path>`, the commit of Prior's answer to 74, as request 74 read them at the commit of Prior's answer to 72 and 73. `git diff --stat 3c29dcf 5f4d1ef -- tests/testdata/fusion-codec tests/testdata/fusion-fj01` prints nothing, so the pins are the same bytes at `3c29dcf`, `b711b62` and `5f4d1ef`, and the listing below does not depend on which of the three is read. At `5f4d1ef` `QualifiedCodecDigest` (`Prior: internal/fusionhost/workbench.go` line 22) and `codecBundleDigest` (`Prior: internal/fusionhost/codec_process_test.go` line 22) are `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, and `codecPin` (line 21) is `ec76d4fdfc928388e0003771d3eafa6211cb1b36`.
+
+**The base is the accepted, unqualified bundle:** `sha256:d6fc9da0b948cb9c8d014d17e2d799b9a4e1c53a9feea428288fb718ff388d97`, 699 729 bytes, at fusion `a69220dc`, `9ec788e1` and `0db5d0de`. Prior accepted it under 74(a) at `b711b62` as the whole delta from `dfab3f21…` and did not qualify it (`### Prior's answer to 74 at b711b62`, above). `QualifiedCodecDigest` is still `dfab3f21…`, the bundle at fusion `ec76d4fd`, 699 094 bytes. Prior's runtime refuses `d6fc9da0…` today.
+
+**The bundle:** `codec/dist/fusion-record.js` at `C` is 700 116 bytes, `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`, blob `934c5f9a`. `shasum -a 256` and `wc -c` over the working tree's file and `git show aa4277d8:codec/dist/fusion-record.js | shasum -a 256` print the same digest. `git log 0db5d0de..aa4277d8 -- codec bin/fusion-record` names `C` alone, and `git diff --stat 0db5d0de aa4277d8 -- codec bin/fusion-record` changes one line in each of three source files and two lines of the bundle. Prior's runtime refuses `b4047458…` today, as it refuses any digest other than `QualifiedCodecDigest`.
+
+This section is request 75, in two parts. 75(a) puts the text delta from `d6fc9da0…` to `b4047458…` to Prior. 75(b) asks Prior to re-snapshot both pins at `C`, re-pin `b4047458…` and run the replay its answer to 74 deferred. No line above is edited. Where this section disagrees with a section above, this section governs.
+
+### What landed, and at which commit
+
+| Commit | Plan step | What it carries |
+|---|---|---|
+| `aa4277d8` | 4 | `codec/contract/dependencies.json` (`notes[2]`), `codec/schemas/campaign.schema.json` (the `$defs` formation package `description`), `codec/contract/prior-mapping.json` (`state_mapping.description`), the bundle `b4047458…`, since the first two are inlined |
+
+The hash was checked with `git show --stat`. Plan steps 1 to 3 of the same package (`360a8a60`, `f0d06298`, `03b08c5f`) touch `catalog/`, `agents/`, `hooks/` and `skills/`, no path either pin holds, as the count below shows. The rendered Prior reviewer profile did not move under step 1, so the module bundle payload did not either. No module bundle is built for delivery here.
+
+### What changed for Prior's two pins, at `aa4277d8`
+
+Both pin files name fusion `ec76d4fd` at `b711b62`. The counts come from the command of request 74's section, which is request 72's command as 74 adapted it, with `a69220dc` replaced by `aa4277d8` and the pin read from `b711b62` where 74 read it from `3c29dcf`. `b711b62` is used because it is the commit of Prior's latest answer, the commit request 74's choice of `3c29dcf` corresponds to; the pins there equal those at Prior's head, as stated above. `$PRIOR` is `/Users/kai/Projects/productive/F09-Prior`, and the command runs from fusion's root:
+
+```
+for pin in fusion-codec:codec/ fusion-fj01:; do n=0; m=0; while read p h; do n=$((n+1)); [ "$(git show "aa4277d8:${pin#*:}$p" 2>/dev/null | shasum -a 256 | cut -c1-64)" = "$h" ] || { m=$((m+1)); echo "  moved ${pin%%:*} $p"; }; done < <(git -C "$PRIOR" show b711b62:tests/testdata/${pin%%:*}/UPSTREAM.json | jq -r '.files|to_entries[]|"\(.key) \(.value)"'); echo "${pin%%:*}: $m of $n moved"; done
+```
+
+It prints, verbatim:
+
+```
+  moved fusion-codec contract/dependencies.json
+  moved fusion-codec contract/prior-mapping.json
+  moved fusion-codec fixtures/prior/REQUESTS.md
+  moved fusion-codec schemas/campaign.schema.json
+  moved fusion-codec schemas/package.schema.json
+fusion-codec: 5 of 418 moved
+  moved fusion-fj01 codec/dist/fusion-record.js
+  moved fusion-fj01 codec/fixtures/prior/REQUESTS.md
+fusion-fj01: 2 of 744 moved
+```
+
+No pinned path is missing at `aa4277d8`.
+
+`Prior: tests/testdata/fusion-codec/UPSTREAM.json` (418 files): five differ. Two of them moved under 74 and are accepted, three moved at `C`.
+
+| Path | `sha256` at `aa4277d8` | Since | Change |
+|---|---|---|---|
+| `contract/dependencies.json` | `758c3462d135b3827607aeebe9faa4f4d6c11a7136485fe29779ad6df4167c1a` | `e2312078` (74), `C` | the third `notes` string, 74(a) item 3, then 75(a) item 1 |
+| `contract/prior-mapping.json` | `271ab4427371f38332dab558cfcb70f9e990ae56f49ec635091d9b3388f45d0d` | `C` | `state_mapping.description`, 75(a) item 3 |
+| `fixtures/prior/REQUESTS.md` | `36947f8edc6d42e9d41e6d7eb875c01921da72c98613921343fde557a201b3f9` | every request since `ec76d4fd` | the sections since `ec76d4fd`; this section changes it again |
+| `schemas/campaign.schema.json` | `ef66c67f074954526f9bf7796930af8f351c74e4abefdf3c0db69b21440fbe78` | `e2312078` (74), `C` | the formation package `description`, 74(a) item 3, then 75(a) item 2 |
+| `schemas/package.schema.json` | `68137721a5faa6cdff5673a1db9f0a21ea02468a6068dd9c0d7b0fcd857341d9` | `e2312078` (74) | as 74 states it; the same bytes as at `a69220dc`, unchanged by `C` |
+
+`git diff 0db5d0de aa4277d8 -- codec/contract codec/schemas` changes the three strings of 75(a) and nothing else. For each of the three files, `jq -S 'del(.. | .description?, .notes?)'` over `git show 0db5d0de:<file>` and over `git show aa4277d8:<file>` gives equal output (`cmp` silent): no keyword, no `$id`, no contract value and no `state_mapping` row moved. The other eight pinned schemas, `contract/transitions.json` and the 13 goldens are unchanged since `ec76d4fd`. The pin holds ten schemas, so request 74's "the other seven pinned schemas" should have read eight; its conclusion stands. No fixture was added: `git diff --name-status ec76d4fd aa4277d8 -- codec/fixtures bin/fusion-record codec/package.json` names this file alone. The pin stays at 418 files, and `fixtures/manifest.json` at 375 entries.
+
+`Prior: tests/testdata/fusion-fj01/UPSTREAM.json` (744 files, bundle `dfab3f21…`): two differ.
+
+| Path | `sha256` at `aa4277d8` | Change |
+|---|---|---|
+| `codec/dist/fusion-record.js` | `b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d` | from `dfab3f21…`: 74(a) in full, then 75(a) items 1 and 2, inlined |
+| `codec/fixtures/prior/REQUESTS.md` | `36947f8e…b3f9` | as above |
+
+The bundle's diff from `d6fc9da0…` is two hunks of one line each: line 12 559 in `dependencies_default` and line 13 223 in `campaign_schema_default`, each the inlined form of one of the two strings. It is 387 bytes longer. `prior-mapping.json` is not inlined, and none of the three old phrases ("reports every cycle", "is a proposal in", "Proposed correspondence") occurs in the bundle at `C`. `bin/fusion-record` and `codec/package.json` are unchanged. **No response delta.** No recorded request or response, seed, delta file, `codec/fixtures/legacy-v12/` or `codec/fixtures/workbench/` moved since `ec76d4fd`, and no code moved since `d6fc9da0…`, so every one of the 238 exchanges should replay through `b4047458…` exactly as through `d6fc9da0…`.
+
+### 75. Does Prior accept the three text corrections as the whole delta from `d6fc9da0…`, and will it re-pin `b4047458…`?
+
+**Closes:** (a) the condition of fusion's release tag on any commit holding plan step 4 of `261022-2234-plan-four-issues-left-by-the-prior-follow-ups.md`, under the user's ruling in `261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md` (option 2): the tag waits for Prior's acceptance of 75(a). (b) the re-snapshot and re-pin 74 announced, now of `b4047458…` in place of `d6fc9da0…`. Preferred form, as for 72 and 73: a Prior response document at a Prior commit that gives 75(a) one verdict, accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for), and reports 75(b)'s re-pin and runs at the Prior commits that carry them.
+
+#### 75(a) The text delta
+
+Three strings, descriptions and notes only, each brought in line with the code or with the table it describes. Before is `0db5d0de`, which holds `d6fc9da0…`; after is `C`.
+
+1. **`codec/contract/dependencies.json`, `notes[2]`: which cycles `reconcile` reports.** `cyclesOf` in `codec/src/cli/ops.ts` reports, for each package on a cycle no reported cycle covers yet, the first cycle through it in edge order. It does not report every cycle.
+   - Before: "Cycle detection runs over the whole depends_on graph of the workbench in two places (codec/src/cli/ops.ts): set-dependencies refuses a list that would close a cycle through the package it sets, and reconcile reports every cycle through a package in its scope. validate does not look for cycles. A cycle found later is reported, never silently cut."
+   - After: "Cycle detection runs over the whole depends_on graph of the workbench in two places (codec/src/cli/ops.ts): set-dependencies refuses a list that would close a cycle through the package it sets, and reconcile reports, for each package id in sorted order that lies on a cycle no reported cycle passes through yet, the first cycle through it in edge order, and keeps those that pass through a package in its scope. So every package in its scope that lies on a cycle lies on a reported one, but a cycle whose packages earlier reported cycles already cover is not reported, so not all cycles are. validate does not look for cycles. A cycle found later is reported, never silently cut."
+2. **`codec/schemas/campaign.schema.json`, the `$defs` formation package `description`: the state mapping is confirmed.** The root description already said every `state_mapping` row is confirmed and applied by no importer; this string still called it a proposal. Only the clause changed; the rest of the string is as it stands at `0db5d0de`.
+   - Before: "… the fusion package status it may correspond to is a proposal in codec/contract/prior-mapping.json, not a field here. …"
+   - After: "… the fusion package status it may correspond to is named in codec/contract/prior-mapping.json state_mapping (every row confirmed, applied by no importer), not a field here. …"
+3. **`codec/contract/prior-mapping.json`, `state_mapping.description`: the first word.** All seven `state_mapping` rows are `confirmed: true`.
+   - Before: "Proposed correspondence of packages.Package.State to a fusion.package/v1 status, from plan FJ00 step 6. …"
+   - After: "Confirmed correspondence of packages.Package.State to a fusion.package/v1 status, from plan FJ00 step 6. …"
+
+**Asked:** Does Prior accept these three strings as the whole delta between `d6fc9da0…` and `b4047458…`? Does any assertion in Prior's harness, host or docs read one of the three old strings?
+
+#### 75(b) Re-snapshot, re-pin and replay
+
+In `Prior: tests/testdata/fusion-codec/UPSTREAM.json`, `commit` to `aa4277d8c10f8fc86b0bdf6b0934bda55d35c1fd` and the five moved entries above, so the pin stays at 418 files. In `Prior: tests/testdata/fusion-fj01/UPSTREAM.json`, `commit` to the same, `bundle_digest` to `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d` and the two moved entries, so the pin stays at 744 entries. `codecPin` and `codecBundleDigest` in `Prior: internal/fusionhost/codec_process_test.go` and `QualifiedCodecDigest` in `Prior: internal/fusionhost/workbench.go`. `REQUESTS.md` with this section stands at the commit that appends it, after `C`, and pinning it there is Prior's choice, as at request 63. `d6fc9da0…` is not asked to be pinned on the way: `b4047458…` is the only bundle this request asks Prior to qualify.
+
+What it asks Prior to run, and what fusion asserts at `C`:
+
+- **All 238 recorded exchanges through `b4047458…`**, each through its delta files, as at 73: FJ01 6 and the handback, FJ02 15, FJ02b 20, `initialize` 26, archive 51, migration 01 to 70 (A to D) 70, migration 71 to 83 (E) 13, takeover 37. This is the replay Prior's answer to 74 deferred to "the re-snapshot and re-pin request that follows the tag". It covers 74(a)'s two evaluation changes and 75(a)'s strings at once.
+- **The shared manifest:** `TestFusionCodecSharedManifest` should pass 375 of 375 entries, 95 valid and 280 invalid (279 `schema-invalid`, 1 `unsupported-format`), schema by schema as request 72's table. No manifest entry and no fixture moved.
+- **`TestFusionAppliedRulingAndGoldens`** should pass unchanged: the 13 goldens did not move, and the `state_mapping` rows are byte-equal once the description is removed.
+- **Prior's conformance run:** `go test ./...` and `go vet ./...` green.
+
+The re-pin should change the digest, `codecPin`, the five codec-pin entries and the two fj01 entries, and nothing else in Prior's assertions. If Prior's replay differs anywhere, the differing exchange and its stdout are the finding, and a differing count is reported, not reconciled by editing either side.
+
+### What fusion does with the answer
+
+- **75(a) accepted:** a release tag may carry plan step 4 (`261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md`, option 2), and the answer is recorded here with the Prior commit that holds it. Until then no tag is cut on any commit holding `C`. 75(b) may follow the tag. Until Prior re-pins, its runtime keeps `dfab3f21…` and refuses `b4047458…`.
+- **75(a) corrected:** the correction lands before any tag carries step 4, and 75(b) is then asked of the bundle that carries it.
+- **75(a) refused or deferred:** no tag carries step 4, and the user rules.
+- **75(b) does not qualify `b4047458…`, or asks for a codec byte to change:** the finding goes to the user before any later codec revision is planned.
+- **The hand-over request follows under a later number.** `Prior: docs/design/fusion-full-surface-handover-to-fusion.md` (Prior `7ac0845`, `sha256:9eca479aa14f5de81cadfd5a004d08dc9c9eca486f13a782640eb719a4748254`, unchanged at `5f4d1ef`) asks for a request carrying H1 to H9 and "reserves no request number". That request is not part of 75. Fusion will put it under a number it assigns after this one, and it will name `b4047458…` as the codec its bundle carries. When that is not yet Prior's `QualifiedCodecDigest`, Prior answers 75(b) first, as the hand-over says. Request 75 does not take up the hand-over's B2 question.
+
+### Requests 64 and 67 to 75, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, replaced as `QualifiedCodecDigest` by `dfab3f21…` at `d372bc0` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 and 73 | **complete** at Prior `01cf2fd` and `d372bc0`, for `ec76d4fd`; `dfab3f21…` qualified; answered at `3c29dcf` | `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md` |
+| 74 | **accepted** at Prior `b711b62`, for `9ec788e1`: 74(a) the delta `dfab3f21…` → `d6fc9da0…` as the whole delta, no correction, not replayed against `d6fc9da0…`; 74(b)(1) and 74(b)(2) accepted. Its re-pin is taken up by 75(b) | `Prior: docs/design/fusion-dependency-evaluation-request74-prior-response.md` |
+| 75 | **asked**: this section, 75(a) the text delta `d6fc9da0…` → `b4047458…`, 75(b) the re-snapshot and re-pin at `aa4277d8` with the replay of 238 exchanges | — |
+
+These rows supersede the rows of `#### Requests 64 and 67 to 74, as they stand` above. Request 75 is the one open request.
