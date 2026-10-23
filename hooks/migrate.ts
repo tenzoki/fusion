@@ -680,15 +680,17 @@ function rollback(wb: string, session: string, endFence = false): string[] {
   if (i.state === "json-control" && !stored(wb, s.rollback.begin_id)) send(wb, { op: "maintenance", operation_id: s.rollback.begin_id, action: "begin" });
   const landed = s.schedule.apply.filter((a) => stored(wb, a.operation_id)).map((a) => a.chunk);
   const rb = new Map(s.schedule.rollback.map((r) => [r.chunk, r.operation_id]));
+  let sent = 0;
   try {
     for (const chunk of [...landed.sort((x, y) => y - x), 0]) {
       if (stored(wb, rb.get(chunk)!)) continue;
       send(wb, { op: "migration", operation_id: rb.get(chunk)!, phase: "rollback", plan: s.plan, chunk });
+      sent++;
       lines.push(`rolled-back-chunk=${chunk}`);
     }
   } catch (e) {
-    // Still activated, so no rollback chunk landed: the refused one was the first, and nothing binds this fence yet (codec/README.md, `## migration`).
-    if (!(e instanceof Stop) || e.code !== EXIT.refused || i.state !== "json-control") throw e;
+    // The first chunk after activation is the refused one only when this call began activated and no chunk landed in it: a rollback chunk stored before the call implies a legacy tree, because the first one removes the manifest. Then nothing binds this fence yet (codec/README.md, `## migration`); any other refusal is the codec's alone.
+    if (!(e instanceof Stop) || e.code !== EXIT.refused || i.state !== "json-control" || sent !== 0) throw e;
     throw refusedFirstChunk(wb, session, s, e);
   }
   const fence = inspect(wb).maintenance as { operation_id: string } | null;

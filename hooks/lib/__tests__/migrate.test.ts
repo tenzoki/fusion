@@ -171,7 +171,10 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
   }, 2 * CASE_TIMEOUT);
 });
 
-/** A plugin copy whose bundle is a stand-in: the real codec answers, then the process dies before its answer is read when kill.json names the request. */
+/**
+ * A plugin copy whose bundle is a stand-in: the real codec answers, then the process dies before its answer is read when kill.json names the request.
+ * A rule carrying `touch` (an absolute path) instead appends a line to that file before the real codec takes the request, and answers as the codec does.
+ */
 function killPlugin(): { plugin: string; kill: (rule: object | null) => void } {
   const plugin = join(base, "plugin");
   if (!existsSync(plugin)) {
@@ -179,11 +182,13 @@ function killPlugin(): { plugin: string; kill: (rule: object | null) => void } {
     mkdirSync(join(plugin, "codec/dist"));
     cpSync(join(REPO_ROOT, "codec/dist/fusion-record.js"), join(plugin, "real/dist/fusion-record.js"));
     cpSync(join(REPO_ROOT, "codec/package.json"), join(plugin, "real/package.json"));
-    writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { existsSync, readFileSync } from "node:fs";
+    writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { appendFileSync, existsSync, readFileSync } from "node:fs";
 const here = new URL(".", import.meta.url).pathname, input = readFileSync(0), q = JSON.parse(input);
-const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
 const k = existsSync(here + "kill.json") ? JSON.parse(readFileSync(here + "kill.json", "utf-8")) : null;
-if (k && q.phase === k.phase && q.chunk === k.chunk) process.exit(9);
+const hit = k !== null && q.phase === k.phase && q.chunk === k.chunk;
+if (hit && k.touch) appendFileSync(k.touch, "touched by the stand-in\\n");
+const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
+if (hit && !k.touch) process.exit(9);
 process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
   }
   return { plugin, kill: (rule) => (rule ? writeFileSync(join(plugin, "codec/dist/kill.json"), JSON.stringify(rule)) : rmSync(join(plugin, "codec/dist/kill.json"), { force: true })) };
@@ -530,6 +535,28 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
     const end = mig(root, home, "rollback", "--end-fence");
     expect([end.status, read(wb, ".json-state/maintenance.json"), value(mig(root, home, "status").stdout, "fence")], end.stderr).toEqual([5, fence, id]);
+  }, 4 * CASE_TIMEOUT);
+
+  // `261017-1908-migrate-rollback-treats-a-later-chunk-refused-in-the-same-call-as-the-first-chunk-after-activation.md`: chunk 2 lands and removes the manifest, then chunk 1 is refused in the same call.
+  it("a rollback chunk refused after another landed in the same call exits 8 with the codec's refusal alone, and rollback completes once the file is put back", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, wb, home } = project();
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), a, { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill(null);
+    expect(cut("run").status).toBe(0);
+    const s = JSON.parse(readFileSync(join(value(cut("status").stdout, "session")!, "state.json"), "utf-8"));
+    const writes = JSON.parse(read(wb, `archive/migrations/${s.migration_id}/chunks/1.json`)).writes as { kind: string; path: string }[];
+    const file = join(wb, writes.find((w) => w.kind === "control")!.path);
+    const bytes = readFileSync(file);
+    kill({ phase: "rollback", chunk: 1, touch: file });
+    const refused = cut("rollback");
+    kill(null);
+    const status = cut("status").stdout;
+    expect([refused.status, refused.stderr, value(status, "state"), value(status, "fence") !== "-"], refused.stderr).toEqual([8, expect.stringMatching(/rollback chunk 1 refused/), "legacy", true]);
+    expect(refused.stderr).not.toMatch(/--end-fence|stay under JSON control|ending the fence/);
+    writeFileSync(file, bytes);
+    const back = cut("rollback");
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
 });
 
