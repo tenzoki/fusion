@@ -38,9 +38,55 @@ export interface CatalogRole {
   support: Record<Host, SupportState>;
 }
 
+// The catalog's version name. v2 adds `entries` beside an unchanged `roles`:
+// the name says the shape to two decoders that read exact key sets, so an old
+// decoder refuses by version rather than by an unknown key. Decision
+// 261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md
+// (option 2).
+export const CATALOG_SCHEMA = "fusion.catalog/v2";
+
+export type EntryKind = "agent" | "skill";
+export type EntryClass = "asks" | "dispatches" | "plain";
+export type ArgumentKind = "flag" | "option" | "positional" | "parameter-line" | "first-message";
+
+export const ENTRY_KINDS: readonly EntryKind[] = ["agent", "skill"];
+export const ENTRY_CLASSES: readonly EntryClass[] = ["asks", "dispatches", "plain"];
+// Prior's argument kinds: `internal/fusionhost/admission.go` at `08c57fb`,
+// the `Argument*` constants, which are inventory.schema.json's enum.
+export const ARGUMENT_KINDS: readonly ArgumentKind[] = ["flag", "option", "positional", "parameter-line", "first-message"];
+// The three host services an entry may require beyond what its workflow
+// declares: the ones Prior binds as model tools of a role run.
+export const ENTRY_SERVICES = ["host.question.v1", "host.exec.v1", "host.dispatch.v1"] as const;
+export const SUPPORT_STATES: readonly SupportState[] = ["supported", "planned", "unsupported"];
+
+export interface EntryArgument {
+  name: string;
+  kind: ArgumentKind;
+  required: boolean;
+  values?: string[];
+  note?: string;
+}
+
+export interface EntryArguments {
+  items: EntryArgument[];
+  note?: string;
+}
+
+/** One function a user starts: a Claude agent or a skill, and its Prior profile. */
+export interface CatalogEntry {
+  id: string;
+  kind: EntryKind;
+  profile: string;
+  class: EntryClass;
+  arguments: EntryArguments;
+  requires: string[];
+  support: Record<Host, SupportState>;
+}
+
 export interface Catalog {
-  schema: "fusion.catalog/v1";
+  schema: typeof CATALOG_SCHEMA;
   roles: CatalogRole[];
+  entries: CatalogEntry[];
 }
 
 export interface ProfilePart {
@@ -66,8 +112,19 @@ export interface Profile {
 // the struct's field order, and the bundle JSON is written in it.
 // ---------------------------------------------------------------------------
 
-// parseExternalCatalog: the anonymous catalog struct, fields Schema, Roles.
-export const PRIOR_CATALOG_KEYS = ["schema", "roles"] as const;
+// parseExternalCatalog: the anonymous catalog struct, fields Schema, Roles,
+// and under fusion.catalog/v2 Entries, which Prior's loader gains at its
+// step 28 on request 76.
+export const PRIOR_CATALOG_KEYS = ["schema", "roles", "entries"] as const;
+// The entry: the shape Prior's hand-over H1 proposes. No Prior loader decodes
+// it yet; the key set is fusion's proposal in request 76, held to the same
+// exactness as the role so the module and Prior can decode it alike.
+export const PRIOR_ENTRY_KEYS = ["id", "kind", "profile", "class", "arguments", "requires", "support"] as const;
+// The argument declaration is Prior's inventory.schema.json `arguments` and
+// `$defs/argument`, which carry optional keys: required ones, then the ones
+// that may be present.
+export const PRIOR_ARGUMENTS_KEYS = { required: ["items"], optional: ["note"] } as const;
+export const PRIOR_ARGUMENT_KEYS = { required: ["name", "kind", "required"], optional: ["values", "note"] } as const;
 // ExternalRole: ID, ClaudeName, PriorIDs, Aliases, Support.
 export const PRIOR_ROLE_KEYS = ["id", "claude_name", "prior_ids", "aliases", "support"] as const;
 // ExternalAlias: ID, Domain.
@@ -119,8 +176,8 @@ export function loadCatalog(catalogDir: string): { catalog: Catalog; bytes: Buff
   const path = join(catalogDir, "catalog.json");
   const bytes = readFileSync(path);
   const catalog = JSON.parse(bytes.toString("utf8")) as Catalog;
-  if (catalog.schema !== "fusion.catalog/v1" || !Array.isArray(catalog.roles)) {
-    throw new RenderError(`${path}: not a fusion.catalog/v1 document`);
+  if (catalog.schema !== CATALOG_SCHEMA || !Array.isArray(catalog.roles) || !Array.isArray(catalog.entries)) {
+    throw new RenderError(`${path}: not a ${CATALOG_SCHEMA} document`);
   }
   return { catalog, bytes };
 }
@@ -296,9 +353,9 @@ export function renderClaude(catalogDir: string, outDir: string): ClaudeRenderRe
 export interface PriorRenderResult {
   /** Files written under `<outDir>`, relative to it. */
   written: string[];
-  /** Planned roles with nothing to ship yet, each with the reason. */
+  /** Planned profiles with nothing to ship yet, each with the reason. */
   skipped: { id: string; reason: string }[];
-  /** Supported roles with no text: Prior refuses a bundle without it. */
+  /** Supported profiles with no text: Prior refuses a bundle without it. */
   missing: { id: string; reason: string }[];
 }
 
@@ -316,6 +373,17 @@ function keysEqual(actual: string[], expected: readonly string[]): boolean {
   return actual.length === expected.length && expected.every((k) => actual.includes(k));
 }
 
+/** Every required key present, nothing outside required and optional. */
+function keysWithin(actual: string[], keys: { required: readonly string[]; optional: readonly string[] }): boolean {
+  return keys.required.every((k) => actual.includes(k)) && actual.every((k) => keys.required.includes(k) || keys.optional.includes(k));
+}
+
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+const ID_SHAPE = /^[a-z][a-z0-9-]*$/;
+
 /**
  * Refuses a catalog whose key sets differ from the ones Prior's loader
  * decodes: an extra key is `ErrExternalContract` on Prior's side, and a
@@ -325,6 +393,26 @@ export function checkPriorCatalogKeys(raw: unknown): void {
   const doc = raw as Record<string, unknown>;
   if (!keysEqual(Object.keys(doc), PRIOR_CATALOG_KEYS)) {
     throw new RenderError(`catalog.json: keys ${Object.keys(doc).join(",")} are not ${PRIOR_CATALOG_KEYS.join(",")}`);
+  }
+  if (!Array.isArray(doc.roles) || !Array.isArray(doc.entries)) {
+    throw new RenderError("catalog.json: roles and entries must be arrays");
+  }
+  for (const entry of doc.entries as unknown[]) {
+    if (!isObject(entry) || !keysEqual(Object.keys(entry), PRIOR_ENTRY_KEYS)) {
+      throw new RenderError(`catalog.json: entry ${String(isObject(entry) ? entry.id : entry)} keys are not ${PRIOR_ENTRY_KEYS.join(",")}`);
+    }
+    const args = entry.arguments;
+    if (!isObject(args) || !keysWithin(Object.keys(args), PRIOR_ARGUMENTS_KEYS) || !Array.isArray(args.items)) {
+      throw new RenderError(`catalog.json: entry ${String(entry.id)} arguments keys are not items[,note]`);
+    }
+    for (const arg of args.items as unknown[]) {
+      if (!isObject(arg) || !keysWithin(Object.keys(arg), PRIOR_ARGUMENT_KEYS)) {
+        throw new RenderError(`catalog.json: entry ${String(entry.id)} argument keys are not name,kind,required[,values][,note]`);
+      }
+    }
+    if (!isObject(entry.support) || !keysEqual(Object.keys(entry.support), PRIOR_HOSTS)) {
+      throw new RenderError(`catalog.json: entry ${String(entry.id)} support hosts are not ${PRIOR_HOSTS.join(",")}`);
+    }
   }
   for (const role of doc.roles as Record<string, unknown>[]) {
     if (!keysEqual(Object.keys(role), PRIOR_ROLE_KEYS)) {
@@ -342,30 +430,141 @@ export function checkPriorCatalogKeys(raw: unknown): void {
 }
 
 /**
- * Writes `profiles/<id>.md` and `profiles/<id>.json` for every role whose
- * `prior` state is not `unsupported` and whose parts exist, and `catalog.json`
- * byte for byte. A planned role without parts gets nothing: Prior's follow-up
- * of 2026-10-11 wants absent preview files omitted, never a placeholder. A
- * supported role without parts is reported under `missing`.
+ * The document-level verdict on a catalog, as the module's Go decoder
+ * (`adapters/prior/fusionmodule/internal/steps/catalog.go` `LoadCatalog`)
+ * reaches it for the top level and the entries: the version name, the key
+ * sets, and every entry value from its closed set. The two are held to the
+ * same verdict by the shared case table `testdata/catalog-decode-cases.v2.json`.
+ * The role values (support words, alias and prior-id rules) are the Go
+ * decoder's and the catalog tests', and are not repeated here.
+ */
+export function checkCatalogDocument(raw: unknown): void {
+  if (!isObject(raw) || raw.schema !== CATALOG_SCHEMA) {
+    throw new RenderError(`catalog.json: not a ${CATALOG_SCHEMA} document`);
+  }
+  checkPriorCatalogKeys(raw);
+  if ((raw.roles as unknown[]).length === 0 || (raw.entries as unknown[]).length === 0) {
+    throw new RenderError("catalog.json: roles and entries must each hold at least one item");
+  }
+  const ids = new Set<string>();
+  for (const e of raw.entries as Record<string, unknown>[]) {
+    const where = `catalog.json: entry ${JSON.stringify(e.id)}`;
+    if (typeof e.id !== "string" || !ID_SHAPE.test(e.id) || ids.has(e.id)) throw new RenderError(`${where}: id not an asset id, or repeated`);
+    ids.add(e.id);
+    if (!ENTRY_KINDS.includes(e.kind as EntryKind)) throw new RenderError(`${where}: kind ${JSON.stringify(e.kind)}`);
+    if (typeof e.profile !== "string" || !ID_SHAPE.test(e.profile)) throw new RenderError(`${where}: profile ${JSON.stringify(e.profile)}`);
+    if (!ENTRY_CLASSES.includes(e.class as EntryClass)) throw new RenderError(`${where}: class ${JSON.stringify(e.class)}`);
+    if (!Array.isArray(e.requires)) throw new RenderError(`${where}: requires is not an array`);
+    const services = new Set<string>();
+    for (const s of e.requires as unknown[]) {
+      if (typeof s !== "string" || !(ENTRY_SERVICES as readonly string[]).includes(s) || services.has(s)) {
+        throw new RenderError(`${where}: requires ${JSON.stringify(s)} is not one of ${ENTRY_SERVICES.join(", ")}, or repeated`);
+      }
+      services.add(s);
+    }
+    const args = e.arguments as Record<string, unknown>;
+    if ("note" in args && typeof args.note !== "string") throw new RenderError(`${where}: arguments.note`);
+    for (const a of args.items as Record<string, unknown>[]) {
+      const ok =
+        typeof a.name === "string" &&
+        a.name !== "" &&
+        ARGUMENT_KINDS.includes(a.kind as ArgumentKind) &&
+        typeof a.required === "boolean" &&
+        (!("values" in a) || (Array.isArray(a.values) && a.values.length > 0 && a.values.every((v) => typeof v === "string"))) &&
+        (!("note" in a) || typeof a.note === "string");
+      if (!ok) throw new RenderError(`${where}: argument ${JSON.stringify(a.name)}`);
+    }
+    for (const host of PRIOR_HOSTS) {
+      if (!SUPPORT_STATES.includes((e.support as Record<string, unknown>)[host] as SupportState)) {
+        throw new RenderError(`${where}: support.${host}`);
+      }
+    }
+  }
+}
+
+/** The entry services a text names, in ENTRY_SERVICES order. */
+export function servicesNamed(text: string): string[] {
+  return ENTRY_SERVICES.filter((s) => text.includes(s));
+}
+
+/**
+ * The entry invariants that need the fusion tree, checked against it:
+ *
+ * - an entry of kind `agent` exactly when `agents/<id>.md` exists, of kind
+ *   `skill` exactly when `skills/<id>/SKILL.md` exists, so every id is a
+ *   Claude agent name or a skill directory name and never both;
+ * - an entry supported on `prior` whose profile has its parts has at least
+ *   one `prior` part, and the entry services those `prior` parts name are
+ *   exactly its `requires`: the declaration is read off the text that makes
+ *   the calls, never written beside it. A supported entry with no profile or
+ *   no parts written is `renderPrior`'s `missing`, as for a role.
+ */
+export function checkEntries(catalog: Catalog, catalogDir: string, fusionRoot: string): void {
+  for (const e of catalog.entries) {
+    const agent = existsSync(join(fusionRoot, "agents", `${e.id}.md`));
+    const skill = existsSync(join(fusionRoot, "skills", e.id, "SKILL.md"));
+    if ((e.kind === "agent") !== agent || (e.kind === "skill") !== skill) {
+      throw new RenderError(`entry ${e.id}: kind ${e.kind}, but agents/${e.id}.md ${agent ? "exists" : "is absent"} and skills/${e.id}/SKILL.md ${skill ? "exists" : "is absent"}`);
+    }
+    if (e.support.prior !== "supported") continue;
+    const profile = loadProfile(catalogDir, e.profile);
+    if (profile === null || partsState(catalogDir, profile) === "absent") continue;
+    const prior = profile.parts.filter((p) => p.tag === "prior");
+    if (prior.length === 0) {
+      throw new RenderError(`entry ${e.id}: supported on prior, and profile ${e.profile} has no prior part`);
+    }
+    const named = servicesNamed(prior.map((p) => readFileSync(partPath(catalogDir, profile, p), "utf8")).join("\n"));
+    const declared = ENTRY_SERVICES.filter((s) => e.requires.includes(s));
+    if (named.join(",") !== declared.join(",")) {
+      throw new RenderError(`entry ${e.id}: requires ${declared.join(",") || "nothing"}, and the prior parts of ${e.profile} name ${named.join(",") || "nothing"}`);
+    }
+  }
+}
+
+/**
+ * The profiles the Prior render ships, each once: a role's own id and an
+ * entry's `profile`, in catalog order, roles first, for every referrer whose
+ * `prior` state is not `unsupported`. A profile named by an agent entry and
+ * by its role is one profile; its state is `supported` when any referrer is.
+ */
+export function priorProfiles(catalog: Catalog): { id: string; state: SupportState }[] {
+  const states = new Map<string, SupportState>();
+  const referrers: { profile: string; state: SupportState }[] = [
+    ...catalog.roles.map((r) => ({ profile: r.id, state: r.support.prior })),
+    ...catalog.entries.map((e) => ({ profile: e.profile, state: e.support.prior })),
+  ];
+  for (const { profile, state } of referrers) {
+    if (state === "unsupported") continue;
+    if (states.get(profile) !== "supported") states.set(profile, state);
+  }
+  return [...states].map(([id, state]) => ({ id, state }));
+}
+
+/**
+ * Writes `profiles/<id>.md` and `profiles/<id>.json` for every profile a role
+ * or an entry names whose `prior` state is not `unsupported` and whose parts
+ * exist, and `catalog.json` byte for byte. A planned profile without parts
+ * gets nothing: Prior's follow-up of 2026-10-11 wants absent preview files
+ * omitted, never a placeholder. A supported one without parts is reported
+ * under `missing`.
  */
 export function renderPrior(catalogDir: string, outDir: string, ctx?: Partial<IncludeContext>): PriorRenderResult {
   const { catalog, bytes } = loadCatalog(catalogDir);
-  checkPriorCatalogKeys(JSON.parse(bytes.toString("utf8")));
+  checkCatalogDocument(JSON.parse(bytes.toString("utf8")));
   const fusionRoot = ctx?.fusionRoot ?? fusionRootOf(catalogDir);
+  checkEntries(catalog, catalogDir, fusionRoot);
   const include: IncludeContext = { fusionRoot, commit: ctx?.commit ?? fusionCommit(fusionRoot) };
   const result: PriorRenderResult = { written: [], skipped: [], missing: [] };
   mkdirSync(join(outDir, "profiles"), { recursive: true });
-  for (const role of catalog.roles) {
-    const state = role.support.prior;
-    if (state === "unsupported") continue;
-    const profile = loadProfile(catalogDir, role.id);
+  for (const { id, state } of priorProfiles(catalog)) {
+    const profile = loadProfile(catalogDir, id);
     const absent = profile === null ? "no profile" : partsState(catalogDir, profile) === "absent" ? "parts listed, none written yet" : null;
     if (absent !== null) {
-      (state === "supported" ? result.missing : result.skipped).push({ id: role.id, reason: absent });
+      (state === "supported" ? result.missing : result.skipped).push({ id, reason: absent });
       continue;
     }
-    const md = join("profiles", `${role.id}.md`);
-    const json = join("profiles", `${role.id}.json`);
+    const md = join("profiles", `${id}.md`);
+    const json = join("profiles", `${id}.json`);
     writeFileSync(join(outDir, md), renderParts(catalogDir, profile!, "prior", include));
     writeFileSync(join(outDir, json), `${JSON.stringify(priorProfileJson(profile!), null, 2)}\n`);
     result.written.push(md, json);

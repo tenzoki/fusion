@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"slices"
 
 	api "github.com/kai/prior/moduleapi/v1"
 )
@@ -20,7 +21,7 @@ type Alias struct {
 	Domain string `json:"domain"`
 }
 
-// Role is one catalog.json entry.
+// Role is one catalog.json role.
 type Role struct {
 	ID         string            `json:"id"`
 	ClaudeName *string           `json:"claude_name"`
@@ -59,39 +60,81 @@ type Workflow struct {
 	Requires    []string `json:"requires"`
 }
 
-// Catalog resolves role names, canonical and alias, to supported roles.
+// CatalogSchema is the catalog's version name: v2 adds entries beside an
+// unchanged roles list, so a decoder that reads exact key sets refuses an
+// unknown shape by its version (decision 261023-1854-does-the-catalog-gain-
+// entries-under-fusion-catalog-v1-or-as-v2.md, option 2).
+const CatalogSchema = "fusion.catalog/v2"
+
+// EntryServices are the host services an entry may require: the three Prior
+// binds as model tools of a role run.
+var EntryServices = []string{"host.question.v1", "host.exec.v1", "host.dispatch.v1"}
+
+// EntryArgument is one argument an entry declares, in the shape of Prior's
+// inventory.schema.json $defs/argument: values and note are optional.
+type EntryArgument struct {
+	Name     string   `json:"name"`
+	Kind     string   `json:"kind"`
+	Required bool     `json:"required"`
+	Values   []string `json:"values,omitempty"`
+	Note     string   `json:"note,omitempty"`
+}
+
+// EntryArguments is an entry's argument declaration: items, and an optional
+// note.
+type EntryArguments struct {
+	Items []EntryArgument `json:"items"`
+	Note  string          `json:"note,omitempty"`
+}
+
+// Entry is one function a user starts, an agent or a skill, with the profile
+// it runs under. The key set is fusion's proposal to Prior (hand-over H1), held
+// to the role's exactness.
+type Entry struct {
+	ID        string            `json:"id"`
+	Kind      string            `json:"kind"`
+	Profile   string            `json:"profile"`
+	Class     string            `json:"class"`
+	Arguments EntryArguments    `json:"arguments"`
+	Requires  []string          `json:"requires"`
+	Support   map[string]string `json:"support"`
+}
+
+// Catalog resolves role names, canonical and alias, to supported roles, and
+// holds the entries in document order.
 type Catalog struct {
-	roles map[string]Role
-	names map[string]Alias
+	roles   map[string]Role
+	names   map[string]Alias
+	entries []Entry
+}
+
+// Entries returns the catalog's entries in document order.
+func (c *Catalog) Entries() []Entry {
+	return append([]Entry(nil), c.entries...)
 }
 
 // LoadCatalog decodes catalog.json with Prior's checks: unique canonical ids,
 // two support states each from the three words, every prior id either the
-// canonical id or a declared alias, no alias shadowing a role or another alias.
+// canonical id or a declared alias, no alias shadowing a role or another alias;
+// and the entries with the checks decodeEntry names.
 func LoadCatalog(b *Bundle) (*Catalog, error) {
 	body, err := b.Asset("catalog.json")
 	if err != nil {
 		return nil, err
 	}
 	var doc struct {
-		Schema string            `json:"schema"`
-		Roles  []json.RawMessage `json:"roles"`
+		Schema  string            `json:"schema"`
+		Roles   []json.RawMessage `json:"roles"`
+		Entries []json.RawMessage `json:"entries"`
 	}
-	if decodeExact(body, &doc, "schema", "roles") != nil || doc.Schema != "fusion.catalog/v1" || len(doc.Roles) == 0 {
+	if decodeExact(body, &doc, "schema", "roles", "entries") != nil || doc.Schema != CatalogSchema || len(doc.Roles) == 0 || len(doc.Entries) == 0 {
 		return nil, fmt.Errorf("%w: catalog.json", ErrBundle)
 	}
 	c := &Catalog{roles: map[string]Role{}, names: map[string]Alias{}}
 	for _, raw := range doc.Roles {
 		var r Role
-		if decodeExact(raw, &r, "id", "claude_name", "prior_ids", "aliases", "support") != nil || !assetID.MatchString(r.ID) || r.PriorIDs == nil || r.Aliases == nil || len(r.Support) != 2 {
+		if decodeExact(raw, &r, "id", "claude_name", "prior_ids", "aliases", "support") != nil || !assetID.MatchString(r.ID) || r.PriorIDs == nil || r.Aliases == nil || !supportValid(r.Support) {
 			return nil, fmt.Errorf("%w: catalog.json role %q", ErrBundle, r.ID)
-		}
-		for _, host := range []string{"prior", "claude-code"} {
-			switch r.Support[host] {
-			case "supported", "planned", "unsupported":
-			default:
-				return nil, fmt.Errorf("%w: catalog.json role %q support.%s", ErrBundle, r.ID, host)
-			}
 		}
 		if _, exists := c.roles[r.ID]; exists {
 			return nil, fmt.Errorf("%w: catalog.json role %q twice", ErrBundle, r.ID)
@@ -131,7 +174,119 @@ func LoadCatalog(b *Bundle) (*Catalog, error) {
 			c.names[name] = Alias{ID: id, Domain: domain}
 		}
 	}
+	ids := map[string]bool{}
+	for _, raw := range doc.Entries {
+		e, err := decodeEntry(raw)
+		if err != nil {
+			return nil, err
+		}
+		if ids[e.ID] {
+			return nil, fmt.Errorf("%w: catalog.json entry %q twice", ErrBundle, e.ID)
+		}
+		ids[e.ID] = true
+		c.entries = append(c.entries, e)
+	}
 	return c, nil
+}
+
+// supportValid holds a support map to exactly the two hosts, each in one of
+// the three states.
+func supportValid(support map[string]string) bool {
+	if len(support) != 2 {
+		return false
+	}
+	for _, host := range []string{"prior", "claude-code"} {
+		switch support[host] {
+		case "supported", "planned", "unsupported":
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+// decodeEntry decodes one entry with exact key sets at every level: id and
+// profile asset ids, kind agent or skill, class asks, dispatches or plain,
+// requires unique and each one of EntryServices, every argument named, of one
+// of Prior's five kinds, with a non-empty values list when it has one, and a
+// support map as a role's. That an entry names a Claude agent or skill and
+// that its requires match its profile's text are the catalog tests' checks
+// against the fusion tree; the module holds no such tree.
+func decodeEntry(raw json.RawMessage) (Entry, error) {
+	var e struct {
+		ID        string            `json:"id"`
+		Kind      string            `json:"kind"`
+		Profile   string            `json:"profile"`
+		Class     string            `json:"class"`
+		Arguments json.RawMessage   `json:"arguments"`
+		Requires  []string          `json:"requires"`
+		Support   map[string]string `json:"support"`
+	}
+	refuse := func(what string) (Entry, error) {
+		return Entry{}, fmt.Errorf("%w: catalog.json entry %q %s", ErrBundle, e.ID, what)
+	}
+	if decodeExact(raw, &e, "id", "kind", "profile", "class", "arguments", "requires", "support") != nil {
+		return refuse("keys")
+	}
+	if !assetID.MatchString(e.ID) || !assetID.MatchString(e.Profile) {
+		return refuse("id or profile")
+	}
+	if e.Kind != "agent" && e.Kind != "skill" {
+		return refuse("kind")
+	}
+	switch e.Class {
+	case "asks", "dispatches", "plain":
+	default:
+		return refuse("class")
+	}
+	if !supportValid(e.Support) {
+		return refuse("support")
+	}
+	seen := map[string]bool{}
+	for _, name := range e.Requires {
+		if seen[name] || !slices.Contains(EntryServices, name) {
+			return refuse("requires " + name)
+		}
+		seen[name] = true
+	}
+	var args struct {
+		Items []json.RawMessage `json:"items"`
+		Note  string            `json:"note"`
+	}
+	if decodeKeys(e.Arguments, &args, []string{"items"}, "note") != nil || args.Items == nil {
+		return refuse("arguments")
+	}
+	out := Entry{ID: e.ID, Kind: e.Kind, Profile: e.Profile, Class: e.Class, Requires: e.Requires, Support: e.Support, Arguments: EntryArguments{Items: []EntryArgument{}, Note: args.Note}}
+	for _, item := range args.Items {
+		var a EntryArgument
+		if decodeKeys(item, &a, []string{"name", "kind", "required"}, "values", "note") != nil || a.Name == "" || (a.Values != nil && len(a.Values) == 0) {
+			return refuse("argument")
+		}
+		switch a.Kind {
+		case "flag", "option", "positional", "parameter-line", "first-message":
+		default:
+			return refuse("argument " + a.Name + " kind")
+		}
+		out.Arguments.Items = append(out.Arguments.Items, a)
+	}
+	return out, nil
+}
+
+// decodeKeys is decodeExact for an object with optional keys: every required
+// key, and of the optional ones exactly those present, so a key outside the
+// two lists or a null value is refused as decodeExact refuses it.
+func decodeKeys(body []byte, out any, required []string, optional ...string) error {
+	var obj map[string]json.RawMessage
+	if json.Unmarshal(body, &obj) != nil {
+		return ErrBundle
+	}
+	fields := append([]string(nil), required...)
+	for _, name := range optional {
+		if _, ok := obj[name]; ok {
+			fields = append(fields, name)
+		}
+	}
+	return decodeExact(body, out, fields...)
 }
 
 // Resolve maps a canonical id or alias to its role and domain. Only a role

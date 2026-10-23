@@ -14,8 +14,8 @@ install: `install.sh` copies a fixed list of entries and `catalog/` is not on it
 
 | Path | What it is |
 |---|---|
-| `catalog.json` | The roles: canonical id, Claude agent name, Prior ids, aliases with their domain, and one support state per host (`supported`, `planned`, `unsupported`). Copied byte for byte into the bundle. |
-| `profiles/<id>/profile.json` | A role's profile: its `parts` list (fusion's own, never shipped) and the seven keys Prior reads. |
+| `catalog.json` | A `fusion.catalog/v2` document. `roles`: canonical id, Claude agent name, Prior ids, aliases with their domain, and one support state per host (`supported`, `planned`, `unsupported`). `entries`: one per function a user starts, an agent or a skill, each with `id`, `kind` (`agent`, `skill`), `profile`, `class` (`asks`, `dispatches`, `plain`), `arguments` (`{items: [{name, kind, required, values?, note?}], note?}`, kinds `flag`, `option`, `positional`, `parameter-line`, `first-message`), `requires` (from `host.question.v1`, `host.exec.v1`, `host.dispatch.v1`) and `support`. Copied byte for byte into the bundle. v2 is decision `261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md` (option 2). |
+| `profiles/<id>/profile.json` | A role's or an entry's profile: its `parts` list (fusion's own, never shipped) and the seven keys Prior reads. |
 | `profiles/<id>/parts/*.md` | The role text, in order, each file tagged `neutral`, `claude` or `prior` in `profile.json`. |
 | `workflows/<id>.v1.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. Two exist: `explorer.v1.json`, one durable role, and `repair.v1.json`, the ten-step reviewed repair of Prior's answer 69. |
 | `schemas/*.schema.json` | The schemas of the three file kinds above; their `description` fields document each shape. |
@@ -24,6 +24,7 @@ install: `install.sh` copies a fixed list of entries and `catalog/` is not on it
 | `src/render.ts` | The renderer and its CLI. |
 | `src/__tests__/render.test.ts` | The contract, as tests. |
 | `src/__tests__/frozen.test.ts` | The freeze, as tests. |
+| `testdata/catalog-decode-cases.v2.json` | Catalog documents with the verdict each must get, asserted by `render.test.ts` against `checkCatalogDocument` and by the module's `internal/steps/catalog_test.go` against `LoadCatalog`, so the two decoders agree. |
 
 ## The two commands
 
@@ -45,8 +46,10 @@ written is skipped too.
 npm run render -- prior <dir>
 ```
 
-Writes into an empty `<dir>`, for every role whose `prior` state is not
-`unsupported` and whose parts exist:
+Writes into an empty `<dir>`, for every profile a role or an entry names whose
+`prior` state is not `unsupported` and whose parts exist, each profile once
+(an agent entry names its role's profile, and that is one profile; its state
+is `supported` when any role or entry naming it is):
 
 - `profiles/<id>.md`: the `neutral` and `prior` parts concatenated. The one
   directive a `prior` part may carry, `{{include rules/<name>.md}}` on a line
@@ -59,17 +62,26 @@ Writes into an empty `<dir>`, for every role whose `prior` state is not
 - `profiles/<id>.json`: the profile with exactly the seven keys Prior's loader
   decodes, `parts` dropped, in Prior's struct order.
 
-And `catalog.json`, byte for byte, after a check that its key sets are exactly
-the ones Prior decodes. The key sets are the constants `PRIOR_*_KEYS` in
+And `catalog.json`, byte for byte, after two checks. The first,
+`checkCatalogDocument`, holds the version name, the key sets and every entry
+value to its closed set. The role key sets are the constants `PRIOR_*_KEYS` in
 `src/render.ts`, derived from the Go structs of Prior
 `internal/fusionhost/external_catalog.go` at `5199cf1`, which decodes with
 unknown fields rejected and an exact key count: one key more or less is a
-refused bundle.
+refused bundle. The entry key sets (`PRIOR_ENTRY_KEYS`,
+`PRIOR_ARGUMENTS_KEYS`, `PRIOR_ARGUMENT_KEYS`) are fusion's proposal to Prior
+in request 76, held to the same exactness; the argument declaration carries
+the optional keys of Prior's inventory schema. The second, `checkEntries`,
+reads the fusion tree: an entry is of kind `agent` exactly when
+`agents/<id>.md` exists and of kind `skill` exactly when
+`skills/<id>/SKILL.md` exists; an entry `supported` on `prior` whose profile
+has parts has at least one `prior` part, and the entry services those parts
+name are exactly its `requires`.
 
 Support states are carried through, not enforced here: that a `planned` role
-and an alias never dispatch is Prior's check. A `planned` role with no parts
-gets nothing written and nothing listed, never a placeholder (Prior's
-follow-up of 2026-10-11). A `supported` role with no parts is reported as
+and an alias never dispatch is Prior's check. A `planned` profile with no
+parts gets nothing written and nothing listed, never a placeholder (Prior's
+follow-up of 2026-10-11). A `supported` profile with no parts is reported as
 missing and the command exits 1, because Prior refuses a bundle whose
 supported role has no text. The bundle's `workflows/` and `schemas/` are
 copied by the bundle assembler, `adapters/prior/fusionmodule/cmd/fusion-bundle/`

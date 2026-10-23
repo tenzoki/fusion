@@ -8,7 +8,7 @@ Split off package `261023-1846-prior-full-surface-handover-h1-to-h9` on the user
 
 The bundle payload carries the installed plugin tree (decision D4, option 2) and the lifecycle hooks with the plugin files they read; the hook rows keep going to `orchestrator-events.jsonl` (decision D1, option 1).
 
-The steps are those of `work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/plans/261023-1854-plan-prior-full-surface-handover-h1-to-h9.md`, cited by number and kept as anchors: steps 19, 20 and 21. Their Files, Changes, Acceptance and Verification lines are this package's brief; its own plan carries them by citation.
+The steps are those of `261023-1854-plan-prior-full-surface-handover-h1-to-h9.md`, cited by number and kept as anchors: steps 19, 20 and 21. Their Files, Changes, Acceptance and Verification lines are this package's brief; its own plan carries them by citation.
 
 ## Depends on
 

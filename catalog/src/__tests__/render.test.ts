@@ -13,32 +13,61 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
+  CATALOG_SCHEMA,
   INCLUDE_DIRECTIVE,
   PRIOR_ALIAS_KEYS,
   PRIOR_CATALOG_KEYS,
+  PRIOR_ENTRY_KEYS,
   PRIOR_HOSTS,
   PRIOR_PROFILE_KEYS,
   PRIOR_ROLE_KEYS,
   RenderError,
   catalogRoot,
+  checkCatalogDocument,
+  checkEntries,
   checkPriorCatalogKeys,
   fusionCommit,
   fusionRootOf,
   loadCatalog,
   loadProfile,
   partsState,
+  priorProfiles,
   provenanceLine,
   readJson,
   renderClaude,
   renderPrior,
   type Catalog,
+  type CatalogEntry,
   type CatalogRole,
   type Profile,
 } from "../render.js";
 
 const CATALOG = catalogRoot();
 const FUSION = fusionRootOf(CATALOG);
-const { catalog } = loadCatalog(CATALOG);
+
+// The live catalog. Loaded once; when it does not load, every group that
+// reads it is one failing case naming the error, and the fixture groups still
+// run. That is the state between a renderer change and the data change that
+// follows it, and it stays red rather than skipped.
+const live: { catalog: Catalog; error: null } | { catalog: null; error: unknown } = (() => {
+  try {
+    return { catalog: loadCatalog(CATALOG).catalog, error: null };
+  } catch (error) {
+    return { catalog: null, error };
+  }
+})();
+
+function describeLive(name: string, body: (catalog: Catalog) => void): void {
+  describe(name, () => {
+    if (live.catalog === null) {
+      it("loads the live catalog.json", () => {
+        throw live.error;
+      });
+      return;
+    }
+    body(live.catalog);
+  });
+}
 
 const scratch: string[] = [];
 function tmp(label: string): string {
@@ -96,7 +125,6 @@ function expectValid(validate: ValidateFunction, doc: unknown, what: string): vo
 
 const profileIds = readdirSync(join(CATALOG, "profiles"));
 const workflowFiles = readdirSync(join(CATALOG, "workflows"));
-const roleById = new Map(catalog.roles.map((r) => [r.id, r]));
 
 /** Prior's `names` map: canonical ids and aliases, each to one role and one domain. */
 function nameMap(c: Catalog): Map<string, { id: string; domain: string }> {
@@ -111,17 +139,25 @@ function nameMap(c: Catalog): Map<string, { id: string; domain: string }> {
   return names;
 }
 
-describe("catalog data", () => {
+describeLive("catalog data", (catalog) => {
+  const roleById = new Map(catalog.roles.map((r) => [r.id, r]));
+  const entryProfiles = new Set(catalog.entries.map((e) => e.profile));
+
   it("catalog.json validates against catalog.schema.json", () => {
     expectValid(validCatalog, catalog, "catalog.json");
   });
 
-  it("every profile.json validates, names its directory and a catalog entry, and lists existing part files or none", () => {
+  it("catalog.json passes the document check and the entry invariants against the fusion tree", () => {
+    expect(() => checkCatalogDocument(readJson(join(CATALOG, "catalog.json")))).not.toThrow();
+    expect(() => checkEntries(catalog, CATALOG, FUSION)).not.toThrow();
+  });
+
+  it("every profile.json validates, names its directory and a role or an entry, and lists existing part files or none", () => {
     for (const id of profileIds) {
       const profile = loadProfile(CATALOG, id);
       expect(profile, `profiles/${id}/profile.json`).not.toBeNull();
       expectValid(validProfile, profile, `profiles/${id}/profile.json`);
-      expect(roleById.has(id), `profiles/${id} has no catalog entry`).toBe(true);
+      expect(roleById.has(id) || entryProfiles.has(id), `profiles/${id} is named by no role and no entry`).toBe(true);
       expect(() => partsState(CATALOG, profile!)).not.toThrow();
     }
   });
@@ -212,6 +248,9 @@ describe("catalog data", () => {
         expect(keysOf(alias).sort()).toEqual([...PRIOR_ALIAS_KEYS].sort());
       }
     }
+    for (const entry of raw.entries as Record<string, unknown>[]) {
+      expect(keysOf(entry).sort(), `entry ${String(entry.id)}`).toEqual([...PRIOR_ENTRY_KEYS].sort());
+    }
     expect(() => checkPriorCatalogKeys(raw)).not.toThrow();
     expect(() => checkPriorCatalogKeys({ ...raw, extra: 1 })).toThrow(RenderError);
   });
@@ -253,7 +292,7 @@ describe("host tokens", () => {
 // The Claude render
 // ---------------------------------------------------------------------------
 
-describe("render claude", () => {
+describeLive("render claude", (catalog) => {
   const out = tmp("claude");
   const result = renderClaude(CATALOG, out);
   const converted = catalog.roles.filter((r) => r.claude_name !== null && loadProfile(CATALOG, r.id) !== null);
@@ -283,12 +322,41 @@ describe("render claude", () => {
 // The Prior render, on a fixture and on the live catalog
 // ---------------------------------------------------------------------------
 
+type State = "supported" | "planned" | "unsupported";
+
+function fixtureEntry(id: string, kind: CatalogEntry["kind"], profile: string, prior: State, requires: string[] = []): CatalogEntry {
+  return {
+    id,
+    kind,
+    profile,
+    class: requires.includes("host.question.v1") ? "asks" : "plain",
+    arguments: { items: [{ name: "task", kind: "first-message", required: true }] },
+    requires,
+    support: { "claude-code": "supported", prior },
+  };
+}
+
+/**
+ * A fusion tree in a temp directory: `rules/`, the Claude files the entries
+ * name (`agents/alpha.md`, `skills/note/SKILL.md`, `skills/later/SKILL.md`)
+ * and a v2 catalog. Roles: alpha supported with parts, beta planned and
+ * gamma supported with parts listed and none written, delta unsupported.
+ * Entries: the agent `alpha` on its role's profile, the skill `note`
+ * supported on `skill-note` whose prior part names one entry service, the
+ * skill `later` planned with no profile.
+ */
 function writeFixture(): { catalogDir: string; fusionRoot: string } {
   const fusionRoot = tmp("fixture-fusion");
   const catalogDir = join(fusionRoot, "catalog");
   mkdirSync(join(fusionRoot, "rules"), { recursive: true });
   writeFileSync(join(fusionRoot, "rules", "user-facing-output.md"), "# Rule\n\nBe terse.\n");
-  const role = (id: string, prior: "supported" | "planned" | "unsupported", claude: string | null = null): CatalogRole => ({
+  mkdirSync(join(fusionRoot, "agents"), { recursive: true });
+  writeFileSync(join(fusionRoot, "agents", "alpha.md"), "---\nname: alpha\n---\n# Alpha\n\nDo the task.\n");
+  for (const skill of ["note", "later"]) {
+    mkdirSync(join(fusionRoot, "skills", skill), { recursive: true });
+    writeFileSync(join(fusionRoot, "skills", skill, "SKILL.md"), `---\nname: ${skill}\n---\n`);
+  }
+  const role = (id: string, prior: State, claude: string | null = null): CatalogRole => ({
     id,
     claude_name: claude,
     prior_ids: [id],
@@ -296,8 +364,13 @@ function writeFixture(): { catalogDir: string; fusionRoot: string } {
     support: { "claude-code": claude === null ? "unsupported" : "supported", prior },
   });
   const fixture: Catalog = {
-    schema: "fusion.catalog/v1",
+    schema: CATALOG_SCHEMA,
     roles: [role("alpha", "supported", "alpha"), role("beta", "planned"), role("gamma", "supported"), role("delta", "unsupported")],
+    entries: [
+      fixtureEntry("alpha", "agent", "alpha", "supported"),
+      fixtureEntry("note", "skill", "skill-note", "supported", ["host.question.v1"]),
+      fixtureEntry("later", "skill", "skill-later", "planned"),
+    ],
   };
   mkdirSync(catalogDir, { recursive: true });
   writeFileSync(join(catalogDir, "catalog.json"), `${JSON.stringify(fixture, null, 2)}\n`);
@@ -332,6 +405,17 @@ function writeFixture(): { catalogDir: string; fusionRoot: string } {
   // beta: planned, parts listed, none written. gamma: supported, the same.
   put("beta", profile("beta", [{ file: "parts/01-neutral.md", tag: "neutral" }]), {});
   put("gamma", profile("gamma", [{ file: "parts/01-neutral.md", tag: "neutral" }]), {});
+  put(
+    "skill-note",
+    profile("skill-note", [
+      { file: "parts/01-neutral.md", tag: "neutral" },
+      { file: "parts/02-prior.md", tag: "prior" },
+    ]),
+    {
+      "01-neutral.md": "# Note\n\nAppend the note.\n",
+      "02-prior.md": "When the content reads as both, ask through host.question.v1.\n",
+    },
+  );
   return { catalogDir, fusionRoot };
 }
 
@@ -358,11 +442,20 @@ describe("render prior (fixture)", () => {
     expect(keysOf(json.execution_policy).sort()).toEqual([...PRIOR_HOSTS].sort());
   });
 
-  it("writes nothing for a planned role without parts and reports it; a supported one without parts is missing", () => {
-    expect(readdirSync(join(out, "profiles")).sort()).toEqual(["alpha.json", "alpha.md"]);
-    expect(result.skipped).toEqual([{ id: "beta", reason: "parts listed, none written yet" }]);
+  it("writes nothing for a planned profile without parts and reports it; a supported one without parts is missing", () => {
+    expect(readdirSync(join(out, "profiles")).sort()).toEqual(["alpha.json", "alpha.md", "skill-note.json", "skill-note.md"]);
+    expect(result.skipped).toEqual([
+      { id: "beta", reason: "parts listed, none written yet" },
+      { id: "skill-later", reason: "no profile" },
+    ]);
     expect(result.missing).toEqual([{ id: "gamma", reason: "parts listed, none written yet" }]);
-    expect(result.written.sort()).toEqual(["catalog.json", "profiles/alpha.json", "profiles/alpha.md"]);
+    expect(result.written.sort()).toEqual(["catalog.json", "profiles/alpha.json", "profiles/alpha.md", "profiles/skill-note.json", "profiles/skill-note.md"]);
+  });
+
+  it("renders an entry's profile from its neutral and prior parts, and a profile an entry shares with its role once", () => {
+    expect(readFileSync(join(out, "profiles", "skill-note.md"), "utf8")).toBe("# Note\n\nAppend the note.\nWhen the content reads as both, ask through host.question.v1.\n");
+    expect(keysOf(readJson(join(out, "profiles", "skill-note.json")))).toEqual([...PRIOR_PROFILE_KEYS]);
+    expect(result.written.filter((w) => w === "profiles/alpha.md")).toHaveLength(1);
   });
 
   it("copies catalog.json byte for byte, states carried through unchanged", () => {
@@ -379,7 +472,11 @@ describe("render prior (fixture)", () => {
   it("refuses a directive line in a neutral part, an include outside rules/, and a missing include target", () => {
     const bad = (partText: string, tag: "neutral" | "prior") => {
       const dir = tmp("prior-bad");
-      writeFileSync(join(dir, "catalog.json"), readFileSync(join(catalogDir, "catalog.json")));
+      // The role alone ships alpha here: the entry's prior-part rule is
+      // checkEntries' case, not this one's.
+      const c = readJson<Catalog>(join(catalogDir, "catalog.json"));
+      c.entries[0].support.prior = "unsupported";
+      writeFileSync(join(dir, "catalog.json"), JSON.stringify(c));
       mkdirSync(join(dir, "profiles", "alpha", "parts"), { recursive: true });
       const p = readJson<Profile>(join(catalogDir, "profiles", "alpha", "profile.json"));
       p.parts = [{ file: "parts/01.md", tag }];
@@ -406,7 +503,142 @@ describe("render prior (fixture)", () => {
   });
 });
 
-describe("render prior (live catalog)", () => {
+// ---------------------------------------------------------------------------
+// Entries, on fixture catalogs: the document check against the shared decode
+// table the Go decoder runs too, and the invariants that need a fusion tree
+// ---------------------------------------------------------------------------
+
+interface DecodeCase {
+  name: string;
+  valid: boolean;
+  document: unknown;
+}
+
+describe("catalog entries (fixture)", () => {
+  const table = readJson<{ schema: string; cases: DecodeCase[] }>(join(CATALOG, "testdata", "catalog-decode-cases.v2.json"));
+
+  it("the shared decode table is a fusion.catalog-cases/v1 table with unique names and both verdicts", () => {
+    expect(table.schema).toBe("fusion.catalog-cases/v1");
+    const names = table.cases.map((c) => c.name);
+    expect(new Set(names).size).toBe(names.length);
+    expect(table.cases.some((c) => c.valid)).toBe(true);
+    expect(table.cases.some((c) => !c.valid)).toBe(true);
+  });
+
+  for (const c of table.cases) {
+    it(`decode case: ${c.name} is ${c.valid ? "accepted" : "refused"}`, () => {
+      if (c.valid) expect(() => checkCatalogDocument(c.document)).not.toThrow();
+      else expect(() => checkCatalogDocument(c.document)).toThrow(RenderError);
+    });
+  }
+
+  it("loadCatalog refuses a fusion.catalog/v1 document, and one without entries", () => {
+    const dir = tmp("v1");
+    writeFileSync(join(dir, "catalog.json"), JSON.stringify({ schema: "fusion.catalog/v1", roles: [] }));
+    expect(() => loadCatalog(dir)).toThrow(/not a fusion\.catalog\/v2 document/);
+    writeFileSync(join(dir, "catalog.json"), JSON.stringify({ schema: CATALOG_SCHEMA, roles: [] }));
+    expect(() => loadCatalog(dir)).toThrow(/not a fusion\.catalog\/v2 document/);
+  });
+
+  it("priorProfiles names each profile once, roles first, supported when any referrer is, unsupported ones left out", () => {
+    const c = readJson<Catalog>(join(writeFixture().catalogDir, "catalog.json"));
+    expect(priorProfiles(c)).toEqual([
+      { id: "alpha", state: "supported" },
+      { id: "beta", state: "planned" },
+      { id: "gamma", state: "supported" },
+      { id: "skill-note", state: "supported" },
+      { id: "skill-later", state: "planned" },
+    ]);
+    c.roles[0].support.prior = "planned";
+    c.entries[2].profile = "beta";
+    c.entries[2].support.prior = "supported";
+    c.entries[1].support.prior = "unsupported";
+    expect(priorProfiles(c)).toEqual([
+      { id: "alpha", state: "supported" },
+      { id: "beta", state: "supported" },
+      { id: "gamma", state: "supported" },
+    ]);
+  });
+
+  describe("checkEntries", () => {
+    const fixture = () => {
+      const f = writeFixture();
+      return { ...f, catalog: readJson<Catalog>(join(f.catalogDir, "catalog.json")) };
+    };
+
+    it("accepts the fixture: an agent, a supported skill whose prior part names its requires, a planned skill with no profile", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).not.toThrow();
+    });
+
+    it("refuses an id that is neither a Claude agent nor a skill directory", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      catalog.entries.push(fixtureEntry("ghost", "skill", "skill-ghost", "unsupported"));
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry ghost: kind skill, but agents\/ghost\.md is absent and skills\/ghost\/SKILL\.md is absent/);
+    });
+
+    it("refuses a kind that does not match the file: agent for a skill, skill for an agent", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      catalog.entries[1].kind = "agent";
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry note: kind agent/);
+      catalog.entries[1].kind = "skill";
+      catalog.entries[0].kind = "skill";
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry alpha: kind skill/);
+    });
+
+    it("refuses an id that is both an agent and a skill, whichever kind it states", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      writeFileSync(join(fusionRoot, "agents", "note.md"), "# Note\n");
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry note: kind skill, but agents\/note\.md exists and skills\/note\/SKILL\.md exists/);
+      catalog.entries[1].kind = "agent";
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry note: kind agent/);
+    });
+
+    it("refuses a supported entry whose profile has parts and no prior part", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      const path = join(catalogDir, "profiles", "skill-note", "profile.json");
+      const p = readJson<Profile>(path);
+      p.parts = p.parts.filter((part) => part.tag !== "prior");
+      writeFileSync(path, JSON.stringify(p));
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry note: supported on prior, and profile skill-note has no prior part/);
+      catalog.entries[1].support.prior = "planned";
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).not.toThrow();
+    });
+
+    it("refuses a supported entry whose requires differ from the services its prior parts name, either way", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      catalog.entries[1].requires = [];
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/entry note: requires nothing, and the prior parts of skill-note name host\.question\.v1/);
+      catalog.entries[1].requires = ["host.exec.v1", "host.question.v1"];
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).toThrow(/requires host\.question\.v1,host\.exec\.v1, and the prior parts of skill-note name host\.question\.v1$/);
+      // A planned entry declares what its future text will need; nothing reads it yet.
+      catalog.entries[1].support.prior = "planned";
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).not.toThrow();
+    });
+
+    it("leaves a supported entry with no profile to renderPrior, which reports it missing", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      catalog.entries[2].support.prior = "supported";
+      expect(() => checkEntries(catalog, catalogDir, fusionRoot)).not.toThrow();
+      writeFileSync(join(catalogDir, "catalog.json"), JSON.stringify(catalog));
+      const r = renderPrior(catalogDir, tmp("prior-entry-missing"), { fusionRoot, commit: "0".repeat(40) });
+      expect(r.missing).toContainEqual({ id: "skill-later", reason: "no profile" });
+    });
+
+    it("renderPrior runs both checks before writing anything", () => {
+      const { catalog, catalogDir, fusionRoot } = fixture();
+      const out = tmp("prior-entry-refused");
+      writeFileSync(join(catalogDir, "catalog.json"), JSON.stringify({ ...catalog, entries: [{ ...catalog.entries[0], start: "x" }] }));
+      expect(() => renderPrior(catalogDir, out, { fusionRoot, commit: "0".repeat(40) })).toThrow(/entry alpha keys are not/);
+      catalog.entries[1].requires = [];
+      writeFileSync(join(catalogDir, "catalog.json"), JSON.stringify(catalog));
+      expect(() => renderPrior(catalogDir, out, { fusionRoot, commit: "0".repeat(40) })).toThrow(/entry note: requires nothing/);
+      expect(readdirSync(out)).toEqual([]);
+    });
+  });
+});
+
+describeLive("render prior (live catalog)", (catalog) => {
   const out = tmp("prior-live");
   const commit = fusionCommit(FUSION);
   const result = renderPrior(CATALOG, out);
@@ -450,15 +682,16 @@ describe("render prior (live catalog)", () => {
     expect(readFileSync(join(out, "catalog.json")).equals(readFileSync(join(CATALOG, "catalog.json")))).toBe(true);
   });
 
-  it("writes nothing for a planned role without parts, and never a placeholder", () => {
+  it("writes nothing for a planned profile without parts, and never a placeholder", () => {
+    const states = new Map(priorProfiles(catalog).map((p) => [p.id, p.state]));
     for (const s of result.skipped) {
-      expect(roleById.get(s.id)!.support.prior).toBe("planned");
+      expect(states.get(s.id)).toBe("planned");
       expect(existsSync(join(out, "profiles", `${s.id}.md`))).toBe(false);
       expect(existsSync(join(out, "profiles", `${s.id}.json`))).toBe(false);
     }
   });
 
-  it("every supported role renders (Prior refuses a bundle whose supported role has no text)", () => {
-    expect(result.missing, "supported roles without parts").toEqual([]);
+  it("every supported role and entry profile renders (Prior refuses a bundle whose supported role has no text)", () => {
+    expect(result.missing, "supported profiles without parts").toEqual([]);
   });
 });

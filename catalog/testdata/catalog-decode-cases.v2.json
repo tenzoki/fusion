@@ -1,0 +1,2322 @@
+{
+  "schema": "fusion.catalog-cases/v1",
+  "description": "Shared fusion.catalog/v2 decode cases. Each document is accepted or refused alike by render.ts checkCatalogDocument (catalog/src/__tests__/render.test.ts) and by the module's LoadCatalog (adapters/prior/fusionmodule/internal/steps/catalog_test.go, read through FUSION_CATALOG_DIR). Roles are valid in every case: the cases vary the top level and the entries. Generated once; edit by hand, keeping names unique.",
+  "cases": [
+    {
+      "name": "base: two entries, optional keys present and absent",
+      "valid": true,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "requires empty",
+      "valid": true,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "arguments with no items",
+      "valid": true,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": []
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "schema v1 with entries",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v1",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "v2 without entries: one key fewer",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "v1 document: schema and roles only",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v1",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "one top-level key more",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ],
+        "extra": 1
+      }
+    },
+    {
+      "name": "entries empty",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": []
+      }
+    },
+    {
+      "name": "entries not an array",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": {}
+      }
+    },
+    {
+      "name": "entry with one key more",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            },
+            "start": "/fusion:alpha"
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry without requires",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry profile null",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": null,
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry id not an asset id",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "Note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry profile not an asset id",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill_note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry id twice",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "alpha",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry kind unknown",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "command",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry class unknown",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "writes",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "requires a service outside the three",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.role.run.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "requires a service twice",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "arguments with one key more",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ],
+              "extra": true
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "arguments without items",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "note": "no items"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "arguments note not a string",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": 3
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "argument with one key more",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false,
+                  "default": "x"
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "argument without required",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message"
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "argument name empty",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "argument kind unknown",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "stdin",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "argument values empty",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "argument note null",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": null
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry support with a third host",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported",
+              "codex": "planned"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry support without prior",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "entry support state unknown",
+      "valid": false,
+      "document": {
+        "schema": "fusion.catalog/v2",
+        "roles": [
+          {
+            "id": "alpha",
+            "claude_name": "alpha",
+            "prior_ids": [
+              "alpha"
+            ],
+            "aliases": [],
+            "support": {
+              "claude-code": "supported",
+              "prior": "supported"
+            }
+          }
+        ],
+        "entries": [
+          {
+            "id": "alpha",
+            "kind": "agent",
+            "profile": "alpha",
+            "class": "plain",
+            "arguments": {
+              "items": [
+                {
+                  "name": "**Audience:**",
+                  "kind": "parameter-line",
+                  "required": false
+                },
+                {
+                  "name": "task",
+                  "kind": "first-message",
+                  "required": true
+                }
+              ]
+            },
+            "requires": [
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "qualified"
+            }
+          },
+          {
+            "id": "note",
+            "kind": "skill",
+            "profile": "skill-note",
+            "class": "asks",
+            "arguments": {
+              "items": [
+                {
+                  "name": "--only",
+                  "kind": "option",
+                  "required": false,
+                  "values": [
+                    "a",
+                    "b"
+                  ],
+                  "note": "one of the two selectors"
+                },
+                {
+                  "name": "content",
+                  "kind": "positional",
+                  "required": false
+                }
+              ],
+              "note": "no argument asks for the content"
+            },
+            "requires": [
+              "host.question.v1",
+              "host.exec.v1"
+            ],
+            "support": {
+              "claude-code": "supported",
+              "prior": "unsupported"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

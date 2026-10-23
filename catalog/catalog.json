@@ -1,5 +1,5 @@
 {
-  "schema": "fusion.catalog/v1",
+  "schema": "fusion.catalog/v2",
   "roles": [
     {
       "id": "orchestrator",
@@ -114,6 +114,382 @@
       "claude_name": "policy-curator",
       "prior_ids": ["policy-curator"],
       "aliases": [],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    }
+  ],
+  "entries": [
+    {
+      "id": "setup",
+      "kind": "skill",
+      "profile": "skill-setup",
+      "class": "asks",
+      "arguments": {
+        "items": []
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "check",
+      "kind": "skill",
+      "profile": "skill-check",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "--only", "kind": "option", "required": false, "values": ["monitor", "concurrency", "assets", "config", "permissions", "gitattributes", "identity", "gitignore", "upstream", "leftovers", "claude-md"] }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "wp",
+      "kind": "skill",
+      "profile": "skill-wp",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "title-and-paragraph", "kind": "positional", "required": false, "note": "a title with an optional paragraph, or a conversational reference" }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "wp-order",
+      "kind": "skill",
+      "profile": "skill-wp-order",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "--format", "kind": "option", "required": false, "values": ["text", "tsv", "markdown", "json"], "note": "passed through unchecked" }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "reconcile",
+      "kind": "skill",
+      "profile": "skill-reconcile",
+      "class": "dispatches",
+      "arguments": {
+        "items": [
+          { "name": "brief", "kind": "positional", "required": false },
+          { "name": "--since", "kind": "option", "required": false, "note": "<commit>" },
+          { "name": "--domain", "kind": "option", "required": false, "values": ["code", "data"] },
+          { "name": "--force", "kind": "flag", "required": false }
+        ]
+      },
+      "requires": ["host.exec.v1", "host.dispatch.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "curate",
+      "kind": "skill",
+      "profile": "skill-curate",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "--full", "kind": "flag", "required": false },
+          { "name": "--edges", "kind": "flag", "required": false },
+          { "name": "--placement", "kind": "flag", "required": false }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "discuss",
+      "kind": "skill",
+      "profile": "skill-discuss",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "--begin", "kind": "option", "required": false, "note": "<reference>; no switch means --begin" },
+          { "name": "--infer", "kind": "flag", "required": false },
+          { "name": "--close", "kind": "flag", "required": false }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "commit",
+      "kind": "skill",
+      "profile": "skill-commit",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "--all", "kind": "flag", "required": false },
+          { "name": "--amend", "kind": "flag", "required": false }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "cleanup",
+      "kind": "skill",
+      "profile": "skill-cleanup",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "--dry-run", "kind": "flag", "required": false },
+          { "name": "--no-push", "kind": "flag", "required": false }
+        ],
+        "note": "any other argument is refused by name"
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "archive",
+      "kind": "skill",
+      "profile": "skill-archive",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "tier", "kind": "positional", "required": false, "note": "tier-1, tier-2 or tier-3, optionally followed by <N>d (default 14); any other text is a natural-language description; none asks which" }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "memo",
+      "kind": "skill",
+      "profile": "skill-memo",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "content", "kind": "positional", "required": false, "note": "content, task:/todo:/aufgabe: content, or a conversational reference" }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "post",
+      "kind": "skill",
+      "profile": "skill-post",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "--since", "kind": "option", "required": false, "note": "<commit>" }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "news",
+      "kind": "skill",
+      "profile": "skill-news",
+      "class": "asks",
+      "arguments": {
+        "items": []
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "cadence",
+      "kind": "skill",
+      "profile": "skill-cadence",
+      "class": "plain",
+      "arguments": {
+        "items": []
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "migrate",
+      "kind": "skill",
+      "profile": "skill-migrate",
+      "class": "asks",
+      "arguments": {
+        "items": []
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "help",
+      "kind": "skill",
+      "profile": "skill-help",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "topic", "kind": "positional", "required": false, "values": ["philosophy", "daily", "install", "update", "configure"] }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "orchestrator",
+      "kind": "agent",
+      "profile": "orchestrator",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "brief", "kind": "first-message", "required": false }
+        ],
+        "note": "no dispatch parameters; the first message is the brief"
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "requirements-designer",
+      "kind": "agent",
+      "profile": "requirements-designer",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "**Work package:**", "kind": "parameter-line", "required": false },
+          { "name": "**Parent task:**", "kind": "parameter-line", "required": false },
+          { "name": "request", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "implementation-planner",
+      "kind": "agent",
+      "profile": "implementation-planner",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "**Executors:**", "kind": "parameter-line", "required": false, "note": "comma-separated, each one of code-implementer, data-implementer, analyst" },
+          { "name": "**Work package:**", "kind": "parameter-line", "required": false },
+          { "name": "**Audience:**", "kind": "parameter-line", "required": false, "values": ["user"] },
+          { "name": "request", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "code-implementer",
+      "kind": "agent",
+      "profile": "code-implementer",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "**Audience:**", "kind": "parameter-line", "required": false, "values": ["user"] },
+          { "name": "task", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "data-implementer",
+      "kind": "agent",
+      "profile": "data-implementer",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "**Audience:**", "kind": "parameter-line", "required": false, "values": ["user"] },
+          { "name": "task", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "reviewer",
+      "kind": "agent",
+      "profile": "reviewer",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "**Review domain:**", "kind": "parameter-line", "required": false, "values": ["code", "ontology", "both"] },
+          { "name": "**Audience:**", "kind": "parameter-line", "required": false, "values": ["user"] },
+          { "name": "task", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "state-auditor",
+      "kind": "agent",
+      "profile": "state-auditor",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "**Domain:**", "kind": "parameter-line", "required": false, "values": ["code", "data"] },
+          { "name": "**Directive:**", "kind": "parameter-line", "required": false },
+          { "name": "**Since:**", "kind": "parameter-line", "required": false },
+          { "name": "**Audience:**", "kind": "parameter-line", "required": false, "values": ["user"] },
+          { "name": "task", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "analyst",
+      "kind": "agent",
+      "profile": "analyst",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "**Audience:**", "kind": "parameter-line", "required": false, "values": ["user"] },
+          { "name": "task", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "document-editor",
+      "kind": "agent",
+      "profile": "document-editor",
+      "class": "plain",
+      "arguments": {
+        "items": [
+          { "name": "**Deliverable language:**", "kind": "parameter-line", "required": true, "values": ["de", "en"], "note": "absent halts" },
+          { "name": "task", "kind": "first-message", "required": true }
+        ]
+      },
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "policy-curator",
+      "kind": "agent",
+      "profile": "policy-curator",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "**Mode:**", "kind": "parameter-line", "required": false, "values": ["survey", "apply"] },
+          { "name": "**Ledger:**", "kind": "parameter-line", "required": false, "note": "absent halts when **Mode:** is apply" },
+          { "name": "**Approved:**", "kind": "parameter-line", "required": false, "note": "absent halts when **Mode:** is apply" },
+          { "name": "**Scope:**", "kind": "parameter-line", "required": false, "values": ["anchored", "full"] },
+          { "name": "**Placement:**", "kind": "parameter-line", "required": false, "values": ["on", "off"] },
+          { "name": "**Edges:**", "kind": "parameter-line", "required": false, "values": ["on", "off"] }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
+      "id": "consultant",
+      "kind": "agent",
+      "profile": "consultant",
+      "class": "dispatches",
+      "arguments": {
+        "items": [
+          { "name": "conversation", "kind": "first-message", "required": false }
+        ]
+      },
+      "requires": ["host.exec.v1", "host.dispatch.v1"],
       "support": { "claude-code": "supported", "prior": "unsupported" }
     }
   ]

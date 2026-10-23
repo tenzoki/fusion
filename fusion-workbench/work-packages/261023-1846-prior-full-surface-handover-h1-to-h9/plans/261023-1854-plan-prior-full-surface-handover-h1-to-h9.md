@@ -240,7 +240,7 @@ The hand-over's Acceptance and Verification lines are quoted where a step realis
 20. **Hook payload fixtures**
     - Executor: data-implementer
     - Files: `adapters/prior/testdata/hook-payloads/<command>/*.json` (new), `adapters/prior/testdata/hook-payloads/README.md`
-    - Changes: one stdin payload per registered command and per branch that writes something: SessionStart (fresh and resumed session), PreToolUse and PostToolUse for `Write`, `Edit`, `Bash` and `Agent` with the fields Prior's analysis `261022-0003-fusion-hook-surfaces.md` `### 1. Per command` names (`session_id`, `tool_name`, `tool_input`, `tool_use_id`, `tool_response`, `agent_id`), SubagentStop; the README cites that section at Prior `08c57fb` as the field source and says the payloads are fusion's, since the hand-over states the original run log is in neither repository.
+    - Changes: one stdin payload per registered command and per branch that writes something: SessionStart (fresh and resumed session), PreToolUse and PostToolUse for `Write`, `Edit`, `Bash` and `Agent` with the fields Prior's analysis on fusion hook surfaces (Prior, 2026-10-22) `### 1. Per command` names (`session_id`, `tool_name`, `tool_input`, `tool_use_id`, `tool_response`, `agent_id`), SubagentStop; the README cites that section at Prior `08c57fb` as the field source and says the payloads are fusion's, since the hand-over states the original run log is in neither repository.
     - Acceptance: every command in `hooks/hooks.json` has at least one payload; each file parses as JSON.
     - Verification: `for f in /Users/kai/Projects/productive/F04-FUSION/fusion/adapters/prior/testdata/hook-payloads/*/*.json; do jq -e . "$f" >/dev/null || echo "bad $f"; done`
     - Dependencies: none
