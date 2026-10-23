@@ -1,0 +1,37 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "0a501ca7-aaa5-4867-882c-947aabd9612d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-23T16:46:37Z"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/261023-1846-prior-full-surface-handover-h1-to-h9.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

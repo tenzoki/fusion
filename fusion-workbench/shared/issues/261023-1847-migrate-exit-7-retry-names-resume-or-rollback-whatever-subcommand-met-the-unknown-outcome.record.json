@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b97e18b9-f848-4bae-8ac2-4ba2662048e1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261023-1847-migrate-exit-7-retry-names-resume-or-rollback-whatever-subcommand-met-the-unknown-outcome.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7174e71a-7c42-4efd-8cd2-c2ea14fd9e70",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261023-1846-migrate-eight-messages-still-name-a-helper-command-without-the-session-flag-and-the-13-3-3-note-says-every-one-does.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
