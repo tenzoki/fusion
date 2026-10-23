@@ -5907,3 +5907,70 @@ The re-pin should change the digest, `codecPin`, the five codec-pin entries and 
 | 75 | **asked**: this section, 75(a) the text delta `d6fc9da0…` → `b4047458…`, 75(b) the re-snapshot and re-pin at `aa4277d8` with the replay of 238 exchanges | — |
 
 These rows supersede the rows of `#### Requests 64 and 67 to 74, as they stand` above. Request 75 is the one open request.
+
+### Prior's answer to 75(a) at 8b505a8
+
+**Read at:** Prior commit `8b505a8` (`8b505a807d2ebc914950fb80204dd4ac3903b92e`, 2026-10-23 09:11, "docs(design): answer fusion request 75(a)"), parent `5f4d1ef`. The answer is `Prior: docs/design/fusion-text-delta-request75-prior-response.md`, 197 lines, 11 635 bytes, `sha256:327ff1d59ac91c0446cb9774b6d423b4bc385b0f04f2cfe8d193bbef287b2a21` as `git show 8b505a8:<path> | shasum -a 256` prints it. It was read from the commit, not from a working tree, and is cited from here on as that path at `8b505a8`. The user relayed the answer as it stands at that commit. Prior read request 75 before fusion committed it: "**The section is not committed in fusion.** It was read from fusion's working tree, uncommitted on top of `aa4277d8`", with `git diff --stat aa4277d8` showing 117 added lines and none removed, and the file then 5 909 lines, `sha256:8b467fbddeb53c42ae60cd49b0b7ff8c812981dc36cbb882043968aec51c03cc`. Prior: "When fusion commits the section, the commit that holds it is the reference, and these figures identify the text this answer read." That commit is fusion `1bbd6c53` (`1bbd6c53382ad4350f2ab92d0a229689da18199b`, 2026-10-23 09:10, "docs(codec): put request 75 to Prior, the text delta and the re-pin"). At `1bbd6c53` this file is 5 909 lines and `sha256:8b467fbd…03cc`, the digest Prior names, and `git diff --numstat aa4277d8 1bbd6c53 -- codec/fixtures/prior/REQUESTS.md` prints `117 0`. So the text Prior read is the text `1bbd6c53` holds. Prior states that it read its own side at `5f4d1ef`, the head of its `main` and the commit request 75 read.
+
+**Nothing pinned moved on Prior's side.** Prior: "No pinned path moved since Prior's answer to 74", for `b711b62` and its head; `git diff --stat b711b62 8b505a8 -- tests/testdata/fusion-codec tests/testdata/fusion-fj01 internal/fusionhost/workbench.go internal/fusionhost/codec_process_test.go` prints nothing. At `8b505a8` `QualifiedCodecDigest` (`Prior: internal/fusionhost/workbench.go` line 22) and `codecBundleDigest` (`Prior: internal/fusionhost/codec_process_test.go` line 22) are `sha256:dfab3f21542716037cb6aeec3be01f7d972928faeb2964081a575f91c32ac55f`, and `codecPin` (line 21) is `ec76d4fdfc928388e0003771d3eafa6211cb1b36`. Both `UPSTREAM.json` files still name `ec76d4fd…`, with 418 and 744 files.
+
+**Prior's verdict, quoted:** "**75(a): accepted.** The three strings are the whole delta between `d6fc9da0…` and `b4047458…`. No assertion in Prior's harness, host or docs reads one of the three old strings. No correction is asked of fusion. This answer accepts a text delta. It does not qualify a codec digest. Prior's runtime keeps `dfab3f21…` and refuses both `d6fc9da0…` and `b4047458…` until 75(b) re-pins."
+
+| Question | Prior's verdict | Rests on, as Prior states it |
+|---|---|---|
+| 75(a) the text delta `d6fc9da0…` → `b4047458…` | **accepted**, no correction | fusion diff `0db5d0de..aa4277d8`; `jq` equality over the three files; bundle digest and hunks; a Prior search over Go, tests, testdata and docs |
+| 75(b) re-snapshot, re-pin `b4047458…`, replay of 238 exchanges | not answered here | "answered separately at a later Prior commit" |
+
+The answer commit carries the response document, one Prior issue record unrelated to request 75 (`261023-0915-one-tool-container-per-run-instead-of-one-per-command`) and Prior's own event log, and nothing under `tests/`, `cmd/` or `internal/`. Prior ran no test for it: "no test was run for this answer: it rests on the diffs, digests and searches above."
+
+#### 75(a) The text delta: **accepted**
+
+| Figure | Request 75 | Prior's answer |
+|---|---|---|
+| Bundle at `0db5d0de` | `d6fc9da0…`, 699 729 bytes | `d6fc9da0b948cb9c8d014d17e2d799b9a4e1c53a9feea428288fb718ff388d97`, 699729 |
+| Bundle at `aa4277d8` | `b4047458…`, 700 116 bytes | `b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`, 700116; the working-tree file the same; "387 bytes longer than `d6fc9da0…`" |
+| Codec commits `0db5d0de..aa4277d8` | `C` alone | "names `aa4277d8` alone" |
+| Source diff | the three strings of 75(a) | four files, one line in each of the three sources and two in the bundle; the three before/after pairs "word for word" |
+| `jq -S 'del(.. \| .description?, .notes?)'` | equal for all three files | "`cmp` is silent for all three. No keyword, `$id`, contract value or `state_mapping` row moved." |
+| Bundle diff | two one-line hunks, lines 12 559 and 13 223 | "two hunks of one line each (`--numstat` `2 2`)", each "the inlined form of items 1 and 2. `prior-mapping.json` is not inlined." |
+| Old phrases in the bundle | none at `C` | "reports every cycle" and "is a proposal in" once at `0db5d0de`, not at `aa4277d8`; "Proposed correspondence" at neither |
+| The whole delta | the three strings | "So the three strings are the whole delta between `d6fc9da0…` and `b4047458…`, as the request states it." |
+
+**Nothing in Prior reads the old strings.** Prior searched its tree outside the two pinned snapshots with `rg -n -F` for the three old phrases and seven fragments of the old strings, over `cmd/`, `internal/`, `modules/`, `tests/`, `docs/` and `concept/`. The one hit is Prior's own FJ00 ruling (below). `TestFusionAppliedRulingAndGoldens` (`Prior: tests/fusion_mapping_test.go:19-63`), the one assertion that opens both mapping files, compares `rows`, `conventions` and `state_mapping.rows` and "never compares `state_mapping.description`"; `TestFusionMappingRulingCoversEveryGoField` (`:65-120`) reads only the ruling and requires every `state_mapping` row to be `confirmed: true`, "That is what 'Confirmed' now says." No Go code reads `notes` from `dependencies.json` or a `description` from a pinned schema, and "Schema validation treats `description` as an annotation, so the shared manifest's verdicts cannot depend on it."
+
+**The pinned copies keep the old text until 75(b).** The pins are at `ec76d4fd`, before 74 and 75, and three pinned files carry an old phrase: `tests/testdata/fusion-codec/schemas/campaign.schema.json` and `tests/testdata/fusion-fj01/codec/dist/fusion-record.js` "is a proposal in", and `tests/testdata/fusion-codec/contract/prior-mapping.json` "Proposed correspondence". "reports every cycle" is in no pinned copy, since `notes[2]` at `ec76d4fd` predates 74(a)'s text. Prior: the re-pin of 75(b) replaces all three, with the other entries request 75 lists.
+
+#### Prior's own cleanup, not fusion's
+
+`Prior: docs/design/fusion-fj00-prior-mapping-ruling.json` line 41, Prior's FJ00 ruling and the source fusion's `prior-mapping.json` copied, still begins its `state_mapping.description` with "Proposed correspondence", though all its rows are `confirmed: true`. Prior: "No assertion reads it, so it does not affect 75(a) or 75(b). Prior records it for its own follow-up. It asks nothing of fusion, and it is not edited in this answer." The answer commit files no Prior record for it. Fusion files nothing for it.
+
+#### Request 74's schema count: **confirmed**
+
+Prior confirms the correction request 75 made to its predecessor: request 74's "the other seven pinned schemas" (line 5660 above) should have read eight. The codec pin holds ten schemas (`campaign`, `common`, `evidence`, `migration-plan`, `migration-proposal`, `migration-receipt`, `package`, `protocol`, `record`, `workbench`), two of them (`campaign`, `package`) changed since `ec76d4fd`, "So eight schemas and `contract/transitions.json` are unchanged since the pin." Prior: "its 74(a) verdict stands." Line 5660 is not edited.
+
+#### 75(b) Re-snapshot, re-pin and replay: **open**
+
+Prior: "75(b) is not answered here. The re-snapshot of both pins at `aa4277d8`, the re-pin of `b4047458…` (`codecPin`, `codecBundleDigest`, `QualifiedCodecDigest`, the five codec-pin entries and the two fj01 entries) and the replay of the 238 recorded exchanges are answered separately, at the later Prior commit that carries them, with the runs that commit makes. Nothing is re-pinned in this answer." Until that commit Prior's runtime keeps `dfab3f21…` and refuses `d6fc9da0…` and `b4047458…`, and the three pinned files above keep the old texts.
+
+#### What follows from this record
+
+- **75(a)'s acceptance is recorded here.** The condition of `## Where this work stops` in plan `261022-2234-plan-four-issues-left-by-the-prior-follow-ups.md`, a release tag on any commit holding step 4 waits for "Prior's acceptance of request 75(a), recorded in `codec/fixtures/prior/REQUESTS.md`", is met by this section (`261019-0913-may-a-codec-revision-after-13-1-0-be-tagged-before-prior-re-qualifies-its-bundle.md`, option 2). This is fusion's conclusion from the plan and the ruling; Prior's answer names the same condition. A tag on a commit holding `aa4277d8` no longer waits, and no correction lands first. Cutting it is a release act outside this package.
+- **Re-pinning may follow the tag.** 75(b) stays open and is answered at a later Prior commit. A tag cut before it carries `b4047458…`, which Prior's runtime refuses until 75(b) re-pins.
+- **The hand-over request** stays as `### What fusion does with the answer` under request 75 puts it: a later number, naming `b4047458…`, with 75(b) answered first while `b4047458…` is not yet `QualifiedCodecDigest`.
+
+#### `REQUESTS.md` and the bundle against Prior's pins, after this append
+
+Both pins still hold this file at `893e823f…`, its bytes at `ec76d4fd`. At `1bbd6c53` it is `sha256:8b467fbddeb53c42ae60cd49b0b7ff8c812981dc36cbb882043968aec51c03cc`, the digest Prior's answer names, and this section moves it again. The bundle is `b4047458…`, as at `aa4277d8`; this section moves no codec byte.
+
+#### Requests 64 and 67 to 75, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, replaced as `QualifiedCodecDigest` by `dfab3f21…` at `d372bc0` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 and 73 | **complete** at Prior `01cf2fd` and `d372bc0`, for `ec76d4fd`; `dfab3f21…` qualified; answered at `3c29dcf` | `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md` |
+| 74 | **accepted** at Prior `b711b62`, for `9ec788e1`: 74(a) the delta `dfab3f21…` → `d6fc9da0…` as the whole delta, no correction, not replayed against `d6fc9da0…`; 74(b)(1) and 74(b)(2) accepted; its count of unchanged schemas corrected to eight, confirmed at `8b505a8`. Its re-pin is taken up by 75(b) | `Prior: docs/design/fusion-dependency-evaluation-request74-prior-response.md` |
+| 75 | 75(a) **accepted** at Prior `8b505a8`, for `1bbd6c53`: the text delta `d6fc9da0…` → `b4047458…` as the whole delta, no correction. 75(b) **open**: the re-snapshot and re-pin at `aa4277d8` and the replay of 238 exchanges, at a later Prior commit. `QualifiedCodecDigest` stays `dfab3f21…` | `Prior: docs/design/fusion-text-delta-request75-prior-response.md` |
+
+These rows supersede the rows of `### Requests 64 and 67 to 75, as they stand` above. Request 75(b) is the one open request.
