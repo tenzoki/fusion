@@ -1,0 +1,2964 @@
+{
+  "schema": "fusion.schema-cases/v1",
+  "cases": [
+    {
+      "name": "eq-full",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "eq-minimal",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [],
+        "project_context": {
+          "instructions": []
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "eq-route-and-audit-ref",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        },
+        "route": "local_1",
+        "audit_ref": "audit-7"
+      },
+      "valid": true
+    },
+    {
+      "name": "eq-agent-entry",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "reviewer",
+          "kind": "agent",
+          "profile": "reviewer"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "eq-flag-empty-value",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "--only",
+            "value": ""
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "eq-id-64-chars",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",
+        "run_id": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "eq-missing-workflow-id",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-missing-run-id",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-missing-entry",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-missing-arguments",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-missing-project-context",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-missing-id",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-missing-kind",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-missing-profile",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-argument-missing-value",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-argument-missing-name",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-project-context-missing-instructions",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {}
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-instruction-missing-path",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-instruction-missing-sha256",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-instruction-missing-text",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-extra-top-level-key",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        },
+        "profile": "skill-memo"
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-extra-key",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo",
+          "class": "asks"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-argument-extra-key",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk",
+            "kind": "positional"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-project-context-extra-key",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ],
+          "files": []
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-instruction-extra-key",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n",
+              "bytes": 10
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-kind-not-enum",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "workflow",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-run-id-too-long",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-run-id-bad-char",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run/1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-workflow-id-empty",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-id-uppercase",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "Memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-id-one-char",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "m",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-entry-profile-bad-char",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill_memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-argument-name-empty",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-argument-name-blank",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "   ",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-argument-value-not-string",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": true
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-sha256-bare-hex",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-instruction-path-empty",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-route-bad-char",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        },
+        "route": "local route"
+      },
+      "valid": false
+    },
+    {
+      "name": "eq-audit-ref-empty",
+      "schema": "entry-request.v1.json",
+      "pointer": "",
+      "document": {
+        "workflow_id": "wf-1",
+        "run_id": "run-1",
+        "entry": {
+          "id": "memo",
+          "kind": "skill",
+          "profile": "skill-memo"
+        },
+        "arguments": [
+          {
+            "name": "text",
+            "value": "buy milk"
+          }
+        ],
+        "project_context": {
+          "instructions": [
+            {
+              "path": "CLAUDE.md",
+              "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "text": "# Project\n"
+            }
+          ]
+        },
+        "audit_ref": ""
+      },
+      "valid": false
+    },
+    {
+      "name": "er-completed",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-completed-minimal",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-completed-sha256-commit",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-completed-chat-text-question",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [],
+            "channel": "chat-text",
+            "outcome": "answered",
+            "selected": [],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-refused",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "refusal",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "unknown-argument",
+            "detail": "unknown-argument detail"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "er-recovery-required",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "recovery-required",
+        "ending": null,
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [],
+        "violations": [
+          {
+            "code": "recovery-required",
+            "detail": "recovery-required detail"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "er-ended",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "stop",
+          "reason": "stopped-by-user"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-ended-with-commits",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "stop",
+          "reason": "stopped-by-user"
+        },
+        "questions": [],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-ended-by-question",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "stop",
+          "reason": "stopped-by-user"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "ended",
+            "selected": [],
+            "text": ""
+          }
+        ],
+        "commits": [],
+        "violations": []
+      },
+      "valid": true
+    },
+    {
+      "name": "er-ended-with-violation",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "stop",
+          "reason": "stopped-by-user"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "stopped",
+            "detail": "stopped detail"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "er-missing-status",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-missing-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-missing-questions",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-missing-commits",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-missing-violations",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ending-missing-reason",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-call-id",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-question",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-options",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-channel",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-outcome",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-selected",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-missing-text",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ]
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-missing-commit",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-missing-reference",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-missing-subject",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-missing-changes",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk"
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-violation-missing-detail",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "refusal",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "unknown-argument"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-violation-missing-code",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "refusal",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "detail": "unknown-argument detail"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-extra-top-level-key",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": [],
+        "workflow_id": "wf-1"
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ending-extra-key",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered",
+          "detail": "x"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-question-extra-key",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note",
+            "asked_at": "now"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-extra-key",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ],
+            "author": "kai"
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-violation-extra-key",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "refusal",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "unknown-argument",
+            "detail": "unknown-argument detail",
+            "step": "run"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-status-not-enum",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "failed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ending-class-not-enum",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "error",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ending-reason-free-text",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "stop",
+          "reason": "The user stopped"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-channel-not-enum",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "terminal",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-outcome-not-enum",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "skipped",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-options-over-sixteen",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "o0",
+              "o1",
+              "o2",
+              "o3",
+              "o4",
+              "o5",
+              "o6",
+              "o7",
+              "o8",
+              "o9",
+              "o10",
+              "o11",
+              "o12",
+              "o13",
+              "o14",
+              "o15",
+              "o16"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-call-id-bad-char",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q 1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-short-hash",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-commit-uppercase-hash",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789ABCDEF0123456789ABCDEF01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-violation-code-empty",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "refusal",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "",
+            "detail": "unknown-argument detail"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-completed-refusal-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "refusal",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-completed-stop-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "stop",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-completed-null-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": null,
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-completed-with-violation",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "completed",
+        "ending": {
+          "class": "success",
+          "reason": "answered"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "reference": "refs/heads/main",
+            "subject": "docs(memo): note the milk",
+            "changes": [
+              "M\tfusion-workbench/shared/memos/notes-kai.md"
+            ]
+          }
+        ],
+        "violations": [
+          {
+            "code": "blocked",
+            "detail": "blocked detail"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-refused-success-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "success",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "unknown-argument",
+            "detail": "unknown-argument detail"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-refused-null-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": null,
+        "questions": [],
+        "commits": [],
+        "violations": [
+          {
+            "code": "unknown-argument",
+            "detail": "unknown-argument detail"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-refused-without-violation",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "refused",
+        "ending": {
+          "class": "refusal",
+          "reason": "unknown-argument"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ended-success-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "success",
+          "reason": "stopped-by-user"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ended-refusal-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": {
+          "class": "refusal",
+          "reason": "stopped-by-user"
+        },
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-ended-null-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "ended",
+        "ending": null,
+        "questions": [],
+        "commits": [],
+        "violations": []
+      },
+      "valid": false
+    },
+    {
+      "name": "er-recovery-required-with-ending",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "recovery-required",
+        "ending": {
+          "class": "stop",
+          "reason": "in-flight"
+        },
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [],
+        "violations": [
+          {
+            "code": "recovery-required",
+            "detail": "recovery-required detail"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "er-recovery-required-without-violation",
+      "schema": "entry-result.v1.json",
+      "pointer": "",
+      "document": {
+        "status": "recovery-required",
+        "ending": null,
+        "questions": [
+          {
+            "call_id": "q-1",
+            "question": "Note or task?",
+            "options": [
+              "note",
+              "task"
+            ],
+            "channel": "ask-user-question",
+            "outcome": "answered",
+            "selected": [
+              "note"
+            ],
+            "text": "note"
+          }
+        ],
+        "commits": [],
+        "violations": []
+      },
+      "valid": false
+    }
+  ]
+}

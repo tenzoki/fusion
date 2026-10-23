@@ -14,6 +14,7 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
   CATALOG_SCHEMA,
+  ENTRY_SERVICES,
   INCLUDE_DIRECTIVE,
   PRIOR_ALIAS_KEYS,
   PRIOR_CATALOG_KEYS,
@@ -635,6 +636,195 @@ describe("catalog entries (fixture)", () => {
       expect(() => renderPrior(catalogDir, out, { fusionRoot, commit: "0".repeat(40) })).toThrow(/entry note: requires nothing/);
       expect(readdirSync(out)).toEqual([]);
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The generic workflow, entry.v1: its requires, and the run step whose role
+// is the invocation's entry.profile, resolved for every entry supported on
+// prior. The live catalog supports none yet, so the fixture catalog carries
+// the cases that bite; the live group holds for whatever entry turns
+// supported later.
+//
+// Plan step 4 of 261023-1854-plan-prior-full-surface-handover-h1-to-h9.md.
+// ---------------------------------------------------------------------------
+
+interface WorkflowStep {
+  id: string;
+  role?: string;
+  host_service?: string;
+  input_from: Record<string, unknown>;
+  completion: Record<string, unknown>;
+}
+interface Workflow {
+  id: string;
+  capability: string;
+  steps: WorkflowStep[];
+  revise_bound: number;
+  requires: string[];
+}
+
+const ROLE_SERVICES = ["host.role.read.v1", "host.role.run.v1", "host.role.complete.v1"];
+// The six services of Prior request 69, which repair.v1 calls beside the role services.
+const REQUEST_69_SERVICES = ["host.role.compose.v1", "host.workspace.v1", "host.capture.v1", "host.integrate.v1", "host.snapshot.v1", "host.workbench.v1"];
+const ENTRY_WORKFLOW_FILE = join(CATALOG, "workflows", "entry.v1.json");
+const validEntryRequest = compile("entry-request.v1.json");
+
+/**
+ * The steps that take their role from the invocation: a host.role.run.v1
+ * call with no fixed role, whose input_from.role names the invocation's
+ * entry.profile.
+ */
+function invocationRoleSteps(wf: Workflow): WorkflowStep[] {
+  return wf.steps.filter(
+    (s) => s.role === undefined && s.host_service === "host.role.run.v1" && typeof s.input_from.role === "string" && s.input_from.role.includes("entry.profile"),
+  );
+}
+
+/**
+ * Why the role-from-invocation run step of `wf` does not resolve for `entry`
+ * in `catalog`; empty when it resolves. Resolving means: the workflow has
+ * exactly one such step; the entry is the catalog's one entry of its id and
+ * is not unsupported on prior; its profile loads with its parts written and
+ * a prior part among them (the role text Prior runs); its requires lie inside
+ * the workflow's, so Prior grants the run every service the entry calls; and
+ * the invocation naming it is a valid entry-request.
+ */
+function entryRunProblems(wf: Workflow, catalog: Catalog, catalogDir: string, entry: CatalogEntry): string[] {
+  const problems: string[] = [];
+  const steps = invocationRoleSteps(wf);
+  if (steps.length !== 1) problems.push(`${steps.length} steps take their role from the invocation, not one`);
+  const same = catalog.entries.filter((e) => e.id === entry.id);
+  if (same.length !== 1 || same[0] !== entry) problems.push(`entry ${entry.id} is not the catalog's one entry of that id`);
+  if (entry.support.prior === "unsupported") problems.push(`entry ${entry.id} is unsupported on prior`);
+  try {
+    const profile = loadProfile(catalogDir, entry.profile);
+    if (profile === null) problems.push(`profile ${entry.profile} is absent`);
+    else if (partsState(catalogDir, profile) === "absent") problems.push(`profile ${entry.profile} has no parts written`);
+    else if (!profile.parts.some((p) => p.tag === "prior")) problems.push(`profile ${entry.profile} has no prior part`);
+  } catch (error) {
+    problems.push(`profile ${entry.profile}: ${(error as Error).message}`);
+  }
+  const outside = entry.requires.filter((s) => !wf.requires.includes(s));
+  if (outside.length > 0) problems.push(`requires ${outside.join(",")} outside the workflow's`);
+  const request = {
+    workflow_id: "wf-1",
+    run_id: "run-1",
+    entry: { id: entry.id, kind: entry.kind, profile: entry.profile },
+    arguments: [],
+    project_context: { instructions: [] },
+  };
+  if (!validEntryRequest(request)) problems.push(`the entry-request naming it is invalid: ${JSON.stringify(validEntryRequest.errors)}`);
+  return problems;
+}
+
+describeLive("the entry.v1 workflow", (catalog) => {
+  const wf = readJson<Workflow>(ENTRY_WORKFLOW_FILE);
+
+  it("validates against workflow.schema.json and serves fusion.entry.v1 with revise_bound 0", () => {
+    expectValid(validWorkflow, wf, "workflows/entry.v1.json");
+    expect(wf.id).toBe("entry");
+    expect(wf.capability).toBe("fusion.entry.v1");
+    expect(wf.revise_bound).toBe(0);
+  });
+
+  it("requires exactly the six request-69 services, the three entry services and the three role services", () => {
+    const expected = [...REQUEST_69_SERVICES, ...ENTRY_SERVICES, ...ROLE_SERVICES];
+    expect(wf.requires).toHaveLength(12);
+    expect(new Set(wf.requires).size, "a service listed twice").toBe(wf.requires.length);
+    expect([...wf.requires].sort()).toEqual([...expected].sort());
+    // repair.v1 is the request-69 workflow: entry.v1 adds the entry services to it and nothing else.
+    const repair = readJson<Workflow>(join(CATALOG, "workflows", "repair.v1.json"));
+    expect([...wf.requires].sort()).toEqual([...repair.requires, ...ENTRY_SERVICES].sort());
+  });
+
+  it("every catalog entry's requires is a subset of the workflow's, whatever its prior state", () => {
+    expect(catalog.entries.length).toBeGreaterThan(0);
+    for (const e of catalog.entries) {
+      for (const s of e.requires) expect(wf.requires, `entry ${e.id}: ${s}`).toContain(s);
+    }
+  });
+
+  it("has exactly one step that takes its role from the invocation, run, bound to the two entry schemas", () => {
+    const steps = invocationRoleSteps(wf);
+    expect(steps.map((s) => s.id)).toEqual(["run"]);
+    expect(steps[0].input_from.role_input_schema).toBe("schemas/entry-request.v1.json");
+    expect(steps[0].completion.result_schema).toBe("schemas/entry-result.v1.json");
+    for (const asset of ["schemas/entry-request.v1.json", "schemas/entry-result.v1.json"]) {
+      expect(existsSync(join(CATALOG, asset)), asset).toBe(true);
+    }
+    // No step of the generic workflow names a fixed role.
+    expect(wf.steps.filter((s) => s.role !== undefined)).toEqual([]);
+  });
+
+  it("the run step's role resolves for every entry supported on prior (none yet: the fixture group bites)", () => {
+    for (const e of catalog.entries.filter((x) => x.support.prior === "supported")) {
+      expect(entryRunProblems(wf, catalog, CATALOG, e), `entry ${e.id}`).toEqual([]);
+    }
+  });
+});
+
+describe("the entry.v1 workflow (fixture catalog)", () => {
+  const wf = readJson<Workflow>(ENTRY_WORKFLOW_FILE);
+  const fixture = () => {
+    const f = writeFixture();
+    return { ...f, catalog: readJson<Catalog>(join(f.catalogDir, "catalog.json")) };
+  };
+
+  it("resolves the run step's role for both supported entries, the agent on its role's profile and the skill", () => {
+    const { catalog, catalogDir } = fixture();
+    const supported = catalog.entries.filter((e) => e.support.prior === "supported");
+    expect(supported.map((e) => e.id)).toEqual(["alpha", "note"]);
+    for (const e of supported) expect(entryRunProblems(wf, catalog, catalogDir, e), `entry ${e.id}`).toEqual([]);
+  });
+
+  it("does not resolve an unsupported entry, or one whose profile is absent", () => {
+    const { catalog, catalogDir } = fixture();
+    catalog.entries[1].support.prior = "unsupported";
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[1])).toEqual(["entry note is unsupported on prior"]);
+    catalog.entries[2].support.prior = "supported";
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[2])).toEqual(["profile skill-later is absent"]);
+  });
+
+  it("does not resolve an entry whose profile has no parts written, or no prior part", () => {
+    const { catalog, catalogDir } = fixture();
+    // gamma lists a neutral part and writes none.
+    catalog.entries[1].profile = "gamma";
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[1])).toEqual(["profile gamma has no parts written"]);
+    const path = join(catalogDir, "profiles", "skill-note", "profile.json");
+    const p = readJson<Profile>(path);
+    p.parts = p.parts.filter((part) => part.tag !== "prior");
+    writeFileSync(path, JSON.stringify(p));
+    catalog.entries[1].profile = "skill-note";
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[1])).toEqual(["profile skill-note has no prior part"]);
+  });
+
+  it("does not resolve an entry that requires a service outside the workflow's", () => {
+    const { catalog, catalogDir } = fixture();
+    catalog.entries[1].requires = ["host.question.v1", "host.push.v1"];
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[1])).toEqual(["requires host.push.v1 outside the workflow's"]);
+  });
+
+  it("does not resolve an entry the entry-request cannot name, or an id the catalog holds twice", () => {
+    const { catalog, catalogDir } = fixture();
+    // The catalog's id pattern admits one character; the request's entry.id does not.
+    catalog.entries[0].id = "a";
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[0]).join("\n")).toMatch(/^the entry-request naming it is invalid: .*\/entry\/id/);
+    catalog.entries[0].id = "alpha";
+    catalog.entries.push({ ...catalog.entries[0] });
+    expect(entryRunProblems(wf, catalog, catalogDir, catalog.entries[0])).toEqual(["entry alpha is not the catalog's one entry of that id"]);
+  });
+
+  it("does not resolve against a workflow whose run step fixes its role, or names none", () => {
+    const { catalog, catalogDir } = fixture();
+    const fixed = structuredClone(wf);
+    const run = fixed.steps.find((s) => s.id === "run")!;
+    delete run.host_service;
+    run.role = "alpha";
+    expect(entryRunProblems(fixed, catalog, catalogDir, catalog.entries[0])).toEqual(["0 steps take their role from the invocation, not one"]);
+    const unnamed = structuredClone(wf);
+    delete unnamed.steps.find((s) => s.id === "run")!.input_from.role;
+    expect(entryRunProblems(unnamed, catalog, catalogDir, catalog.entries[0])).toEqual(["0 steps take their role from the invocation, not one"]);
   });
 });
 
