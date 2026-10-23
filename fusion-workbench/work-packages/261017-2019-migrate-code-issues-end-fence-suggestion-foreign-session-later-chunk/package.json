@@ -3,7 +3,7 @@
   "id": "6701b085-42df-4911-8d9d-b03b4d841cf7",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Three migrate code fixes and their ride-along comment fixes landed (a567d299, 29a96ed1, 2e5f4277, 0521dc83), released as fusion 13.3.2 (6b92d484, tag v13.3.2), closing review accepted (a6071469).",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "61830d6f-1df5-4f9c-be24-7d6e48ed54cd",
+          "revision": "sha256:e601712f7920c10b399cb5556f0652061ff7cb7f23c58e1e5cce48e09294aae1"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
