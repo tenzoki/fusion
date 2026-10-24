@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ac2b49c2-ce7a-4d21-932a-9f660915523f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261024-1748-migrate-endleftfence-doc-comment-still-says-it-ends-only-a-fence-a-refused-first-rollback-chunk-left.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
