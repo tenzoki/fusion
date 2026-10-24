@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "73bb161d-d68a-4c36-9823-aa10b3c370e2",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261024-1650-migrate-rollback-drops-the-record-of-its-own-standing-fence-when-the-retried-begin-is-refused.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
