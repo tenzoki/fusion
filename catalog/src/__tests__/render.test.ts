@@ -103,8 +103,23 @@ export const HOST_TOKENS: { name: string; re: RegExp; control: string }[] = [
   { name: "slash command", re: /(^|[\s`(])\/[a-z][a-z0-9-]*:[a-z]/m, control: "run /fusion:setup first" },
 ];
 
+/** Every host token a text carries: the lint over a `neutral` part. */
 function tokenHits(text: string): string[] {
   return HOST_TOKENS.filter((t) => t.re.test(text)).map((t) => t.name);
+}
+
+// The lint is split by host. A `neutral` part refuses every HOST_TOKENS entry.
+// A Prior render refuses only Claude Code's own mechanics: an entry run does
+// its Setup and its record writes through `host.exec.v1`, which takes an exact
+// argv, so its `prior` part spells the helper, the plugin root it runs from
+// and the resolver keys it reads back. Decision
+// 261024-2111-may-an-entry-profiles-prior-part-spell-the-helper-calls-its-host-exec-runs.md
+// (option 1).
+export const CLAUDE_ONLY_TOKENS = ["Agent(", "AskUserQuestion", "slash command"] as const;
+
+/** The host tokens a Prior render still refuses, outside an inlined rule. */
+function priorTokenHits(text: string): string[] {
+  return HOST_TOKENS.filter((t) => (CLAUDE_ONLY_TOKENS as readonly string[]).includes(t.name) && t.re.test(text)).map((t) => t.name);
 }
 
 // ---------------------------------------------------------------------------
@@ -286,6 +301,32 @@ describe("host tokens", () => {
     for (const part of partsOf("neutral")) {
       expect(tokenHits(readFileSync(part.path, "utf8")), `${part.id}/${part.file}`).toEqual([]);
     }
+  });
+
+  // A Setup line of the shape an entry profile's prior part writes: a helper
+  // run through host.exec.v1 by path and by bare name, and the keys read back.
+  const helperCall =
+    'Run `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator` through host.exec.v1, hold `OUT_ISSUE` and `$SCAN_PLANS`, and file through `fusion-write create`.\n';
+
+  it("the Prior-only refusals are HOST_TOKENS entries, and the neutral lint keeps all of them", () => {
+    const names = HOST_TOKENS.map((t) => t.name);
+    for (const n of CLAUDE_ONLY_TOKENS) expect(names, n).toContain(n);
+    expect(names.length).toBeGreaterThan(CLAUDE_ONLY_TOKENS.length);
+  });
+
+  it("a Prior text that spells a helper call, the plugin root and the resolver keys passes the Prior lint", () => {
+    expect(priorTokenHits(helperCall)).toEqual([]);
+  });
+
+  it("a Prior text with Agent(, AskUserQuestion or a slash command fails the Prior lint", () => {
+    expect(priorTokenHits(`${helperCall}Dispatch Agent(fusion:reviewer).\n`)).toEqual(["Agent("]);
+    expect(priorTokenHits(`${helperCall}Put an AskUserQuestion.\n`)).toEqual(["AskUserQuestion"]);
+    expect(priorTokenHits(`${helperCall}Run /fusion:setup first.\n`)).toEqual(["slash command"]);
+  });
+
+  it("a neutral part with the same helper call still fails the neutral lint", () => {
+    expect(tokenHits(helperCall)).toEqual(["$FUSION_PLUGIN_ROOT", "bin/ helper path", "bin/ helper bare word", "$OUT_*/$SCAN_*"]);
+    expect(tokenHits("Read every path fusion-rules emits.\n")).toEqual(["bin/ helper bare word"]);
   });
 });
 
@@ -847,6 +888,8 @@ describeLive("render prior (live catalog)", (catalog) => {
   // preserved and its provenance hashed (Prior answer 67.2 (iv)), so it names
   // Claude surfaces by their names. The token lint reads the overlay around
   // it: what the overlay says about those surfaces is the prior part's job.
+  // The overlay is held to the Prior lint, which admits the helper calls an
+  // entry run makes through host.exec.v1 (see CLAUDE_ONLY_TOKENS).
   const inlined = partsOf("prior").flatMap((p) =>
     readFileSync(p.path, "utf8")
       .split("\n")
@@ -860,7 +903,7 @@ describeLive("render prior (live catalog)", (catalog) => {
       const md = readFileSync(join(out, file), "utf8");
       let overlay = md;
       for (const body of inlined) overlay = overlay.split(body).join("");
-      expect(tokenHits(overlay), file).toEqual([]);
+      expect(priorTokenHits(overlay), file).toEqual([]);
       expect(md, file).not.toMatch(/\{\{include/);
     }
   });

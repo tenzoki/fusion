@@ -17,8 +17,8 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": "261024-2111-does-an-entry-run-of-a-repair-role-write-the-workbench-on-prior.md",
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

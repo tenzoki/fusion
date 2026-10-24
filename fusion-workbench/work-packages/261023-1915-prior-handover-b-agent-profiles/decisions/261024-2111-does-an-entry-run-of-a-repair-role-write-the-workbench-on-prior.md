@@ -31,3 +31,6 @@ Under D5 (`261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-
 ## Recommendation
 
 Option 1. It is the rule D5 set, carried from schemas to grants. Prior answers the one open half in request 76. Confidence: inference. Prior's entry admission (its step 28) is not written yet, so how it reads `writes_workbench` for an entry run is unknown.
+
+---
+Answered: 261024-2111-does-an-entry-run-of-a-repair-role-write-the-workbench-on-prior.md — option 1, the workflow grants the write as D5 has it bind the schemas; profile.json stays, the three prior parts branch on the role input, request 76 asks Prior to read the grant per workflow; ruled by user, Kai Stalmann <ks@qantr.com>, in chat 2026-10-24 ("B1")

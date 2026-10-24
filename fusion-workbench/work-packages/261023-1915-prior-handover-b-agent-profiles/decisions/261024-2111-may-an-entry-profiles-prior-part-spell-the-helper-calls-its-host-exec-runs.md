@@ -32,3 +32,6 @@ An entry run on Prior does its Setup and every record write through `host.exec.v
 ## Recommendation
 
 Option 1. The lint exists to keep Claude mechanics out of Prior's text. A helper that Prior itself mounts and runs is not a Claude mechanic. `Agent(`, `AskUserQuestion` and slash commands are, and they stay refused. The change is one test split and it lands before step 6. Confidence: inference, from reading the test, the hand-over's H8 and `ExecCall`. Prior has not said how its executor spells the mount path.
+
+---
+Answered: 261024-2111-may-an-entry-profiles-prior-part-spell-the-helper-calls-its-host-exec-runs.md — option 1, split the lint by host: neutral parts keep the full HOST_TOKENS list, a Prior render refuses only the Claude Code tokens; ruled by user, Kai Stalmann <ks@qantr.com>, in chat 2026-10-24 ("A1")
