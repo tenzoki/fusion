@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5c6d7300-764d-4ebc-b359-d9c340056145",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261024-1005-catalog-readme-says-two-workflows-exist-and-its-layout-omits-the-schema-case-tables.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
