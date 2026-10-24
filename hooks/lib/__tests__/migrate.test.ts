@@ -648,6 +648,26 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([refused.status, refused.stderr.includes("maintenance-active"), after.rollback, run.status, value(run.stdout, "result"), run.stderr.includes("is being rolled back")], refused.stderr + run.stderr).toEqual([8, true, null, 0, "no-op", false]);
   }, 4 * CASE_TIMEOUT);
 
+  // Row K: the codec sets the fence before it stores the answer, so a crash between leaves this begin's own fence and no answer; its retry is refused under that fence.
+  it("a retried rollback refused by its own begin's fence keeps the record and names --end-fence, which ends it (issue 261024-1650)", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, wb, home } = project();
+    const own = join(home, "own");
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), [...a, "--session", own], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill(null);
+    expect(cut("run").status).toBe(0);
+    kill({ op: "maintenance", action: "begin" });
+    expect(cut("rollback").status).toBe(7);
+    kill(null);
+    const begin = JSON.parse(readFileSync(join(own, "state.json"), "utf-8")).rollback.begin_id;
+    rmSync(join(wb, `.json-state/ops/${begin}.json`));
+    const refused = mig(root, home, "rollback", "--session", own);
+    const after = JSON.parse(readFileSync(join(own, "state.json"), "utf-8"));
+    expect([refused.status, after.rollback?.begin_id, refused.stderr.includes(`\`bin/fusion-migrate rollback --end-fence --session ${own}\``)], refused.stderr).toEqual([8, begin, true]);
+    const ended = mig(root, home, "rollback", "--end-fence", "--session", own);
+    expect([ended.status, value(ended.stdout, "fence-ended"), value(mig(root, home, "status", "--session", own).stdout, "fence")], ended.stderr).toEqual([0, begin, "-"]);
+  }, 5 * CASE_TIMEOUT);
+
   it("cell A reset with git and cell C with a fence of another id: --end-fence leaves either fence byte-identical (issue 261016-1052)", () => {
     const { plugin, kill } = killPlugin();
     const { root, wb, home } = project();

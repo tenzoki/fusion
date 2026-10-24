@@ -717,6 +717,16 @@ function endLeftFence(wb: string, session: string, s: State): string[] {
   return [`fence-ended=${fence}`, "result=json-control", "note=the codec refuses every later rollback of this migration"];
 }
 
+/** The id of the fence standing now, null for none, undefined when `inspect` does not answer: then nothing is decided on it. */
+function standingFence(wb: string): string | null | undefined {
+  try {
+    const m = inspect(wb).maintenance as { operation_id?: unknown } | null;
+    return m === null ? null : typeof m?.operation_id === "string" ? m.operation_id : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Rolls back every landed chunk, then chunk 0, then ends the fence; resumable under the recorded ids. */
 function rollback(wb: string, session: string, endFence = false): string[] {
   const s = recorded(wb, session);
@@ -741,10 +751,16 @@ function rollback(wb: string, session: string, endFence = false): string[] {
     try {
       send(wb, { op: "maintenance", operation_id: begin, action: "begin" });
     } catch (e) {
-      // A refused begin raised no fence and rolled nothing back, so the ids go: `run`, `resume` and `current` read a set field as a rollback in flight. An unanswered one (exit 7) may have landed, and its retry resends it under the same id.
-      if (e instanceof Stop && e.code === EXIT.refused && !stored(wb, begin)) {
-        s.rollback = null;
-        writeState(session, s);
+      // An unanswered begin (exit 7) may have landed, and its retry resends it under the same id. A refused one is decided on the fence standing now, the only mark the codec leaves of who raised it (`{operation_id, since}`), since a refusal is never stored and so `stored` cannot tell.
+      if (e instanceof Stop && e.code === EXIT.refused) {
+        const now = standingFence(wb);
+        // No fence, or another id's: this begin raised none and rolled nothing back, so the ids go, as `run`, `resume` and `current` read a set field as a rollback in flight.
+        if (now !== undefined && now !== begin) {
+          s.rollback = null;
+          writeState(session, s);
+        }
+        // This begin's own fence, its answer lost between fence and answer: no rollback chunk runs under a begin that is not stored, so the record stays for `--end-fence`.
+        if (now === begin) throw new Stop(EXIT.refused, `${e.message}. That fence is this rollback's own: its maintenance begin set it and its answer was lost, and the codec runs no rollback chunk under a begin it has no answer for, so ${command(wb, session, "rollback")} is refused again; ${command(wb, session, "rollback --end-fence")} ends the fence and keeps the store under JSON control`);
       }
       throw e;
     }
