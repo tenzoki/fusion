@@ -18,12 +18,16 @@ This downloads fusion over plain HTTPS into `~/.fusion` and installs a `fusion` 
 
 ```bash
 fusion              # start an orchestrator session
-fusion --update     # re-download the latest, overwrite ~/.fusion
+fusion --update     # re-install the head of main into ~/.fusion, then restart the session
 fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v13.3.3` to pin a release — every release since v5.5.0 is tagged; the default is the head of `main`, which is what `fusion --update` fetches), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+**Which copy am I running?** `fusion --where` names the folder; `grep '"version"' "$(fusion --where)/.claude-plugin/plugin.json"` its version. Inside a session, `grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json"` names the copy that session actually loaded. On the default ref the version names the last release, and the tree can be newer.
+
+A release reaches your machine only when you run `fusion --update` and then restart Claude Code; nothing updates `~/.fusion` on its own, and nothing tells you a newer release exists. A running session keeps the copy it started with.
+
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v13.3.3` to pin a release; `git tag` lists the tagged ones, which are most releases since v5.5.0, though several v10 releases between v10.8 and v10.19 have none; the default is the head of `main`, which is what `fusion --update` fetches), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`). `fusion --update` does not remember them: set them again on each update, or run the installer with them.
 
 **Upgrading from v12?** v13 moves every record's state out of Markdown into JSON control files beside it (`package.json`, `<name>.record.json`), written only through `bin/fusion-write`; the text stays Markdown. Every agent stops at Setup on a v12 workbench until `/fusion:migrate` has converted it, which needs Node 20.12.0 or later and asked one question on each real workbench it was measured on. Every installation that writes a migrated workbench must be on v13 first, since nothing detects one that is not. [`docs/upgrading-to-v13.md`](docs/upgrading-to-v13.md) is the procedure, the multi-checkout order and the documented limits.
 
@@ -66,6 +70,8 @@ Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v13.3.3` to pin a releas
 
 The marketplace path has no `fusion` launcher; start an agent directly with `claude --agent fusion:orchestrator` (the plugin must be enabled in the project).
 
+**Use one path, not both.** A marketplace install is separate from `~/.fusion`: `fusion --update` never refreshes it, `fusion --uninstall` never removes it, and a plain `claude` session in a project where it is enabled loads that copy. `claude plugin list` shows every marketplace install with its scope and project. Remove one with `claude plugin uninstall fusion@tenzoki-plugins --scope <user|project|local>`, run from inside the project for `project` and `local`. To update one, pull the marketplace clone (`git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main`), run `claude plugin update fusion@tenzoki-plugins` (with the same `--scope` it was installed at) and restart Claude Code.
+
 ### The `fusion` launcher
 
 The HTTPS installer writes `fusion` to `~/.local/bin`. It runs Claude Code with the plugin loaded and a chosen agent:
@@ -80,8 +86,8 @@ fusion --help            # full usage
 
 ### Requirements
 
-- **Claude Code v2.1.63+** (the orchestrator uses the `Agent(...)` tool-restriction syntax introduced there; on older Claude Code, use fusion v1.9.3 or earlier).
-- **Node.js 18+** for the TypeScript hooks. The hooks ship pre-compiled to `hooks/dist/` — no `npm install` needed at runtime, only `node`.
+- **Claude Code v2.1.63+** (the oldest version fusion is known to load on; it is tested on current releases).
+- **Node.js 20.12.0+** for the hooks and the record codec. Both ship pre-compiled (`hooks/dist/`, `codec/dist/`), so no `npm install` is needed at runtime, only `node`. Without it no session can file or update a record.
 - **Python 3** for the monitor dashboard.
 
 ## Setup
@@ -103,7 +109,7 @@ Setup is the only thing that creates a workbench. Without it, agents halt with "
 Start the orchestrator and give it a task:
 
 ```bash
-fusion                                   # or: claude --agent fusion:orchestrator
+fusion                                   # marketplace install: claude --agent fusion:orchestrator
 ```
 
 Then, in the chat, state what you want — for example *"implement the plan, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope and runs a **dispatch loop**: one task at a time — read it, dispatch an executor (code-implementer, data-implementer), read what comes back, commit it, and tell you where things stand before taking the next one. No queue is built and no count bounds the loop; you do, by saying what is next. The reviewer runs **once per work package, at its close**, scoped by the coverage tiling so nothing slips between sessions. A reconciliation checks the tracking files when you ask for it (`/fusion:reconcile`), and on any audit result but `coherent` it opens the **Rebalance approval**.

@@ -82,15 +82,9 @@ Read `$FUSION_SRC/README.md`. Two paths:
 
 ### 4. Update — *picking up new versions*
 
-**If you installed via the HTTPS installer (recommended):** run `fusion --update` — it re-downloads the latest over HTTPS and overwrites `~/.fusion`. That's the whole update; no slash commands, no cache surgery.
+**If you installed via the HTTPS installer (recommended):** run `fusion --update` — it re-installs the head of `main` into `~/.fusion` — then restart the session. Nothing updates `~/.fusion` on its own. That's the whole update; no slash commands, no cache surgery.
 
-**If you installed via the marketplace:** type these three slash commands in Claude Code, in order:
-
-1. `/plugin uninstall fusion@tenzoki-plugins`
-2. `/plugin install fusion@tenzoki-plugins`
-3. `/reload-plugins`
-
-**Why three commands:** Claude Code has no `/plugin upgrade` or `/plugin update`. `/plugin install` on an already-installed plugin reports *"already installed globally"* and does not re-fetch — so the upgrade path requires `uninstall` first.
+**If you installed via the marketplace:** pull the marketplace clone (caveat below), run `claude plugin update fusion@tenzoki-plugins` in a shell (add `--scope project` or `--scope local` if you installed at that scope), then restart Claude Code. That copy is separate from `~/.fusion`; `$FUSION_SRC/README.md` says how to keep only one.
 
 **Coming from 13.0.0 to 13.3.2:** 13.3.0 to 13.3.3 need no migration; `fusion --update` is the whole update. 13.3.3: `/fusion:migrate` messages naming a command carry `--session` under a non-default session. 13.3.2 changes only `/fusion:migrate`: `run` refuses a rolled-back record kept for another path, a later undo step that is refused reports only the refusal, and the undo messages suggest `rollback --end-fence` and `set-aside` only where they would act. 13.3.1: a prerequisite edge with one accepted evidence binding is met even when another names a missing record, and with none accepted it answers `missing-evidence`; `/fusion:migrate` `run` and `repair` exit 9 only for an unverified backup, 3 for any other fault. 13.3.0: the session start now names the periodic checks that are due, and names a project instruction file with a section over the weight threshold. `/fusion:curate --placement` asks the policy-curator to propose where such text moves, every curator survey states its net byte change per surface, and the reviewer reports drift in that file as text to move (`$FUSION_SRC/rules/context-lean-claude-md.md` `### Relocating in a consuming project`).
 
@@ -100,9 +94,9 @@ Read `$FUSION_SRC/README.md`. Two paths:
 
 **Older than that:** this section carries the last three install-from paragraphs and no more, because it is a per-release list on a surface with a fixed byte ceiling. For an older install, run `ls $FUSION_SRC/docs/` and read every `upgrading-to` note above the user's own version, in version order; not every release has one, and no filename is derivable from a version string. One of them still carries an action that fails silently when it is skipped: v9 retired the `strategic` and `knowledge` domain values, and a record still carrying one runs as `code` without saying so.
 
-**One caveat for the marketplace path:** the local *marketplace clone* at `~/.claude/plugins/marketplaces/<name>/` is what `/plugin install` reads, not the GitHub remote. If a version bump hasn't reached it, run `git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main` first, then the three commands. (The HTTPS installer has none of this friction — prefer it.)
+**One caveat for the marketplace path:** the local *marketplace clone* at `~/.claude/plugins/marketplaces/<name>/` is the catalogue `/plugin install` reads; the plugin itself comes from `tenzoki/fusion`'s default branch into `~/.claude/plugins/cache/`. If a version bump hasn't reached the clone, run `git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main` first. (The HTTPS installer has none of this friction — prefer it.)
 
-For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`, dual git push), read the "Release process" section of `CLAUDE.md` in the fusion **source repo** (https://github.com/tenzoki/fusion/blob/main/CLAUDE.md) — that file is dev-only and deliberately not shipped, so `$FUSION_PLUGIN_ROOT/CLAUDE.md` does not exist on an installed copy.
+For the maintainer-side release flow, read `$FUSION_SRC/README-agents.md` `## Releasing`.
 
 ### 5. Configure — *customizing fusion for a project*
 

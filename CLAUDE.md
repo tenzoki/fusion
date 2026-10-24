@@ -7,7 +7,7 @@ This repository is the **source of the fusion Claude Code plugin** (`tenzoki-plu
 
 ## What this is
 
-Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plugins`). Provides:
+Plugin installed by `install.sh` from `tenzoki/fusion` `heads/main`; also in the `tenzoki-plugins` marketplace (`tenzoki/claude-plugins`). Provides:
 
 - **agents**: the 11 prompts, what each is for, which dispatch parameter each reads, and the five that went at v11. Detail: `README-agents.md` `## The agents`.
 - **guard and hooks**, observation-only since 260816: what each hook writes, and the three checks that were removed. Detail: `README-hooks.md` `## Concept`.
@@ -55,11 +55,11 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 
 ## Release process
 
-The two repositories, the numbered steps, the tag, the marketplace cache clone, the HTTPS installer's invariants and the five surfaces a release keeps coherent are in `README-agents.md` `## Releasing`, beside `## Adding a new agent`.
+The two repositories, the numbered steps, the tag, the marketplace clone, the HTTPS installer's invariants and the five surfaces a release keeps coherent are in `README-agents.md` `## Releasing`, beside `## Adding a new agent`.
 
 ## Testing during development
 
-Use `claude --plugin-dir /path/to/this/repo` to load directly from disk: no install, no cache, no version bumping required. Reserve the marketplace flow for releases.
+Run `FUSION_PLUGIN_ROOT=$PWD claude --plugin-dir $PWD` here to load from disk: no install, no version bump.
 
 ## Where to look when something breaks
 

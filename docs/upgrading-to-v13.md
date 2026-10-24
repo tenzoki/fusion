@@ -154,7 +154,8 @@ Both launchers are named `fusion`, so start the v13 one by its full path, and op
 project only through it. Migrate one project at a time.
 
 **Never run `fusion --update` from the v13 launcher.** It downloads `install.sh` from `main` and
-runs it with no variables, which reinstalls `heads/main` into `~/.fusion`. To refresh the v13
+runs it without the variables this install was made with (the launcher does not remember them),
+which reinstalls `heads/main` into `~/.fusion` and rewrites `~/.local/bin/fusion`. To refresh the v13
 install, run the installer again with the same three variables.
 
 ## Documented limits

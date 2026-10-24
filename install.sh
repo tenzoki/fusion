@@ -52,9 +52,9 @@ Install Claude Code first, then re-run this installer:
   https://docs.claude.com/en/docs/claude-code"
 fi
 if ! command -v node >/dev/null 2>&1; then
-  warn "Node.js ('node') was not found on your PATH."
-  warn "fusion's compliance guard runs as a Node hook; without node it will not fire."
-  warn "Agents still work, but install Node.js to get the guard: https://nodejs.org"
+  warn "Node.js 20.12.0 or later ('node') was not found on your PATH."
+  warn "fusion's hooks, its record writer (bin/fusion-write) and /fusion:migrate all run on node: without it no session can file or update a record."
+  warn "Install Node.js 20.12.0+: https://nodejs.org"
 fi
 
 # --- 2. Download + extract over HTTPS (no git, no SSH) ------------------------
@@ -92,9 +92,9 @@ done
 # codec/dist are self-contained, so node_modules is never needed at runtime.
 rm -rf "$INSTALL_DIR/hooks/node_modules"
 rm -rf "$INSTALL_DIR/codec/node_modules"
-# Compiled hooks must be present — the guard runs from hooks/dist.
+# Compiled hooks must be present — fusion's hooks run from hooks/dist.
 [ -f "$INSTALL_DIR/hooks/dist/guard.js" ] \
-  || warn "hooks/dist/guard.js missing — the compliance guard will not run."
+  || warn "hooks/dist/guard.js missing — fusion's hooks will not run."
 # The codec bundle must be present — bin/fusion-record execs it.
 [ -f "$INSTALL_DIR/codec/dist/fusion-record.js" ] \
   || warn "codec/dist/fusion-record.js missing — bin/fusion-record will not run."

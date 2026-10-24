@@ -10,7 +10,7 @@ Fusion ist ein Claude-Code-Plugin, das eine Arbeitssitzung als Team von elf spez
 curl -fsSL https://raw.githubusercontent.com/tenzoki/fusion/main/install.sh | bash
 ```
 
-Das legt Fusion nach `~/.fusion` und einen Launcher `fusion` nach `~/.local/bin`. Voraussetzungen: Claude Code v2.1.63+, Node.js 18+ (für die Hooks), Python 3 (für den Monitor).
+Das legt Fusion nach `~/.fusion` und einen Launcher `fusion` nach `~/.local/bin`. Voraussetzungen: Claude Code v2.1.63+, Node.js 20.12.0+ (für Hooks und Record-Codec), Python 3 (für den Monitor).
 
 **Starten:**
 
@@ -204,10 +204,12 @@ fusion-workbench/orchestrator-events.jsonl merge=union
 ## 9. Update und Stilprofile
 
 ```bash
-fusion --update     # lädt die neueste Version nach ~/.fusion, dann Sitzung neu starten
+fusion --update     # installiert den Stand von main nach ~/.fusion, dann Sitzung neu starten
 ```
 
-Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung festgepinnt; ein Update wirkt erst nach Neustart. Die Release-Notes je Version liegen in `docs/upgrading-to-v*.md`; `/fusion:help update` nennt die letzten drei. Beim Marketplace-Pfad gibt es keinen `fusion`-Launcher und kein `/plugin update`: dort erst den Marketplace-Clone pullen, dann `uninstall`, `install`, `/reload-plugins`.
+Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung festgepinnt; ein Update wirkt erst nach Neustart. Die Release-Notes je Version liegen in `docs/upgrading-to-v*.md`; `/fusion:help update` nennt die letzten drei. Ein Release ist erst auf dem Rechner, wenn `fusion --update` gelaufen und die Sitzung neu gestartet ist; nichts aktualisiert `~/.fusion` von selbst, und nichts meldet, dass es ein neueres Release gibt. Welche Kopie läuft, zeigt `grep '"version"' "$(fusion --where)/.claude-plugin/plugin.json"`. Beim Marketplace-Pfad gibt es keinen `fusion`-Launcher: dort erst den Marketplace-Clone pullen, dann `claude plugin update fusion@tenzoki-plugins` und Claude Code neu starten.
+
+**Nur einen Pfad nutzen.** Eine Marketplace-Installation ist von `~/.fusion` getrennt: `fusion --update` frischt sie nie auf, `fusion --uninstall` entfernt sie nie, und eine einfache `claude`-Sitzung in einem Projekt, in dem sie aktiviert ist, lädt diese Kopie. `claude plugin list` zeigt jede Marketplace-Installation mit Scope und Projekt; entfernt wird sie mit `claude plugin uninstall fusion@tenzoki-plugins --scope <user|project|local>`, für `project` und `local` aus dem Projekt heraus aufgerufen.
 
 **Stilprofile.** Setup kopiert vier Profile nach `fusion-workbench/stilwerk/`: `default-voice-{en,de}.yaml` (Langform, für Berichte und Specs) und `chat-voice-{en,de}.yaml` (Kurzform, für jede Chat-Zeile jedes Agenten). Die Sprache wählt `CLAUDE.md`: `**Language:** de` für den Chat, optional `**Artifact language:** en` für die geschriebenen Artefakte. Die Kopien sind projektlokal editierbar und werden bei späteren Setups nicht überschrieben. Ändert sich ein ausgeliefertes Profil, vergleicht Setup Schritt 0e die Prüfsumme und fragt einmal: **„Replace them“** oder **„Keep mine“**. Bei einer Kopie, die vor der Prüfsummen-Aufzeichnung existierte, kann Fusion Anpassung und veraltete Kopie nicht unterscheiden und sagt das.
 
