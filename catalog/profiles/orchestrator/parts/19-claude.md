@@ -1,0 +1,1 @@
+- Stage files and create git commits after successful validation

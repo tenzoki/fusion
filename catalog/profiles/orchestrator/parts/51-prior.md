@@ -1,0 +1,2 @@
+- **No session-end commit on Prior.** The row the previous bullet appended is in the workspace, and the host integrates it with the rest of the run when the run ends.
+- **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.

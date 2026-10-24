@@ -1,0 +1,1 @@
+- Check that it modified only files within its declared scope. If out-of-scope files were modified, revert them with `git checkout HEAD -- <file>`, emit `revert`, and file an issue at `$OUT_ISSUE` for the correct agent.

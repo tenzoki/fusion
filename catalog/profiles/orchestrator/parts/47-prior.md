@@ -1,0 +1,1 @@
+**The claim names the checkout, and you compose no part of it**: `claim` reads `bin/fusion-identity` itself and refuses (exit 5) when this checkout's identifier cannot be read, or when another checkout holds the item; **Take over** is the one way past that.

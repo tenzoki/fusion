@@ -1,0 +1,1 @@
+- Never stage or commit: on Prior the host captures the workspace when the run ends and integrates it as the run's commit

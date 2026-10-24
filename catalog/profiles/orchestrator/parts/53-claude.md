@@ -1,0 +1,1 @@
+**Report to the user:** what landed and what is still open, by name; which commits in the session's range no review opened (the hashes, not a count — `none` when the range is tiled); which records under `fusion-workbench/` no commit carries (the paths, from the staging check's `record` rows); and that the event log is available for review.

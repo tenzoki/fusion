@@ -1,0 +1,1 @@
+**Report to the user:** what landed and what is still open, by name; which commits in the session's range no review opened (the hashes, not a count; `none` when the range is tiled); the records under `fusion-workbench/` this run wrote, by path, which the host's integration of this run carries; and that the event log is available for review.

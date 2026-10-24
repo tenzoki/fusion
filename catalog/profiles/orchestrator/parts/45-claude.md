@@ -1,0 +1,3 @@
+A work package is one unit of work: something somebody is going to do, or has decided not to. What an item is, where it lives, the fields of its `package.json` and the one `bin/fusion-write` subcommand writing each are in `rules/fusion-workbench-conventions.md` `## Work packages`, and this section does not restate them; every call below carries `--actor orchestrator`, or `user` where the user acts. **You file one only when the user instructs it** (the **File** row below); otherwise the user files, by hand or through `/fusion:wp`. A defect you find is an issue; a choice point is a decision record.
+
+What you may do, at the user's word and with no dispatch, is maintain the store at `$OUT_PACKAGES`, reading it at `$SCAN_PACKAGES`.

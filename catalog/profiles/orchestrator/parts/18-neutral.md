@@ -1,0 +1,1 @@
+- Run build/test commands to validate agent output (as documented in CLAUDE.md)

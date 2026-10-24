@@ -1,0 +1,1 @@
+- **Emit `session_end`**, carrying `<ID>` as every line does.

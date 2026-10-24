@@ -104,8 +104,8 @@ and the profiles are fusion's own and are not frozen.
 
 ## Editing a converted prompt
 
-`agents/code-implementer.md`, `agents/reviewer.md` and `agents/state-auditor.md`
-are generated. Do not edit them by hand: the byte-equality test fails, and the
+`agents/code-implementer.md`, `agents/reviewer.md`, `agents/state-auditor.md`
+and `agents/orchestrator.md` are generated. Do not edit them by hand: the byte-equality test fails, and the
 next render overwrites the edit. The route is
 
 1. edit the part under `catalog/profiles/<id>/parts/`: a `neutral` part when
@@ -122,6 +122,13 @@ of `261010-1504-span-map-and-repair-correspondence.md`. What a neutral part may
 still carry, and what the Prior overlay has to resolve, is Finding 3 there:
 `CLAUDE.md` means the host-supplied `project_context`, and the cited rule file
 is inlined through the include directive.
+
+The token lint over a Prior render is narrower: it refuses only `Agent(`,
+`AskUserQuestion` and a slash command. An entry run does its Setup and its
+record writes through `host.exec.v1`, so its `prior` part spells the helper
+path, `$FUSION_PLUGIN_ROOT` and the `OUT_*`/`SCAN_*` keys it reads back
+(decision `261024-2111-may-an-entry-profiles-prior-part-spell-the-helper-calls-its-host-exec-runs.md`,
+option 1).
 
 ## What the tests do not cover
 

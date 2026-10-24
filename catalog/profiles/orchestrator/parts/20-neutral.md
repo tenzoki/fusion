@@ -1,0 +1,1 @@
+- Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)

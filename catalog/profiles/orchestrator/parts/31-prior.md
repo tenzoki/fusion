@@ -1,0 +1,1 @@
+4. **Mark the source.** `"$FUSION_PLUGIN_ROOT/bin/fusion-write" transition --to in_progress` on the issue, or on the plan with `--steps '[{"id":"<n>","state":"in_progress"}]'` (`rules/fusion-workbench-conventions.md` `### Planning files`).
