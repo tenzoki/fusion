@@ -736,7 +736,19 @@ function rollback(wb: string, session: string, endFence = false): string[] {
     s.rollback = { begin_id: randomUUID(), end_id: randomUUID() };
     writeState(session, s);
   }
-  if (i.state === "json-control" && !stored(wb, s.rollback.begin_id)) send(wb, { op: "maintenance", operation_id: s.rollback.begin_id, action: "begin" });
+  const begin = s.rollback.begin_id;
+  if (i.state === "json-control" && !stored(wb, begin)) {
+    try {
+      send(wb, { op: "maintenance", operation_id: begin, action: "begin" });
+    } catch (e) {
+      // A refused begin raised no fence and rolled nothing back, so the ids go: `run`, `resume` and `current` read a set field as a rollback in flight. An unanswered one (exit 7) may have landed, and its retry resends it under the same id.
+      if (e instanceof Stop && e.code === EXIT.refused && !stored(wb, begin)) {
+        s.rollback = null;
+        writeState(session, s);
+      }
+      throw e;
+    }
+  }
   const landed = s.schedule.apply.filter((a) => stored(wb, a.operation_id)).map((a) => a.chunk);
   const rb = new Map(s.schedule.rollback.map((r) => [r.chunk, r.operation_id]));
   let sent = 0;
@@ -968,7 +980,7 @@ function main(argv: string[]): number {
       : sub === "set-aside" ? setAside(wb, session, flags.has("--consent"))
       : status(wb, session);
   } catch (e) {
-    if (e instanceof Stop && e.code === EXIT.unknown) throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, retry(sub, rest, readState(session)))} sends the same request again.`);
+    if (e instanceof Stop && e.code === EXIT.unknown) throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, retry(sub, rest, sub === "run" ? readState(session) : null))} sends the same request again.`);
     throw e;
   }
   out(lines);

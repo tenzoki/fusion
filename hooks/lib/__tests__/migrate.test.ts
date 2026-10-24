@@ -417,6 +417,19 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
   }, 4 * CASE_TIMEOUT);
 
+  it("an exit 7 met by survey or repair --list over a state.json that does not parse stays exit 7 and names itself (issue 261024-1425)", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, home } = project();
+    const session = join(home, "own");
+    mkdirSync(session, { recursive: true });
+    writeFileSync(join(session, "state.json"), "{ not json");
+    kill({ phase: "survey" });
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), [...a, "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    const [survey, repair] = [cut("survey"), cut("repair", "--list")];
+    kill(null);
+    expect([survey.status, spelled(survey.stderr), repair.status, spelled(repair.stderr)], survey.stderr + repair.stderr).toEqual([7, [`\`bin/fusion-migrate survey --session ${session}\``], 7, [`\`bin/fusion-migrate repair --list --session ${session}\``]]);
+  }, 2 * CASE_TIMEOUT);
+
   it("a session path with a space is quoted in the command a message names, which pastes into a shell (issue 261024-1005)", () => {
     const { root, wb, home } = project();
     const session = join(home, "my own");
@@ -620,6 +633,20 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const again = runNamed(root, home, spelled(run.stderr)[0]);
     expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "legacy"]);
   }, 5 * CASE_TIMEOUT);
+
+  it("a rollback whose maintenance begin a foreign fence refused leaves no rollback recorded, and run then answers the no-op (issue 261024-1425)", () => {
+    const { root, wb, home } = project();
+    const own = join(home, "own");
+    const codec = (q: object) => spawnSync(resolve(REPO_ROOT, "bin", "fusion-record"), [], { cwd: wb, encoding: "utf-8", env: { PATH, HOME: home }, input: JSON.stringify(q) });
+    expect(mig(root, home, "run", "--session", own).status).toBe(0);
+    const foreign = randomUUID();
+    expect(codec({ op: "maintenance", operation_id: foreign, action: "begin" }).status).toBe(0);
+    const refused = mig(root, home, "rollback", "--session", own);
+    const after = JSON.parse(readFileSync(join(own, "state.json"), "utf-8"));
+    expect(codec({ op: "maintenance", operation_id: randomUUID(), action: "end", fence: foreign }).status).toBe(0);
+    const run = mig(root, home, "run", "--session", own);
+    expect([refused.status, refused.stderr.includes("maintenance-active"), after.rollback, run.status, value(run.stdout, "result"), run.stderr.includes("is being rolled back")], refused.stderr + run.stderr).toEqual([8, true, null, 0, "no-op", false]);
+  }, 4 * CASE_TIMEOUT);
 
   it("cell A reset with git and cell C with a fence of another id: --end-fence leaves either fence byte-identical (issue 261016-1052)", () => {
     const { plugin, kill } = killPlugin();
