@@ -618,6 +618,15 @@ function workSincePlan(wb, s) {
     const ops = join(wb, STATE_DIR, "ops");
     return (existsSync(ops) ? readdirSync(ops) : []).filter((n) => !n.startsWith(".") && n.endsWith(".json")).map((n) => n.slice(0, -5)).filter((id) => !own.has(id) && !noOp(id));
 }
+/** Whether the codec stored a successful answer under `id`; a refusal stored there or an unreadable answer is not an end. */
+function endStored(wb, id) {
+    try {
+        return JSON.parse(readFileSync(join(wb, STATE_DIR, "ops", `${id}.json`), "utf-8")).response?.ok === true;
+    }
+    catch {
+        return false;
+    }
+}
 /** Sends `maintenance end` for the fence this rollback began; the ids are dropped only after it is stored, so a retry resends it under its id. */
 function endRollbackFence(wb, session, s) {
     send(wb, { op: "maintenance", operation_id: s.rollback.end_id, action: "end", fence: s.rollback.begin_id });
@@ -683,6 +692,13 @@ function endLeftFence(wb, session, s) {
     const reset = shows !== null ? landedFence(wb, s, i) : null;
     if (reset !== null)
         throw new Stop(EXIT.precondition, `${landedThenReset(wb, session, s, reset, shows)}; nothing was sent`);
+    // An end stored under this record's id landed even when its answer was lost (exit 7): observe that before acting, and settle the record instead of refusing its own retry.
+    if (s.rollback !== null && endStored(wb, s.rollback.end_id)) {
+        const fence = s.rollback.begin_id;
+        s.rollback = null;
+        writeState(session, s);
+        return [`fence-ended=${fence}`, "result=json-control", "note=the fence had already ended: its maintenance end was stored before the answer was lost, so nothing was sent; the codec refuses every later rollback of this migration"];
+    }
     const last = s.schedule ? s.schedule.rollback.find((r) => r.chunk === s.schedule.apply.length) : undefined;
     if (s.rollback === null || i.state !== "json-control" || i.maintenance?.operation_id !== s.rollback.begin_id || (last && stored(wb, last.operation_id)))
         throw new Stop(EXIT.precondition, "no fence of a refused rollback stands on a store under JSON control, nor an idle fence of this record over a legacy store; nothing was sent");

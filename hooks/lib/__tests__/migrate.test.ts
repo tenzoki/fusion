@@ -393,9 +393,10 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     const end = cut("rollback", "--end-fence");
     kill(null);
     expect([end.status, spelled(end.stderr)], end.stderr).toEqual([7, [`\`bin/fusion-migrate rollback --end-fence --session ${session}\``]]);
-    // The stand-in lets the codec store the end before it dies, so the named retry reaches this session's record and finds the fence ended.
+    // The stand-in lets the codec store the end before it dies, so the named retry reaches this session's record, finds the fence ended and settles the undo (issue: the retry exited 5 and left the rollback ids set).
     const again = runNamed(root, home, spelled(end.stderr)[0]);
-    expect([again.stderr.includes("no run is recorded"), value(mig(root, home, "status", "--session", session).stdout, "fence")], again.stderr).toEqual([false, "-"]);
+    const after = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
+    expect([again.status, value(again.stdout, "result"), (value(again.stdout, "note") ?? "").includes("already ended"), after.rollback, value(mig(root, home, "status", "--session", session).stdout, "fence")], again.stderr).toEqual([0, "json-control", true, null, "-"]);
     kill({ phase: "apply", chunk: 1 });
     const other = project();
     const fresh = join(other.home, "own");
@@ -403,6 +404,15 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     kill(null);
     expect([run.status, spelled(run.stderr)], run.stderr).toEqual([7, [`\`bin/fusion-migrate resume --session ${fresh}\``]]);
   }, 6 * CASE_TIMEOUT);
+
+  it("rollback --end-fence with no refused rollback recorded still exits 5 and leaves the record as it was", () => {
+    const { root, home } = project();
+    expect(mig(root, home, "run").status).toBe(0);
+    const session = value(mig(root, home, "status").stdout, "session")!;
+    const before = readFileSync(join(session, "state.json"), "utf-8");
+    const end = mig(root, home, "rollback", "--end-fence");
+    expect([end.status, end.stderr.includes("no fence of a refused rollback stands"), readFileSync(join(session, "state.json"), "utf-8")], end.stderr).toEqual([5, true, before]);
+  }, 2 * CASE_TIMEOUT);
 
   // Resume, rollback and run refuse without a write, and set-aside --consent is the way out; Step 7's route over this tree is store-name-migration.test.ts case (i).
   it("a done session over a tree reset with git: resume, rollback and run refuse it unchanged, set-aside --consent moves it aside, and run then migrates (issue 261015-2223)", () => {
