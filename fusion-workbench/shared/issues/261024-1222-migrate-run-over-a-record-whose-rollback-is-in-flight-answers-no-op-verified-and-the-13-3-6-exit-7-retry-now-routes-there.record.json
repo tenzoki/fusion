@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d365cce7-d743-4f2d-af28-e90bd24d2d73",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261024-1222-migrate-run-over-a-record-whose-rollback-is-in-flight-answers-no-op-verified-and-the-13-3-6-exit-7-retry-now-routes-there.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
