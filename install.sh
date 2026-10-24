@@ -26,7 +26,7 @@
 # Overrides (optional env vars):
 #   FUSION_REF   git ref to fetch (default: heads/main). Pin a tagged
 #                release with FUSION_REF=tags/v<version> — e.g.
-#                FUSION_REF=tags/v13.3.6 for the current release. Not every
+#                FUSION_REF=tags/v13.3.7 for the current release. Not every
 #                release has a tag; `git tag` lists the ones that do.
 #   FUSION_HOME  install dir (default: ~/.fusion)
 #   FUSION_BIN   launcher dir (default: ~/.local/bin)
