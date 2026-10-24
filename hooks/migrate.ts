@@ -552,6 +552,8 @@ function preconditions(wb: string, session: string): string[] {
 function run(wb: string, session: string): string[] {
   const previous = readState(session);
   if (previous) current(wb, session, previous);
+  // a rollback in flight outranks `done`: the tree is on its way back to legacy, so nothing here is verified any more
+  if (previous && !previous.rolled_back && previous.rollback !== null) throw new Stop(EXIT.precondition, `${previous.migration_id} is being rolled back; ${command(wb, session, "rollback")} finishes that`);
   if (previous?.done && !previous.rolled_back) return [`migrated=${previous.migration_id}`, "result=no-op", "note=nothing was sent: the session records this migration as verified"];
   if (previous && !previous.rolled_back) throw new Stop(EXIT.precondition, `a run of ${previous.migration_id} is recorded in ${session}; ${command(wb, session, "resume")} finishes it or ${command(wb, session, "rollback")} undoes it`);
   const lines = preconditions(wb, session);
@@ -923,14 +925,16 @@ const VALUED = new Set(["--apply", "--value", "--session"]);
 /**
  * The command that sends an unanswered request again, without its `--session`
  * (`command` adds that). After `run` the session's record decides, not the
- * subcommand: `resume` where it holds a run neither done nor rolled back, which
- * only `resume` drives on, else `run` again, since `run` met the unknown outcome
- * before it wrote its record. `resume` after `resume`, `rollback` with its
+ * subcommand: `rollback` where it holds a rollback in flight, which only
+ * `rollback` finishes, `resume` where it holds a run neither done nor rolled
+ * back, which only `resume` drives on, else `run` again: with no live record
+ * `run` met the unknown outcome before writing one, and over a done one it
+ * answers the no-op. `resume` after `resume`, `rollback` with its
  * `--end-fence`, and any other subcommand as it was given, since what it sent
  * unanswered was a read that only it repeats.
  */
 function retry(sub: string, rest: string[], s: State | null): string {
-  if (sub === "run") return s !== null && !s.done && !s.rolled_back ? "resume" : "run";
+  if (sub === "run") return s === null || s.rolled_back ? "run" : s.rollback !== null ? "rollback" : s.done ? "run" : "resume";
   if (sub === "resume") return "resume";
   if (sub === "rollback") return rest.includes("--end-fence") ? "rollback --end-fence" : "rollback";
   const given = rest.filter((_, i) => rest[i] !== "--session" && rest[i - 1] !== "--session");

@@ -103,8 +103,9 @@
 #   7  an outcome is unknown: the codec gave no answer. Nothing is lost;
 #      stderr names the command, with the same --session, that sends the
 #      same request again. After `run` the session's record decides:
-#      `resume` where it holds a run neither done nor rolled back, else
-#      `run` again (the outcome came before the record was written).
+#      `rollback` where it holds a rollback in flight, `resume` where it
+#      holds a run neither done nor rolled back, else `run` again (no live
+#      record was written yet, or a done one answers the no-op).
 #      `resume` after `resume`, `rollback` (with its --end-fence) after
 #      `rollback`, else the command as given.
 #      `rollback --end-fence` resends nothing when its end's answer was

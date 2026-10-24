@@ -590,6 +590,37 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
   }, 4 * CASE_TIMEOUT);
 
+  /** A completed run whose rollback was cut after its chunk 1, under `--session <home>/own`: done, not rolled back, a rollback in flight. */
+  const rollbackInFlight = () => {
+    const { plugin, kill } = killPlugin();
+    const { root, home } = project();
+    const session = join(home, "own");
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), [...a, "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill(null);
+    expect(cut("run").status).toBe(0);
+    kill({ phase: "rollback", chunk: 2 });
+    expect(cut("rollback").status).toBe(7);
+    kill(null);
+    return { kill, cut, root, home, session };
+  };
+
+  it("run over a done record whose rollback is in flight refuses and names rollback, never the verified no-op (issue 261024-1222)", () => {
+    const { cut, root, home, session } = rollbackInFlight();
+    const run = cut("run");
+    expect([run.status, value(run.stdout, "result") ?? null, spelled(run.stderr)], run.stderr).toEqual([5, null, [`\`bin/fusion-migrate rollback --session ${session}\``]]);
+    expect([runNamed(root, home, spelled(run.stderr)[0]).status, value(cut("status").stdout, "rolled_back")]).toEqual([0, "true"]);
+  }, 5 * CASE_TIMEOUT);
+
+  it("an exit 7 met by run over a rollback in flight names rollback, which finishes it (issue 261024-1222)", () => {
+    const { kill, cut, root, home, session } = rollbackInFlight();
+    kill({ op: "inspect" });
+    const run = cut("run");
+    kill(null);
+    expect([run.status, spelled(run.stderr)], run.stderr).toEqual([7, [`\`bin/fusion-migrate rollback --session ${session}\``]]);
+    const again = runNamed(root, home, spelled(run.stderr)[0]);
+    expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "legacy"]);
+  }, 5 * CASE_TIMEOUT);
+
   it("cell A reset with git and cell C with a fence of another id: --end-fence leaves either fence byte-identical (issue 261016-1052)", () => {
     const { plugin, kill } = killPlugin();
     const { root, wb, home } = project();
