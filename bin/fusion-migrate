@@ -104,6 +104,8 @@
 #      stderr names the command, with the same --session, that sends the
 #      same request again: `resume` after `run` or `resume`, `rollback`
 #      (with its --end-fence) after `rollback`, else the command as given.
+#      `rollback --end-fence` resends nothing when its end's answer was
+#      stored; it settles that answer instead.
 #   8  the codec refused a request; its class and reason are on stderr.
 #   9  the backup does not verify; nothing was repaired or restored.
 #
