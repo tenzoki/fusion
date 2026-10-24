@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a67d8002-3ff7-40fb-9950-381afae4b20e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261024-1425-migrate-exit-7-from-survey-or-repair-becomes-an-internal-fault-when-the-session-state-does-not-parse.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

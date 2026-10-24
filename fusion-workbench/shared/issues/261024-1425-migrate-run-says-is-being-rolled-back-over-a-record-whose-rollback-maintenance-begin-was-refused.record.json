@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "f212eea0-d2bd-4237-b9ff-0f9f761f3524",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261024-1425-migrate-run-says-is-being-rolled-back-over-a-record-whose-rollback-maintenance-begin-was-refused.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
