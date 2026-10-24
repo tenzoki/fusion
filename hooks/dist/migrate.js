@@ -661,8 +661,9 @@ function refusedFirstChunk(wb, session, s, refusal) {
     return new Stop(EXIT.refused, `${refusal.message}. Work stored since the plan (${work.slice(0, 3).join(", ")}${work.length > 3 ? `, ${work.length - 3} more` : ""}) is refused by the codec's audit in every rollback of this migration, whatever is restored, so the fence ${fence} this rollback began is ended: the store stays under JSON control and takes writes again`);
 }
 /**
- * `rollback --end-fence`: ends the fence a refused first rollback chunk left
- * standing, and nothing else. Under JSON control the codec ends it. Over a
+ * `rollback --end-fence`: ends the fence this record's rollback left standing,
+ * after a refused first chunk or after its `maintenance begin` raised the fence
+ * and lost its answer, and nothing else. Under JSON control the codec ends it. Over a
  * legacy tree a git reset left it on, the codec cannot, so this host removes
  * the fence file once `endFenceEnds` holds, no write lock
  * stands and the file still reads as exactly that fence (the header's

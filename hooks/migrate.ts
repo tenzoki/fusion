@@ -672,8 +672,9 @@ function refusedFirstChunk(wb: string, session: string, s: State, refusal: Stop)
 }
 
 /**
- * `rollback --end-fence`: ends the fence a refused first rollback chunk left
- * standing, and nothing else. Under JSON control the codec ends it. Over a
+ * `rollback --end-fence`: ends the fence this record's rollback left standing,
+ * after a refused first chunk or after its `maintenance begin` raised the fence
+ * and lost its answer, and nothing else. Under JSON control the codec ends it. Over a
  * legacy tree a git reset left it on, the codec cannot, so this host removes
  * the fence file once `endFenceEnds` holds, no write lock
  * stands and the file still reads as exactly that fence (the header's
