@@ -17,14 +17,16 @@ install: `install.sh` copies a fixed list of entries and `catalog/` is not on it
 | `catalog.json` | A `fusion.catalog/v2` document. `roles`: canonical id, Claude agent name, Prior ids, aliases with their domain, and one support state per host (`supported`, `planned`, `unsupported`). `entries`: one per function a user starts, an agent or a skill, each with `id`, `kind` (`agent`, `skill`), `profile`, `class` (`asks`, `dispatches`, `plain`), `arguments` (`{items: [{name, kind, required, values?, note?}], note?}`, kinds `flag`, `option`, `positional`, `parameter-line`, `first-message`), `requires` (from `host.question.v1`, `host.exec.v1`, `host.dispatch.v1`) and `support`. Copied byte for byte into the bundle. v2 is decision `261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md` (option 2). |
 | `profiles/<id>/profile.json` | A role's or an entry's profile: its `parts` list (fusion's own, never shipped) and the seven keys Prior reads. |
 | `profiles/<id>/parts/*.md` | The role text, in order, each file tagged `neutral`, `claude` or `prior` in `profile.json`. |
-| `workflows/<id>.v1.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. Two exist: `explorer.v1.json`, one durable role, and `repair.v1.json`, the ten-step reviewed repair of Prior's answer 69. |
+| `workflows/<id>.v1.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. `ls workflows` lists them; among them `explorer.v1.json`, one durable role, `repair.v1.json`, the ten-step reviewed repair of Prior's answer 69, and `entry.v1.json`, the `fusion.entry.v1` workflow proposed in request 76 and not yet accepted by Prior. |
 | `schemas/*.schema.json` | The schemas of the three file kinds above; their `description` fields document each shape. |
 | `schemas/*.v1.json` | The request, role-input, envelope and result schemas the bundle ships. |
 | `schemas/FROZEN` | The sha256 of every published schema and workflow definition, one line each, written at plan step 15 on Prior's answer 69. See `## The frozen assets`. |
 | `src/render.ts` | The renderer and its CLI. |
 | `src/__tests__/render.test.ts` | The contract, as tests. |
 | `src/__tests__/frozen.test.ts` | The freeze, as tests. |
+| `src/__tests__/schema-cases.test.ts` | The schema-case tables, as tests: every row validates against the schema it names with the verdict it records, under ajv. |
 | `testdata/catalog-decode-cases.v2.json` | Catalog documents with the verdict each must get, asserted by `render.test.ts` against `checkCatalogDocument` and by the module's `internal/steps/catalog_test.go` against `LoadCatalog`, so the two decoders agree. |
+| `testdata/*-schema-cases.v1.json` | The schema-case tables (`fusion.schema-cases/v1`; `ls testdata/*-schema-cases.v1.json` lists them): documents, each naming the schema it validates against, with the verdict each must get, asserted by `schema-cases.test.ts` against ajv and by the module's `internal/steps/schema_cases_test.go` against the Go validator, so the two validators agree on the same rows. |
 
 ## The two commands
 

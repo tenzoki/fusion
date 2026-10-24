@@ -162,9 +162,12 @@ function sessionDir(wb: string, flag: string | undefined): string {
   return resolve(flag ?? join(homedir(), ".fusion-migrate", sha(wb).slice(7, 19)));
 }
 
+/** One argument as a shell reads it back: bare where it holds no character a shell treats specially, else single-quoted. */
+const shellWord = (a: string): string => (/^[\w./:=@%+-]+$/.test(a) ? a : `'${a.replace(/'/g, "'\\''")}'`);
+
 /** A helper command as a message names it, with `--session` where the session is not the default. */
 function command(wb: string, session: string, sub: string): string {
-  return `\`bin/fusion-migrate ${sub}${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}\``;
+  return `\`bin/fusion-migrate ${sub}${session === sessionDir(wb, undefined) ? "" : ` --session ${shellWord(session)}`}\``;
 }
 
 function readState(session: string): State | null {
@@ -532,7 +535,7 @@ function preconditions(wb: string, session: string): string[] {
     const reset = shows !== null ? landedFence(wb, sib!, i) : null;
     const ends = sib === null ? null : endFenceEnds(wb, sib, i);
     const other = sib === null ? null : fenceWay(wb, aside!, sib, i, shows);
-    const way = aside === null || other === null ? `${command(wb, session, "resume")}, ${command(wb, session, "rollback")} or the archive helper that set it closes it` : reset !== null ? `the record set aside in ${aside} (\`--session ${aside}\`) began it: ${landedThenReset(wb, aside, sib!, reset, shows!)}` : ends !== null ? `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it, then run again` : `the record set aside in ${aside} began it: ${other}`;
+    const way = aside === null || other === null ? `${command(wb, session, "resume")}, ${command(wb, session, "rollback")} or the archive helper that set it closes it` : reset !== null ? `the record set aside in ${aside} (\`--session ${shellWord(aside)}\`) began it: ${landedThenReset(wb, aside, sib!, reset, shows!)}` : ends !== null ? `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it, then run again` : `the record set aside in ${aside} began it: ${other}`;
     throw new Stop(EXIT.precondition, `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}); ${way}. Nothing was written.`);
   }
   const lines: string[] = [];
@@ -919,15 +922,19 @@ const VALUED = new Set(["--apply", "--value", "--session"]);
 
 /**
  * The command that sends an unanswered request again, without its `--session`
- * (`command` adds that): `resume` for a run, which only `resume` drives on,
- * `rollback` with its `--end-fence`, and any other subcommand as it was given,
- * since what it sent unanswered was a read that only it repeats.
+ * (`command` adds that). After `run` the session's record decides, not the
+ * subcommand: `resume` where it holds a run neither done nor rolled back, which
+ * only `resume` drives on, else `run` again, since `run` met the unknown outcome
+ * before it wrote its record. `resume` after `resume`, `rollback` with its
+ * `--end-fence`, and any other subcommand as it was given, since what it sent
+ * unanswered was a read that only it repeats.
  */
-function retry(sub: string, rest: string[]): string {
-  if (sub === "run" || sub === "resume") return "resume";
+function retry(sub: string, rest: string[], s: State | null): string {
+  if (sub === "run") return s !== null && !s.done && !s.rolled_back ? "resume" : "run";
+  if (sub === "resume") return "resume";
   if (sub === "rollback") return rest.includes("--end-fence") ? "rollback --end-fence" : "rollback";
   const given = rest.filter((_, i) => rest[i] !== "--session" && rest[i - 1] !== "--session");
-  return [sub, ...given.map((a) => (/^[\w./:=@%+-]+$/.test(a) ? a : `'${a.replace(/'/g, "'\\''")}'`))].join(" ");
+  return [sub, ...given.map(shellWord)].join(" ");
 }
 
 function main(argv: string[]): number {
@@ -957,7 +964,7 @@ function main(argv: string[]): number {
       : sub === "set-aside" ? setAside(wb, session, flags.has("--consent"))
       : status(wb, session);
   } catch (e) {
-    if (e instanceof Stop && e.code === EXIT.unknown) throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, retry(sub, rest))} sends the same request again.`);
+    if (e instanceof Stop && e.code === EXIT.unknown) throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, retry(sub, rest, readState(session)))} sends the same request again.`);
     throw e;
   }
   out(lines);

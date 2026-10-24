@@ -405,6 +405,28 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect([run.status, spelled(run.stderr)], run.stderr).toEqual([7, [`\`bin/fusion-migrate resume --session ${fresh}\``]]);
   }, 6 * CASE_TIMEOUT);
 
+  it("an exit 7 met by run before its record is written names run again, which then migrates (issue 261024-1005)", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, home } = project();
+    const session = join(home, "own");
+    kill({ op: "inspect" });
+    const cut = spawnSync(join(plugin, "bin", "fusion-migrate"), ["run", "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill(null);
+    expect([cut.status, spelled(cut.stderr)], cut.stderr).toEqual([7, [`\`bin/fusion-migrate run --session ${session}\``]]);
+    const again = runNamed(root, home, spelled(cut.stderr)[0]);
+    expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
+  }, 4 * CASE_TIMEOUT);
+
+  it("a session path with a space is quoted in the command a message names, which pastes into a shell (issue 261024-1005)", () => {
+    const { root, wb, home } = project();
+    const session = join(home, "my own");
+    edit(wb, "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md", "**Status:** open", "**Status:** claimed");
+    const run = mig(root, home, "run", "--session", session);
+    expect([run.status, spelled(run.stderr)], run.stderr).toEqual([6, [`\`bin/fusion-migrate repair --list --session '${session}'\``]]);
+    const pasted = spawnSync("/bin/bash", ["-c", spelled(run.stderr)[0].slice(1, -1).replace(/^bin\/fusion-migrate/, `'${BIN}'`)], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    expect([pasted.status, Number(value(pasted.stdout, "blocking")) > 0], pasted.stderr).toEqual([0, true]);
+  }, 2 * CASE_TIMEOUT);
+
   it("rollback --end-fence with no refused rollback recorded still exits 5 and leaves the record as it was", () => {
     const { root, home } = project();
     expect(mig(root, home, "run").status).toBe(0);

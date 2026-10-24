@@ -24,9 +24,10 @@
 # install time.
 #
 # Overrides (optional env vars):
-#   FUSION_REF   git ref to fetch (default: heads/main). Every release is
-#                tagged v<version>, so pin one with FUSION_REF=tags/v<version>
-#                — e.g. FUSION_REF=tags/v13.3.5 for the current release.
+#   FUSION_REF   git ref to fetch (default: heads/main). Pin a tagged
+#                release with FUSION_REF=tags/v<version> — e.g.
+#                FUSION_REF=tags/v13.3.5 for the current release. Not every
+#                release has a tag; `git tag` lists the ones that do.
 #   FUSION_HOME  install dir (default: ~/.fusion)
 #   FUSION_BIN   launcher dir (default: ~/.local/bin)
 
@@ -132,7 +133,7 @@ fusion — launch Claude Code with a fusion agent (loads ~/.fusion via --plugin-
   fusion --yolo [agent]           add --dangerously-skip-permissions (no prompts)
   fusion [agent] -p "..."         extra args after the agent go straight to claude
 
-  fusion --update                 re-download the latest over HTTPS
+  fusion --update                 re-install the head of main into ~/.fusion
   fusion --uninstall              remove ~/.fusion and this launcher
   fusion --where                  print the install dir
 USAGE
