@@ -3,7 +3,7 @@
   "id": "0a501ca7-aaa5-4867-882c-947aabd9612d",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -37,7 +37,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "H1, H6 and H7 landed: catalog v2 with 27 entries (7fed356a), Prior pin at 08c57fb (6be14760), the entry.v1 workflow and schemas (a419215a), its catalog tests and shared case table (830ec97c), module support for fusion.entry.v1 (d02e5cb8); closing review accepted (af76f94f), four issues filed for follow-up.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "4503fa03-fd5a-4cef-8e74-2a0ebc3659d6",
+          "revision": "sha256:c572ca193733096fc9235bbfe50605e53f933fbc92fe7ebc846738d0b95eb687"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
