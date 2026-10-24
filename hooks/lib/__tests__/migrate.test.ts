@@ -172,7 +172,7 @@ describe("bin/fusion-migrate refuses without Node, and before anything else", ()
 });
 
 /**
- * A plugin copy whose bundle is a stand-in: the real codec answers, then the process dies before its answer is read when kill.json names the request.
+ * A plugin copy whose bundle is a stand-in: the real codec answers, then the process dies before its answer is read when kill.json names the request (its phase and chunk, and its op and action where the rule gives them).
  * A rule carrying `touch` (an absolute path) instead appends a line to that file before the real codec takes the request, and answers as the codec does.
  */
 function killPlugin(): { plugin: string; kill: (rule: object | null) => void } {
@@ -185,7 +185,7 @@ function killPlugin(): { plugin: string; kill: (rule: object | null) => void } {
     writeFileSync(join(plugin, "codec/dist/fusion-record.js"), `import { spawnSync } from "node:child_process"; import { appendFileSync, existsSync, readFileSync } from "node:fs";
 const here = new URL(".", import.meta.url).pathname, input = readFileSync(0), q = JSON.parse(input);
 const k = existsSync(here + "kill.json") ? JSON.parse(readFileSync(here + "kill.json", "utf-8")) : null;
-const hit = k !== null && q.phase === k.phase && q.chunk === k.chunk;
+const hit = k !== null && q.phase === k.phase && q.chunk === k.chunk && (k.op === undefined || q.op === k.op) && (k.action === undefined || q.action === k.action);
 if (hit && k.touch) appendFileSync(k.touch, "touched by the stand-in\\n");
 const r = spawnSync(process.execPath, [here + "../../real/dist/fusion-record.js"], { input });
 if (hit && !k.touch) process.exit(9);
@@ -325,6 +325,85 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     expect([again.status, again.stderr.includes("is recorded in"), commands(again.stderr).length, commands(again.stderr).filter((c) => !c.endsWith(` --session ${session}\``))], again.stderr).toEqual([5, true, 2, []]);
   }, 4 * CASE_TIMEOUT);
 
+  // issue 261023-1846. A message names a command spelled out (`bin/fusion-migrate rollback`) or by its bare subcommand (`rollback`); both count.
+  const SUBS = "survey|status|repair|run|resume|rollback|restore-backup|set-aside";
+  const spelled = (text: string) => text.match(new RegExp(`\`(?:bin/fusion-migrate )?(?:${SUBS})\\b[^\`]*\``, "g")) ?? [];
+  /** The commands `text` names, each as [count of them, those not ending in `--session <dir>`]. */
+  const flagged = (text: string, dir: string) => [spelled(text).length > 0, spelled(text).filter((c) => !c.endsWith(` --session ${dir}\``))];
+  /** Runs the command a message names, as the person would paste it. */
+  const runNamed = (cwd: string, home: string, c: string) => mig(cwd, home, ...c.slice(1, -1).replace(/^bin\/fusion-migrate /, "").split(" "));
+
+  it("no message line in the source names a subcommand bare, outside the four that only describe one (issue 261023-1846)", () => {
+    const code = readFileSync(resolve(REPO_ROOT, "hooks", "migrate.ts"), "utf-8").split("\n").filter((l) => !/^\s*(\*|\/\*\*|\/\/)/.test(l)).join("\n");
+    const DESCRIPTIVE = ["rollback --end-fence` does not end that fence", "rollback --end-fence` refuses that fence from here", "run` refuses while it stands", "status` names where the run stands"];
+    // A backtick escaped inside a template literal, or one inside a double-quoted string; `command()` spells the rest.
+    const spans = [...[...code.matchAll(new RegExp(`\\\\\`((?:${SUBS})\\b[^\`\\\\]*\\\\\`.{0,50})`, "g"))].map((m) => m[1].replace(/\\`/g, "`")), ...[...code.matchAll(/"(?:[^"\\\n]|\\.)*"/g)].flatMap((q) => [...q[0].matchAll(new RegExp(`\`((?:${SUBS})\\b[^\`]*\`.{0,50})`, "g"))].map((m) => m[1]))];
+    expect(spans.filter((f) => !DESCRIPTIVE.some((d) => f.startsWith(d)))).toEqual([]);
+  });
+
+  it("under a non-default --session, the blocking, unknown-finding, rolled-back, current-record, restore and end-fence messages name every command with it, and each named command acts on that session (issue 261023-1846)", () => {
+    const blocked = project();
+    const own = join(blocked.home, "own");
+    edit(blocked.wb, "work-packages/260901-0900-tokenizer-handles-unicode/260901-0900-tokenizer-handles-unicode.md", "**Status:** open", "**Status:** claimed");
+    const run = mig(blocked.root, blocked.home, "run", "--session", own);
+    expect([run.status, ...flagged(run.stderr, own)], run.stderr).toEqual([6, true, []]);
+    const listed = runNamed(blocked.root, blocked.home, spelled(run.stderr)[0]);
+    expect([listed.status, Number(value(listed.stdout, "blocking")) > 0], listed.stderr).toEqual([0, true]);
+    const unknown = mig(blocked.root, blocked.home, "repair", "--apply", "no-such-finding", "--session", own);
+    expect([unknown.status, ...flagged(unknown.stderr, own)], unknown.stderr).toEqual([6, true, []]);
+
+    const { root, home } = project();
+    const mine = join(home, "own");
+    expect(mig(root, home, "run", "--session", mine).status).toBe(0);
+    const restore = mig(root, home, "restore-backup", "--consent", "--session", mine);
+    expect([restore.status, ...flagged(restore.stderr, mine)], restore.stderr).toEqual([5, true, []]);
+    const current = mig(root, home, "set-aside", "--session", mine);
+    expect([current.status, ...flagged(current.stderr, mine), spelled(current.stderr).length], current.stderr).toEqual([5, true, [], 2]);
+    // Its `rollback` gets past `recorded`: that session, not the default one, is rolled back.
+    const back = runNamed(root, home, spelled(current.stderr).find((c) => c.includes(" rollback "))!);
+    expect([back.status, value(back.stdout, "result")], back.stderr).toEqual([0, "legacy"]);
+    const resumed = mig(root, home, "resume", "--session", mine);
+    expect([resumed.status, ...flagged(resumed.stderr, mine)], resumed.stderr).toEqual([5, true, []]);
+    expect(value(runNamed(root, home, spelled(resumed.stderr)[0]).stdout, "result")).toBe("no-op");
+    const kept = mig(root, home, "set-aside", "--session", mine);
+    expect([kept.status, ...flagged(kept.stderr, mine)], kept.stderr).toEqual([5, true, []]);
+
+    // Cell C under its own session: the note's set-aside and run carry it, and run then migrates there.
+    const c = cellC(["--session", join(base, `own${n}`)]);
+    const ended = mig(c.root, c.home, "rollback", "--end-fence", "--session", c.session);
+    const note = value(ended.stdout, "note") ?? "";
+    expect([ended.status, ...flagged(note, c.session), spelled(note).length], ended.stderr).toEqual([0, true, [], 2]);
+    for (const cmd of spelled(note)) expect(runNamed(c.root, c.home, cmd).status).toBe(0);
+    expect(value(mig(c.root, c.home, "status", "--session", c.session).stdout, "record")).toBe("current");
+  }, 8 * CASE_TIMEOUT);
+
+  it("an exit-7 retry names the command that met it: status names status, rollback --end-fence names itself, run names resume (issue 261023-1847)", () => {
+    const { plugin, kill } = killPlugin();
+    const { root, wb, home } = project();
+    const session = join(home, "own");
+    const cut = (...a: string[]) => spawnSync(join(plugin, "bin", "fusion-migrate"), [...a, "--session", session], { cwd: root, encoding: "utf-8", env: { PATH, HOME: home } });
+    kill({ op: "inspect" });
+    const status = cut("status");
+    kill(null);
+    expect([status.status, spelled(status.stderr)], status.stderr).toEqual([7, [`\`bin/fusion-migrate status --session ${session}\``]]);
+    expect(cut("run").status).toBe(0);
+    writeFileSync(join(wb, BENCH), `${read(wb, BENCH)}\nA hand edit, no codec operation.\n`);
+    expect(cut("rollback").status).toBe(8);
+    kill({ op: "maintenance", action: "end" });
+    const end = cut("rollback", "--end-fence");
+    kill(null);
+    expect([end.status, spelled(end.stderr)], end.stderr).toEqual([7, [`\`bin/fusion-migrate rollback --end-fence --session ${session}\``]]);
+    // The stand-in lets the codec store the end before it dies, so the named retry reaches this session's record and finds the fence ended.
+    const again = runNamed(root, home, spelled(end.stderr)[0]);
+    expect([again.stderr.includes("no run is recorded"), value(mig(root, home, "status", "--session", session).stdout, "fence")], again.stderr).toEqual([false, "-"]);
+    kill({ phase: "apply", chunk: 1 });
+    const other = project();
+    const fresh = join(other.home, "own");
+    const run = spawnSync(join(plugin, "bin", "fusion-migrate"), ["run", "--session", fresh], { cwd: other.root, encoding: "utf-8", env: { PATH, HOME: other.home } });
+    kill(null);
+    expect([run.status, spelled(run.stderr)], run.stderr).toEqual([7, [`\`bin/fusion-migrate resume --session ${fresh}\``]]);
+  }, 6 * CASE_TIMEOUT);
+
   // Resume, rollback and run refuse without a write, and set-aside --consent is the way out; Step 7's route over this tree is store-name-migration.test.ts case (i).
   it("a done session over a tree reset with git: resume, rollback and run refuse it unchanged, set-aside --consent moves it aside, and run then migrates (issue 261015-2223)", () => {
     const { root, wb, home } = project();
@@ -371,7 +450,7 @@ describe("bin/fusion-migrate migrates, rolls back and restores with the plugin a
     }
     expect(mig(root, home, "rollback").status).toBe(0);
     const kept = mig(root, home, "set-aside", "--consent"); // a rolled-back record is current, and run is what acts on it (issue 261016-1052)
-    expect([kept.status, /`run` starts a new migration/.test(kept.stderr), kept.stderr.includes("`resume`")], kept.stderr).toEqual([5, true, false]);
+    expect([kept.status, /`bin\/fusion-migrate run` starts a new migration/.test(kept.stderr), kept.stderr.includes("resume")], kept.stderr).toEqual([5, true, false]);
     const cut = JSON.parse(readFileSync(join(session, "state.json"), "utf-8"));
     writeFileSync(join(session, "state.json"), JSON.stringify({ ...cut, rolled_back: false }));
     const chunk0 = cut.schedule.rollback.find((r: { chunk: number }) => r.chunk === 0).operation_id;
@@ -406,18 +485,18 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
 
   // issue 261016-1052, cells C, A and D of decision 261016-1436: C's idle fence is ended by rollback --end-fence (option 1); A and D keep their fence.
   const FENCE = ".json-state/maintenance.json";
-  /** Cell C: a migration committed, a first rollback chunk refused over a hand edit, then a git reset back to Markdown. */
-  function cellC(): { root: string; wb: string; home: string; session: string; fence: string } {
+  /** Cell C: a migration committed, a first rollback chunk refused over a hand edit, then a git reset back to Markdown; `at` is passed to every call (a `--session`). */
+  function cellC(at: string[] = []): { root: string; wb: string; home: string; session: string; fence: string } {
     const { root, wb, home } = project();
     writeFileSync(join(root, ".git/info/exclude"), "home/\n", { flag: "a" });
-    expect(mig(root, home, "run").status).toBe(0);
+    expect(mig(root, home, "run", ...at).status).toBe(0);
     git(root, "add", "-A");
     git(root, "commit", "-qm", "migrated");
     writeFileSync(join(wb, BENCH), `${read(wb, BENCH)}\nA hand edit, no codec operation.\n`);
-    const refused = mig(root, home, "rollback");
+    const refused = mig(root, home, "rollback", ...at);
     expect([refused.status, refused.stderr]).toEqual([8, expect.stringMatching(/after-state-changed[\s\S]*fence .* stands/)]);
     expect(git(root, "reset", "-q", "--hard", "HEAD~1").status).toBe(0);
-    const status = mig(root, home, "status").stdout;
+    const status = mig(root, home, "status", ...at).stdout;
     expect([value(status, "state"), value(status, "fence") !== "-", value(status, "record")], status).toEqual(["legacy", true, "stale"]);
     return { root, wb, home, session: value(status, "session")!, fence: read(wb, FENCE) };
   }
@@ -434,7 +513,7 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     rmSync(join(wb, ".json-state/write.lock"));
     expect([locked.status, locked.stderr, read(wb, FENCE)]).toEqual([5, expect.stringMatching(/write\.lock stands[\s\S]*Nothing was removed/), fence]);
     const ended = mig(root, home, "rollback", "--end-fence");
-    expect([ended.status, value(ended.stdout, "fence-ended"), value(ended.stdout, "result"), value(ended.stdout, "note"), value(mig(root, home, "status").stdout, "fence")], ended.stderr).toEqual([0, JSON.parse(fence).operation_id, "legacy", "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; set-aside --consent, then run", "-"]);
+    expect([ended.status, value(ended.stdout, "fence-ended"), value(ended.stdout, "result"), value(ended.stdout, "note"), value(mig(root, home, "status").stdout, "fence")], ended.stderr).toEqual([0, JSON.parse(fence).operation_id, "legacy", "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; `bin/fusion-migrate set-aside --consent`, then `bin/fusion-migrate run`", "-"]);
     const aside = mig(root, home, "set-aside", "--consent");
     expect([aside.status, survey()], aside.stderr).toEqual([0, expect.stringMatching(/^ROUTE=survey$/m)]); // exit 0: the survey block again
     const again = mig(root, home, "run");
@@ -448,7 +527,7 @@ process.stdout.write(r.stdout); process.exit(r.status ?? 1);\n`);
     const run = mig(root, home, "run");
     expect([run.status, run.stderr.includes("a fence or a pending intent stands"), run.stderr.includes(`\`bin/fusion-migrate rollback --end-fence --session ${aside}\` ends it`)], run.stderr).toEqual([5, true, true]);
     const ended = mig(root, home, "rollback", "--end-fence", "--session", aside);
-    expect([ended.status, value(ended.stdout, "note")], ended.stderr).toEqual([0, "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; run"]);
+    expect([ended.status, value(ended.stdout, "note")], ended.stderr).toEqual([0, "no rollback chunk landed under it, and the codec refuses every later rollback of this migration; `bin/fusion-migrate run`"]);
     const again = mig(root, home, "run");
     expect([again.status, value(again.stdout, "result")], again.stderr).toEqual([0, "json-control"]);
   }, 6 * CASE_TIMEOUT);

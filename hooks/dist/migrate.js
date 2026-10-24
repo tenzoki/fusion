@@ -508,7 +508,7 @@ function preconditions(wb, session) {
         const reset = shows !== null ? landedFence(wb, sib, i) : null;
         const ends = sib === null ? null : endFenceEnds(wb, sib, i);
         const other = sib === null ? null : fenceWay(wb, aside, sib, i, shows);
-        const way = aside === null || other === null ? "`resume`, `rollback` or the archive helper that set it closes it" : reset !== null ? `the record set aside in ${aside} (\`--session ${aside}\`) began it: ${landedThenReset(wb, aside, sib, reset, shows)}` : ends !== null ? `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it, then run again` : `the record set aside in ${aside} began it: ${other}`;
+        const way = aside === null || other === null ? `${command(wb, session, "resume")}, ${command(wb, session, "rollback")} or the archive helper that set it closes it` : reset !== null ? `the record set aside in ${aside} (\`--session ${aside}\`) began it: ${landedThenReset(wb, aside, sib, reset, shows)}` : ends !== null ? `the record set aside in ${aside} began it: ${command(wb, aside, "rollback --end-fence")} ends it, then run again` : `the record set aside in ${aside} began it: ${other}`;
         throw new Stop(EXIT.precondition, `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}); ${way}. Nothing was written.`);
     }
     const lines = [];
@@ -555,7 +555,7 @@ function run(wb, session) {
         out(lines);
         for (const f of blocks)
             say(`blocking ${f.class} ${f.path}: ${f.detail}`);
-        throw new Stop(EXIT.blocking, `${blocks.length} blocking findings remain; \`repair --list\` proposes their repairs. Nothing was migrated.`);
+        throw new Stop(EXIT.blocking, `${blocks.length} blocking findings remain; ${command(wb, session, "repair --list")} proposes their repairs. Nothing was migrated.`);
     }
     const writes = p.records.reduce((t, r) => t + 2 + (r.narrative_after === null ? 0 : 1), 0);
     const chunks = Math.floor(writes / 48) + 1;
@@ -581,7 +581,7 @@ function resumeRun(wb, session) {
     const s = recorded(wb, session);
     current(wb, session, s);
     if (s.rolled_back || s.rollback !== null)
-        throw new Stop(EXIT.precondition, `${s.migration_id} is being or was rolled back; \`rollback\` finishes that`);
+        throw new Stop(EXIT.precondition, `${s.migration_id} is being or was rolled back; ${command(wb, session, "rollback")} finishes that`);
     if (s.done)
         return [`migrated=${s.migration_id}`, "result=no-op"];
     return drive(wb, session, s);
@@ -675,7 +675,9 @@ function endLeftFence(wb, session, s) {
         unlinkSync(file);
         s.rollback = null;
         writeState(session, s);
-        return [`fence-ended=${idle}`, "result=legacy", `note=no rollback chunk landed under it, and the codec refuses every later rollback of this migration; ${/\.stale-[^/]*$/.test(session) ? "" : `set-aside --consent${session === sessionDir(wb, undefined) ? "" : ` --session ${session}`}, then `}run`];
+        // A set-aside record's run belongs to the session it was set aside from, which this one names without the `.stale-` suffix.
+        const aside = /\.stale-[^/]*$/;
+        return [`fence-ended=${idle}`, "result=legacy", `note=no rollback chunk landed under it, and the codec refuses every later rollback of this migration; ${aside.test(session) ? "" : `${command(wb, session, "set-aside --consent")}, then `}${command(wb, session.replace(aside, ""), "run")}`];
     }
     const shows = i.state === "legacy" ? stale(wb, s, i.state) : null;
     const reset = shows !== null ? landedFence(wb, s, i) : null;
@@ -698,7 +700,7 @@ function rollback(wb, session, endFence = false) {
         return [`rolled-back=${s.migration_id}`, "result=no-op"];
     if (s.plan === null || s.schedule === null) {
         if (stored(wb, s.operation_ids.plan) || existsSync(join(wb, STATE_DIR, "journal", s.operation_ids.plan)))
-            throw new Stop(EXIT.precondition, "the plan landed or is pending and only its own request finishes it; `resume` first");
+            throw new Stop(EXIT.precondition, `the plan landed or is pending and only its own request finishes it; ${command(wb, session, "resume")} first`);
         rmSync(join(wb, s.proposal.path), { force: true });
         s.rolled_back = true;
         writeState(session, s);
@@ -754,7 +756,7 @@ function restoreBackup(wb, session, consent) {
         throw new Stop(EXIT.backup, `${backup} no longer matches its recorded tree hash; nothing was restored`);
     const plans = existsSync(join(wb, "archive", "migrations")) ? readdirSync(join(wb, "archive", "migrations")).filter((d) => existsSync(join(wb, "archive", "migrations", d, "plan.json"))) : [];
     if (existsSync(join(wb, "workbench.json")) || existsSync(join(wb, STATE_DIR, "maintenance.json")) || plans.length)
-        throw new Stop(EXIT.precondition, "a manifest, a fence or plan files stand; `rollback` first. Nothing was restored.");
+        throw new Stop(EXIT.precondition, `a manifest, a fence or plan files stand; ${command(wb, session, "rollback")} first. Nothing was restored.`);
     if (!consent)
         throw new Stop(EXIT.precondition, "restore-backup replaces the workbench with the backup; pass --consent. Nothing was restored.");
     for (const name of readdirSync(wb))
@@ -834,7 +836,7 @@ function setAside(wb, session, consent) {
         throw new Stop(EXIT.precondition, fence !== null ? `${endFenceWay(wb, session, fence)}, then ${command(wb, session, "set-aside --consent")}; \`run\` refuses while it stands. Nothing was moved.` : way !== null ? `${way.replace(/^./, (c) => c.toUpperCase())}. Nothing was moved.` : `a fence or a pending intent stands (${JSON.stringify(i.maintenance ?? i.pending)}), and \`run\` refuses while it stands, so ${session} stays; the tool that set it closes it. Nothing was moved.`);
     }
     if (shows === null)
-        throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} and this tree carries it (record=current), so it stays; ${s.rolled_back ? "`run` starts a new migration" : "`resume` or `rollback` acts on it"}. Nothing was moved.`);
+        throw new Stop(EXIT.precondition, `${session} records ${s.migration_id} and this tree carries it (record=current), so it stays; ${s.rolled_back ? `${command(wb, session, "run")} starts a new migration` : `${command(wb, session, "resume")} or ${command(wb, session, "rollback")} acts on it`}. Nothing was moved.`);
     const to = `${session}.stale-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}`;
     if (!consent)
         throw new Stop(EXIT.precondition, `set-aside moves ${session} to ${to}; pass --consent. Nothing was moved.`);
@@ -895,7 +897,7 @@ function repair(wb, session, flags) {
     const id = flags.get("--apply")?.[0];
     const f = [...blocks, ...optional].find((x) => findingId(wb, x) === id);
     if (f === undefined)
-        throw new Stop(EXIT.blocking, `no repairable finding ${id}; its file may have changed since it was listed. \`repair --list\` names the current ones. Nothing was written.`);
+        throw new Stop(EXIT.blocking, `no repairable finding ${id}; its file may have changed since it was listed. ${command(wb, session, "repair --list")} names the current ones. Nothing was written.`);
     const answers = {};
     for (const v of flags.get("--value") ?? []) {
         const at = v.indexOf("=");
@@ -920,6 +922,20 @@ function repair(wb, session, flags) {
 // --- the entry -----------------------------------------------------------------------
 const TAKES = { survey: [], repair: ["--list", "--optional", "--apply", "--value", "--consent"], run: [], resume: [], rollback: ["--end-fence"], status: [], "restore-backup": ["--consent"], "set-aside": ["--consent"] };
 const VALUED = new Set(["--apply", "--value", "--session"]);
+/**
+ * The command that sends an unanswered request again, without its `--session`
+ * (`command` adds that): `resume` for a run, which only `resume` drives on,
+ * `rollback` with its `--end-fence`, and any other subcommand as it was given,
+ * since what it sent unanswered was a read that only it repeats.
+ */
+function retry(sub, rest) {
+    if (sub === "run" || sub === "resume")
+        return "resume";
+    if (sub === "rollback")
+        return rest.includes("--end-fence") ? "rollback --end-fence" : "rollback";
+    const given = rest.filter((_, i) => rest[i] !== "--session" && rest[i - 1] !== "--session");
+    return [sub, ...given.map((a) => (/^[\w./:=@%+-]+$/.test(a) ? a : `'${a.replace(/'/g, "'\\''")}'`))].join(" ");
+}
 function main(argv) {
     const [sub, given, ...rest] = argv;
     if (sub === undefined || !(sub in TAKES) || !given)
@@ -954,7 +970,7 @@ function main(argv) {
     }
     catch (e) {
         if (e instanceof Stop && e.code === EXIT.unknown)
-            throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, "resume")} (or ${command(wb, session, "rollback")}, if that was the command) sends the same request again.`);
+            throw new Stop(EXIT.unknown, `${e.message}; ${command(wb, session, retry(sub, rest))} sends the same request again.`);
         throw e;
     }
     out(lines);
