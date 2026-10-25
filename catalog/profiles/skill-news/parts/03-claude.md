@@ -1,0 +1,3 @@
+The user invoked `/fusion:news`. This workflow shows the messages that reached the remote and that this checkout has not been shown yet. They are read out of a fetched ref: nothing in the working tree is touched, and no merge happens in order to see them.
+
+**The mechanism is not in this body.** The fetch, the two-tree set difference, the exit codes and the state vocabulary are documented in `bin/fusion-forum`'s own header, which is the authoritative text for all of it. Open that header when you need to know how an answer was produced. What this body carries is the flow and the sentences the user reads.

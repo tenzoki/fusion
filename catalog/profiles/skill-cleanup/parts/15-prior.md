@@ -1,0 +1,2 @@
+- Splits handed over: paths and message summary, one line each. No hash: this run made no commit.
+- Push: the host's, and reported by the host, not here.

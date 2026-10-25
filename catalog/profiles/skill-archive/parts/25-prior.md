@@ -1,0 +1,1 @@
+1. **Resolve paths, read the tracking rule.** Step 1 above — both halves. No `cd` persists: every `host.exec.v1` call gives the directory holding `$WORKBENCH`, workspace-relative, as its `directory`, so relative paths resolve.

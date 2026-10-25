@@ -1,0 +1,3 @@
+- empty (default) — compose every split and its message, and hand them over in the result; the host integrates the run and pushes only when the entry declares a remote.
+- `--dry-run` — print the splits this run would hand over and stop. Nothing is handed over.
+- `--no-push` — hand the splits over, and say in the result that nothing is to be pushed; whether the host pushes is the entry's declaration, not this flag's.

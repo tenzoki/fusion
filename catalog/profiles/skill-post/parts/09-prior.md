@@ -1,0 +1,1 @@
+`UNRESOLVED` stops the run before anything is composed. The identifier is the filename's third field and the only thing that tells a reader who wrote the entry, so nothing is substituted for it: say which half could not be read and write no file. `bin/fusion-identity`'s own header carries the exit codes and what each one means.

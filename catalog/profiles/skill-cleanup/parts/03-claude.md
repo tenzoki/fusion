@@ -1,0 +1,3 @@
+- empty (default) — commit every split, then push.
+- `--dry-run` — print the splits this run would make and stop. No staging, no commit, no push.
+- `--no-push` — commit, and leave the commits local.

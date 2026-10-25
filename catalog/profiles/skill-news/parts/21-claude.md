@@ -1,0 +1,1 @@
+Exit 3 means the registry carries no entry for that hex at `$HEAD`, exit 6 that it could not be read there; neither is a fault. **Render the hex itself then**, exactly as every other display site does; the reason is in `bin/fusion-checkout-name`'s header.

@@ -1,0 +1,1 @@
+- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The host integrates the renames as this run's commit.

@@ -1,0 +1,1 @@
+- **A pull is the user's yes and never automatic.** This workflow fetches, which changes no file, and it pulls only after the user answers Step 6.

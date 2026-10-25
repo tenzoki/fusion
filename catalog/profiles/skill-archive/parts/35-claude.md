@@ -1,0 +1,1 @@
+9. **Report.** Print archive path, item count, file count, manifest path. Any collision needs the user's attention — it means an artefact stayed put. Remind the user that archives are local and not committed automatically; they can `git add` the archive directory if they want the snapshot in version control.

@@ -1,0 +1,1 @@
+- **Commits nothing** and pushes nothing itself. The host integrates the entry with the run.

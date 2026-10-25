@@ -1,0 +1,1 @@
+6. **Confirm with one `host.question.v1` call.** The user came here to archive, and this body moves nothing until they say so — every run asks, whatever the mode and whatever the tier. Ask in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:

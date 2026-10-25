@@ -1,0 +1,1 @@
+**Both files are append logs, one pair per person**, and every capture adds a block to the end of the right one. **Work for the project is not a memo:** an argument starting `idea:`, `idee:` or `backlog:`, or asking for the backlog, gets the answer that `/fusion:wp` files it, and nothing is written.

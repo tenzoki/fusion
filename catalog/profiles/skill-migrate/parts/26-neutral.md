@@ -1,0 +1,2 @@
+- **`ROUTE=interrupted`**: go to *Interrupted* below.
+- **`ROUTE=json-control`**: the workbench is already on JSON control, whatever `run=` says (migrated here, in another checkout, or created so). Say so and stop, asking nothing and naming no finding.

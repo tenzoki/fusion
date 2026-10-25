@@ -1,0 +1,1 @@
+- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The user decides when to commit the migration.

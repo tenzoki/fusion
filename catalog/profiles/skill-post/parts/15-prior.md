@@ -1,0 +1,1 @@
+Write the draft with the host's file tools to `"$WORKBENCH/.post-draft-$CHECKOUT"`, made workspace-relative, a dotfile at the workbench root that no staging list names. The host's capture takes every file the workspace holds when the run ends, so a draft that is not moved into the store is removed (`rm -f`) before the run ends. Count that file, never a rendering of it:

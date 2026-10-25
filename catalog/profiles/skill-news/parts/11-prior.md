@@ -1,0 +1,1 @@
+> *The news entry needs `bin/fusion-forum`, and the installed bundle does not carry it. That is a defect of the installed bundle: report it. There is no `fusion --update` and no session to restart on this host.*

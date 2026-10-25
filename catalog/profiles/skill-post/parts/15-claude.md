@@ -1,0 +1,1 @@
+Write the draft with the `Write` tool to `"$WORKBENCH/.post-draft-$CHECKOUT"`, a dotfile at the workbench root that no staging list names and `/fusion:cleanup` does not commit, and count that file, never a rendering of it:

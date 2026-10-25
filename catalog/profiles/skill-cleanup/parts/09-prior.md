@@ -1,0 +1,1 @@
+1. **Compose the message, and write no file.** On Prior there is no message file: no `/tmp` path is known to survive between calls, a file inside the workspace would be captured with the run, and there is no Claude Code session identifier to key one by. Each split's message is carried, verbatim, in this run's result.

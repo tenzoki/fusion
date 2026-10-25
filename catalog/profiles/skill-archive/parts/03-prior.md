@@ -1,0 +1,1 @@
+The user started the archive entry. Move a curated set of workbench artefacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused. **That is the whole of it**: this body runs no other pass and triggers none.

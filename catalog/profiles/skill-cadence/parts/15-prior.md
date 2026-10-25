@@ -1,0 +1,2 @@
+- It is **not** read-only. It writes `activity-log-$CO.md` in the project root and `cadence-$CO.md` in `$OUT_MEMO`, and it adopts a legacy `-$USER` activity log onto the checkout name. It modifies no other source.
+- It commits nothing itself — the host integrates both files as this run's commit.

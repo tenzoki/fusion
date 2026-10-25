@@ -1,0 +1,1 @@
+- **Never touch git.** No `git add`, no `git commit`. The user decides whether to commit the archive.

@@ -1,0 +1,1 @@
+- **A pull is the user's, outside this run, and never automatic.** This workflow fetches, which changes no file, and it never pulls: the workspace revision is the host's, so when new entries were shown the run says a pull is owed.

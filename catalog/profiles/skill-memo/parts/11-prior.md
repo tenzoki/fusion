@@ -1,0 +1,1 @@
+- The argument is about things to do: `the open tasks`, `this todo`, `diese aufgabe`, `what's left to do`. Route by keyword or imperative content only: an entry run has no conversation to look back at.

@@ -1,0 +1,3 @@
+Then what to do next, in this order: the host integrates the renames as this run's commit and pushes it only when the entry declares a remote; tell the other checkouts to pull rather than migrate again, so the project has one revert point (a checkout holding an untracked container under `circles/` runs the migrate entry once more after the pull); run the setup entry. For `MODE=plain`, say that nothing here is in a diff, and go on to Step 6.
+
+**In `MODE=git`, a run that moved anything ends here**: the run's integration is the one commit of renames, and the citation repairs and Step 7 come in a later migrate entry run, which offers them.

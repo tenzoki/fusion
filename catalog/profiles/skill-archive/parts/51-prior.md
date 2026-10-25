@@ -1,0 +1,1 @@
+- **Never touch git.** No `git add`, no `git commit`. The host integrates the archive with the run.

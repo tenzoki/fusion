@@ -1,0 +1,2 @@
+- Notes: `$WORKBENCH/$OUT_MEMO/notes-$P.md`, created with the header `# Notes — <person>` and a blank line
+- Tasks: `$WORKBENCH/$OUT_MEMO/tasks-$P.md`, created with the header `# Tasks — <person>` and a blank line

@@ -1,0 +1,1 @@
+   - A goal to capture without starting work on it → the wp entry files it as its own work package in the work-package store, where it waits at `open` until somebody claims it. Its path is then a valid input to **requirements-designer**, which turns it into a spec without touching the package

@@ -1,0 +1,1 @@
+The pointer block carries the commit range (the session's start anchor, to `HEAD`), this session's filed records as **storeless wildcard citations** in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines, and one sentence on what the other side need not redo.

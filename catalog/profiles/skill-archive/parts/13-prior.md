@@ -1,0 +1,1 @@
+- (empty) — ask the user with one `host.question.v1` call whether they want a tier or a natural-language description.

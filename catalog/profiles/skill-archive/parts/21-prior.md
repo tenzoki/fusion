@@ -1,0 +1,1 @@
+Adds `$SCAN_REVIEWS/*.md` whose filename date prefix is older than the threshold. A review has no state; aging is the only signal, and one an evidence record names moves with that record through Step 4's survey. Every review kind shares this one store and they are distinguished by the sender in the filename.

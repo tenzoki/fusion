@@ -1,0 +1,3 @@
+- **`EXIT=1`, `2`, `3` or `6`**: nothing is on stdout; show its stderr line and stop.
+- **`EXIT=4`**: show its `refused (…)` line and say no write is offered for that reason; `dirty-tree` clears with a commit or a stash, and a re-run offers this step again. Go to Step 7.
+- **`EXIT=5`**, summary line `rewrites=0`: nothing to repair; ask nothing.

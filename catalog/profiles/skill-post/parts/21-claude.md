@@ -1,0 +1,1 @@
+Two lines at most: the path written, or that nothing was written and which of Step 3's two conditions or Step 2's unresolved identity is why. Name any pointer element Step 2 left out for an unread value — the omission belongs here, not in the entry. Add one sentence telling the user to carry the file in their next commit, because an entry nobody pushed reaches nobody.

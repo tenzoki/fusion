@@ -1,0 +1,7 @@
+> 2. Not now: nothing changes, and the migrate entry can run again at any time.
+
+**Run.** Only on 1, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" run`. Show every `reported=`, `untracked=` and `ignored=` line, then the receipt (`verified=`, `migrated=`). `result=no-op` means it had already run and nothing was sent. Exit 6 means a finding came back: return to the repairs. Exit 5, 8, 9 or 3: show the reason and stop.
+
+**Interrupted.** On exit 7, or `ROUTE=interrupted`, run `"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" status` and ask: 1. continue (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" resume`), 2. undo (`"$FUSION_PLUGIN_ROOT/bin/fusion-migrate" rollback`). Never start a second plan: a re-run is `run`, which no-ops once done. On a `rollback` refused with exit 8, show its stderr and ask how to go on.
+
+**Report.** Close with the receipt, then name what the host's integration of this run carries, in this order: the repairs, only when one was applied; the originals and the record pairs; the rewritten records; the manifest. Then repeat the sentence: every installation that writes this workbench must be on 13.0.0 or later before it writes again (13.2.0 to roll back or re-run a migration that converts no record), and nothing detects a checkout that does not update, so other checkouts update their installation first, then pull. `bin/fusion-migrate rollback` undoes the migration and `bin/fusion-migrate status` says where it stands.

@@ -1,0 +1,1 @@
+[ "$LEGACY" = 1 ] && echo "REFUSED: this shape converts with the plugin source at tag v11.11.1. Check it out, start claude --plugin-dir <that checkout>, run /fusion:migrate there; then fusion --update, restart, and run /fusion:migrate again."

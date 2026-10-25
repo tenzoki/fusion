@@ -1,0 +1,1 @@
+- **Move, do not copy.** The point is to shrink the live workbench. If the user wants a copy without removal, ask via `AskUserQuestion` before doing it.

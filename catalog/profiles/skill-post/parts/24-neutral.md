@@ -1,0 +1,1 @@
+- **Composes nothing when there is nothing to say** (Step 3), and writes nothing without the yes that Step 4's shape puts.

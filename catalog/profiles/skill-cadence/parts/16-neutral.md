@@ -1,0 +1,2 @@
+- It files no issues and no decisions. A cadence run is a read of the past, not a queue of work.
+- It is **not** a personal digest and does not group or rank by author. The three lists are the project's; the only identity in the document is step 8b's own-checkout metrics.

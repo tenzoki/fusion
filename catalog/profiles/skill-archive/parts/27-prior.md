@@ -1,0 +1,1 @@
+   - If empty, ask with one `host.question.v1` call whether they want `tier-1` / `tier-2` / `tier-3` / describe.

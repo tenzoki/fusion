@@ -1,0 +1,2 @@
+- Commits created: hash and summary, one line each.
+- Push: pushed to `<branch>`, skipped (`--no-push`), or **rejected** with the git error.

@@ -121,7 +121,11 @@ exists (decision
 option 1): at present `skills/setup/SKILL.md`, `skills/check/SKILL.md`,
 `skills/wp/SKILL.md`, `skills/wp-order/SKILL.md`,
 `skills/reconcile/SKILL.md`, `skills/curate/SKILL.md`,
-`skills/discuss/SKILL.md` and `skills/commit/SKILL.md`.
+`skills/discuss/SKILL.md`, `skills/commit/SKILL.md`,
+`skills/cleanup/SKILL.md`, `skills/archive/SKILL.md`,
+`skills/memo/SKILL.md`, `skills/post/SKILL.md`, `skills/news/SKILL.md`,
+`skills/cadence/SKILL.md`, `skills/migrate/SKILL.md` and
+`skills/help/SKILL.md`.
 `npm run render -- claude` lists the skills that are still hand-edited as
 `skipped … no profile`. Do not edit a generated file by hand:
 the byte-equality test fails, and the next render overwrites the edit. The

@@ -1,0 +1,1 @@
+**B. The digest.** Read that record back and write `cadence-$CO.md` to `$OUT_MEMO` with **three ranked lists**: topics **since yesterday** (on a Monday "yesterday" is a Sunday, so Fri + Sat + Sun collapse into one bucket), topics of the **last 7 days**, and **recurring themes by churn** over the whole history.

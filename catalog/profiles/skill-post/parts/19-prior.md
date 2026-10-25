@@ -1,0 +1,2 @@
+mkdir -p "$WORKBENCH/$OUT_FORUM"
+mv "$WORKBENCH/.post-draft-$CHECKOUT" "$WORKBENCH/$OUT_FORUM/$STAMP-$CHECKOUT-<slug>.md"

@@ -1,0 +1,2 @@
+  - `./rules/` — fusion-agent-specific rules (e.g. `review-priorities.md`) that have no meaning outside a fusion context.
+  - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).

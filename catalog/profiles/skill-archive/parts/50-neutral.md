@@ -1,0 +1,2 @@
+- **Never archive a live work package.** `open`, `claimed` and `paused` are live by the field's own definition; only `done` and `dropped` are archive-class, and only when nothing live still points at them.
+- **Never delete the archive folder.** This workflow only creates and adds.

@@ -1,0 +1,1 @@
+   **Shared files (per tier).** Mechanically expand the tier's globs against the `$SCAN_*` values derived in Step 1. For aged buckets, parse the `YYMMDD` (or legacy `MMDD`) date prefix and compare to `today - threshold`.

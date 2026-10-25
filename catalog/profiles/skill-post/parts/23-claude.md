@@ -1,0 +1,1 @@
+- **Commits nothing** and pushes nothing. The user carries the entry into their next commit.
