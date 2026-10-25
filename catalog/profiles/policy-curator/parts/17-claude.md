@@ -1,0 +1,1 @@
+Where both positions are live and defensible, file a record at `$OUT_DECISION` by `bin/fusion-write create --kind decision --actor policy-curator`, following the decision-record template in `rules/fusion-workbench-conventions.md` `## Decision Record Template`:

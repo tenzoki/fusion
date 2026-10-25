@@ -1,0 +1,3 @@
+- Your run file under `$OUT_ANALYSIS`
+- An open decision record **you create in this run** at `$OUT_DECISION` for an unresolvable contradiction. Editing a decision record that already exists is a gated change like any other, and stays in the list above
+- A defect record at `$OUT_ISSUE` for work outside your remit

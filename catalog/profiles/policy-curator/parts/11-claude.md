@@ -1,0 +1,2 @@
+| 1 | Work packages — the brief, the dependency field, the status and the closure note a finished or dropped item carries. One **directory** per item under the store, the record inside it under the directory's own name, or under the container's marked name where the item predates that form | `$SCAN_PACKAGES` |
+| 2 | Decision records, all five states. Superseded and implemented records carry their own citation inline | `$SCAN_DECISIONS` |

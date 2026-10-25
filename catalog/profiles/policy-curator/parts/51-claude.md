@@ -1,0 +1,1 @@
+- Decision records under `$SCAN_DECISIONS` — including the `Superseded by:` annotation and the `transition` that goes with it

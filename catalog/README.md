@@ -107,7 +107,8 @@ and the profiles are fusion's own and are not frozen.
 `agents/code-implementer.md`, `agents/reviewer.md`, `agents/state-auditor.md`,
 `agents/orchestrator.md`, `agents/consultant.md`, `agents/analyst.md`,
 `agents/requirements-designer.md`, `agents/implementation-planner.md`,
-`agents/data-implementer.md` and `agents/document-editor.md` are generated. Do not edit them by hand: the byte-equality test fails, and the
+`agents/data-implementer.md`, `agents/document-editor.md` and
+`agents/policy-curator.md` are generated. Do not edit them by hand: the byte-equality test fails, and the
 next render overwrites the edit. The route is
 
 1. edit the part under `catalog/profiles/<id>/parts/`: a `neutral` part when

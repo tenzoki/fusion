@@ -1,0 +1,1 @@
+Edit neither side, and report the record's path in your summary. Placement follows the one store the kind has and resolves through the `bin/fusion-paths` lines Setup step 2 held, never through a named store path.

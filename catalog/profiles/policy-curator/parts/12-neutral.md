@@ -1,0 +1,1 @@
+| 3 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question. **The commit message is the per-commit record**, so this source carries what a session log used to | the repository |

@@ -1,0 +1,1 @@
+- **A change to a file outside your remit** (an agent prompt, a skill body, `README*.md`, anything under `bin/`, `hooks/` or `docs/`) — file a defect record at `$OUT_ISSUE` naming the file, the required change and the executor who owns it, and cite that issue from the ledger entry that surfaced it.
