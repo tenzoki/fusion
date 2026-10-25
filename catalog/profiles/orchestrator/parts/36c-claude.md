@@ -1,0 +1,1 @@
+   d. If it reports failure (blocked, or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert`. Tell the user the task is errored. Move to the next task.

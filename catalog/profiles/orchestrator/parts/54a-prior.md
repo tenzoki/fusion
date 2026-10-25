@@ -1,0 +1,8 @@
+| Agent modifies wrong files (out of scope) | Revert the out-of-scope files no earlier task of this run changed with `git checkout HEAD -- <file>`, name the others to the user, log error, file issue for correct agent |
+| Validation fails after agent work (tests fail, consistency check fails) | Re-dispatch the same executor as a defect task (one attempt). On success: report the task (Step 5); the host's integration carries it with the run. On failure: revert the task's files no earlier task of this run changed, name the others to the user, mark the task errored, tell the user |
+| Agent edits outside its declared scope (`code-implementer` edits `.yaml`, `data-implementer` edits `.go`) | Revert the out-of-scope files no earlier task of this run changed, name the others to the user, file issue for correct agent, log the scope violation |
+| Cross-domain task discovered at runtime (task needs both code + data changes) | Split into two subtasks with dependency, present to user for confirmation |
+| Integration fails at the run's end | Not this run's to handle: the run makes no commit, and the host reports its own integration failure |
+
+**Revert strategy:** Always use `git checkout HEAD -- <specific-files>`, never `git checkout .` or `git reset --hard`. Revert only the specific files that are problematic. On Prior `HEAD` is the run's base revision, not the last task's commit, so a file an earlier task of this run changed is never reverted: that would discard the earlier task's work too. Name it to the user instead, with what the failing task changed in it, and leave it as it stands.
+

@@ -1,0 +1,5 @@
+2. **The review — the one pass this work gets** (decision `260827-1120_*_how-often-does-the-review-pass-run.md`). Closure paths only; continued work waits. Take the coverage read once more (**Review coverage**) with `--since` the commit that filed the item, its narrative's first (`git -C "$WORKBENCH" log --follow --diff-filter=A --format=%h -- <step 1's narrative.path> | tail -n 1`; a migration adds `package.json`), then route by what the uncovered commits changed, scoped to their files **plus the carried `**Not-opened:**` list**:
+   - Code files → emit `review_start`, invoke `reviewer` with `**Review domain:** code`, emit `review_done`.
+   - Ontology/data files (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → the same with `**Review domain:** ontology`. Both kinds in one uncovered range are **one** dispatch carrying `**Review domain:** both`, not two.
+
+   - `uncovered 0` with no carried file named, or no code or data file in range → skip cleanly; the finish then carries no `--evidence`.

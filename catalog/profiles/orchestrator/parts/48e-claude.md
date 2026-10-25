@@ -1,0 +1,5 @@
+- **Give the user the session summary**, in the report and nowhere else. No file is written: the commits are the record of the work, and the summary is what tells the user what those commits mean. It carries, in this order:
+  - **Brief** — the user's original request, and the outcome: complete, bounded closure with its reason, or stopped by the user.
+  - **What was done** — one line per commit: short hash, summary, source record.
+  - **Coherence** — the state-auditor's audit result when a reconciliation ran this session, and the words "no reconciliation was run" when none was.
+  - **Review coverage** — the range `<session-start>..<HEAD>` with its commit count, one line per review file with its `**Reviewed-range:**`, the commits no review opened (`none` when the range is tiled), and the last review's `**Not-opened:**` list.

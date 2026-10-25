@@ -514,3 +514,34 @@ The Len columns of Finding 4 sum to each file's size. The span counts of Finding
 - [ ] The two decision records above.
 - [ ] Do requirements-designer and implementation-planner ask through `host.question.v1` or in chat? Their Tool Discipline sections say chat, and their Output Style sections name `AskUserQuestion`. This map reads both as `host.question.v1`, which agrees with the catalog. Prior's inventory reads them differently from each other (`unfixed`, `chat-text`). A user ruling of "chat" removes `host.question.v1` from both entries at step 15.
 - [ ] On Prior, the orchestrator's dispatch loop commits once per task, but an entry run integrates once per run (`entry.v1` `integrate`). The span map moves every commit instruction into `claude` spans. Whether one orchestrator entry run may span many tasks, with one integration at its end, is a question for request 76. It is not a cut question.
+
+## Addendum 261025: orchestrator spans re-cut for the per-task commit
+
+Issue `261025-1117-orchestrator-prior-render-keeps-neutral-steps-that-presume-a-commit-per-task.md` found five neutral spans of the orchestrator that act on a commit per task. Finding 1's tagging rule could not see them: plain prose carries the per-task commit, and no line in them has a `HOST_TOKENS` hit. They are now `claude` + `prior` pairs. Each `prior` part says what an entry run can do on Prior, where the host integrates once, at the run's end. The Claude bytes have not moved. Offsets are bytes into `git show 22d16e6a:agents/orchestrator.md`, half-open, and that file is still byte-identical to `HEAD:agents/orchestrator.md`. The concatenated neutral and claude parts equal it.
+
+| Old span | New parts | Bytes [start, end) | Lines | Tag | What presumes a commit | Prior behaviour stated |
+|---|---|---|---|---|---|---|
+| 36 | `36a-claude` / `36a-prior` | [37579, 38137) | 258-258 | claude | "a decision `--to implemented --implementation-ref` once Step 4 has committed" | a decision stays at `answered`, keeps its `Implemented:` line, and is named in the summary as owed the transition once the integration commit exists |
+| 36 | `36b-neutral` | [38137, 39045) | 259-268 | neutral | | |
+| 36 | `36c-claude` / `36c-prior` | [39045, 39268) | 269-269 | claude | item 2d: "revert all task changes with `git checkout HEAD -- <files>`" | revert only files no earlier task of the run changed; name the others to the user and leave them as they stand |
+| 36 | `36d-neutral` | [39268, 39405) | 270-270 | neutral | | |
+| 38 | `38-neutral` | [48453, 48515) | 302-304 | neutral | | |
+| 38 | `38a-claude` / `38a-prior` | [48515, 48728) | 305-307 | claude | Step 5: "After each commit", "with the short hash" | after each task; report the task in the commit message's shape with its files, without a hash |
+| 38 | `38b-neutral` | [48728, 49779) | 308-317 | neutral | | |
+| 48 | `48-neutral` | [66474, 67952) | 418-428 | neutral | | |
+| 48 | `48a-claude` / `48a-prior` | [67952, 68983) | 429-433 | claude | closing review routed by the uncovered commits since the item was filed; "`uncovered 0` … skip cleanly" | route by the files the run changed (per-task reports, read back against `git status --porcelain`), plus earlier uncovered commits and the carried `**Not-opened:**` list; the dispatch says the files are uncommitted on the base revision |
+| 48 | `48b-neutral` | [68983, 72183) | 434-442 | neutral | | |
+| 48 | `48c-claude` / `48c-prior` | [72183, 72814) | 443-443 | claude | closure note cites "the session's commit range" | the note cites the run: its session id, its tasks, and the host's integration as their commit |
+| 48 | `48d-neutral` | [72814, 73188) | 444-450 | neutral | | |
+| 48 | `48e-claude` / `48e-prior` | [73188, 74031) | 451-455 | claude | summary: "the commits are the record", "one line per commit: short hash", range `<session-start>..<HEAD>` | one line per task from its per-task report, no hash; coverage by the files the run changed, plus earlier uncovered commits; decisions left at `answered` named |
+| 48 | `48f-neutral` | [74031, 74225) | 456-458 | neutral | | |
+| 54 | `54-neutral` | [76934, 77102) | 468-473 | neutral | | |
+| 54 | `54a-claude` / `54a-prior` | [77102, 78104) | 474-481 | claude | error-table revert rows, "On success: commit", "Git conflict during commit", `**Revert strategy:**` to `HEAD` | the same revert rule as 36c; success is reported and integrated with the run; the commit-conflict row becomes the host's integration failure |
+
+`36-neutral.md` is gone. Its first line is now a claude span, so no neutral part kept its name. In span 54, the whitespace-only line 481 joins the claude span before it, under Finding 1's rule.
+
+Two `prior` parts were corrected in the same pass. Neither is a re-cut. `35-prior.md` had carried over span 35's revert to `HEAD` unchanged, and it now uses the 36c rule. `53-prior.md` reported "which commits in the session's range no review opened". It now reports the files this run changed that no review of this run opened, and the uncovered commits from before the run.
+
+The `prior` parts name no entry service besides `host.exec.v1`.
+
+Still open in the Prior render: the `reviewer` row of the routing table (`60-neutral.md`) reads "over the uncovered files plus the carried list". It summarises 48a and is no instruction that an entry run cannot carry out, so it was not re-cut. Whether an entry run may integrate once per task is a question for request 76, not a question about where to cut. If Prior says yes, these `prior` parts get shorter.
