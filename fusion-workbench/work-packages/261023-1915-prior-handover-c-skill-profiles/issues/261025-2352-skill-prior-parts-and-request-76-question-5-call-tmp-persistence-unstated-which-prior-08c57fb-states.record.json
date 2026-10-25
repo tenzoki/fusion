@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8530b2e9-c333-4eca-8af1-7bb50a142026",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-c-skill-profiles/issues/261025-2352-skill-prior-parts-and-request-76-question-5-call-tmp-persistence-unstated-which-prior-08c57fb-states.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

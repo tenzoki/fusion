@@ -22,3 +22,5 @@ State the two bounds once in each Setup binding: read an install-tree file in pi
 
 - Every Setup binding that reads with `cat` names the 64 KiB bound and the chunked read; `reviewer/parts/17-prior.md` names the 32 KiB bound and the chunked write.
 - `cd catalog && npm test` exits 0; the Claude render diff is empty.
+
+Also seen: 261025-2352 by reviewer — the sixteen skill bindings (`skill-*/parts/01-prior.md`) already read in chunks under 64 KiB, while the eleven agent Setup parts still read with `["cat", "<path>"]` at `ec6c968e`, so the one binding now has two variants.

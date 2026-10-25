@@ -24,3 +24,5 @@ Add a test that runs `priorTokenHits` over every `prior` part of every profile, 
 
 - Inserting `AskUserQuestion` into any new profile's `prior` part turns `cd catalog && npm test` red.
 - `cd catalog && npm test` exits 0 on the tree as it stands.
+
+Also seen: 261025-2352 by reviewer — at `ec6c968e` the gap covers the 210 `prior` parts of the sixteen skill profiles too (all `prior: unsupported`), and `catalog/README.md` ("held to the same lints … the narrower Prior lint") and `eab95b30` ("skill parts are covered as they land") overstate it; no hit today with all sixteen set supported in a scratch copy.

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b017bb1c-087b-451f-b4cc-522ae65c1937",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-c-skill-profiles/issues/261025-2352-thirty-eight-prior-part-citations-name-request-76-questions-by-a-number-only-the-span-map-assigns.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

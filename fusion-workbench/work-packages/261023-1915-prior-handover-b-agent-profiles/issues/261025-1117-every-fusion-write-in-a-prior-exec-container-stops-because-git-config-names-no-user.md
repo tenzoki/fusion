@@ -31,3 +31,5 @@ Request 76 asks Prior to make the user's git identity resolvable inside the exec
 
 - Request 76 carries the identity provisioning question and the `.checkout-id` carry under its own heading.
 - If fusion adds the Setup line, `cd catalog && npm test` exits 0 and the Claude render diff is empty.
+
+Also seen: 261025-2352 by reviewer — `skill-memo/parts/01-prior.md` makes memo halt on it; and a run cannot set the identity itself, because `execPrelude` (Prior `08c57fb` `internal/supervisor/exec.go`) rewrites `$HOME/.gitconfig` with `>` before every call, so a `git config --global` from one call is gone at the next.

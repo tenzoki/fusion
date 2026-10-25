@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "eeee2fcc-9ea5-4c42-9abe-88e8fb492476",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "ba6b441859bf82ee336d36ac58c2bd0ac5fb1929",
+    "git_range": null
+  },
+  "brief_revision": "sha256:299306123d722a9e996a84ebf98339e4d4c41fe901d2aee17faf47c9cda5ab36",
+  "plan_revision": null,
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.7"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261023-1915-prior-handover-c-skill-profiles/reviews/261025-2352-reviewer-closing-review-of-prior-handover-c-skill-profiles.md",
+    "sha256": "sha256:9c11d23dbe668b9e0f5304590e544f8dd4210f2784795e04f12ed1b4ba42c887",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-25T22:56:40Z",
+  "extensions": {}
+}
