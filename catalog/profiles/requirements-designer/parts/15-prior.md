@@ -1,0 +1,1 @@
+- What has already been specified or planned: read the specs and plans under `$SCAN_PLANS`, every directory it names, before writing a new one. A capability that already carries a spec must be built on, not re-specified from scratch; two specs for one capability is how a contradiction reaches the implementation-planner.

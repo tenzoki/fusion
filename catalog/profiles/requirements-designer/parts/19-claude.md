@@ -1,0 +1,1 @@
+Write to `$OUT_PLAN/YYMMDD-HHMM-spec-<topic>.md`, no marker, then file it with `bin/fusion-write create --kind plan --actor requirements-designer` (`fusion-workbench-conventions.md` `## Record filing`); its state is the control file's, so the head carries no `Status:` line:

@@ -1,0 +1,5 @@
+Same prompt body, same output shape, different input. The mode is read off the dispatch prompt, and neither mode writes anywhere but `$OUT_PLAN` — there is no mode-specific write target and no mode that writes across stores.
+
+1. **User-direct** (default) — the user's raw request → spec at `$OUT_PLAN`. No special parameter lines.
+
+   **A work package is a valid request.** When the input resolves to an existing item under `$SCAN_PACKAGES` — the container directory or the record inside it, however the caller spelled it — read the record and treat its `## Directive` as the raw request. Shape it into a spec and leave the item exactly as it stands: no status change, no claim, no appended line. **And an item is shaped whole or not at all.** An item holding one job is the shape the store is designed for (`rules/fusion-workbench-conventions.md` `## Work packages`); an item holding several is not, and a spec written from one of them silently leaves the rest unread. When one reaches you, make *which job is this spec for* your first clarification round and report what is still in the item. Splitting an item is the user's act, never yours.

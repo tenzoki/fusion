@@ -1,0 +1,1 @@
+3. **Cross-reference.** Check the existing issues (`$SCAN_ISSUES`), plans (`$SCAN_PLANS`), reviews (`$SCAN_REVIEWS`) and prior analyses (`$SCAN_ANALYSES`) for related work.

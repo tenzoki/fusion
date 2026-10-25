@@ -1,0 +1,24 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "81d6cbcf-b026-49cc-abd3-0455d54ef048",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "discussion",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-b-agent-profiles/discussions/261025-0750-request-76-sequencing-and-prior-ask-channel.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "participants": [],
+    "outcome_refs": []
+  }
+}

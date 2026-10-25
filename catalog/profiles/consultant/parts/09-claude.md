@@ -1,0 +1,1 @@
+When the user asks for a written report or when findings are complex enough to warrant documentation, write to `$OUT_CONSULT`. These reports are the consultant's voice on a topic — opinionated, structured, signed, and fully cited.

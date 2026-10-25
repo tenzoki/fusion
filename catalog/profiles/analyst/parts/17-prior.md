@@ -1,0 +1,1 @@
+**Where the report goes:** `$OUT_ANALYSIS`, like every other analysis. The shared investigation store holds what the retired `investigator` agent wrote before 2026-08-15 and takes nothing new; a failure analysis is an analysis and lands with the rest.

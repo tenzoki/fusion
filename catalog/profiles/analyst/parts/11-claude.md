@@ -1,0 +1,1 @@
+4. Write to `$OUT_DECISION/YYMMDD-HHMM-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`, then file it with `bin/fusion-write create --kind decision --actor analyst` (`## Record filing`); it starts `open`

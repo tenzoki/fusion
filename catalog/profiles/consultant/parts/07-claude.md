@@ -1,0 +1,2 @@
+- Write to `$OUT_CONSULT` — consultation reports
+- Write to `$OUT_ISSUE` — actionable defects as issues
