@@ -1,0 +1,1 @@
+- The reported path does not start with the `OUT_ANALYSIS` value from Step 1. A ledger this workflow would relay into an apply dispatch has to be a run file where the agent writes one (`agents/policy-curator.md` `## The run file`); a path pointing anywhere else is not one, and guessing which file was meant would hand the apply pass a document nobody wrote.

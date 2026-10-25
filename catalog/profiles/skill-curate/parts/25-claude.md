@@ -1,0 +1,1 @@
+3. **How to undo it** — the revert paths, which each entry carries. For a git-tracked surface that is `git checkout -- <path>`; an entry whose file is not under version control says in those words that no revert path exists.

@@ -1,0 +1,1 @@
+- **Dispatches `fusion:state-auditor`, once.** No second dispatch, no other agent, no fallback pass of its own when the agent returns badly — an unusable return is reported as one.

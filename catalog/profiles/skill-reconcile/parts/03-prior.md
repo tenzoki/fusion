@@ -1,0 +1,3 @@
+The user started the reconcile entry. This body performs one procedure: it dispatches the `state-auditor` entry once, through `host.dispatch.v1`, reads what comes back, and reports it. **It runs no other pass, reads no other skill body, and dispatches nothing else.**
+
+**It writes one thing and no more**: this checkout's reconcile mark, after the pass returns. Every change to a plan, a defect record or a review is the agent's, made under `agents/state-auditor.md` `## Scope`, and every one of them is left in the workspace — this body commits nothing and pushes nothing. Every change is integrated with this run by the host, once, when the run ends.

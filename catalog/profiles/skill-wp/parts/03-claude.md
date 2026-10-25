@@ -1,0 +1,1 @@
+File something worth doing later as a **work package**: a direction for the project rather than a note to self, which is `/fusion:memo`'s. It waits in the backlog at `open` until somebody claims it. **An item is a new directory each time, never an append**, because every reader of the backlog takes one file to be one job.

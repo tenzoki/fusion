@@ -1,0 +1,1 @@
+- **`bin/fusion-identity` exit 1** — halt per `### Who filed it`: register nothing. Its **3 or 5**: no hex, skip this block, `unread`. Its **4**: no person, register anyway.

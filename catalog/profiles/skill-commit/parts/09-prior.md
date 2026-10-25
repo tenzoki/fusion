@@ -1,0 +1,1 @@
+- `--amend` is refused on this host, so there is nothing to warn about

@@ -1,0 +1,3 @@
+Step 0 printed `checks_due=`. On `none`, say nothing at all and go to Step 2 — the ordinary case in an unchanged installation. On `unread`, say that no due list was computed and that `/fusion:check` runs the whole set by hand.
+
+**One or more selectors: perform them here.** A skill body cannot invoke a slash command, so read `$FUSION_SRC/skills/check/SKILL.md` and execute the section of each named selector inline, then its stamp block over exactly the selectors you ran. That body owns the procedures and their reporting; restate none of it here, and do not tell the user to type the command instead.

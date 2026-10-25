@@ -1,0 +1,1 @@
+    git rm -q --cached fusion-workbench/.checkout-id && printf 'fusion-workbench/.checkout-id\n' >> ./.gitignore && echo "gitignore: .checkout-id was tracked — untracked (file kept on disk) and excluded"

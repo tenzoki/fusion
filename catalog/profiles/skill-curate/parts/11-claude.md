@@ -1,0 +1,1 @@
+Then read the run file itself with the `Read` tool, at `$WORKBENCH/<run-file path>`. It carries the entry ids, which per-entry approval needs, and the outcomes section this workflow reports from in Step 7.

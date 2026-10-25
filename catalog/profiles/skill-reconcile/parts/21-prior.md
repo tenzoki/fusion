@@ -1,0 +1,1 @@
+- **Dispatches the `state-auditor` entry, once, through `host.dispatch.v1`.** No second dispatch, no other entry, no fallback pass of its own when the child run returns badly — an unusable return is reported as one.

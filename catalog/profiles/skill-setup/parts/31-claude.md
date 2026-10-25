@@ -1,0 +1,1 @@
+**`UNRESOLVED` is not a path and nothing here reads through it** (`bin/fusion-source-root`'s header carries the branch). Say so, say the due checks were not run and stay due, and tell the user to restart the session so the SessionStart hook exports the variable. **A due selector is not a blocking check either way:** nothing here blocks the session, and a check not run stays due.

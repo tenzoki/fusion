@@ -1,0 +1,3 @@
+- **Writes the reconcile mark and nothing else.** No record, no tracking file, no session state.
+- **Commits nothing and pushes nothing.**
+- **Opens no approval and asks nothing.** A run typed and walked away from finishes.

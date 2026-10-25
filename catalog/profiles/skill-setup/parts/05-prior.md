@@ -1,0 +1,1 @@
+**Everything else that used to run here is a periodic check**, each a fact about the *installation* rather than about this run. They live in the check entry; Step 0 says which are due and Step 1 runs those.

@@ -1,0 +1,1 @@
+2. **Choose which groups.** A follow-up `host.question.v1` call with `multi_select`, one option per non-empty group, in the same order. What comes back marked is the approved set; everything unmarked is declined, and neither needs a third question.

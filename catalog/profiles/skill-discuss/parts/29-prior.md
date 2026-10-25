@@ -1,0 +1,1 @@
+- **Dispatches the `consultant` entry** and nothing else, once per round, through `host.dispatch.v1`. No other entry, no sub-dispatch of its own.

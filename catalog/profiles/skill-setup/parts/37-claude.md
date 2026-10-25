@@ -1,0 +1,1 @@
+**Write no row here.** The SessionStart hook appends this session's mechanical `session_start` row; your own row, the one carrying the brief, belongs to your Setup step 6. There is no live dashboard file to write — the monitor reads the log.

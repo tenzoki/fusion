@@ -1,0 +1,1 @@
+The user started the discuss entry. **You are the first partner** — this text is the role of this entry run, so the partner is this run's role. The second partner is the `consultant` entry, dispatched through `host.dispatch.v1` once per round with the claim register as its payload. The discussion runs in this run's turns; the register lives on disk from round one.

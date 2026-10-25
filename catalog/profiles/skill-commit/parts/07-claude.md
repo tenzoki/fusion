@@ -1,0 +1,79 @@
+Steps 6 and 7 are headed sections rather than items of the list above. Step 6
+has to show a here-document at column 0, and a column-0 block ends the list it
+sits in — so the list ends at step 5 and the last two steps carry their own
+headings. The procedure is still seven steps in order.
+
+### 6. Stage and commit as one held pair
+
+Write the confirmed message to a scratch file, then run stage and commit as a
+single command under the project's commit lock — it serialises access to the
+shared git index against any parallel session's agents
+(`rules/commit-lock.md` `## Commit lock`; the `with` form acquires,
+runs, and releases on any exit). The pair must be held together: the lock only
+defends against commit absorption if no path is staged outside it.
+
+**`<msg-file>` is a path under `/tmp`** — write it as
+`/tmp/fusion-commit-msg-<something-unique>.txt` and nowhere else. Never inside
+`fusion-workbench/`: `/tmp` is swept and the workbench is not, and the workbench
+is the tree `git status` reports on, so a message file written there survives as
+a leftover. Measured — `fusion-workbench/.commit-msg-tmp`, holding one commit's
+message, at a path no helper in `agents/`, `skills/`, `bin/` or `hooks/` names
+(`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`).
+`hooks/lib/staging-drift.ts` reads a commit-message-shaped file under the
+workbench as a fault and says so — scoped to what no artefact store owns, so a
+record you authored *about* commit messages is not mistaken for one.
+
+Write the scratch file with a **quoted** heredoc delimiter, so the shell expands
+nothing in the message — a body written under a bare `<<EOF` still substitutes
+`$var` and runs backtick commands.
+
+The block below sits at column 0 deliberately, and a copy of it must too. A
+here-document opened with `<<` ends only at a terminator that is the whole
+line, at column 0, with nothing before it — `<<-` strips leading **tabs**
+only, never spaces, so there is no operator that rescues an indented copy.
+An indented terminator is never matched and the heredoc runs to EOF; an
+indented body line puts those same leading spaces on that line of the commit
+message, subject line included.
+
+```bash
+cat > <msg-file> <<'FUSION_MSG_EOF'
+<the confirmed message, verbatim>
+FUSION_MSG_EOF
+```
+
+The message reaches `git` only as `-F <msg-file>`. It is never an argument on a
+command line, so apostrophes in it cannot end a quoted string.
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <absolute-path> <absolute-path> && git commit -F <msg-file>'
+```
+
+**Write the staging paths absolute.** `with` `cd`s to the workbench root — the
+directory that holds `fusion-workbench/` — before running the command after
+`--`. The selection recorded in step 2 is relative to the git toplevel, and the
+layout permits the workbench root to sit below it, in which case every relative
+path in that selection misses.
+
+Only when there is nothing to stage (everything to commit was already staged
+before the workflow started) does the bare form apply:
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -F <msg-file>
+```
+
+**Then commit the event log alone.** The commit just landed appended a `commit`
+row to `fusion-workbench/orchestrator-events.jsonl`. Stage that one absolute
+path in a second `with commit --` acquisition: a held region whose only path
+is the log emits no row
+(`rules/commit-lock.md` `### The lock writes the commit event`), so it settles
+the log rather than regenerating it.
+
+### 7. Show result
+
+- Display commit hash
+- Show `git log -1 --oneline`
+
+## Flags
+
+- `--all`: Include all changes (staged inside the locked step 6, not earlier)
+- `--amend`: Amend the previous commit (use with caution)

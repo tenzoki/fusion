@@ -1,0 +1,2 @@
+- `--begin <reference from the chat>` starts a discussion on that reference.
+- **No switch means `--begin`**, taking whatever text follows as the topic and the preceding exchange as the reference.

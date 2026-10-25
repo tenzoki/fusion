@@ -1,0 +1,1 @@
+6. **`case5-missing-local`** — the project has no copy (the profile copy in the setup entry failed or was skipped), so `bin/fusion-rules` emits no path for that profile. Name it in the Done report with that consequence; presence is that step's job.

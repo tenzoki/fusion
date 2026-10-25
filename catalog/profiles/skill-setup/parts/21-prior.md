@@ -1,0 +1,1 @@
+- `chat-voice-{en,de}.yaml` — the short-form **chat** profile (anti-pattern blacklist plus a minimal terse-and-direct whitelist for approval prompts, `host.question.v1` question text, status reports, chat replies).

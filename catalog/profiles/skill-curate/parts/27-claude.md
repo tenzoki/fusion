@@ -1,0 +1,2 @@
+- The workflow **dispatches only `fusion:policy-curator`**, twice at most.
+- The workflow **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.

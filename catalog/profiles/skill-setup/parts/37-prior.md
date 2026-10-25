@@ -1,0 +1,1 @@
+**Write no row here.** The `session_start` row is the host lifecycle runtime's (H9, decision D1), and no orchestrator session follows this run to write a row of its own. There is no live dashboard file to write — the monitor reads the log.

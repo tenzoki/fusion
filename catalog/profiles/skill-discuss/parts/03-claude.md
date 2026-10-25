@@ -1,0 +1,1 @@
+The user invoked `/fusion:discuss`. **You are the first partner** — this body is a prompt to the assistant that is currently running, so the partner is whoever received it, whatever agent that is. The second partner is `fusion:consultant`, dispatched once per round with the claim register as its payload. The discussion runs in the chat; the register lives on disk from round one.

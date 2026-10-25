@@ -1,0 +1,3 @@
+The user started the wp-order entry. This workflow runs the helper `bin/fusion-work-order` through `host.exec.v1` and renders what it printed. The entry's name differs from the helper's; this is the only helper it wraps.
+
+**The mechanism is not in this body.** The node set, the ordering, depth, blocking count, readiness, the optimism counts and the exit codes are documented in the headers of `bin/fusion-work-order` and of `hooks/order.ts`, which renders the computation and points to where it is done; those headers are the authoritative text. What this body carries is the flow and the sentences the user reads.

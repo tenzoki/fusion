@@ -1,0 +1,4 @@
+- **Commits nothing** and pushes nothing.
+- **Decides nothing.** The record holds what was disputed, what survived, what was given up and a recommendation that binds nothing.
+- **Claims no work package and changes no status.** Where the store goes is the Origin Rule's answer, resolved once at Step 1: a discussion started under an item's brief lands in that item's container.
+- **Overrides no result on the consultant's behalf.** A claim you believe and it refuted is refuted with your position recorded as open dissent — not quietly re-filed under what held up.

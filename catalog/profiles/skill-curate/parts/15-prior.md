@@ -1,0 +1,1 @@
+This is a **separate prompt, asked before the ledger counts are shown**. Its whole content is the scale: which surface, how many bytes of it the run proposes to delete, and the 20 percent threshold it crossed. One `host.question.v1` call with two options — go on to the ledger, or stop here without seeing it.

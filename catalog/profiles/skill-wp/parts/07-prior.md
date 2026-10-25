@@ -1,0 +1,3 @@
+1. **Literal** — the entry's argument text: a `<title>` with an optional paragraph after the first line; a leading `idea:`, `idee:` or `backlog:` is stripped. The first line, or a short line derived from it, is the title, the rest the paragraph.
+2. **Conversational reference** — on Prior there is no conversation to refer to. An argument such as `this idea` or `das gehört ins Backlog` names content the arguments do not carry, so it is treated as mode 3.
+3. **Empty** — ask for the title and the paragraph with one `host.question.v1` call; the user's typed reply comes back as `text`. Do not guess.

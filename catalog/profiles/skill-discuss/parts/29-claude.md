@@ -1,0 +1,1 @@
+- **Dispatches `fusion:consultant`** and nothing else, once per round. No other agent, no sub-dispatch of its own.

@@ -1,0 +1,4 @@
+**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`; its header documents the mint and the six exit codes, and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as the orchestrator's Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the session id the host passes in the environment of this run's `host.exec.v1` calls (`FUSION_SESSION_ID`, request 76, question 7) and not from a SessionStart line, and no such value means no key.
+
+```bash
+[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"

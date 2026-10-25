@@ -1,0 +1,3 @@
+These eleven checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.check-stamps`, which never leaves this checkout, therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
+
+**Run them all, or run one.** `/fusion:check` runs every selector below; `--only <selector>` runs exactly one. A selector this run does not perform keeps its stamp, so a `--only` run never claims coverage it did not take.

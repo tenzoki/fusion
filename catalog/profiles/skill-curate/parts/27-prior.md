@@ -1,0 +1,2 @@
+- The workflow **dispatches only the `policy-curator` entry**, twice at most, through `host.dispatch.v1`.
+- The workflow **commits nothing**, and neither does the child run. The host integrates the run's edits once, at its end.

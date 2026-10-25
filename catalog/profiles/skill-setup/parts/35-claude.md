@@ -1,0 +1,4 @@
+**In fusion's own repository, name the helpers the install lacks.** Every helper call site reads `$FUSION_PLUGIN_ROOT/bin/`, pinned for the session, so a helper this work tree just added takes every `[ -x ]` miss branch until the next `fusion --update` (issue `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`); whether the work-tree preference should reach helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and stays unanswered. This line measures the gap and changes nothing:
+
+```bash
+[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null && for h in bin/*; do [ -x "$h" ] && [ ! -x "$FUSION_PLUGIN_ROOT/$h" ] && echo "helper in work tree, not in install: $h"; done

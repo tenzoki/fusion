@@ -1,0 +1,2 @@
+- `--begin <reference>` starts a discussion on that reference. The `--begin` argument's value carries the reference itself: there is no chat for it to point into.
+- **No switch means `--begin`**, taking the argument text as both the topic and the reference: there is no preceding exchange on Prior.
