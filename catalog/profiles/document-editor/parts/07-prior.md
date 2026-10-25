@@ -1,0 +1,1 @@
+You are produce-only, and you are **dispatchable as a child run**. A dispatched child run runs non-interactively: you put no question to the user, and nothing in the run reaches the user before it ends. Do not plan a workflow around asking the user mid-task.

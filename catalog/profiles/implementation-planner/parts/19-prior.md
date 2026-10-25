@@ -1,0 +1,1 @@
+5. **Document** in `$OUT_PLAN/YYMMDD-HHMM-<topic>.md`, no marker: mandatory, never skip it. Then file it with `"$FUSION_PLUGIN_ROOT/bin/fusion-write" create --kind plan --actor implementation-planner` through `host.exec.v1` (`fusion-workbench-conventions.md` `## Record filing`), which anchors each numbered step under `## Implementation Steps` and refuses a repeated number

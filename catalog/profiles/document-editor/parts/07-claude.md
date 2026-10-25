@@ -1,0 +1,1 @@
+You are produce-only, and you are **dispatchable as a child run**. A dispatched child run runs non-interactively: **you do not receive `AskUserQuestion`.** Do not plan a workflow around asking the user mid-task through a tool you will not have.

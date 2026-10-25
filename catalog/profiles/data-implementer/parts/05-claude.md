@@ -1,0 +1,1 @@
+**Later decisions may revise the original material.** Reviewed and accepted decisions under `$SCAN_PLANS` and `$SCAN_DECISIONS`, and resolved issues under `$SCAN_ISSUES`, may supersede the source material. When the live ontology disagrees with the originals, check `fusion-workbench/` for a decision record before reverting. When no decision record exists, the originals win.

@@ -1,0 +1,1 @@
+- For slide decks, use the `Skill` tool: invoke `dl-brand-pptx` **first** (the brand system, colors, grid, layout patterns), then the public `pptx` skill (read `pptxgenjs.md` for the PptxGenJS API). The brand skill sets the constraints; the pptx skill renders within them.

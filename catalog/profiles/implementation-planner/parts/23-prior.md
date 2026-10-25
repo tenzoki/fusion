@@ -1,0 +1,2 @@
+- Existing analysis reports under `$SCAN_ANALYSES` and what they conclude
+- Open decisions under `$SCAN_DECISIONS` (post-Phase-3) or open-question issues under `$SCAN_ISSUES`, every directory each value names

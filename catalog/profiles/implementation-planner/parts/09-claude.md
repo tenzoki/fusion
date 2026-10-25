@@ -1,0 +1,1 @@
+Read the decision records at `open` or `answered` under every directory in `$SCAN_DECISIONS`, the rows of one `bin/fusion-record` `list` (`fusion-workbench-conventions.md` `## Marker globs`); treat as zero open decisions if none exist. These are inputs to planning:

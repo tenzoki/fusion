@@ -1,0 +1,1 @@
+Your output is **planning documents only** (in `$OUT_PLAN`), plus defect files in `$OUT_ISSUE` and decision records in `$OUT_DECISION`, all per `fusion-workbench-conventions.md`. The planning document is the deliverable — it provides traceability for every decision and implementation step. Without it, there is no auditable record of what was planned and why.

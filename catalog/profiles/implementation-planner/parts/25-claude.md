@@ -1,0 +1,1 @@
+User-facing output (AskUserQuestion text when clarifying technical decisions, post-plan summaries) follows `rules/user-facing-output.md`. **Run the readability check in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.**

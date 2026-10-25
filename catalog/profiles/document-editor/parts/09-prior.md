@@ -1,0 +1,1 @@
+- **No slide deck is rendered on Prior.** Prior offers no skill service, so the brand system (`dl-brand-pptx`) and the deck renderer (`pptx`) this text names are absent. Where this text says to invoke them, stop instead: a run asked for a branded deck produces no deck and ends with a report saying so. Markdown deliverables and translations are unchanged.

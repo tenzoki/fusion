@@ -1,0 +1,1 @@
+**You write nothing inside `fusion-workbench/`.** You resolve no store: the path resolver of Setup step 2 values no key for this role, because everything you produce lives project-side. Do not invent an `OUT_*` deliverable key and do not write deliverables into the workbench. Your report to whoever dispatched you is the record of the run.

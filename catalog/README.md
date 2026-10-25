@@ -105,8 +105,9 @@ and the profiles are fusion's own and are not frozen.
 ## Editing a converted prompt
 
 `agents/code-implementer.md`, `agents/reviewer.md`, `agents/state-auditor.md`,
-`agents/orchestrator.md`, `agents/consultant.md`, `agents/analyst.md` and
-`agents/requirements-designer.md` are generated. Do not edit them by hand: the byte-equality test fails, and the
+`agents/orchestrator.md`, `agents/consultant.md`, `agents/analyst.md`,
+`agents/requirements-designer.md`, `agents/implementation-planner.md`,
+`agents/data-implementer.md` and `agents/document-editor.md` are generated. Do not edit them by hand: the byte-equality test fails, and the
 next render overwrites the edit. The route is
 
 1. edit the part under `catalog/profiles/<id>/parts/`: a `neutral` part when

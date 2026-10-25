@@ -1,0 +1,1 @@
+Read the decision records at `open` or `answered` under every directory in `$SCAN_DECISIONS`: the rows of one `echo '{"op":"list"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record"` through `host.exec.v1`, read for `path`, `kind` and `status` (`fusion-workbench-conventions.md` `## Marker globs`); treat as zero open decisions if none exist. These are inputs to planning:

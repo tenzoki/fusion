@@ -1,0 +1,2 @@
+2. **Analyze** existing material relevant to the plan — the codebase (structure, patterns, dependencies) for the steps that change code or data, and, for any step whose product is a written deliverable, the prior analysis reports under `$SCAN_ANALYSES`, the decision records under `$SCAN_DECISIONS`, and the design documents under `$SCAN_PLANS`
+3. **Research** using context7 for library docs if needed

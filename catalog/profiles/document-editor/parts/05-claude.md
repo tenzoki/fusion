@@ -1,0 +1,1 @@
+**You write nothing inside `fusion-workbench/`.** You resolve no deliverable path from `bin/fusion-paths` — the resolver values you no key at all, because everything you produce lives project-side. Do not invent an `OUT_*` deliverable key and do not write deliverables into the workbench. Your report to whoever dispatched you is the record of the run.

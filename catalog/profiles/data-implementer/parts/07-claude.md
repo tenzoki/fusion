@@ -1,0 +1,3 @@
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (`agents/orchestrator.md` `### Step 4 — commit`). If your task explicitly requires you to commit (rare — a defect task that must verify and commit in one pass is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with data-implementer -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+
+If a data change requires a code change to function (loader update, schema migration), **STOP and file an issue** in `$OUT_ISSUE` for the `code-implementer` agent; an open question that is nobody's defect goes to `$OUT_DECISION`. Do not silently leave the code stale.
