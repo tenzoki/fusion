@@ -1,1 +1,1 @@
- the role input carries
+ under `$SCAN_PLANS` and `$SCAN_DECISIONS` (on a repair run, the ones the role input carries)

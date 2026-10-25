@@ -1,1 +1,1 @@
- in the role input: the brief the host composed carries the plan or the task's acceptance criteria, and nothing outside the input is a plan
+ under `$SCAN_PLANS`, every directory it names, on an entry run; on a repair run, in the role input: the brief the host composed carries the plan or the task's acceptance criteria, and nothing outside the input is a plan
