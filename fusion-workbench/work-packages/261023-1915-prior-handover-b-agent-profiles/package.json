@@ -3,7 +3,7 @@
   "id": "62168220-9db5-46e8-8bb9-c0be22e895d1",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -39,7 +39,20 @@
   "active_documents": [],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Eight entry profiles (orchestrator, consultant, analyst, requirements-designer, implementation-planner, data-implementer, document-editor, policy-curator) and the entry-run branch of the three repair profiles, plan steps 5 to 10, commits 98a6c2ed to 5544cfca; three review findings fixed at 81f000c7",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "aa3ea40f-45b8-4c31-8454-996a0e910397",
+          "revision": "sha256:7ec705c216ed28c79163c45825e88ac627352f28298eabe7177f4fb33dd80c78"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}

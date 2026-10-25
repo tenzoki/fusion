@@ -13,3 +13,13 @@ The steps are those of `261023-1854-plan-prior-full-surface-handover-h1-to-h9.md
 ## Depends on
 
 Package A (`261023-1846-prior-full-surface-handover-h1-to-h9`), terminal.
+
+## Closure
+
+Closed `done` (outcome `completed`) on 2026-10-25 by the orchestrator on the user's word. Commits `af5fad9d..81f000c7`: plan steps 5 to 10 at `af5fad9d`, `98a6c2ed`, `18b154cc`, `65b02b31`, `5478386f`, `5544cfca`; the closing review at `ff14570b` (verdict revise, range `3e8e4c2e..5544cfca`, evidence `reviews/261025-1117-reviewer-closing-review-of-prior-handover-b-agent-profiles.evidence.json`); its findings on the absolute exec directory, the commit-per-task spans and reviewer `06a` fixed at `81f000c7`.
+
+Review gap: `81f000c7` came after the closing review and no review opened it. The review verdict is revise, so a `succeeded` edge on this item stays unmet.
+
+All seven stop conditions of the plan were read to the user and held.
+
+Still open from the review: issues `261025-1117-every-fusion-write-in-a-prior-exec-container-stops-because-git-config-names-no-user.md` (request 76), `261025-1117-orchestrator-prior-parts-name-no-host-dispatch-v1-so-step-15-alone-cannot-pass-checkentries.md`, `261025-1117-prior-parts-read-and-write-through-exec-past-its-64-kib-output-and-32-kib-argument-bounds.md`, `261025-1117-fusion-write-evidence-on-prior-stamps-host-claude-code-and-the-base-revision-tree.md`, `261025-1117-the-eight-new-prior-parts-pass-no-lint-and-no-service-check-until-step-15.md`; decision `261025-1117-how-does-a-read-only-role-write-the-workbench-on-a-prior-entry-run.md` open; the per-task integration question goes to request 76.
