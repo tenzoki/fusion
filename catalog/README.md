@@ -2,8 +2,8 @@
 
 One source, two renders. This package holds the role catalog, the role parts,
 the workflow definitions and the result schemas from which fusion generates
-both host outputs: the Claude Code prompts under `agents/` for the converted
-roles, and the Prior module bundle's profile assets. Why there is one source is
+both host outputs: the Claude Code prompts under `agents/` and `skills/` for
+the converted roles and skills, and the Prior module bundle's profile assets. Why there is one source is
 the ruling `261009-1024-fusion-is-the-one-source-of-role-texts-and-workflow-rules-for-both-hosts.md`;
 how the source relates to the committed prompts is decision
 `261010-1235-how-is-the-host-neutral-role-text-the-source-of-both-the-claude-agents-and-the-prior-profiles.md`
@@ -33,16 +33,22 @@ install: `install.sh` copies a fixed list of entries and `catalog/` is not on it
 Both run from this directory after `npm ci`.
 
 ```
-npm run render -- claude [<dir>]
+npm run render -- claude [<root>]
 ```
 
-Writes the Claude output of every role that has parts: the `neutral` and
-`claude` parts concatenated in profile order, nothing between them, to
-`<dir>/<claude_name>.md`. `<dir>` defaults to `../agents`, the live tree. The
-output must equal the committed `agents/<id>.md` byte for byte, and the test
-suite fails on any difference. A role without a profile keeps its hand-edited
-prompt and is reported as skipped; a role whose parts are listed but not yet
-written is skipped too.
+Writes the Claude output of every profile that has parts: the `neutral` and
+`claude` parts concatenated in profile order, nothing between them, to the
+file the catalog names for it under `<root>`. `<root>` defaults to `..`, the
+fusion root, so the live tree. A role with a Claude name renders to
+`agents/<claude_name>.md`; an entry renders to the file its `kind` gives,
+`agents/<id>.md` for `agent` and `skills/<id>/SKILL.md` for `skill`, from the
+profile it names. The target comes from the kind, never from the profile id's
+`skill-` prefix. An agent entry on its role's profile is the role's file and
+is written once; one file named from two profiles, or one profile naming two
+files, is an error. The output must equal the committed file byte for byte,
+and the test suite fails on any difference. A target without a profile keeps
+its hand-edited file and is reported as skipped (`no profile`); one whose
+parts are listed but not yet written is skipped too.
 
 ```
 npm run render -- prior <dir>
@@ -108,15 +114,27 @@ and the profiles are fusion's own and are not frozen.
 `agents/orchestrator.md`, `agents/consultant.md`, `agents/analyst.md`,
 `agents/requirements-designer.md`, `agents/implementation-planner.md`,
 `agents/data-implementer.md`, `agents/document-editor.md` and
-`agents/policy-curator.md` are generated. Do not edit them by hand: the byte-equality test fails, and the
-next render overwrites the edit. The route is
+`agents/policy-curator.md` are generated, and so is every
+`skills/<name>/SKILL.md` whose entry's profile, `catalog/profiles/skill-<name>/`,
+exists (decision
+`261023-1854-how-does-a-skill-become-a-profile-when-its-body-carries-claude-mechanics.md`,
+option 1); `npm run render -- claude` lists the skills that are still
+hand-edited as `skipped … no profile`. Do not edit a generated file by hand:
+the byte-equality test fails, and the next render overwrites the edit. The
+route is
 
 1. edit the part under `catalog/profiles/<id>/parts/`: a `neutral` part when
    the change holds on both hosts, a `claude` part when it is Claude Code
-   mechanics, a `prior` part when it is Prior's;
-2. `cd catalog && npm run render -- claude`, which rewrites `agents/<id>.md`;
+   mechanics, a `prior` part when it is Prior's. A skill's frontmatter is
+   Claude mechanics and sits in a `claude` part;
+2. `cd catalog && npm run render -- claude`, which rewrites `agents/<id>.md`
+   and `skills/<name>/SKILL.md`;
 3. `cd catalog && npm test`, then the usual `cd hooks && npm test`, since the
-   growth bounds and lints over `agents/` still read the generated file.
+   growth bounds and lints over `agents/` and `skills/` still read the
+   generated file.
+
+A skill's parts are held to the same lints as an agent's, unchanged: the
+`neutral` lint below and the narrower Prior lint after it.
 
 A `neutral` part may carry no host token: no `$FUSION_PLUGIN_ROOT`, no `bin/`
 helper, no `$OUT_*` or `$SCAN_*` key, no `Agent(`, no `AskUserQuestion`, no

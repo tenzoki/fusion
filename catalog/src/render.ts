@@ -3,7 +3,9 @@
 // `catalog/profiles/<id>/profile.json` lists a role's text as ordered parts,
 // each tagged `neutral`, `claude` or `prior`. The Claude render concatenates
 // the `neutral` and `claude` parts and must reproduce the committed
-// `agents/<id>.md` byte for byte; the Prior render concatenates the `neutral`
+// `agents/<id>.md`, or for a skill entry's profile `skills/<name>/SKILL.md`,
+// byte for byte (decision 261023-1854-how-does-a-skill-become-a-profile-when-
+// its-body-carries-claude-mechanics.md, option 1); the Prior render concatenates the `neutral`
 // and `prior` parts, resolves the one directive a `prior` part may carry, and
 // becomes the bundle's `profiles/<id>.md`. Beside it the Prior render writes
 // `profiles/<id>.json` and `catalog.json` with exactly the keys Prior's loader
@@ -307,41 +309,90 @@ export function renderParts(catalogDir: string, profile: Profile, host: "claude"
 // The Claude render
 // ---------------------------------------------------------------------------
 
-export interface ClaudeRenderResult {
-  /** `agents/<claude_name>.md` files written, as absolute paths. */
-  written: { id: string; path: string }[];
-  /** Roles with a Claude name and no render, each with the reason. */
-  skipped: { id: string; reason: string }[];
+/** One Claude file a profile renders to, relative to the fusion root. */
+export interface ClaudeTarget {
+  /** The profile id whose parts make the file. */
+  id: string;
+  /** `agents/<name>.md` or `skills/<name>/SKILL.md`. */
+  target: string;
+}
+
+/** The Claude file of an entry, chosen by its kind and never by its profile id. */
+export function entryClaudeTarget(entry: Pick<CatalogEntry, "id" | "kind">): string {
+  return entry.kind === "skill" ? join("skills", entry.id, "SKILL.md") : join("agents", `${entry.id}.md`);
 }
 
 /**
- * Writes `<outDir>/<claude_name>.md` for every role that has a profile whose
- * parts exist. A role without a profile keeps its hand-edited prompt; a role
- * whose parts are listed but not yet written is reported, not rendered.
+ * Every Claude file the catalog names, each once, roles first: a role with a
+ * Claude name renders to `agents/<claude_name>.md` from its own profile, an
+ * entry to the file its kind gives from the profile it names. An agent entry
+ * on its role's profile is the role's file again and is listed once. One file
+ * named from two profiles, or one profile rendering to two files, is an error:
+ * either would leave the committed file with two sources.
  */
-export function renderClaude(catalogDir: string, outDir: string): ClaudeRenderResult {
-  const { catalog } = loadCatalog(catalogDir);
-  const result: ClaudeRenderResult = { written: [], skipped: [] };
-  mkdirSync(outDir, { recursive: true });
-  for (const role of catalog.roles) {
-    const profile = loadProfile(catalogDir, role.id);
-    if (role.claude_name === null) {
-      if (profile?.parts.some((p) => p.tag === "claude")) {
-        throw new RenderError(`${role.id}: a claude part on a role with no Claude name`);
-      }
+export function claudeTargets(catalog: Catalog): ClaudeTarget[] {
+  const byTarget = new Map<string, string>();
+  const byProfile = new Map<string, string>();
+  const named: ClaudeTarget[] = [
+    ...catalog.roles.filter((r) => r.claude_name !== null).map((r) => ({ id: r.id, target: join("agents", `${r.claude_name}.md`) })),
+    ...catalog.entries.map((e) => ({ id: e.profile, target: entryClaudeTarget(e) })),
+  ];
+  const out: ClaudeTarget[] = [];
+  for (const t of named) {
+    const profile = byTarget.get(t.target);
+    if (profile !== undefined) {
+      if (profile !== t.id) throw new RenderError(`${t.target}: named from profile ${profile} and from profile ${t.id}`);
       continue;
     }
+    const target = byProfile.get(t.id);
+    if (target !== undefined) throw new RenderError(`profile ${t.id}: renders to ${target} and to ${t.target}`);
+    byTarget.set(t.target, t.id);
+    byProfile.set(t.id, t.target);
+    out.push(t);
+  }
+  return out;
+}
+
+export interface ClaudeRenderResult {
+  /** Claude files written: the profile id, the target relative to the output root, the absolute path. */
+  written: { id: string; target: string; path: string }[];
+  /** Claude files named and not rendered, each with the reason. */
+  skipped: { id: string; target: string; reason: string }[];
+}
+
+/**
+ * Writes `<outRoot>/<target>` for every Claude target (`claudeTargets`) whose
+ * profile has its parts: `agents/<name>.md` and `skills/<name>/SKILL.md`. A
+ * target without a profile keeps its hand-edited file; one whose parts are
+ * listed but not yet written is reported, not rendered. A claude part in a
+ * profile that renders to no Claude file is an error, since it would reach
+ * nothing.
+ */
+export function renderClaude(catalogDir: string, outRoot: string): ClaudeRenderResult {
+  const { catalog } = loadCatalog(catalogDir);
+  const targets = claudeTargets(catalog);
+  const rendered = new Set(targets.map((t) => t.id));
+  for (const role of catalog.roles) {
+    if (rendered.has(role.id)) continue;
+    if (loadProfile(catalogDir, role.id)?.parts.some((p) => p.tag === "claude")) {
+      throw new RenderError(`${role.id}: a claude part on a role with no Claude name`);
+    }
+  }
+  const result: ClaudeRenderResult = { written: [], skipped: [] };
+  for (const { id, target } of targets) {
+    const profile = loadProfile(catalogDir, id);
     if (profile === null) {
-      result.skipped.push({ id: role.id, reason: "no profile: the prompt is hand-edited" });
+      result.skipped.push({ id, target, reason: "no profile: the file is hand-edited" });
       continue;
     }
     if (partsState(catalogDir, profile) === "absent") {
-      result.skipped.push({ id: role.id, reason: "parts listed, none written yet" });
+      result.skipped.push({ id, target, reason: "parts listed, none written yet" });
       continue;
     }
-    const path = join(outDir, `${role.claude_name}.md`);
+    const path = join(outRoot, target);
+    mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, renderParts(catalogDir, profile, "claude"));
-    result.written.push({ id: role.id, path });
+    result.written.push({ id, target, path });
   }
   return result;
 }
@@ -575,11 +626,11 @@ export function renderPrior(catalogDir: string, outDir: string, ctx?: Partial<In
 }
 
 // ---------------------------------------------------------------------------
-// CLI: `render claude [<dir>]` and `render prior <dir>`
+// CLI: `render claude [<root>]` and `render prior <dir>`
 // ---------------------------------------------------------------------------
 
 function usage(): never {
-  process.stderr.write("usage: render claude [<dir>]   (default: ../agents)\n       render prior <dir>\n");
+  process.stderr.write("usage: render claude [<root>]   (default: .., the fusion root; writes agents/ and skills/ under it)\n       render prior <dir>\n");
   process.exit(2);
 }
 
@@ -588,10 +639,10 @@ export function main(argv: string[]): number {
   const catalogDir = catalogRoot();
   if (target === "claude") {
     if (argv.length > 2) usage();
-    const outDir = dir === undefined ? join(fusionRootOf(catalogDir), "agents") : resolve(dir);
-    const r = renderClaude(catalogDir, outDir);
+    const outRoot = dir === undefined ? fusionRootOf(catalogDir) : resolve(dir);
+    const r = renderClaude(catalogDir, outRoot);
     for (const w of r.written) process.stdout.write(`wrote ${w.path}\n`);
-    for (const s of r.skipped) process.stdout.write(`skipped ${s.id}: ${s.reason}\n`);
+    for (const s of r.skipped) process.stdout.write(`skipped ${s.target} (${s.id}): ${s.reason}\n`);
     return 0;
   }
   if (target === "prior") {

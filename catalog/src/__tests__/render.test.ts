@@ -10,7 +10,7 @@
 import Ajv2020, { type ValidateFunction } from "ajv/dist/2020.js";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
   CATALOG_SCHEMA,
@@ -25,6 +25,7 @@ import {
   RenderError,
   catalogRoot,
   checkCatalogDocument,
+  claudeTargets,
   checkEntries,
   checkPriorCatalogKeys,
   fusionCommit,
@@ -297,6 +298,8 @@ describe("host tokens", () => {
     expect(tokenHits("common locations: `scripts/`, `tools/`, `bin/`")).toEqual([]);
   });
 
+  // Over every profile directory, so a skill's parts (`profiles/skill-<name>/`)
+  // are held to the same lint as an agent's from the day they land.
   it("no neutral part carries a host token", () => {
     for (const part of partsOf("neutral")) {
       expect(tokenHits(readFileSync(part.path, "utf8")), `${part.id}/${part.file}`).toEqual([]);
@@ -334,29 +337,98 @@ describe("host tokens", () => {
 // The Claude render
 // ---------------------------------------------------------------------------
 
+/** Every file under `dir`, relative to it, sorted. */
+function filesUnder(dir: string): string[] {
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((d) => d.isFile())
+    .map((d) => relative(dir, join(d.parentPath, d.name)))
+    .sort();
+}
+
+// The byte equality covers agents and skills alike: every Claude target whose
+// profile exists, roles' agents and skill entries' SKILL.md, against the
+// committed file. A skill without a profile is skipped as "no profile" and
+// its committed file is not touched.
 describeLive("render claude", (catalog) => {
   const out = tmp("claude");
   const result = renderClaude(CATALOG, out);
-  const converted = catalog.roles.filter((r) => r.claude_name !== null && loadProfile(CATALOG, r.id) !== null);
+  const targets = claudeTargets(catalog);
+  const converted = targets.filter((t) => loadProfile(CATALOG, t.id) !== null);
 
-  for (const role of converted) {
-    it(`reproduces agents/${role.claude_name}.md byte for byte (${role.id})`, () => {
-      const rendered = join(out, `${role.claude_name}.md`);
-      const skip = result.skipped.find((s) => s.id === role.id);
-      expect(skip, `${role.id} not rendered: ${skip?.reason}`).toBeUndefined();
-      const actual = readFileSync(rendered);
-      const expected = readFileSync(join(FUSION, "agents", `${role.claude_name}.md`));
-      expect(actual.equals(expected), `${role.claude_name}.md differs (${actual.length} vs ${expected.length} bytes)`).toBe(true);
+  it("names every agent of a role and every skill entry as a target, by the entry's kind", () => {
+    for (const e of catalog.entries) {
+      expect(targets.map((t) => t.target), `entry ${e.id}`).toContain(e.kind === "skill" ? `skills/${e.id}/SKILL.md` : `agents/${e.id}.md`);
+    }
+  });
+
+  for (const t of converted) {
+    it(`reproduces ${t.target} byte for byte (${t.id})`, () => {
+      const skip = result.skipped.find((s) => s.target === t.target);
+      expect(skip, `${t.target} not rendered: ${skip?.reason}`).toBeUndefined();
+      const actual = readFileSync(join(out, t.target));
+      const expected = readFileSync(join(FUSION, t.target));
+      expect(actual.equals(expected), `${t.target} differs (${actual.length} vs ${expected.length} bytes)`).toBe(true);
     });
   }
 
-  it("writes nothing for a role without a profile, and nothing outside the converted set", () => {
-    const written = readdirSync(out).sort();
-    const expected = converted.filter((r) => !result.skipped.some((s) => s.id === r.id)).map((r) => `${r.claude_name}.md`).sort();
-    expect(written).toEqual(expected);
-    for (const r of catalog.roles) {
-      if (r.claude_name !== null && loadProfile(CATALOG, r.id) === null) expect(written).not.toContain(`${r.claude_name}.md`);
+  it("skips every target without a profile as no profile, and writes nothing outside the converted set", () => {
+    const expected = converted.filter((t) => !result.skipped.some((s) => s.target === t.target)).map((t) => t.target).sort();
+    expect(filesUnder(out)).toEqual(expected);
+    for (const t of targets.filter((x) => loadProfile(CATALOG, x.id) === null)) {
+      expect(result.skipped, t.target).toContainEqual({ id: t.id, target: t.target, reason: "no profile: the file is hand-edited" });
     }
+  });
+});
+
+describe("render claude (fixture)", () => {
+  const { catalogDir, fusionRoot } = writeFixture();
+  const out = tmp("claude-fixture");
+  const result = renderClaude(catalogDir, out);
+
+  it("writes a role's agent and a skill entry's SKILL.md, each equal to the fixture tree's file", () => {
+    expect(filesUnder(out)).toEqual(["agents/alpha.md", "skills/note/SKILL.md"]);
+    for (const f of filesUnder(out)) expect(readFileSync(join(out, f)).equals(readFileSync(join(fusionRoot, f))), f).toBe(true);
+    expect(result.written.map((w) => [w.id, w.target])).toEqual([
+      ["alpha", "agents/alpha.md"],
+      ["skill-note", "skills/note/SKILL.md"],
+    ]);
+  });
+
+  it("lists an agent entry on its role's profile once, and skips a skill without a profile", () => {
+    expect(result.written.filter((w) => w.target === "agents/alpha.md")).toHaveLength(1);
+    expect(result.skipped).toEqual([{ id: "skill-later", target: "skills/later/SKILL.md", reason: "no profile: the file is hand-edited" }]);
+  });
+
+  it("takes the target from the entry's kind, never from the profile id's prefix", () => {
+    const c = readJson<Catalog>(join(catalogDir, "catalog.json"));
+    // A skill entry on a profile without the prefix still renders to skills/,
+    // and an agent entry on a skill-prefixed profile to agents/.
+    c.entries[1].profile = "notes-text";
+    c.entries.push({ ...c.entries[0], id: "omega", profile: "skill-omega" });
+    expect(claudeTargets(c)).toEqual([
+      { id: "alpha", target: "agents/alpha.md" },
+      { id: "notes-text", target: "skills/note/SKILL.md" },
+      { id: "skill-later", target: "skills/later/SKILL.md" },
+      { id: "skill-omega", target: "agents/omega.md" },
+    ]);
+  });
+
+  it("refuses one file from two profiles, and one profile to two files", () => {
+    const c = readJson<Catalog>(join(catalogDir, "catalog.json"));
+    c.entries[0].profile = "skill-note";
+    expect(() => claudeTargets(c)).toThrow(/agents\/alpha\.md: named from profile alpha and from profile skill-note/);
+    const d = readJson<Catalog>(join(catalogDir, "catalog.json"));
+    d.entries[2].profile = "skill-note";
+    expect(() => claudeTargets(d)).toThrow(/profile skill-note: renders to skills\/note\/SKILL\.md and to skills\/later\/SKILL\.md/);
+  });
+
+  it("refuses a claude part in a profile that renders to no Claude file", () => {
+    const f = writeFixture();
+    const path = join(f.catalogDir, "profiles", "gamma", "profile.json");
+    const p = readJson<Profile>(path);
+    p.parts = [{ file: "parts/01-claude.md", tag: "claude" }];
+    writeFileSync(path, JSON.stringify(p));
+    expect(() => renderClaude(f.catalogDir, tmp("claude-orphan"))).toThrow(/gamma: a claude part on a role with no Claude name/);
   });
 });
 
@@ -396,7 +468,8 @@ function writeFixture(): { catalogDir: string; fusionRoot: string } {
   writeFileSync(join(fusionRoot, "agents", "alpha.md"), "---\nname: alpha\n---\n# Alpha\n\nDo the task.\n");
   for (const skill of ["note", "later"]) {
     mkdirSync(join(fusionRoot, "skills", skill), { recursive: true });
-    writeFileSync(join(fusionRoot, "skills", skill, "SKILL.md"), `---\nname: ${skill}\n---\n`);
+    const body = skill === "note" ? "# Note\n\nAppend the note.\n" : "";
+    writeFileSync(join(fusionRoot, "skills", skill, "SKILL.md"), `---\nname: ${skill}\n---\n${body}`);
   }
   const role = (id: string, prior: State, claude: string | null = null): CatalogRole => ({
     id,
@@ -450,10 +523,13 @@ function writeFixture(): { catalogDir: string; fusionRoot: string } {
   put(
     "skill-note",
     profile("skill-note", [
+      { file: "parts/00-claude.md", tag: "claude" },
       { file: "parts/01-neutral.md", tag: "neutral" },
       { file: "parts/02-prior.md", tag: "prior" },
     ]),
     {
+      // The frontmatter is Claude mechanics: the Claude render carries it, the Prior render does not.
+      "00-claude.md": "---\nname: note\n---\n",
       "01-neutral.md": "# Note\n\nAppend the note.\n",
       "02-prior.md": "When the content reads as both, ask through host.question.v1.\n",
     },
