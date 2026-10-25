@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ebb8858c-3995-4055-b9af-f161cfba9f10",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-b-agent-profiles/issues/261025-1117-fusion-write-evidence-on-prior-stamps-host-claude-code-and-the-base-revision-tree.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

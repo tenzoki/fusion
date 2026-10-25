@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "23b696c5-d18a-4957-8ec0-075296cc6d37",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-b-agent-profiles/issues/261025-1117-prior-setup-parts-pass-the-absolute-workbench-root-as-exec-directory-which-prior-refuses.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

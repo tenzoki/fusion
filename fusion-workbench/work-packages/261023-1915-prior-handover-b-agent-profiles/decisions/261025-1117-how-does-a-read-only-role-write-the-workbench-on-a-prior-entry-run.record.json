@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2f60b303-d046-44c4-9ec3-065909febe86",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-b-agent-profiles/decisions/261025-1117-how-does-a-read-only-role-write-the-workbench-on-a-prior-entry-run.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
