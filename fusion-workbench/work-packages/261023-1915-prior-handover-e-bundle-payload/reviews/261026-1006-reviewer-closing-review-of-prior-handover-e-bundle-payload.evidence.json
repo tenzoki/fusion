@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "40b2fadc-730c-4546-95c0-0ce093a7af07",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "af45293f335732402eabe50dcc13d1b71ed4dd0a",
+    "git_range": null
+  },
+  "brief_revision": "sha256:5436e292706617b329881c236da3cf64d8ae15e27c43b427ae18867e0c084b1c",
+  "plan_revision": null,
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.7"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261023-1915-prior-handover-e-bundle-payload/reviews/261026-1006-reviewer-closing-review-of-prior-handover-e-bundle-payload.md",
+    "sha256": "sha256:4bb834e0f76655fe70f9cbda4d0052d84bd3196f52591e0b7049d732a55731cb",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-26T09:09:06Z",
+  "extensions": {}
+}
