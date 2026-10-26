@@ -1,1 +1,1 @@
-Call `host.dispatch.v1` with the entry id `policy-curator`. The first three non-empty content lines of the input MUST be the three parameters, in this order:
+Call `host.dispatch.v1` with the entry id `policy-curator` and, as its `input`, the JSON object the dispatch rule above states. Its first three `arguments` items MUST be the three parameters below, each named by its label (`**Mode:**`, `**Ledger:**`, `**Approved:**`) with the text after the label as its `value`, in this order:

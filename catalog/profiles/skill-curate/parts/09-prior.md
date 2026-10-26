@@ -1,1 +1,1 @@
-Call `host.dispatch.v1` with the entry id `policy-curator`. The input's first non-empty content line MUST be the mode parameter.
+Call `host.dispatch.v1` with the entry id `policy-curator` and, as its `input`, the JSON object the dispatch rule above states. Its first `arguments` item MUST be the mode parameter, `{"name": "**Mode:**", "value": "survey"}`, and each further line below is one more item, named by its label with the text after the label as its `value`. The `policy-curator` entry declares no `task` argument, so the input carries none.

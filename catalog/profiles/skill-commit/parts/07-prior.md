@@ -1,9 +1,11 @@
 ### 6. Hand the message over, and commit nothing
 
 On Prior the confirmed message is this run's result, and nothing more is done
-with it here. Write no message file: no scratch path outside the workspace is
-known to survive between calls, and a file inside the workspace would be
-captured with the run. Take no commit lock, and run no `git add`, no
+with it here. Write no message file: this run runs no `git commit` that
+would read one. A scratch file under `/tmp` would persist between this run's
+calls and be gone at its end (Prior `08c57fb`: one tool container per run,
+`/tmp` a 64 MiB `noexec` tmpfs), so nothing after the run could read it, and
+a file inside the workspace would be captured with the run. Take no commit lock, and run no `git add`, no
 `git commit` and no `git commit --amend`: the host captures the workspace when
 the run ends and integrates it as the run's one commit. Whether the host takes
 this message for that commit is Prior's to say (request 76, question 1); until
