@@ -3,8 +3,12 @@
   "id": "b49d6666-63a0-4d1d-bde0-1d4fef0a86e9",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "open",
-  "claim": null,
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-10-26T09:52:33Z"
+  },
   "mode": {
     "value": "ordinary",
     "source": null

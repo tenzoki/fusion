@@ -17,8 +17,12 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": {
+      "path": "work-packages/261023-1915-prior-handover-b-agent-profiles/decisions/261025-1117-how-does-a-read-only-role-write-the-workbench-on-a-prior-entry-run.md",
+      "sha256": "sha256:0c62092b8a6a7fe6ab6cc54c366e709a147867468593d73aa4eba93cdd7ba2e5",
+      "kind": "decision"
+    },
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

@@ -29,3 +29,5 @@ Decision `261024-2111-does-an-entry-run-of-a-repair-role-write-the-workbench-on-
 ## Recommendation
 
 Option 2, with option 1 as the interim text until Prior answers. A ceiling the role can step around by a second service is not a ceiling. Confidence: inference. How Prior's `prior-enforced` policy treats an exec call that writes the workspace is not stated at the pin.
+
+Answered: the user in chat, 2026-10-26, answer "1" to "answer the decision first (option 2, recommended), then claim F" — option 2: the entry workflow grants `create` and `write` scoped to `fusion-workbench/`; request 76 asks Prior for the path-scoped file grant, and the `prior` parts of `reviewer` and `state-auditor` change once Prior answers; ruled by user, Kai Stalmann <ks@qantr.com>
