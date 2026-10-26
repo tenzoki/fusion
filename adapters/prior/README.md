@@ -384,7 +384,7 @@ launcher from there through `os/exec` with exactly the two Prior variables
 and no `PATH`, its working directory the payload, in its own process group,
 as Prior's `internal/module.StartProcess` does. The host side is the SDK's
 `ConnectWithServices` with the fake host of `internal/fixture`: in-memory
-durable `host.role.*` services and the six repair services. Seventeen cases:
+durable `host.role.*` services and the six repair services. Eighteen cases:
 
 - eleven explorer cases (`explorer_test.go`, plan step 9): the handshake
   advertises the explorer; a valid answer completes with the host evidence
@@ -416,6 +416,43 @@ durable `host.role.*` services and the six repair services. Seventeen cases:
   refused with `review.binding`; an attempt map short of the bound is refused
   before any role call; and the explorer's results still decode under the
   frozen schemas.
+- one hook-layout case (`hooks_test.go`, plan step 21), which starts no
+  module process. The `hooks/hooks.json` the manifest's `lifecycle_hooks`
+  pins must match its declared sha256 and equal the plugin tree's file byte
+  for byte, and it must register exactly the eight commands that
+  `testdata/hook-payloads/README.md` maps to payload directories. One fixture
+  repository (`git init`, a fixed local identity, one commit at a fixed date,
+  `fusion-workbench/.fusion-setup`) is copied fresh for two runs of one
+  session, once with `CLAUDE_PLUGIN_ROOT` at the unpacked payload and once at
+  the plugin tree (the parent of `FUSION_CATALOG_DIR`). Each command runs
+  verbatim through `/bin/bash -c` with its payload on stdin, the repository as
+  its working directory, and an environment built from scratch: `PATH` and
+  `TMPDIR` inherited; `HOME`, `CLAUDE_PLUGIN_ROOT` and `CLAUDE_ENV_FILE` set
+  per run; no `FUSION_*` variable, so `bin/fusion-identity` mints the
+  checkout identifier. The session runs SessionStart fresh, then resumed,
+  then the PreToolUse/PostToolUse pairs with the tool effects applied between
+  them. The SubagentStop payloads go where the payload README places them.
+  The Bash pair runs after the first workbench record is written, followed
+  by one commit, so that the staging drift and the review-coverage gap are
+  both reached. After every command, the exit code, stdout, stderr, the set
+  of paths the command wrote and every file under the run directory (outside
+  `.git`) must be equal between the two runs. Before the comparison, four
+  things are normalised: the run directory, the plugin root, the minted
+  checkout identifier, and the stamps (ISO-8601 date-times and epoch
+  milliseconds). The payload must not change. Eight event rows
+  (`session_start` to `review_coverage`) and the four env exports must be
+  in the plugin-tree run's final files, so the equality is not vacuous. Every reply is then classified as Prior reads
+  it, as `empty`, `text` or one JSON object with its field paths. It has to
+  lie inside `protocol_subset`: `text` on SessionStart only,
+  `additionalContext` on PostToolUse only, and `hookEventName` naming the
+  event. Every declared event, form and field also has to be observed, so
+  the declaration is a measurement in both directions. Measured at
+  `ec3d9597`: the env export and `subagent-stop.js` reply `empty`;
+  `session-id.js` replies `text`; the banner and `session-start.js` reply
+  `json` with `hookEventName` and `systemMessage`; `identity-notice.js` (its
+  checkout already minted by `session-start.js`) and `guard.js` reply `{}`;
+  `tracker.js` replies `{}` or `json` with `hookEventName` and
+  `additionalContext`. That is exactly the declared subset.
 
 The launcher maps this machine's `/usr/bin/uname -s -m` to one binary, so the
 suite starts `bin/darwin-arm64/fusion-module` on the build machine and never
