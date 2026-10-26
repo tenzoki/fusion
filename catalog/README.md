@@ -125,9 +125,11 @@ option 1): at present `skills/setup/SKILL.md`, `skills/check/SKILL.md`,
 `skills/cleanup/SKILL.md`, `skills/archive/SKILL.md`,
 `skills/memo/SKILL.md`, `skills/post/SKILL.md`, `skills/news/SKILL.md`,
 `skills/cadence/SKILL.md`, `skills/migrate/SKILL.md` and
-`skills/help/SKILL.md`.
-`npm run render -- claude` lists the skills that are still hand-edited as
-`skipped … no profile`. Do not edit a generated file by hand:
+`skills/help/SKILL.md`. That is every file under `agents/` and `skills/`:
+each is render output of `profiles/<id>/` (`profile.json` and
+`parts/NN-{neutral,claude,prior}.md`), and a new skill directory without a
+profile is reported by `npm run render -- claude` as `skipped … no profile`.
+Do not edit a generated file by hand:
 the byte-equality test fails, and the next render overwrites the edit. The
 route is
 
@@ -139,7 +141,12 @@ route is
    and `skills/<name>/SKILL.md`;
 3. `cd catalog && npm test`, then the usual `cd hooks && npm test`, since the
    growth bounds and lints over `agents/` and `skills/` still read the
-   generated file.
+   generated file. The hooks suite cannot tell a hand edit from a render,
+   which is why fusion's release step 0 runs `cd catalog && npm ci && npm test`.
+
+Commit the parts and the render together: after the commit, a fresh
+`npm run render -- claude` leaves `git -C .. diff --exit-code agents/ skills/`
+at exit 0.
 
 A skill's parts are held to the same lints as an agent's, unchanged: the
 `neutral` lint below and the narrower Prior lint after it.
