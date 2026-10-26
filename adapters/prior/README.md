@@ -115,6 +115,37 @@ yields another digest. The build refuses a dirty fusion tree outside
 `fusion-workbench/`; `FUSION_BUILD_ALLOW_DIRTY=1` builds anyway and marks the
 revision `<sha>+dirty`.
 
+After the data files the assembler copies the **install tree**: every file
+`git ls-files -s` lists under the entries of `install.sh`'s copy loop, with
+the bytes git's index holds for it, at the payload root in the plugin's own
+layout (`agents/`, `skills/`, `rules/`, `bin/`, `hooks/`, `codec/`,
+`templates/`, `stilwerk/`, `docs/`, `.claude-plugin/` and the three READMEs),
+mode `0500` for git mode `100755` and `0400` otherwise. So a helper, hook or
+skill finds under Prior the tree a Claude Code install holds (decision
+`261023-1854-which-plugin-tree-does-the-bundle-payload-carry-for-the-helper-runtime.md`,
+option 2). None of it is in the manifest's `data`, so the module never reads
+it. `TestInstallEntriesAreTheInstallLoop` parses the loop out of `install.sh`
+and fails when the assembler's list differs: the loop stays the one
+authority. A link (git mode `120000`) is not carried, because a bundle holds
+regular files only; the assembler names each one on stderr and in
+`build-identity.json` `install_tree_omitted` (as of `b0c068c8`, the test
+fixture `codec/fixtures/legacy-v12/workbench/shared/analyses/latest-benchmark.md`).
+An unmerged entry or a submodule refuses the build, and so does an
+install-tree path that equals, contains or lies below a module path (a data
+file, `module.json`, `build-identity.json`, `bin/fusion-module` or a target
+binary). Node's floor is the carried `hooks/package.json` and
+`codec/package.json` `engines`, `>=20.12.0`.
+
+The manifest declares the carried hooks in `lifecycle_hooks`: `path`
+`hooks/hooks.json`, `sha256` of the bytes the payload holds, and
+`protocol_subset` with events `SessionStart`, `PreToolUse`, `PostToolUse`,
+`SubagentStop`, reply forms `empty`, `text`, `json` and reply fields
+`hookSpecificOutput.hookEventName`, `hookSpecificOutput.systemMessage`,
+`hookSpecificOutput.additionalContext`, read from `hooks/hooks.json` and the
+hook sources (`hookSubset` in `cmd/fusion-bundle/main.go` names the source of
+each). The assembler checks the declaration against the payload as Prior's
+`InspectBundle` does through `LifecycleHooks.VerifyFile`.
+
 `verify` writes a throwaway probe into the clone's `integrationbuild/` and
 runs Prior's own `InspectBundle` over `<out>/payload/` and, after
 `ExtractBundleArchive`, over the extracted tarball, comparing both identities

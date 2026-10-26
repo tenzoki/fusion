@@ -10,9 +10,18 @@
 // toolchain that did it.
 //
 // Inputs are the rendered catalog assets (`render prior`), fusion's catalog
-// for the workflow and schema files, the launcher, the adapter sources for the
-// inventory, and the two revisions. Output is one directory outside both
-// repositories:
+// for the workflow and schema files, the install tree from fusion's git
+// index, the launcher, the adapter sources for the inventory, and the two
+// revisions.
+//
+// The install tree is every file git lists under the entries of install.sh's
+// copy loop, at the payload root in the plugin's own layout, so the helpers,
+// hooks and skills find under Prior the tree a Claude Code install holds
+// (decision 261023-1854, which plugin tree the bundle payload carries, option
+// 2). None of it is a manifest data file: the module never reads it. The
+// manifest's lifecycle_hooks pins the carried hooks/hooks.json.
+//
+// Output is one directory outside both repositories:
 //
 //	<out>/payload/                  the bundle, as Prior inspects it
 //	<out>/fusion-<version>.tar      the payload, uncompressed, normalized
@@ -26,6 +35,7 @@ package main
 
 import (
 	"archive/tar"
+	"bufio"
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
@@ -41,6 +51,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -58,6 +69,37 @@ const launcherPath = "bin/fusion-module"
 
 // entryPoint is the staged package the targets are built from (67.4).
 const entryPoint = "./integrationbuild/fusionmodule/cmd/fusion-module"
+
+// identityPath is the build record inside the payload.
+const identityPath = "build-identity.json"
+
+// installEntries restates the entries of install.sh's copy loop, in its
+// order. install.sh is the one authority for what an install holds;
+// TestInstallEntriesAreTheInstallLoop fails when the two differ.
+var installEntries = []string{
+	".claude-plugin", "agents", "skills", "rules", "hooks", "codec", "bin", "stilwerk", "templates", "docs",
+	"README.md", "README-agents.md", "README-hooks.md", "LICENSE",
+}
+
+// hooksPath is the hook registration the manifest's lifecycle_hooks pins.
+const hooksPath = "hooks/hooks.json"
+
+// hookSubset is the part of Claude Code's hook protocol the carried hooks
+// rely on, in Prior's vocabulary (moduleapi/v1 HookEvents, HookReplyForms,
+// HookReplyFields). Read from hooks/hooks.json and the hook sources: the
+// events are hooks.json's four keys; "empty" is the CLAUDE_ENV_FILE commands
+// and subagent-stop.js, "text" is session-id.js's plain line, "json" the
+// SessionStart printf, session-start.js, identity-notice.js, guard.js's `{}`
+// and tracker.js; the fields are hookEventName and systemMessage (SessionStart)
+// and additionalContext (tracker.js, PostToolUse). The hook-layout
+// conformance measures every observed reply against this declaration.
+func hookSubset() api.HookProtocolSubset {
+	return api.HookProtocolSubset{
+		Events:      []string{"SessionStart", "PreToolUse", "PostToolUse", "SubagentStop"},
+		ReplyForms:  []string{"empty", "text", "json"},
+		ReplyFields: []string{"hookSpecificOutput.hookEventName", "hookSpecificOutput.systemMessage", "hookSpecificOutput.additionalContext"},
+	}
+}
 
 // target is one of the three platforms the bundle carries (67.9).
 type target struct{ OS, Arch string }
@@ -119,6 +161,23 @@ type buildIdentity struct {
 	AdapterSources []hashedFile  `json:"adapter_sources"`
 	Targets        []builtTarget `json:"targets"`
 	Payload        []hashedFile  `json:"payload"`
+	// InstallTreeOmitted names the install-tree links the payload does not
+	// carry: a bundle holds regular files only, and Prior's InspectBundle
+	// refuses a link.
+	InstallTreeOmitted []omittedLink `json:"install_tree_omitted"`
+}
+
+// treeFile is one install-tree file as fusion's git index holds it.
+type treeFile struct {
+	Path string
+	Mode os.FileMode
+	Body []byte
+}
+
+// omittedLink is an install-tree entry of git mode 120000 and its target.
+type omittedLink struct {
+	Path   string `json:"path"`
+	Target string `json:"target"`
 }
 
 // handover is handover.json, the record that travels beside the tarball and
@@ -241,6 +300,28 @@ func assemble(o options) error {
 		}
 	}
 
+	// The install tree, beside the data and outside it. Every path is checked
+	// against the module's own before any is written.
+	tree, omitted, err := installTree(o.fusionRoot)
+	if err != nil {
+		return fmt.Errorf("install tree: %w", err)
+	}
+	if err := checkCollisions(tree, moduleReserved(data)); err != nil {
+		return err
+	}
+	for _, f := range tree {
+		if err := w.write(f.Path, f.Body, f.Mode); err != nil {
+			return fmt.Errorf("install tree: %w", err)
+		}
+	}
+	for _, l := range omitted {
+		fmt.Fprintf(os.Stderr, "fusion-bundle: install tree: %s is a link to %s, not carried\n", l.Path, l.Target)
+	}
+	hooks, err := lifecycleHooks(tree)
+	if err != nil {
+		return err
+	}
+
 	// The launcher, then one native build per target in Prior's exact form.
 	if err := w.copyFile(o.launcher, launcherPath, 0o500); err != nil {
 		return err
@@ -254,7 +335,7 @@ func assemble(o options) error {
 		built = append(built, builtTarget{t.OS, t.Arch, t.command("<payload>"), digest})
 	}
 
-	manifest := api.Manifest{SchemaVersion: 1, ID: ModuleID, Version: version, RuntimeAPI: "1", Executable: launcherPath, Data: data}
+	manifest := api.Manifest{SchemaVersion: 1, ID: ModuleID, Version: version, RuntimeAPI: "1", Executable: launcherPath, Data: data, LifecycleHooks: hooks}
 	manifestBytes, err := json.Marshal(manifest)
 	if err != nil {
 		return err
@@ -274,12 +355,12 @@ func assemble(o options) error {
 	if err != nil {
 		return err
 	}
-	identity := buildIdentity{FusionRevision: o.fusionRevision, PriorRevision: o.priorRevision, GoVersion: runtime.Version(), AdapterSources: sources, Targets: built, Payload: payloadFiles}
+	identity := buildIdentity{FusionRevision: o.fusionRevision, PriorRevision: o.priorRevision, GoVersion: runtime.Version(), AdapterSources: sources, Targets: built, Payload: payloadFiles, InstallTreeOmitted: omitted}
 	identityBytes, err := prettyJSON(identity)
 	if err != nil {
 		return err
 	}
-	if err := w.write("build-identity.json", identityBytes, 0o400); err != nil {
+	if err := w.write(identityPath, identityBytes, 0o400); err != nil {
 		return err
 	}
 
@@ -323,8 +404,150 @@ func assemble(o options) error {
 		return err
 	}
 
-	fmt.Printf("module_id %s\nversion %s\nbundle_digest %s\npayload %s\ntarball %s\ntarball_sha256 %s\nfiles %d\n", ModuleID, version, bundleDigest, payload, tarPath, tarSum, len(index.Files))
+	fmt.Printf("module_id %s\nversion %s\nbundle_digest %s\npayload %s\ntarball %s\ntarball_sha256 %s\nfiles %d\ninstall_tree_files %d\ninstall_tree_omitted %d\nlifecycle_hooks %s sha256:%s\n", ModuleID, version, bundleDigest, payload, tarPath, tarSum, len(index.Files), len(tree), len(omitted), hooks.Path, hooks.SHA256)
 	return nil
+}
+
+// installTree reads the install tree from fusion's git index: every path
+// `git ls-files -s` lists under installEntries, with the bytes of its blob,
+// mode 0500 for git mode 100755 and 0400 for 100644. Reading the index, not
+// the work tree, keeps an untracked file out by construction; a clean tree,
+// which build.sh requires, makes the index HEAD. A link (120000) is returned
+// as omitted; an unmerged entry or any other mode (a submodule) refuses the
+// build.
+func installTree(fusionRoot string) ([]treeFile, []omittedLink, error) {
+	args := append([]string{"--literal-pathspecs", "-C", fusionRoot, "ls-files", "-s", "-z", "--"}, installEntries...)
+	listing, err := gitOutput(nil, args...)
+	if err != nil {
+		return nil, nil, err
+	}
+	type entry struct{ mode, object, path string }
+	var entries []entry
+	for _, record := range strings.Split(string(listing), "\x00") {
+		if record == "" {
+			continue
+		}
+		meta, p, ok := strings.Cut(record, "\t")
+		fields := strings.Fields(meta)
+		if !ok || len(fields) != 3 {
+			return nil, nil, fmt.Errorf("unreadable ls-files record %q", record)
+		}
+		if fields[2] != "0" {
+			return nil, nil, fmt.Errorf("%s is unmerged (stage %s)", p, fields[2])
+		}
+		entries = append(entries, entry{fields[0], fields[1], p})
+	}
+	if len(entries) == 0 {
+		return nil, nil, fmt.Errorf("git lists no file under %s in %s", strings.Join(installEntries, " "), fusionRoot)
+	}
+	objects := make([]string, len(entries))
+	for i, e := range entries {
+		objects[i] = e.object
+	}
+	bodies, err := readBlobs(fusionRoot, objects)
+	if err != nil {
+		return nil, nil, err
+	}
+	files := []treeFile{}
+	omitted := []omittedLink{}
+	for i, e := range entries {
+		switch e.mode {
+		case "100644":
+			files = append(files, treeFile{e.path, 0o400, bodies[i]})
+		case "100755":
+			files = append(files, treeFile{e.path, 0o500, bodies[i]})
+		case "120000":
+			omitted = append(omitted, omittedLink{e.path, string(bodies[i])})
+		default:
+			return nil, nil, fmt.Errorf("%s has git mode %s; the install tree carries files and links only", e.path, e.mode)
+		}
+	}
+	return files, omitted, nil
+}
+
+// readBlobs returns the bytes of each named blob, in order, through one
+// `git cat-file --batch`.
+func readBlobs(root string, objects []string) ([][]byte, error) {
+	out, err := gitOutput(strings.NewReader(strings.Join(objects, "\n")+"\n"), "-C", root, "cat-file", "--batch")
+	if err != nil {
+		return nil, err
+	}
+	r := bufio.NewReader(bytes.NewReader(out))
+	bodies := make([][]byte, len(objects))
+	for i, object := range objects {
+		header, err := r.ReadString('\n')
+		if err != nil {
+			return nil, fmt.Errorf("cat-file %s: %w", object, err)
+		}
+		fields := strings.Fields(header)
+		if len(fields) != 3 || fields[0] != object || fields[1] != "blob" {
+			return nil, fmt.Errorf("cat-file %s answered %q", object, strings.TrimSpace(header))
+		}
+		size, err := strconv.Atoi(fields[2])
+		if err != nil || size < 0 {
+			return nil, fmt.Errorf("cat-file %s: size %q", object, fields[2])
+		}
+		body := make([]byte, size)
+		if _, err := io.ReadFull(r, body); err != nil {
+			return nil, fmt.Errorf("cat-file %s: %w", object, err)
+		}
+		if b, err := r.ReadByte(); err != nil || b != '\n' {
+			return nil, fmt.Errorf("cat-file %s: no record terminator", object)
+		}
+		bodies[i] = body
+	}
+	return bodies, nil
+}
+
+func gitOutput(stdin io.Reader, args ...string) ([]byte, error) {
+	cmd := exec.Command("git", args...)
+	cmd.Stdin = stdin
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("git %s: %w: %s", strings.Join(args, " "), err, strings.TrimSpace(stderr.String()))
+	}
+	return out, nil
+}
+
+// moduleReserved is every payload path the module's own files take: the data
+// files, the manifest, the build record, the launcher and the three binaries.
+func moduleReserved(data []string) []string {
+	reserved := append([]string{manifestPath, identityPath, launcherPath}, data...)
+	for _, t := range targets {
+		reserved = append(reserved, t.binaryPath())
+	}
+	return reserved
+}
+
+// checkCollisions refuses an install-tree path that is a module path, or a
+// directory of one, or lies below one: the two sets share the payload root
+// and neither may shadow the other.
+func checkCollisions(tree []treeFile, reserved []string) error {
+	for _, f := range tree {
+		for _, r := range reserved {
+			if f.Path == r || strings.HasPrefix(r, f.Path+"/") || strings.HasPrefix(f.Path, r+"/") {
+				return fmt.Errorf("install-tree path %s collides with the module's %s", f.Path, r)
+			}
+		}
+	}
+	return nil
+}
+
+// lifecycleHooks is the manifest's declaration of the carried hooks.json:
+// its path, the sha256 of the bytes the payload holds, and hookSubset.
+func lifecycleHooks(tree []treeFile) (*api.LifecycleHooks, error) {
+	for _, f := range tree {
+		if f.Path == hooksPath {
+			hooks := &api.LifecycleHooks{Path: hooksPath, SHA256: hexSum(f.Body), ProtocolSubset: hookSubset()}
+			if err := hooks.Validate(); err != nil {
+				return nil, err
+			}
+			return hooks, nil
+		}
+	}
+	return nil, fmt.Errorf("install tree lacks %s", hooksPath)
 }
 
 // fusionVersion reads the release version from .claude-plugin/plugin.json:
@@ -536,7 +759,8 @@ func indexPayload(payload string) (bundleIndex, error) {
 }
 
 // checkAgainstManifest restates InspectBundle's manifest checks: the
-// executable is present and executable, every data entry is present.
+// executable is present and executable, every data entry is present, and the
+// lifecycle_hooks declaration names a payload file with its digest.
 func checkAgainstManifest(index bundleIndex, manifest api.Manifest) error {
 	files := map[string]bundleFile{}
 	for _, f := range index.Files {
@@ -548,6 +772,11 @@ func checkAgainstManifest(index bundleIndex, manifest api.Manifest) error {
 	for _, p := range manifest.Data {
 		if files[p].Digest == "" {
 			return fmt.Errorf("data file %s is not in the payload", p)
+		}
+	}
+	if hooks := manifest.LifecycleHooks; hooks != nil {
+		if err := hooks.VerifyFile(files[hooks.Path].Digest); err != nil {
+			return err
 		}
 	}
 	return nil
