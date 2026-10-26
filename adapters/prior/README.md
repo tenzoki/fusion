@@ -424,8 +424,15 @@ serves to a scripted role run. Nineteen cases:
   class and supported on `prior` there, with the script's calls inside the
   entry's `requires`. Each invocation of `fusion.entry.v1` runs one scripted
   role run that makes its class's service call: `host.exec.v1` for `help`;
-  `host.exec.v1` then `host.dispatch.v1` for `reconcile`, whose child changes
-  a work-package control record; `host.question.v1`, answered, then
+  `host.exec.v1` then `host.dispatch.v1` for `reconcile`, invoked with
+  `--domain code` and a brief, whose child `state-auditor` changes a
+  work-package control record. The dispatch's `input` is the shape fusion
+  proposes in request 76, `{"arguments": [{"name", "value"}, …]}`, built
+  from the child's declared arguments in the bundle's `catalog.json`
+  (`**Domain:**`, `**Directive:**`, then `task`; `**Since:**`, which the run
+  does not hold, omitted). The input the fake host receives must have exactly
+  that shape and must name only declared arguments, each once, never empty,
+  in declared order, with every required one present; `host.question.v1`, answered, then
   `host.exec.v1` writing a memo for `memo`. The invocation, the frozen role
   input and the envelope must validate against the payload's
   `entry-request.v1.json` and `entry-result.v1.json`; the envelope must be

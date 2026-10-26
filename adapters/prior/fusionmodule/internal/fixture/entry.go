@@ -41,8 +41,12 @@ type ScriptCall struct {
 	Answer      api.QuestionResult
 	// Argv is a command's.
 	Argv []string
-	// Entry is the child a dispatch runs.
+	// Entry is the child a dispatch runs; Input is the dispatch's input,
+	// the child's arguments in the shape fusion proposes in request 76,
+	// {"arguments":[{"name","value"},...]}, each name an argument the child
+	// entry declares in catalog.json. Nil sends that shape with no item.
 	Entry string
+	Input json.RawMessage
 	// Writes are the repository paths a command or a dispatched child changes
 	// in the run's workspace.
 	Writes []string
@@ -200,7 +204,11 @@ func (h *EntryHost) scripted(profile string) func(string, json.RawMessage) json.
 			case api.ExecCapability:
 				body, _ = json.Marshal(api.ExecCall{EntryBinding: binding, Argv: step.Argv, Directory: ".", TimeoutMS: 60000, ExpectedWorkspace: h.Tree()})
 			case api.DispatchCapability:
-				body, _ = json.Marshal(api.DispatchCall{EntryBinding: binding, Entry: step.Entry, Description: "run " + step.Entry, Input: json.RawMessage(`{"task":"scripted"}`), ExpectedWorkspace: h.Tree()})
+				input := step.Input
+				if input == nil {
+					input = json.RawMessage(`{"arguments":[]}`)
+				}
+				body, _ = json.Marshal(api.DispatchCall{EntryBinding: binding, Entry: step.Entry, Description: "run " + step.Entry, Input: input, ExpectedWorkspace: h.Tree()})
 			}
 			inv := api.Invocation{OperationID: api.EntryOperationID(step.Capability, in.WorkflowID, runID, step.CallID), Capability: step.Capability, Input: body}
 			response, err := api.DecodeEntryResponse(step.Capability, h.serveEntry(inv, step))

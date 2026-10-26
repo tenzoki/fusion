@@ -49,7 +49,15 @@ type entryDrive struct {
 	arguments                []map[string]string
 	script                   fixture.Script
 	pageBytes                int
+	// childHeld is what the run holds for its dispatched child, by the
+	// child's declared argument name; the dispatch input is built from it
+	// against the child's declaration in the bundle's catalog.json.
+	childHeld map[string]string
 }
+
+// reconcileTask is the one-sentence task the reconcile body gives the
+// state-auditor after its parameter lines (skill-reconcile part 16).
+const reconcileTask = "Reconcile every tracking file against ground truth and return the three-edge Coherence audit result."
 
 // entryDrives are help (plain), reconcile (dispatches) and memo (asks), the
 // three step 17 proposed. Each script makes its class's call; the
@@ -64,12 +72,15 @@ func entryDrives() []entryDrive {
 				{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"bin/fusion-workbench-root"}},
 			}}},
 		{id: "reconcile", kind: "skill", profile: "skill-reconcile", class: "dispatches",
-			arguments: []map[string]string{{"name": "--force", "value": ""}},
+			arguments: []map[string]string{{"name": "--domain", "value": "code"}, {"name": "brief", "value": "check package F"}},
 			script: fixture.Script{Calls: []fixture.ScriptCall{
 				{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"bin/fusion-work-order"}},
 				{Capability: api.DispatchCapability, CallID: "d-1", Entry: "state-auditor", Writes: []string{fixture.WorkbenchPrefix + entryPackageRecord}},
 			}},
-			pageBytes: 40},
+			pageBytes: 40,
+			// Domain and Directive from the run's arguments, no Since, which
+			// the run does not hold and so omits; the task last.
+			childHeld: map[string]string{"**Domain:**": "code", "**Directive:**": "check package F", "task": reconcileTask}},
 		{id: "memo", kind: "skill", profile: "skill-memo", class: "asks",
 			arguments: []map[string]string{{"name": "content", "value": "buy milk"}},
 			script: fixture.Script{Calls: []fixture.ScriptCall{
@@ -137,6 +148,85 @@ func validates(t *testing.T, payload *steps.Bundle, schema string, body []byte) 
 	}
 }
 
+// dispatchArgument is one item of a dispatch input's arguments.
+type dispatchArgument struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+// childInput builds a host.dispatch.v1 input in the shape fusion proposes in
+// request 76 (the dispatch rule of every prior part that dispatches, e.g.
+// skill-reconcile part 01 and orchestrator part 33): {"arguments": [{name,
+// value}, ...]}, one item per argument the child entry declares in the
+// bundle's catalog.json that the run holds a value for, in declared order. A
+// held value under a name the child does not declare fails the test.
+func childInput(t *testing.T, catalog *steps.Catalog, child string, held map[string]string) json.RawMessage {
+	t.Helper()
+	e, ok := catalog.Entry(child)
+	if !ok {
+		t.Fatalf("the bundle's catalog has no entry %s to dispatch", child)
+	}
+	declared := map[string]bool{}
+	items := []dispatchArgument{}
+	for _, a := range e.Arguments.Items {
+		declared[a.Name] = true
+		if v, ok := held[a.Name]; ok {
+			items = append(items, dispatchArgument{a.Name, v})
+		}
+	}
+	for name := range held {
+		if !declared[name] {
+			t.Fatalf("%s declares no argument %q", child, name)
+		}
+	}
+	return mustMarshal(t, map[string][]dispatchArgument{"arguments": items})
+}
+
+// checkDispatchInput holds the input the fake host received on a dispatch to
+// the shape: exactly one member, arguments; each item exactly name and
+// value; every name one the child declares, once; no empty value; every
+// required argument present; the parameter lines before the first-message
+// argument, both in declared order.
+func checkDispatchInput(t *testing.T, catalog *steps.Catalog, child string, input json.RawMessage) {
+	t.Helper()
+	var shape struct {
+		Arguments []dispatchArgument `json:"arguments"`
+	}
+	if err := api.Decode(input, &shape); err != nil || shape.Arguments == nil {
+		t.Fatalf("dispatch input %s is not {\"arguments\":[{name,value}]}: %v", input, err)
+	}
+	var strict struct {
+		Arguments []map[string]json.RawMessage `json:"arguments"`
+	}
+	if err := json.Unmarshal(input, &strict); err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range strict.Arguments {
+		if _, n := item["name"]; len(item) != 2 || !n {
+			t.Fatalf("dispatch input item %v is not exactly {name, value}", item)
+		}
+	}
+	e, _ := catalog.Entry(child)
+	position := map[string]int{}
+	for i, a := range e.Arguments.Items {
+		position[a.Name] = i
+	}
+	sent := map[string]bool{}
+	last := -1
+	for _, a := range shape.Arguments {
+		i, ok := position[a.Name]
+		if !ok || sent[a.Name] || a.Value == "" || i <= last {
+			t.Fatalf("dispatch input %s: item %q is undeclared by %s, repeated, empty or out of declared order", input, a.Name, child)
+		}
+		sent[a.Name], last = true, i
+	}
+	for _, a := range e.Arguments.Items {
+		if a.Required && !sent[a.Name] {
+			t.Fatalf("dispatch input %s lacks %s's required %q", input, child, a.Name)
+		}
+	}
+}
+
 // One entry per class runs through fusion.entry.v1 to a completed envelope
 // against the process started from the built bundle, and each run made its
 // class's service call.
@@ -160,7 +250,10 @@ func TestOneEntryPerClassRunsAgainstTheBuiltBundle(t *testing.T) {
 				t.Fatalf("the bundle's catalog has %s as %+v", d.id, e)
 			}
 			var scripted []string
-			for _, c := range d.script.Calls {
+			for i, c := range d.script.Calls {
+				if c.Capability == api.DispatchCapability {
+					d.script.Calls[i].Input = childInput(t, catalog, c.Entry, d.childHeld)
+				}
 				if !slices.Contains(e.Requires, c.Capability) {
 					t.Fatalf("the script calls %s, outside %s's requires %v", c.Capability, d.id, e.Requires)
 				}
@@ -231,6 +324,25 @@ func TestOneEntryPerClassRunsAgainstTheBuiltBundle(t *testing.T) {
 				}
 				if err := json.Unmarshal(call.Input, &binding); err != nil {
 					t.Fatalf("entry call %s: %v", call.Input, err)
+				}
+				if call.Capability == api.DispatchCapability {
+					var dispatch struct {
+						Entry       string          `json:"entry"`
+						Description string          `json:"description"`
+						Input       json.RawMessage `json:"input"`
+					}
+					if err := json.Unmarshal(call.Input, &dispatch); err != nil {
+						t.Fatalf("dispatch call %s: %v", call.Input, err)
+					}
+					if len(made) > len(d.script.Calls) {
+						t.Fatalf("the run made %v, more calls than the script's %d", made, len(d.script.Calls))
+					}
+					want := d.script.Calls[len(made)-1]
+					checkDispatchInput(t, catalog, dispatch.Entry, dispatch.Input)
+					if dispatch.Entry != want.Entry || dispatch.Description == "" || strings.ContainsAny(dispatch.Description, "\n") || string(dispatch.Input) != string(want.Input) {
+						t.Fatalf("dispatch call %s, want entry %s and input %s", call.Input, want.Entry, want.Input)
+					}
+					t.Logf("dispatched %s with %s", dispatch.Entry, dispatch.Input)
 				}
 				if binding.Identity != b.identity || binding.WorkflowID != entryWorkflowID || binding.Actor != entryRunID || call.OperationID != api.EntryOperationID(call.Capability, entryWorkflowID, entryRunID, call.Slot) {
 					t.Fatalf("entry call %+v", call)
