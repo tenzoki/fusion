@@ -41,7 +41,7 @@ the pin that file advertises no service yet.
 | `fusionmodule/internal/repair/` | The repair workflow: interprets `workflows/repair.v1.json` over the step executor and the host service client and serves `fusion.repair.v1`; ten steps, the attempt map validated before any role call, every role read before it is run on restart. |
 | `fusionmodule/internal/entry/` | The entry workflow: interprets `workflows/entry.v1.json` over the same executor and client and serves `fusion.entry.v1`; seven steps, the run's role taken from the invocation's entry through the catalog's entries, the run read before it is run on restart; see `### The entry workflow`. |
 | `fusionmodule/internal/fixture/` | Test support only: a payload built from `catalog/` (optionally with named entries made supported on prior and given a profile), a fake host with in-memory durable `host.role.*` services and the six repair services, and an entry fake host that serves those six to the module and `host.question.v1`, `host.exec.v1` and `host.dispatch.v1` to a scripted role run. Not linked into the executable. |
-| `fusionmodule/conformance/` | The conformance suite: starts the launcher from a bundle `build.sh` wrote and drives both workflows through `moduleapi/v1` against the fake host; see `### Conformance against a built bundle`. |
+| `fusionmodule/conformance/` | The conformance suite: starts the launcher from a bundle `build.sh` wrote and drives the three workflows through `moduleapi/v1` against the fake host; see `### Conformance against a built bundle`. |
 | `testdata/repair-fixture/` | The repair conformance's toy repository and `task.json`; see the same section. |
 
 ## How the sources are built
@@ -384,7 +384,9 @@ launcher from there through `os/exec` with exactly the two Prior variables
 and no `PATH`, its working directory the payload, in its own process group,
 as Prior's `internal/module.StartProcess` does. The host side is the SDK's
 `ConnectWithServices` with the fake host of `internal/fixture`: in-memory
-durable `host.role.*` services and the six repair services. Eighteen cases:
+durable `host.role.*` services, the six repair services and, for the entry
+case, the three entry services, which the fake host refuses to the module and
+serves to a scripted role run. Nineteen cases:
 
 - eleven explorer cases (`explorer_test.go`, plan step 9): the handshake
   advertises the explorer; a valid answer completes with the host evidence
@@ -416,6 +418,26 @@ durable `host.role.*` services and the six repair services. Eighteen cases:
   refused with `review.binding`; an attempt map short of the bound is refused
   before any role call; and the explorer's results still decode under the
   frozen schemas.
+- one entry case (`entry_test.go`, plan step 18, H7) with one subtest per
+  class: `help` (`plain`), `reconcile` (`dispatches`) and `memo` (`asks`),
+  each read from the bundle's own `catalog.json` and required to be of that
+  class and supported on `prior` there, with the script's calls inside the
+  entry's `requires`. Each invocation of `fusion.entry.v1` runs one scripted
+  role run that makes its class's service call: `host.exec.v1` for `help`;
+  `host.exec.v1` then `host.dispatch.v1` for `reconcile`, whose child changes
+  a work-package control record; `host.question.v1`, answered, then
+  `host.exec.v1` writing a memo for `memo`. The invocation, the frozen role
+  input and the envelope must validate against the payload's
+  `entry-request.v1.json` and `entry-result.v1.json`; the envelope must be
+  `completed` with ending `success`/`answered`. The module must call none of
+  the three entry services, and the run must have made exactly the scripted
+  calls under the bundle's identity, the run as actor and Prior's entry
+  operation id. Per class: `help` is captured and never integrated;
+  `reconcile` carries one commit on `refs/prior/accepted/fusion-entry` and
+  its control record is read in 40-byte pages; `memo` carries the question
+  with its answer and one commit, and reads no record. The kills at each
+  boundary are proven at unit level in `internal/entry` and are not repeated
+  here.
 - one hook-layout case (`hooks_test.go`, plan step 21), which starts no
   module process. The `hooks/hooks.json` the manifest's `lifecycle_hooks`
   pins must match its declared sha256 and equal the plugin tree's file byte
