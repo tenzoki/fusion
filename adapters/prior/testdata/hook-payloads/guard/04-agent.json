@@ -1,0 +1,11 @@
+{
+  "session_id": "f0510000-0000-4000-8000-000000000001",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Agent",
+  "tool_input": {
+    "subagent_type": "fusion:state-auditor",
+    "description": "Fixture dispatch",
+    "prompt": "**Work-item:** 261001-0000-fixture-package\n\nFixture dispatch: report the repository state and stop."
+  },
+  "tool_use_id": "toolu_fixture_0004"
+}

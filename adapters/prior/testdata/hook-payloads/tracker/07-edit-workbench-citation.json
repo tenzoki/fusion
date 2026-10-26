@@ -1,0 +1,15 @@
+{
+  "session_id": "f0510000-0000-4000-8000-000000000001",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "fusion-workbench/shared/analyses/261001-0000-fixture-citation.md",
+    "old_string": "for the cause.",
+    "new_string": "for the cause, and `shared/decisions/261001-0002_open_fixture-cited-decision.md` for the ruling.",
+    "replace_all": false
+  },
+  "tool_use_id": "toolu_fixture_0008",
+  "tool_response": {
+    "filePath": "fusion-workbench/shared/analyses/261001-0000-fixture-citation.md"
+  }
+}

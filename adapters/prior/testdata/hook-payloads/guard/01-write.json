@@ -1,0 +1,10 @@
+{
+  "session_id": "f0510000-0000-4000-8000-000000000001",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "docs/fixture-note.md",
+    "content": "# Fixture note\n\nWritten by the hook payload fixture.\n"
+  },
+  "tool_use_id": "toolu_fixture_0001"
+}

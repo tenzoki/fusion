@@ -1,0 +1,14 @@
+{
+  "session_id": "f0510000-0000-4000-8000-000000000001",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "fusion-workbench/shared/reviews/261001-0000-reviewer-fixture-review.md",
+    "content": "# Review: fixture\n\n**Verdict:** pass\n"
+  },
+  "tool_use_id": "toolu_fixture_0009",
+  "tool_response": {
+    "type": "create",
+    "filePath": "fusion-workbench/shared/reviews/261001-0000-reviewer-fixture-review.md"
+  }
+}

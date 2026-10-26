@@ -1,0 +1,14 @@
+{
+  "session_id": "f0510000-0000-4000-8000-000000000001",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "fusion-workbench/shared/analyses/261001-0000-fixture-citation.md",
+    "content": "# Fixture citation\n\nSee `shared/issues/261001-0001_open_fixture-cited-issue.md` for the cause.\n"
+  },
+  "tool_use_id": "toolu_fixture_0007",
+  "tool_response": {
+    "type": "create",
+    "filePath": "fusion-workbench/shared/analyses/261001-0000-fixture-citation.md"
+  }
+}

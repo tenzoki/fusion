@@ -1,0 +1,5 @@
+{
+  "hook_event_name": "SubagentStop",
+  "agent_id": "fixture-agent-bg-0001",
+  "agent_type": "fusion:state-auditor"
+}

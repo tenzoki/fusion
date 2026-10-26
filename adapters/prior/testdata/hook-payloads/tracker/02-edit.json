@@ -1,0 +1,15 @@
+{
+  "session_id": "f0510000-0000-4000-8000-000000000001",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "docs/fixture-note.md",
+    "old_string": "Written by",
+    "new_string": "Rewritten by",
+    "replace_all": false
+  },
+  "tool_use_id": "toolu_fixture_0002",
+  "tool_response": {
+    "filePath": "docs/fixture-note.md"
+  }
+}
