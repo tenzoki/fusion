@@ -127,7 +127,7 @@
         "items": []
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "check",
@@ -140,7 +140,7 @@
         ]
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "wp",
@@ -153,7 +153,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "wp-order",
@@ -166,7 +166,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "reconcile",
@@ -182,7 +182,7 @@
         ]
       },
       "requires": ["host.exec.v1", "host.dispatch.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "curate",
@@ -196,8 +196,8 @@
           { "name": "--placement", "kind": "flag", "required": false }
         ]
       },
-      "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "requires": ["host.question.v1", "host.exec.v1", "host.dispatch.v1"],
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "discuss",
@@ -211,8 +211,8 @@
           { "name": "--close", "kind": "flag", "required": false }
         ]
       },
-      "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "requires": ["host.question.v1", "host.exec.v1", "host.dispatch.v1"],
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "commit",
@@ -254,7 +254,7 @@
         ]
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "memo",
@@ -267,7 +267,7 @@
         ]
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "post",
@@ -280,7 +280,7 @@
         ]
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "news",
@@ -290,8 +290,8 @@
       "arguments": {
         "items": []
       },
-      "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "cadence",
@@ -302,7 +302,7 @@
         "items": []
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "migrate",
@@ -312,8 +312,8 @@
       "arguments": {
         "items": []
       },
-      "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "help",
@@ -326,7 +326,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "orchestrator",
@@ -339,8 +339,8 @@
         ],
         "note": "no dispatch parameters; the first message is the brief"
       },
-      "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "requires": ["host.exec.v1", "host.dispatch.v1"],
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "requirements-designer",
@@ -355,7 +355,7 @@
         ]
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "implementation-planner",
@@ -371,7 +371,7 @@
         ]
       },
       "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "code-implementer",
@@ -385,7 +385,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "data-implementer",
@@ -399,7 +399,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "reviewer",
@@ -414,7 +414,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "state-auditor",
@@ -431,7 +431,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "analyst",
@@ -445,7 +445,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "document-editor",
@@ -459,7 +459,7 @@
         ]
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "policy-curator",
@@ -476,8 +476,8 @@
           { "name": "**Edges:**", "kind": "parameter-line", "required": false, "values": ["on", "off"] }
         ]
       },
-      "requires": ["host.question.v1", "host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "requires": ["host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
       "id": "consultant",
@@ -490,7 +490,7 @@
         ]
       },
       "requires": ["host.exec.v1", "host.dispatch.v1"],
-      "support": { "claude-code": "supported", "prior": "unsupported" }
+      "support": { "claude-code": "supported", "prior": "supported" }
     }
   ]
 }

@@ -192,7 +192,7 @@ func TestFusionInstallTree(t *testing.T) {
 			t.Errorf("%s: mode %o, want %o", p, modes[p], mode)
 		}
 	}
-	data := append([]string(nil), fixture.DataFiles...)
+	data := fixture.DataFiles(t, fixture.CatalogDir(t))
 	if err := checkCollisions(tree, moduleReserved(data)); err != nil {
 		t.Fatal(err)
 	}

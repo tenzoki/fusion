@@ -527,7 +527,7 @@ func TestEntriesThatCannotRunAreRefusedBeforeAnyHostCall(t *testing.T) {
 		"unknown entry":           {strings.Replace(valid, entry, `"entry":{"id":"nope","kind":"skill","profile":"skill-nope"}`, 1), "entry.unknown"},
 		"kind not the entry's":    {strings.Replace(valid, entry, `"entry":{"id":"memo","kind":"agent","profile":"skill-memo"}`, 1), "entry.invalid"},
 		"profile not the entry's": {strings.Replace(valid, entry, `"entry":{"id":"memo","kind":"skill","profile":"skill-help"}`, 1), "entry.invalid"},
-		"unsupported on prior":    {strings.Replace(valid, entry, `"entry":{"id":"wp","kind":"skill","profile":"skill-wp"}`, 1), "entry.unsupported"},
+		"unsupported on prior":    {strings.Replace(valid, entry, `"entry":{"id":"cleanup","kind":"skill","profile":"skill-cleanup"}`, 1), "entry.unsupported"},
 		"no workflow_id":          {strings.Replace(valid, `,"workflow_id":"wf-entry"`, ``, 1), "invocation.invalid"},
 		"unknown member":          {strings.Replace(valid, `"run_id"`, `"mode":"x","run_id"`, 1), "invocation.invalid"},
 		"empty audit_ref":         {strings.Replace(valid, `"run_id"`, `"audit_ref":"","run_id"`, 1), "invocation.invalid"},

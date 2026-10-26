@@ -34,8 +34,8 @@ func CatalogDir(t *testing.T) string {
 	return dir
 }
 
-// Profiles are the four roles the bundle serves on Prior, each with its
-// rendered profile in the payload.
+// Profiles are the four roles the repair host serves on Prior. The payload
+// carries their profiles among PayloadProfiles.
 var Profiles = []string{"explorer", "code-implementer", "reviewer", "state-auditor"}
 
 // Workflows are the definitions the payload carries.
@@ -51,13 +51,99 @@ var Schemas = []string{
 	"entry-request", "entry-result",
 }
 
-// DataFiles are the payload entries the fixture declares, in manifest order:
-// the catalog, then each profile's pair, each workflow and each schema.
-var DataFiles = dataFiles()
+// PayloadProfiles are the profiles the live catalog ships on Prior, chosen as
+// priorProfiles in catalog/src/render.ts chooses them: a role's own id and an
+// entry's profile, roles first, in catalog order, each once, for every
+// referrer whose prior state is not unsupported. Of those, a profile with no
+// profile.json or none of its parts written is left out as the render leaves
+// it out; a supported one is then the render's `missing`, and fails the test.
+// Reading the catalog keeps the fixture declaring what the real bundle
+// declares whatever the catalog's support states are.
+func PayloadProfiles(t *testing.T, catalogDir string) []string {
+	t.Helper()
+	body, err := os.ReadFile(filepath.Join(catalogDir, "catalog.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	type support struct {
+		Prior string `json:"prior"`
+	}
+	var doc struct {
+		Roles []struct {
+			ID      string  `json:"id"`
+			Support support `json:"support"`
+		} `json:"roles"`
+		Entries []struct {
+			Profile string  `json:"profile"`
+			Support support `json:"support"`
+		} `json:"entries"`
+	}
+	if err := json.Unmarshal(body, &doc); err != nil {
+		t.Fatal(err)
+	}
+	var order []string
+	state := map[string]string{}
+	refer := func(profile, prior string) {
+		if prior == "unsupported" {
+			return
+		}
+		if _, seen := state[profile]; !seen {
+			order = append(order, profile)
+		}
+		if state[profile] != "supported" {
+			state[profile] = prior
+		}
+	}
+	for _, r := range doc.Roles {
+		refer(r.ID, r.Support.Prior)
+	}
+	for _, e := range doc.Entries {
+		refer(e.Profile, e.Support.Prior)
+	}
+	var out []string
+	for _, id := range order {
+		if partsWritten(t, catalogDir, id) {
+			out = append(out, id)
+		} else if state[id] == "supported" {
+			t.Fatalf("profile %s is supported on prior and has no profile.json or parts: the render would report it missing", id)
+		}
+	}
+	return out
+}
 
-func dataFiles() []string {
+// partsWritten reports whether profiles/<id>/profile.json exists and lists at
+// least one part file that does, render.ts's loadProfile and partsState.
+func partsWritten(t *testing.T, catalogDir, id string) bool {
+	t.Helper()
+	body, err := os.ReadFile(filepath.Join(catalogDir, "profiles", id, "profile.json"))
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	var profile struct {
+		Parts []struct {
+			File string `json:"file"`
+		} `json:"parts"`
+	}
+	if err := json.Unmarshal(body, &profile); err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range profile.Parts {
+		if _, err := os.Stat(filepath.Join(catalogDir, "profiles", id, filepath.FromSlash(p.File))); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+// DataFiles are the payload entries Bundle declares, in manifest order: the
+// catalog, then each payload profile's pair, each workflow and each schema.
+func DataFiles(t *testing.T, catalogDir string) []string {
+	t.Helper()
 	out := []string{"catalog.json"}
-	for _, id := range Profiles {
+	for _, id := range PayloadProfiles(t, catalogDir) {
 		out = append(out, "profiles/"+id+".json", "profiles/"+id+".md")
 	}
 	for _, id := range Workflows {
@@ -81,11 +167,11 @@ func Bundle(t *testing.T, catalogDir string) string {
 }
 
 // EntryBundle is Bundle with the named catalog entries made supported on prior
-// and, for each whose profile the payload does not carry yet, a profile that
-// names the two entry schemas (decision D5 of the H1-H9 hand-over), with a
-// placeholder text. It stands in for what plan steps 6 to 15 deliver, profiles
-// for the entries and their support on prior, so the module's entry.v1 support
-// is driven before they land; the live catalog is read, never written.
+// and, for each whose profile the payload does not carry, a profile that names
+// the two entry schemas (decision D5 of the H1-H9 hand-over), with a
+// placeholder text. A named entry the live catalog already supports changes
+// nothing; one it does not is driven as if it did. The live catalog is read,
+// never written.
 func EntryBundle(t *testing.T, catalogDir string, supported ...string) string {
 	t.Helper()
 	root := t.TempDir()
@@ -105,9 +191,10 @@ func EntryBundle(t *testing.T, catalogDir string, supported ...string) string {
 		}
 		write(rel, body)
 	}
-	catalog, entryProfiles := supportEntries(t, catalogDir, supported)
+	payload := PayloadProfiles(t, catalogDir)
+	catalog, entryProfiles := supportEntries(t, catalogDir, payload, supported)
 	write("catalog.json", catalog)
-	data := append([]string(nil), DataFiles...)
+	data := DataFiles(t, catalogDir)
 	for _, id := range entryProfiles {
 		write("profiles/"+id+".json", EntryProfile(id))
 		write("profiles/"+id+".md", []byte("fixture entry profile text\n"))
@@ -119,7 +206,7 @@ func EntryBundle(t *testing.T, catalogDir string, supported ...string) string {
 	for _, name := range Schemas {
 		copyFile("schemas/"+name+".v1.json", "schemas/"+name+".v1.json")
 	}
-	for _, id := range Profiles {
+	for _, id := range payload {
 		profileBytes, err := os.ReadFile(filepath.Join(catalogDir, "profiles", id, "profile.json"))
 		if err != nil {
 			t.Fatal(err)
@@ -147,8 +234,8 @@ func EntryBundle(t *testing.T, catalogDir string, supported ...string) string {
 
 // supportEntries reads the live catalog.json and returns it with each named
 // entry's prior support set to supported, unchanged when none is named, and
-// the profiles of those entries that are not among Profiles, each once.
-func supportEntries(t *testing.T, catalogDir string, supported []string) ([]byte, []string) {
+// the profiles of those entries that are not among payload, each once.
+func supportEntries(t *testing.T, catalogDir string, payload, supported []string) ([]byte, []string) {
 	t.Helper()
 	body, err := os.ReadFile(filepath.Join(catalogDir, "catalog.json"))
 	if err != nil {
@@ -166,7 +253,7 @@ func supportEntries(t *testing.T, catalogDir string, supported []string) ([]byte
 		t.Fatal(err)
 	}
 	carried := map[string]bool{}
-	for _, id := range Profiles {
+	for _, id := range payload {
 		carried[id] = true
 	}
 	var profiles []string

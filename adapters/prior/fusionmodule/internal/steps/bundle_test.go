@@ -12,6 +12,7 @@ import (
 
 func TestOpenBundleServesDeclaredDataOnly(t *testing.T) {
 	root := fixture.Bundle(t, fixture.CatalogDir(t))
+	declared := fixture.DataFiles(t, fixture.CatalogDir(t))
 	if err := os.WriteFile(filepath.Join(root, "extra.json"), []byte("{}"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -19,10 +20,10 @@ func TestOpenBundleServesDeclaredDataOnly(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if b.Manifest.ID != "fusion" || b.Manifest.Executable != "bin/fusion-module" || len(b.Manifest.Data) != len(fixture.DataFiles) {
+	if b.Manifest.ID != "fusion" || b.Manifest.Executable != "bin/fusion-module" || len(b.Manifest.Data) != len(declared) {
 		t.Fatalf("manifest %+v", b.Manifest)
 	}
-	for _, p := range fixture.DataFiles {
+	for _, p := range declared {
 		if _, err := b.Asset(p); err != nil {
 			t.Errorf("%s: %v", p, err)
 		}
@@ -125,8 +126,12 @@ func TestCatalogResolvesSupportedRolesOnly(t *testing.T) {
 	if p, err := LoadProfile(b, "reviewer"); err != nil || p.InputSchema != "schemas/review-request.v1.json" || p.ResultSchema != "schemas/review-response.v1.json" || p.MayDelegate || p.WritesWorkbench["prior"] {
 		t.Errorf("reviewer profile %+v: %v", p, err)
 	}
-	if _, err := LoadProfile(b, "analyst"); err == nil {
-		t.Error("an unsupported role's absent profile loaded")
+	// The commit skill is held unsupported on Prior and is the only
+	// referrer of its profile, so no referrer ships it. (The orchestrator
+	// is no example any more: its entry is supported, so its profile
+	// ships, while its role row stays unsupported, as the refusal loop above checks.)
+	if _, err := LoadProfile(b, "skill-commit"); err == nil {
+		t.Error("an unsupported entry's absent profile loaded")
 	}
 	w, err := LoadWorkflow(b, "workflows/explorer.v1.json")
 	if err != nil {
