@@ -3,7 +3,7 @@
   "id": "4cc6a058-1397-4820-82e7-b67d64ad2322",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -39,7 +39,20 @@
   "active_documents": [],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Steps 11 to 14 done: all sixteen skills have profiles, Claude renders byte-equal; review findings 1 to 4 fixed at db315ce3, five low findings left open",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "eeee2fcc-9ea5-4c42-9abe-88e8fb492476",
+          "revision": "sha256:af357b591153d456ae2c50f2c76e50dc14e280b8a263239a0e38f76fba782b5c"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
