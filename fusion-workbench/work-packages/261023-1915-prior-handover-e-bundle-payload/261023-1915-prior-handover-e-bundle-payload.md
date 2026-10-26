@@ -13,3 +13,7 @@ The steps are those of `261023-1854-plan-prior-full-surface-handover-h1-to-h9.md
 ## Depends on
 
 Step 16 of package A only (the Prior build pin), not the whole package; no package-level edge is set, so the start waits on that step by reading, not by the graph.
+
+## Closure
+
+Closed `done` (outcome `completed`) on 2026-10-26 by the orchestrator, at the user's word, all seven stop conditions confirmed as holding. Commits: `9bb1751e` (step 20, hook payloads), `ec3d9597` (step 19, install tree and lifecycle_hooks), `4e53b552` (step 21, hook-layout conformance), closing review `5bbbe40e` (verdict accept, range `ec6c968e..4e53b552`, which also covers package C's fix `db315ce3`). Coverage gap: none in the range; the review commit itself is workbench-only. Still open, carried into package F: the four payload choices step 19 made beyond the plan, which request 76 must state (medium), and the hook-payload README order (low).

@@ -3,7 +3,7 @@
   "id": "ceb3b13f-44bf-44f7-a563-311f39a66774",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -31,7 +31,20 @@
   "active_documents": [],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Steps 19 to 21 done: the payload carries the install tree and lifecycle_hooks, 27 hook payloads, hook-layout conformance bundle against plugin tree passes; review accept with one medium and one low finding left open for package F",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "40b2fadc-730c-4546-95c0-0ce093a7af07",
+          "revision": "sha256:1b18078924b8d913061441310e40cd4d218a2d75cca6426745c74b14aed239d2"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
