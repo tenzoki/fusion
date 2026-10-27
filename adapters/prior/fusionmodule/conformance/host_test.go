@@ -1,6 +1,7 @@
 // Package conformance starts fusion's built Prior module bundle the way
-// Prior's host does and drives the explorer through moduleapi/v1 against a
-// fake durable host (plan step 9).
+// Prior's host does and drives its two workflows, the explorer and the entry
+// workflow, through moduleapi/v1 against a fake durable host (plan step 9;
+// the entry cases in entry_test.go).
 //
 // This is conformance on macOS arm64 against a fake host, not Prior's
 // acceptance. The launcher bin/fusion-module maps this machine's
@@ -50,7 +51,7 @@ import (
 	api "github.com/kai/prior/moduleapi/v1"
 )
 
-// Capability is the one workflow the bundle advertises.
+// Capability is the explorer workflow the bundle advertises.
 const Capability = "fusion.explorer.v1"
 
 // sessionTimeout bounds one process's lifetime, as Prior requires a deadline
@@ -400,8 +401,7 @@ func invocation(t *testing.T, runID string, roleInput json.RawMessage, auditRef 
 }
 
 // readFixture, mustMarshal and copyTree are the helpers hooks_test.go and
-// entry_test.go share, kept here when repair_test.go, which held them, was
-// deleted with the repair workflow.
+// entry_test.go share.
 
 func readFixture(t *testing.T, root, rel string) []byte {
 	t.Helper()

@@ -6,16 +6,24 @@ package conformance
 // are never started (see host_test.go).
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"io"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/fixture"
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/steps"
 	api "github.com/kai/prior/moduleapi/v1"
 )
+
+// frozenAt is the commit whose explorer schemas the installed ones must
+// equal byte for byte (plan step 9's contract, kept under step 15's freeze).
+const frozenAt = "d52223a9"
 
 func TestHandshakeAdvertisesTheExplorer(t *testing.T) {
 	b := openBundle(t)
@@ -314,5 +322,66 @@ func TestUnknownCapabilityIsRefused(t *testing.T) {
 	}
 	if host.ModelCalls != 1 || len(host.Calls) != 5 {
 		t.Fatalf("calls %+v", host.Calls)
+	}
+}
+
+// An explorer answer decodes under the explorer schemas as installed in the
+// bundle, and those schemas are byte-equal to the ones frozen at frozenAt.
+func TestExplorerResultsStillDecodeUnderTheFrozenSchemas(t *testing.T) {
+	b := openBundle(t)
+	host := fixture.NewHost()
+	s := connect(t, b, host, nil)
+	defer s.close()
+	input := b.roleInput(t, defaultTask())
+	out, err := s.client.Invoke(s.ctx, api.Invocation{OperationID: "op-1", Capability: Capability, Input: invocation(t, "run-1", input, "")})
+	if err != nil {
+		t.Fatalf("invoke: %v; module stderr: %q", err, s.proc.stderr.String())
+	}
+	// Decoded by the schemas as installed in the bundle.
+	payload, err := steps.OpenBundle(b.dir)
+	if err != nil {
+		t.Fatalf("installed payload: %v", err)
+	}
+	envelopeSchema, err := payload.Schema("schemas/explorer-envelope.v1.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	resultSchema, err := payload.Schema("schemas/explorer-result.v1.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	parsed, err := steps.Parse(out)
+	if err != nil {
+		t.Fatalf("envelope %s: %v", out, err)
+	}
+	if err := envelopeSchema.Validate(parsed); err != nil {
+		t.Fatalf("envelope does not decode under the installed schema: %v", err)
+	}
+	var env envelope
+	if err := api.Decode(out, &env); err != nil {
+		t.Fatal(err)
+	}
+	if env.Domain.Status != "completed" {
+		t.Fatalf("envelope %+v", env)
+	}
+	result, err := steps.Parse(env.Domain.Result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := resultSchema.Validate(result); err != nil {
+		t.Fatalf("result does not decode under the installed schema: %v", err)
+	}
+	// The installed explorer schemas are the ones frozen at step 9's commit.
+	fusionRoot := filepath.Dir(fixture.CatalogDir(t))
+	for _, name := range []string{"explorer-request", "explorer-role-input", "explorer-envelope", "explorer-result"} {
+		rel := "schemas/" + name + ".v1.json"
+		cmd := exec.Command("git", "-C", fusionRoot, "show", frozenAt+":catalog/"+rel)
+		committed, err := cmd.Output()
+		if err != nil {
+			t.Fatalf("git show %s:catalog/%s: %v", frozenAt, rel, err)
+		}
+		if installed := b.read(t, rel); !bytes.Equal(installed, committed) {
+			t.Fatalf("%s as installed differs from %s", rel, frozenAt)
+		}
 	}
 }
