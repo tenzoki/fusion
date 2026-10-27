@@ -17,10 +17,14 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "superseded",
     "answer_ref": "261024-2111-does-an-entry-run-of-a-repair-role-write-the-workbench-on-prior.md",
     "implementation_ref": null,
-    "superseded_by": null,
+    "superseded_by": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "8bab1c3b-f73c-4da6-8ea0-52fcbb9fae13",
+      "display": "261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-entry-model.md"
+    },
     "deferral": null
   }
 }

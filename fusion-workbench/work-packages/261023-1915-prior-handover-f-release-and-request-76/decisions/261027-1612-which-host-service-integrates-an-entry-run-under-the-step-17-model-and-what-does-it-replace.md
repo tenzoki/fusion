@@ -35,3 +35,6 @@ Revised on 2026-10-27 at the plan review, before any answer, after the user's ru
 ## Recommendation
 
 Option 1, under the name `host.entry.integrate.v1`, put to Prior in request 77 as fusion's proposal for Prior to confirm or correct. `entry.v2` then requires ten services: `host.role.read.v1`, `host.role.run.v1`, `host.role.complete.v1`, `host.role.compose.v1`, `host.workspace.v1`, `host.entry.integrate.v1`, `host.workbench.v1`, `host.question.v1`, `host.exec.v1` and `host.dispatch.v1`. The plan cited above is written against this option. Under option 2 or 3, its steps 2 to 5 and 10 are re-planned.
+
+---
+Answered: the user in chat, 2026-10-27, "1" to the review of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model.md (approve the plan, all four open questions as recommended) — option 1, host.entry.integrate.v1 in place of capture, integrate and snapshot; ten services; ruled by user, Kai Stalmann <ks@qantr.com>

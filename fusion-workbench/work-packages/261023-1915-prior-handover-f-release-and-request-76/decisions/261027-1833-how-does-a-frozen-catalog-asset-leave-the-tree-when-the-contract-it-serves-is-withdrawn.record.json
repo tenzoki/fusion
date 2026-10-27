@@ -17,8 +17,8 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": "261027-1833-how-does-a-frozen-catalog-asset-leave-the-tree-when-the-contract-it-serves-is-withdrawn.md",
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

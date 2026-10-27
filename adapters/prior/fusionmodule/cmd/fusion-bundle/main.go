@@ -49,6 +49,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -288,7 +289,7 @@ func assemble(o options) error {
 		return fmt.Errorf("rendered assets: %w", err)
 	}
 	for _, dir := range []string{"workflows", "schemas"} {
-		if err := w.copyTree(filepath.Join(o.fusionRoot, "catalog", dir), dir, isV1JSON); err != nil {
+		if err := w.copyTree(filepath.Join(o.fusionRoot, "catalog", dir), dir, isPublishedAsset); err != nil {
 			return fmt.Errorf("catalog %s: %w", dir, err)
 		}
 	}
@@ -643,10 +644,16 @@ func isRegularJSONOrMarkdown(rel string) bool {
 	return strings.HasSuffix(rel, ".json") || strings.HasSuffix(rel, ".md")
 }
 
-// isV1JSON selects the published definitions and schemas; the catalog's own
-// `*.schema.json` meta-schemas describe fusion's source files and stay home.
-func isV1JSON(rel string) bool {
-	return !strings.Contains(rel, "/") && strings.HasSuffix(rel, ".v1.json")
+// publishedName is a published asset's file name: `<name>.v<n>.json` for a
+// positive n, so a corrected asset's new version ships beside the old one.
+var publishedName = regexp.MustCompile(`^[^/]+\.v[1-9][0-9]*\.json$`)
+
+// isPublishedAsset selects the published definitions and schemas, every
+// version of them, directly under their directory; the catalog's own
+// `*.schema.json` meta-schemas describe fusion's source files and stay home,
+// as do `FROZEN` and `WITHDRAWN`.
+func isPublishedAsset(rel string) bool {
+	return publishedName.MatchString(rel)
 }
 
 func contains(list []string, s string) bool {

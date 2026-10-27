@@ -17,8 +17,8 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": "261027-1612-which-host-service-integrates-an-entry-run-under-the-step-17-model-and-what-does-it-replace.md",
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

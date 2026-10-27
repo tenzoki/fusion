@@ -34,3 +34,6 @@ Revised on 2026-10-27 at the plan review, before any answer: request 77 now also
 ## Recommendation
 
 Option 1, with request 77 stating that an answer naming `sha256:90961e04…` closes neither request.
+
+---
+Answered: the user in chat, 2026-10-27, "1" to the review of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model.md (approve the plan, all four open questions as recommended) — option 1, 77 amends 76 and announces repair's withdrawal; ruled by user, Kai Stalmann <ks@qantr.com>

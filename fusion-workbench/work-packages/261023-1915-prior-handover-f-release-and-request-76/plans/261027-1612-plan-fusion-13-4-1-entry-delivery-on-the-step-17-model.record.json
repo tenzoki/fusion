@@ -17,15 +17,15 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
+    "state": "in_progress",
     "steps": [
       {
         "id": "1",
-        "state": "open"
+        "state": "in_progress"
       },
       {
         "id": "2",
-        "state": "open"
+        "state": "done"
       },
       {
         "id": "3",
@@ -61,6 +61,12 @@
       }
     ],
     "criteria": [],
-    "acceptance": null
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "b49d6666-63a0-4d1d-bde0-1d4fef0a86e9"
+      },
+      "revision": "sha256:61e5f545ac591fe8e0548f129b8bcfe021f3ca784802ec22751f367f955339ab"
+    }
   }
 }

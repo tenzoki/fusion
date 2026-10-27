@@ -210,10 +210,10 @@ describeLive("catalog data", (catalog) => {
     }
   });
 
-  it("every .v1.json schema compiles under draft 2020-12 and carries no network reference", () => {
-    const v1 = readdirSync(join(CATALOG, "schemas")).filter((n) => n.endsWith(".v1.json"));
-    expect(v1.length).toBeGreaterThan(0);
-    for (const name of v1) {
+  it("every .v<n>.json schema compiles under draft 2020-12 and carries no network reference", () => {
+    const published = readdirSync(join(CATALOG, "schemas")).filter((n) => /\.v[1-9][0-9]*\.json$/.test(n));
+    expect(published.length).toBeGreaterThan(0);
+    for (const name of published) {
       const text = readFileSync(join(CATALOG, "schemas", name), "utf8");
       expect(() => new Ajv2020({ strict: false }).compile(JSON.parse(text))).not.toThrow();
       // The copied Prior result schema carries its own `$id` and `$schema`
@@ -757,13 +757,17 @@ describe("catalog entries (fixture)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The generic workflow, entry.v1: its requires, and the run step whose role
+// The generic workflow, entry.v2: its requires, and the run step whose role
 // is the invocation's entry.profile, resolved for every entry supported on
-// prior. The live catalog supports none yet, so the fixture catalog carries
-// the cases that bite; the live group holds for whatever entry turns
-// supported later.
+// prior. The fixture catalog carries the cases that bite; the live group
+// holds for every entry the catalog supports.
 //
-// Plan step 4 of 261023-1854-plan-prior-full-surface-handover-h1-to-h9.md.
+// Plan step 4 of 261023-1854-plan-prior-full-surface-handover-h1-to-h9.md,
+// moved to entry.v2 at plan step 2 of 261027-1612-plan-fusion-13-4-1-entry-
+// delivery-on-the-step-17-model.md. entry.v1 is no longer served (decision
+// 261027-1612-does-the-module-keep-serving-fusion-entry-v1-beside-fusion-
+// entry-v2, option 1), and repair.v1 is withdrawn, so no comparison with the
+// request-69 workflow is made: entry.v2 states the common contract itself.
 // ---------------------------------------------------------------------------
 
 interface WorkflowStep {
@@ -782,10 +786,39 @@ interface Workflow {
 }
 
 const ROLE_SERVICES = ["host.role.read.v1", "host.role.run.v1", "host.role.complete.v1"];
-// The six services of Prior request 69, which repair.v1 calls beside the role services.
-const REQUEST_69_SERVICES = ["host.role.compose.v1", "host.workspace.v1", "host.capture.v1", "host.integrate.v1", "host.snapshot.v1", "host.workbench.v1"];
-const ENTRY_WORKFLOW_FILE = join(CATALOG, "workflows", "entry.v1.json");
+// The request-69 services entry.v2 calls, and the one service that integrates
+// the run on the step-17 model (decision 261027-1612-which-host-service-
+// integrates-an-entry-run-under-the-step-17-model-and-what-does-it-replace,
+// option 1): capture, integrate and snapshot are replaced by it.
+const ENTRY_V2_HOST_SERVICES = ["host.role.compose.v1", "host.workspace.v1", "host.entry.integrate.v1", "host.workbench.v1"];
+// The request-69 services the step-17 model no longer calls.
+const RETIRED_SERVICES = ["host.capture.v1", "host.integrate.v1", "host.snapshot.v1"];
+const ENTRY_WORKFLOW = "workflows/entry.v2.json";
+const ENTRY_REQUEST_SCHEMA = "schemas/entry-request.v1.json";
+const ENTRY_RESULT_SCHEMA = "schemas/entry-result.v2.json";
 const validEntryRequest = compile("entry-request.v1.json");
+
+// entry.v2 is written at plan step 3. Until then every group that reads it is
+// one failing case naming the error, as describeLive does for the catalog.
+const entryWorkflow: { wf: Workflow; error: null } | { wf: null; error: unknown } = (() => {
+  try {
+    return { wf: readJson<Workflow>(join(CATALOG, ENTRY_WORKFLOW)), error: null };
+  } catch (error) {
+    return { wf: null, error };
+  }
+})();
+
+function describeEntryWorkflow(name: string, body: (wf: Workflow) => void): void {
+  describe(name, () => {
+    if (entryWorkflow.wf === null) {
+      it(`loads ${ENTRY_WORKFLOW}`, () => {
+        throw entryWorkflow.error;
+      });
+      return;
+    }
+    body(entryWorkflow.wf);
+  });
+}
 
 /**
  * The steps that take their role from the invocation: a host.role.run.v1
@@ -835,54 +868,56 @@ function entryRunProblems(wf: Workflow, catalog: Catalog, catalogDir: string, en
   return problems;
 }
 
-describeLive("the entry.v1 workflow", (catalog) => {
-  const wf = readJson<Workflow>(ENTRY_WORKFLOW_FILE);
+describeLive("the entry.v2 workflow", (catalog) => {
+  describeEntryWorkflow("its definition", (wf) => {
+    it("validates against workflow.schema.json and serves fusion.entry.v2 with revise_bound 0", () => {
+      expectValid(validWorkflow, wf, ENTRY_WORKFLOW);
+      expect(wf.id).toBe("entry");
+      expect(wf.capability).toBe("fusion.entry.v2");
+      expect(wf.revise_bound).toBe(0);
+    });
 
-  it("validates against workflow.schema.json and serves fusion.entry.v1 with revise_bound 0", () => {
-    expectValid(validWorkflow, wf, "workflows/entry.v1.json");
-    expect(wf.id).toBe("entry");
-    expect(wf.capability).toBe("fusion.entry.v1");
-    expect(wf.revise_bound).toBe(0);
-  });
+    it("requires exactly the ten services: the three role services, the four host services and the three entry services", () => {
+      const expected = [...ROLE_SERVICES, ...ENTRY_V2_HOST_SERVICES, ...ENTRY_SERVICES];
+      expect(expected).toHaveLength(10);
+      expect(new Set(wf.requires).size, "a service listed twice").toBe(wf.requires.length);
+      expect([...wf.requires].sort()).toEqual([...expected].sort());
+    });
 
-  it("requires exactly the six request-69 services, the three entry services and the three role services", () => {
-    const expected = [...REQUEST_69_SERVICES, ...ENTRY_SERVICES, ...ROLE_SERVICES];
-    expect(wf.requires).toHaveLength(12);
-    expect(new Set(wf.requires).size, "a service listed twice").toBe(wf.requires.length);
-    expect([...wf.requires].sort()).toEqual([...expected].sort());
-    // repair.v1 is the request-69 workflow: entry.v1 adds the entry services to it and nothing else.
-    const repair = readJson<Workflow>(join(CATALOG, "workflows", "repair.v1.json"));
-    expect([...wf.requires].sort()).toEqual([...repair.requires, ...ENTRY_SERVICES].sort());
-  });
+    it("every step's host_service is in requires", () => {
+      for (const step of wf.steps) {
+        if (step.host_service !== undefined) expect(wf.requires, `step ${step.id}: ${step.host_service}`).toContain(step.host_service);
+      }
+    });
 
-  it("every catalog entry's requires is a subset of the workflow's, whatever its prior state", () => {
-    expect(catalog.entries.length).toBeGreaterThan(0);
-    for (const e of catalog.entries) {
-      for (const s of e.requires) expect(wf.requires, `entry ${e.id}: ${s}`).toContain(s);
-    }
-  });
+    it("every catalog entry's requires is a subset of the workflow's, whatever its prior state", () => {
+      expect(catalog.entries.length).toBeGreaterThan(0);
+      for (const e of catalog.entries) {
+        for (const s of e.requires) expect(wf.requires, `entry ${e.id}: ${s}`).toContain(s);
+      }
+    });
 
-  it("has exactly one step that takes its role from the invocation, run, bound to the two entry schemas", () => {
-    const steps = invocationRoleSteps(wf);
-    expect(steps.map((s) => s.id)).toEqual(["run"]);
-    expect(steps[0].input_from.role_input_schema).toBe("schemas/entry-request.v1.json");
-    expect(steps[0].completion.result_schema).toBe("schemas/entry-result.v1.json");
-    for (const asset of ["schemas/entry-request.v1.json", "schemas/entry-result.v1.json"]) {
-      expect(existsSync(join(CATALOG, asset)), asset).toBe(true);
-    }
-    // No step of the generic workflow names a fixed role.
-    expect(wf.steps.filter((s) => s.role !== undefined)).toEqual([]);
-  });
+    it("has exactly one step that takes its role from the invocation, run, bound to entry-request.v1 and entry-result.v2", () => {
+      const steps = invocationRoleSteps(wf);
+      expect(steps.map((s) => s.id)).toEqual(["run"]);
+      expect(steps[0].input_from.role_input_schema).toBe(ENTRY_REQUEST_SCHEMA);
+      expect(steps[0].completion.result_schema).toBe(ENTRY_RESULT_SCHEMA);
+      for (const asset of [ENTRY_REQUEST_SCHEMA, ENTRY_RESULT_SCHEMA]) {
+        expect(existsSync(join(CATALOG, asset)), asset).toBe(true);
+      }
+      // No step of the generic workflow names a fixed role.
+      expect(wf.steps.filter((s) => s.role !== undefined)).toEqual([]);
+    });
 
-  it("the run step's role resolves for every entry supported on prior (none yet: the fixture group bites)", () => {
-    for (const e of catalog.entries.filter((x) => x.support.prior === "supported")) {
-      expect(entryRunProblems(wf, catalog, CATALOG, e), `entry ${e.id}`).toEqual([]);
-    }
+    it("the run step's role resolves for every entry supported on prior", () => {
+      for (const e of catalog.entries.filter((x) => x.support.prior === "supported")) {
+        expect(entryRunProblems(wf, catalog, CATALOG, e), `entry ${e.id}`).toEqual([]);
+      }
+    });
   });
 });
 
-describe("the entry.v1 workflow (fixture catalog)", () => {
-  const wf = readJson<Workflow>(ENTRY_WORKFLOW_FILE);
+describeEntryWorkflow("the entry.v2 workflow (fixture catalog)", (wf) => {
   const fixture = () => {
     const f = writeFixture();
     return { ...f, catalog: readJson<Catalog>(join(f.catalogDir, "catalog.json")) };
@@ -942,6 +977,54 @@ describe("the entry.v1 workflow (fixture catalog)", () => {
     const unnamed = structuredClone(wf);
     delete unnamed.steps.find((s) => s.id === "run")!.input_from.role;
     expect(entryRunProblems(unnamed, catalog, catalogDir, catalog.entries[0])).toEqual(["0 steps take their role from the invocation, not one"]);
+  });
+});
+
+// Holds once plan step 7 has withdrawn repair and the accepted-reference entry
+// assets and turned the three repair roles into entry profiles; red before
+// that, by design (decisions 261027-1833-does-fusion-keep-the-repair-route-
+// on-prior-beside-the-step-17-entry-model, option 3, and 261027-1833-how-does-
+// a-frozen-catalog-asset-leave-the-tree-when-the-contract-it-serves-is-
+// withdrawn, option 1).
+describeLive("after the repair withdrawal (plan step 7)", (catalog) => {
+  const workflowsNow = () => readdirSync(join(CATALOG, "workflows")).sort();
+
+  it("workflows/ holds exactly explorer.v1.json and entry.v2.json", () => {
+    expect(workflowsNow()).toEqual(["entry.v2.json", "explorer.v1.json"]);
+  });
+
+  it("no workflow definition names host.capture.v1, host.integrate.v1 or host.snapshot.v1", () => {
+    const hits: string[] = [];
+    for (const file of workflowsNow()) {
+      const text = readFileSync(join(CATALOG, "workflows", file), "utf8");
+      for (const s of RETIRED_SERVICES) if (text.includes(s)) hits.push(`${file}: ${s}`);
+    }
+    expect(hits).toEqual([]);
+  });
+
+  it("every profile a supported entry names declares entry-request.v1 and entry-result.v2", () => {
+    const wrong: string[] = [];
+    for (const id of new Set(catalog.entries.filter((e) => e.support.prior === "supported").map((e) => e.profile))) {
+      const p = loadProfile(CATALOG, id);
+      if (p === null) wrong.push(`${id}: no profile`);
+      else if (p.input_schema !== ENTRY_REQUEST_SCHEMA || p.result_schema !== ENTRY_RESULT_SCHEMA) wrong.push(`${id}: ${p.input_schema}, ${p.result_schema}`);
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  it("the only roles supported on prior are roles a workflow step names (today explorer)", () => {
+    const names = nameMap(catalog);
+    const stepRoles = new Set<string>();
+    for (const file of workflowsNow()) {
+      const wf = readJson<Workflow>(join(CATALOG, "workflows", file));
+      for (const step of wf.steps) {
+        if (step.role === undefined || step.role === null) continue;
+        const ref = names.get(step.role);
+        if (ref !== undefined) stepRoles.add(ref.id);
+      }
+    }
+    const supported = catalog.roles.filter((r) => r.support.prior === "supported").map((r) => r.id);
+    expect(supported.filter((id) => !stepRoles.has(id)), `workflow roles: ${[...stepRoles].join(", ")}`).toEqual([]);
   });
 });
 

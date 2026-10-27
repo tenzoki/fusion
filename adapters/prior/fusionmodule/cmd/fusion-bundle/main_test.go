@@ -197,3 +197,59 @@ func TestFusionInstallTree(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// The data selection takes every version of a published asset, directly under
+// schemas/ and workflows/, and leaves the meta-schemas, the freeze lists,
+// a v0 name and anything in a subdirectory at home: a v2 beside a v1 lands in
+// the payload's data files.
+func TestCopyTreeTakesEveryPublishedVersion(t *testing.T) {
+	catalog := t.TempDir()
+	files := []string{
+		"schemas/entry-request.v1.json",
+		"schemas/entry-result.v1.json",
+		"schemas/entry-result.v2.json",
+		"schemas/x.v10.json",
+		"schemas/workflow.schema.json",
+		"schemas/FROZEN",
+		"schemas/WITHDRAWN",
+		"schemas/x.v0.json",
+		"schemas/x.v01.json",
+		"schemas/old/y.v1.json",
+		"workflows/explorer.v1.json",
+		"workflows/entry.v2.json",
+		"workflows/notes.md",
+	}
+	for _, p := range files {
+		full := filepath.Join(catalog, filepath.FromSlash(p))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte("{}\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	w := writer{root: t.TempDir()}
+	for _, dir := range []string{"workflows", "schemas"} {
+		if err := w.copyTree(filepath.Join(catalog, dir), dir, isPublishedAsset); err != nil {
+			t.Fatal(err)
+		}
+	}
+	got := append([]string(nil), w.written...)
+	sort.Strings(got)
+	want := []string{
+		"schemas/entry-request.v1.json",
+		"schemas/entry-result.v1.json",
+		"schemas/entry-result.v2.json",
+		"schemas/x.v10.json",
+		"workflows/entry.v2.json",
+		"workflows/explorer.v1.json",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("data files %v, want %v", got, want)
+	}
+	for _, p := range want {
+		if _, err := os.Stat(filepath.Join(w.root, filepath.FromSlash(p))); err != nil {
+			t.Errorf("%s not written to the payload: %v", p, err)
+		}
+	}
+}

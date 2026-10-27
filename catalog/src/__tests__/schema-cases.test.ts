@@ -4,11 +4,13 @@
 // `adapters/prior/fusionmodule/internal/steps/schema_cases_test.go` asserts the
 // same rows, so the two validators agree on them or one of the suites is red.
 //
-// The repair table: plan step 12 of
-// 261022-1611-plan-prior-bundle-closing-review-follow-ups.md. The entry table
-// (entry-request and entry-result of fusion.entry.v1): plan step 4 of
-// 261023-1854-plan-prior-full-surface-handover-h1-to-h9.md; the Go side runs it
-// from that plan's step 17.
+// The entry table of fusion.entry.v2 (entry-request.v1 and entry-result.v2):
+// plan step 2 of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-
+// model.md, the table itself that plan's step 3. The repair table and the
+// fusion.entry.v1 table are no longer run: repair is withdrawn (decision
+// 261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-
+// entry-model) and entry v1 is not served. No table holds explorer rows; the
+// explorer's schemas are held by their freeze.
 
 import Ajv2020, { type ValidateFunction } from "ajv/dist/2020.js";
 import { existsSync } from "node:fs";
@@ -17,10 +19,9 @@ import { describe, expect, it } from "vitest";
 import { catalogRoot, readJson } from "../render.js";
 
 const CATALOG = catalogRoot();
-const TABLES = [
-  { label: "repair", file: "repair-schema-cases.v1.json", schemas: null },
-  { label: "entry", file: "entry-schema-cases.v1.json", schemas: ["entry-request.v1.json", "entry-result.v1.json"] },
-] as const;
+const TABLES: readonly { label: string; file: string; schemas: readonly string[] | null }[] = [
+  { label: "entry v2", file: "entry-schema-cases.v2.json", schemas: ["entry-request.v1.json", "entry-result.v2.json"] },
+];
 
 interface SchemaCase {
   name: string;
@@ -43,7 +44,19 @@ function validatorFor(name: string): ValidateFunction {
 }
 
 for (const { label, file, schemas } of TABLES) {
-  const table = readJson<{ schema: string; cases: SchemaCase[] }>(join(CATALOG, "testdata", file));
+  // A table not yet written is one failing case naming it, not a collection
+  // error that would take the file's other tables down with it.
+  let table: { schema: string; cases: SchemaCase[] };
+  try {
+    table = readJson<{ schema: string; cases: SchemaCase[] }>(join(CATALOG, "testdata", file));
+  } catch (error) {
+    describe(`the shared ${label}-schema cases`, () => {
+      it(`loads testdata/${file}`, () => {
+        throw error;
+      });
+    });
+    continue;
+  }
 
   describe(`the shared ${label}-schema cases`, () => {
     it("is a v1 table of uniquely named rows, each naming a shipped schema at the root", () => {
@@ -63,7 +76,7 @@ for (const { label, file, schemas } of TABLES) {
 
     if (schemas !== null) {
       it("covers each of its schemas with both verdicts, and names no other schema", () => {
-        for (const c of table.cases) expect(schemas as readonly string[], c.name).toContain(c.schema);
+        for (const c of table.cases) expect(schemas, c.name).toContain(c.schema);
         for (const s of schemas) {
           expect(table.cases.some((c) => c.schema === s && c.valid), `${s}: no accepted row`).toBe(true);
           expect(table.cases.some((c) => c.schema === s && !c.valid), `${s}: no refused row`).toBe(true);

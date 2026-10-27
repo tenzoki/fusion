@@ -33,3 +33,6 @@
 ## Recommendation
 
 Option 1. The freeze rule binds bytes under a name and is silent on withdrawal. Its test already holds only the set on disk, so a file and its line leaving together breaks none of its checks. What the rule needs is the one guarantee withdrawal could otherwise undo, that a name never returns with other bytes, and `WITHDRAWN` makes that guarantee mechanical. The first filing of `261027-1612-does-the-module-keep-serving-fusion-entry-v1-beside-fusion-entry-v2.md` stated the constraint as "never edited or removed under its name". The "removed" half read more into the rule than its three sources say, and that record now cites this one. Confidence: the three sources were read at `cd4970b5`. That Prior needs nothing from fusion's tree to read old repair runs is fusion's reading of 69.5, which request 77 asks Prior to confirm.
+
+---
+Answered: the user in chat, 2026-10-27, "1" to the review of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model.md (approve the plan, all four open questions as recommended) — option 1, withdraw with catalog/schemas/WITHDRAWN and a never-reused name; ruled by user, Kai Stalmann <ks@qantr.com>

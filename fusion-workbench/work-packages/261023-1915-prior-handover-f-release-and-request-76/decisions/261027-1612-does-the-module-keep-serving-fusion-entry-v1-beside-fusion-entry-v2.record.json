@@ -17,8 +17,8 @@
   },
   "extensions": {},
   "control": {
-    "state": "open",
-    "answer_ref": null,
+    "state": "answered",
+    "answer_ref": "261027-1612-does-the-module-keep-serving-fusion-entry-v1-beside-fusion-entry-v2.md",
     "implementation_ref": null,
     "superseded_by": null,
     "deferral": null

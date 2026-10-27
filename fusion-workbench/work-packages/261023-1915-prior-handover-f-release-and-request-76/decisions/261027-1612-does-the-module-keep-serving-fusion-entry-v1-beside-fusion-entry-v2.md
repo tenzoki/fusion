@@ -34,3 +34,6 @@ This record was revised on 2026-10-27 at the plan review, before any answer. The
 ## Recommendation
 
 Option 1, on the condition that the withdrawal record is answered with its option 1. If that record keeps the files (its option 2 or 3), this record's answer is option 2. Option 3 is excluded once the ruling on repair is answered as stated. The revised plan cited above is written against option 1.
+
+---
+Answered: the user in chat, 2026-10-27, "1" to the review of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model.md (approve the plan, all four open questions as recommended) — option 1, serve fusion.entry.v2 only, the v1 workflow and result schema withdrawn; ruled by user, Kai Stalmann <ks@qantr.com>
