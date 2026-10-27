@@ -1,1 +1,1 @@
-    echo "gitignore: .checkout-id is tracked — left tracked on this host, where an index-only change is not known to survive the run's integration (request 76, question 8); report it"
+    echo "gitignore: .checkout-id is tracked — left tracked on this host, where an index-only change does not reach the user's checkout through the run's integration (request 77, question 5); report it"

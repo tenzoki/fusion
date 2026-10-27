@@ -1,1 +1,1 @@
- loaded in Setup step 2 (on an entry run, the `*ontology*`, `*normative*` or `*verb*` rule files `fusion-rules` emits from the project's `./rules/`; on a repair run, the project's own ontology, normative and verb rule files, where the project context carries them)
+ loaded in Setup step 2 (the `*ontology*`, `*normative*` or `*verb*` rule files `fusion-rules` emits from the project's `./rules/`)

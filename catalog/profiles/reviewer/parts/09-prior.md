@@ -1,1 +1,1 @@
- under `$SCAN_ISSUES` (on a repair run, the ones it carries)
+ under `$SCAN_ISSUES`

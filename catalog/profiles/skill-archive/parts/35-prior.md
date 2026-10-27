@@ -1,1 +1,1 @@
-9. **Report.** Print archive path, item count, file count, manifest path. Any collision needs the user's attention — it means an artefact stayed put. The host integrates the moves as this run's commit when the run ends, so there is nothing for the user to `git add`.
+9. **Report.** Print archive path, item count, file count, manifest path. Any collision needs the user's attention — it means an artefact stayed put. The moves reach the user's checkout uncommitted when the host integrates this run, so the user stages and commits them.

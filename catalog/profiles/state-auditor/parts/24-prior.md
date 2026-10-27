@@ -1,1 +1,1 @@
- `$OUT_ISSUE` on an entry run, per `rules/fusion-workbench-conventions.md` `## Record filing`, and to the answer's issue entries on a repair run, for the host to file**, one entry per defect
+ `$OUT_ISSUE`, per `rules/fusion-workbench-conventions.md` `## Record filing`**, one entry per defect

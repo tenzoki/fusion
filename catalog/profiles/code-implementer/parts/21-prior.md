@@ -1,1 +1,1 @@
-the text of an entry run's report, the notes and reasons inside a repair run's JSON answer, 
+the text of your report, 

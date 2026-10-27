@@ -1,1 +1,1 @@
-Close with the one line that says the edits are integrated as this run's commit.
+Close with the one line that says the edits reach the user's checkout uncommitted when the host integrates this run.

@@ -1,1 +1,1 @@
-- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The host integrates the renames as this run's commit.
+- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The renames reach the user's checkout uncommitted when the host integrates this run; the index `git mv` wrote stays in the workspace.

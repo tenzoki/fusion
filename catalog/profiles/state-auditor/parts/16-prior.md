@@ -1,1 +1,1 @@
- directory in `$SCAN_DECISIONS`, the decisions at `open` or `answered` from the Step 1 `list`, on an entry run, and for each decision the role input carries at `open` or `answered` on a repair run (Step 1)
+ directory in `$SCAN_DECISIONS`, the decisions at `open` or `answered` from the Step 1 `list`

@@ -41,7 +41,7 @@
       },
       {
         "id": "6",
-        "state": "in_progress"
+        "state": "done"
       },
       {
         "id": "7",
@@ -66,7 +66,7 @@
         "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
         "record_id": "b49d6666-63a0-4d1d-bde0-1d4fef0a86e9"
       },
-      "revision": "sha256:61e5f545ac591fe8e0548f129b8bcfe021f3ca784802ec22751f367f955339ab"
+      "revision": "sha256:2b9686737467c53d9d8b62b9526b4214251359171ab24e595caeb1302ff7edc9"
     }
   }
 }

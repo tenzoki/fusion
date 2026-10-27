@@ -4,5 +4,5 @@
 | Cross-domain task discovered at runtime (task needs both code + data changes) | Split into two subtasks with dependency, present to user for confirmation |
 | Integration fails at the run's end | Not this run's to handle: the run makes no commit, and the host reports its own integration failure |
 
-**Revert strategy:** Always use `git checkout HEAD -- <specific-files>`, never `git checkout .` or `git reset --hard`. Revert only the specific files that are problematic. On Prior `HEAD` is the run's base revision, not the last task's commit, so a file an earlier task of this run changed is never reverted: that would discard the earlier task's work too. Name it to the user instead, with what the failing task changed in it, and leave it as it stands.
+**Revert strategy:** Always use `git checkout HEAD -- <specific-files>`, never `git checkout .` or `git reset --hard`. Revert only the specific files that are problematic. On Prior `HEAD` is the run's base revision, not the last task's commit, and the workspace also holds the user's uncommitted changes from before the run. So a file an earlier task of this run changed, or one Setup's `git status --porcelain` listed, is never reverted: that would discard that work too. Name it to the user instead, with what the failing task changed in it, and leave it as it stands.
 

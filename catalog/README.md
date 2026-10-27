@@ -17,16 +17,17 @@ install: `install.sh` copies a fixed list of entries and `catalog/` is not on it
 | `catalog.json` | A `fusion.catalog/v2` document. `roles`: canonical id, Claude agent name, Prior ids, aliases with their domain, and one support state per host (`supported`, `planned`, `unsupported`). `entries`: one per function a user starts, an agent or a skill, each with `id`, `kind` (`agent`, `skill`), `profile`, `class` (`asks`, `dispatches`, `plain`), `arguments` (`{items: [{name, kind, required, values?, note?}], note?}`, kinds `flag`, `option`, `positional`, `parameter-line`, `first-message`), `requires` (from `host.question.v1`, `host.exec.v1`, `host.dispatch.v1`) and `support`. Copied byte for byte into the bundle. v2 is decision `261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md` (option 2). |
 | `profiles/<id>/profile.json` | A role's or an entry's profile: its `parts` list (fusion's own, never shipped) and the seven keys Prior reads. |
 | `profiles/<id>/parts/*.md` | The role text, in order, each file tagged `neutral`, `claude` or `prior` in `profile.json`. |
-| `workflows/<id>.v1.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. `ls workflows` lists them; among them `explorer.v1.json`, one durable role, `repair.v1.json`, the ten-step reviewed repair of Prior's answer 69, and `entry.v1.json`, the `fusion.entry.v1` workflow proposed in request 76 and not yet accepted by Prior. |
+| `workflows/<id>.v<n>.json` | A workflow definition: the steps, their hand-overs and completion conditions, `revise_bound`, and the host services it `requires`. There are two: `explorer.v1.json`, one durable role, and `entry.v2.json`, the `fusion.entry.v2` workflow every supported entry runs under, proposed in request 77 and not yet accepted by Prior. It delivers on Prior's step-17 model: the run works in a copy of the user's checkout, and one `host.entry.integrate.v1` call fast-forwards the user's branch over the run's commits and applies its uncommitted changes to the checkout. |
 | `schemas/*.schema.json` | The schemas of the three file kinds above; their `description` fields document each shape. |
-| `schemas/*.v1.json` | The request, role-input, envelope and result schemas the bundle ships. |
-| `schemas/FROZEN` | The sha256 of every published schema and workflow definition, one line each, written at plan step 15 on Prior's answer 69. See `## The frozen assets`. |
+| `schemas/*.v<n>.json` | The request, role-input, envelope and result schemas the bundle ships: the explorer's four, `entry-request.v1.json` and `entry-result.v2.json`. |
+| `schemas/FROZEN` | The sha256 of every published schema and workflow definition, one line each, written at plan step 15 on Prior's answer 69 and extended by the v2 lines of 13.4.1. See `## The frozen assets`. |
+| `schemas/WITHDRAWN` | The assets withdrawn from the published set, in `FROZEN`'s line form at the hash their `FROZEN` line carried, grouped under a comment line naming the commit that holds their bytes. See `## The frozen assets`. |
 | `src/render.ts` | The renderer and its CLI. |
 | `src/__tests__/render.test.ts` | The contract, as tests. |
 | `src/__tests__/frozen.test.ts` | The freeze, as tests. |
 | `src/__tests__/schema-cases.test.ts` | The schema-case tables, as tests: every row validates against the schema it names with the verdict it records, under ajv. |
 | `testdata/catalog-decode-cases.v2.json` | Catalog documents with the verdict each must get, asserted by `render.test.ts` against `checkCatalogDocument` and by the module's `internal/steps/catalog_test.go` against `LoadCatalog`, so the two decoders agree. |
-| `testdata/*-schema-cases.v1.json` | The schema-case tables (`fusion.schema-cases/v1`; `ls testdata/*-schema-cases.v1.json` lists them): documents, each naming the schema it validates against, with the verdict each must get, asserted by `schema-cases.test.ts` against ajv and by the module's `internal/steps/schema_cases_test.go` against the Go validator, so the two validators agree on the same rows. |
+| `testdata/*-schema-cases.v<n>.json` | The schema-case tables (`fusion.schema-cases/v1`; `ls testdata/*-schema-cases.v*.json` lists them): documents, each naming the schema it validates against, with the verdict each must get, asserted by `schema-cases.test.ts` against ajv and by the module's `internal/steps/schema_cases_test.go` against the Go validator, so the two validators agree on the same rows. |
 
 ## The two commands
 
@@ -97,7 +98,7 @@ run by `adapters/prior/build.sh`, not by this command.
 
 ## The frozen assets
 
-Every `schemas/*.v1.json` and `workflows/*.v1.json` is a published contract:
+Every `schemas/*.v<n>.json` and `workflows/*.v<n>.json` is a published contract:
 Prior decodes the bundle's copy, and the explorer's five were accepted byte
 for byte at request 68. `schemas/FROZEN` names each with its sha256, and
 `src/__tests__/frozen.test.ts` holds four things: the list parses and is
@@ -107,6 +108,20 @@ accepted. A change to a frozen file turns `npm test` red; the route is a new
 schema version beside the old one, agreed with Prior, and a new `FROZEN`
 line for it, never an edit under the same name. The `*.schema.json` files
 and the profiles are fusion's own and are not frozen.
+
+A contract that is withdrawn takes its assets out of the tree together with
+their `FROZEN` lines (decision
+`261027-1833-how-does-a-frozen-catalog-asset-leave-the-tree-when-the-contract-it-serves-is-withdrawn.md`,
+option 1). `schemas/WITHDRAWN` lists each one in `FROZEN`'s line form, at the
+hash its `FROZEN` line carried, under a comment line naming the commit that
+still holds the bytes. `frozen.test.ts` holds that the list parses, that its
+paths and `FROZEN`'s are disjoint, that no withdrawn path exists on disk, and
+that each hash is the sha256 of the path at the commit its group names. A
+withdrawn name is never published again; a successor is a new version. In
+13.4.1 the repair workflow was withdrawn with its eight schemas (bytes at
+`v13.1.0`), and so were `workflows/entry.v1.json` and
+`schemas/entry-result.v1.json` (bytes at `ca9eb60d`), under decision
+`261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-entry-model.md`.
 
 ## Editing a converted prompt
 
