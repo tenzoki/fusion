@@ -1,0 +1,15 @@
+# withdrawn at plan step 7 of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model; one line per withdrawn asset in FROZEN's form, <sha256>  <relative path from catalog/>, at the hash its FROZEN line carried; a withdrawn name is never published again
+# the repair contract, withdrawn under E4 (261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-entry-model) and E5 (261027-1833-how-does-a-frozen-catalog-asset-leave-the-tree-when-the-contract-it-serves-is-withdrawn, option 1); the bytes stand at commit v13.1.0
+2f1f30c0c75eb3ebb63967d61e5b472b348c6130f676441b2057b93002ac6488  workflows/repair.v1.json
+8b6b9ded521240322b983f6b041985ba3c4fab38b1d398267863b45ce85c9b39  schemas/repair-request.v1.json
+07a19c5dabb6e3761278edd259b2b18794b58526f4652c27d35dd4b8da66a852  schemas/repair-result.v1.json
+2ce4aa511b3aee429aa0cfd8afa63fd7dd78fb6a1014f2cbe15c645214ae010f  schemas/implementer-request.v1.json
+d0bd78f1a1022fcf1786329b2cf66aae4b59677eba6b6aac1df0456d98f78804  schemas/implementer-result.v1.json
+d9d98627201af82b64a568cb0ebace557f466814bc0ae4a76670ecc869e61031  schemas/review-request.v1.json
+0d62e44446a996bf9e96e0024f8396cddc176ca366acc869942fb9fe49ee4a0e  schemas/review-response.v1.json
+ac1ca858ed2e68576076950555a7ad24d17c91ef16a168592dbed4900a1be5f0  schemas/audit-request.v1.json
+7c6f52787e6477195d618a240497d8a8ed3a093c949a50ccf5499455b1c844e5  schemas/audit-result.v1.json
+
+# the accepted-reference entry assets of request 76, withdrawn under E4 and E5 (as above); the bytes stand at commit ca9eb60d
+bae94eef716d90ec230a468acf19107b10b39b78ed1e9a222ad120e082d92041  workflows/entry.v1.json
+32bd64e1449f8df0ab1b37371ec76642a90cc1089a3da2c4e2fa99aab43d53f5  schemas/entry-result.v1.json

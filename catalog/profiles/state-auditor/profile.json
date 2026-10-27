@@ -40,10 +40,10 @@
     { "file": "parts/24-prior.md", "tag": "prior" },
     { "file": "parts/25-neutral.md", "tag": "neutral" }
   ],
-  "input_schema": "schemas/audit-request.v1.json",
-  "result_schema": "schemas/audit-result.v1.json",
-  "tools_ceiling": ["read", "list", "search", "runtime-inspect", "git-inspect"],
+  "input_schema": "schemas/entry-request.v1.json",
+  "result_schema": "schemas/entry-result.v2.json",
+  "tools_ceiling": ["read", "list", "search", "git-inspect"],
   "may_delegate": false,
-  "writes_workbench": { "claude-code": true, "prior": false },
+  "writes_workbench": { "claude-code": true, "prior": true },
   "execution_policy": { "claude-code": "claude-guided", "prior": "prior-enforced" }
 }
