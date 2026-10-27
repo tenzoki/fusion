@@ -6093,3 +6093,238 @@ Both pins now hold this file at `36947f8e…b3f9`, its bytes at `aa4277d8`, whic
 | 75 | **complete**. 75(a) **accepted** at Prior `8b505a8`, for `1bbd6c53`: the text delta `d6fc9da0…` → `b4047458…` as the whole delta, no correction. 75(b) **complete** at Prior `08c57fb`, for `aa4277d8`: both pins re-snapshotted (418 and 744 entries), `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d` qualified, 700 116 bytes, now `QualifiedCodecDigest`; 238 of 238 exchanges, 375 manifest cases (95 valid, 280 invalid), 13 goldens unchanged, `go test ./...` and `go vet ./...` passed | `Prior: docs/design/fusion-text-delta-request75-prior-response.md` (75(a)); `Prior: docs/design/fusion-text-delta-request75b-prior-response.md` (75(b)) |
 
 These rows supersede the rows of `#### Requests 64 and 67 to 75, as they stand` above. No request is open.
+
+## Full fusion surface (request 76)
+
+**Written against:** the candidate **C = `ca9eb60d7a1268dfddb0f0611958af6fc4de6c26`** on `main` (2026-10-27 05:25, "chore(release): fusion 13.4.0"), `v13.3.9-28-gca9eb60d`, version `13.4.0` in `.claude-plugin/plugin.json`. No tag `v13.4.0` exists (`git tag -l 'v13.4*'` prints nothing). The bundle below was built at **`308650e1e49ae0d0addd0449df47205677f08471`**, two commits after C that touch `fusion-workbench/` alone, and this section is appended on **`75187b06`** (`75187b06058055e47f6bc8838f0008ba32407b07`, "chore(workbench): plan step 24 done, 13.4.0 bundle built and delivered"), one more such commit. `git diff --stat ca9eb60d 75187b06 -- . ':!fusion-workbench'` prints nothing, so C, the build commit and this section's parent hold the same shipped tree. At `75187b06` this file is 6 095 lines, `sha256:983c24fa8291c45a18ebfe755892e10bb11dff91e8fe6789521e0761502e16a7`. **Prior was read at `89fda50`** (`89fda5013b9638522db0ddfc293b48b12ae8557a`, 2026-10-25 17:24, "chore(events): orchestrator event log through the follow-ups"), the head of its `main`, from committed objects only. The adapter's `adapters/prior/PRIOR_PIN` is **`08c57fb4ec91df6b1e1e311fa2d063eb5ff08076`** (2026-10-23 10:03, "feat(fusionhost): qualify codec bundle b4047458 and answer request 75(b)"), moved there at `6be14760`; `bfdddd0`, where Prior's entry wire landed, is its ancestor, and `git diff --stat 08c57fb 89fda50 -- moduleapi go.mod go.sum schemas/module-api` prints nothing. Prior paths below are read with `git show 08c57fb:<path>` unless `89fda50` is named.
+
+Both pin files were read with `git show 89fda50:tests/testdata/<pin>/UPSTREAM.json`. Both name fusion `aa4277d8`, `fusion-codec` with 418 files and `fusion-fj01` with 744 and `bundle_digest` `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`, and `git diff --stat 08c57fb 89fda50 -- tests/testdata/fusion-codec tests/testdata/fusion-fj01` prints nothing. Request 75's command (`### What changed for Prior's two pins, at aa4277d8`), with `aa4277d8` replaced by `75187b06` and the pin read from `89fda50`, prints, verbatim:
+
+```
+  moved fusion-codec fixtures/prior/REQUESTS.md
+fusion-codec: 1 of 418 moved
+  moved fusion-fj01 codec/fixtures/prior/REQUESTS.md
+fusion-fj01: 1 of 744 moved
+```
+
+This file is the one pinned path that moved since `aa4277d8`, and this section moves it again.
+
+This section is **the hand-over request** that `Prior: docs/design/fusion-full-surface-handover-to-fusion.md` asks for (Prior `7ac0845`, `sha256:9eca479aa14f5de81cadfd5a004d08dc9c9eca486f13a782640eb719a4748254`, unchanged at `89fda50`), and the request under a later number that request 75's `### What fusion does with the answer` announced. It carries the five items of the hand-over's `## What the request should carry`, the codec digest, one row for each of H1 to H9, fusion's ruling on the B2 question, the decisions fusion asks Prior to confirm, and the questions its implementation left for Prior. Fusion did the work as plan `261023-1854-plan-prior-full-surface-handover-h1-to-h9.md`, in five work packages, A to C, E and F. **It asks nothing about the codec**, and no line above is edited. Where this section disagrees with a section above, this section governs.
+
+### The bundle
+
+The absolute hand-over path, as `adapters/prior/build.sh deliver` printed it on 2026-10-27:
+
+```
+/Users/kai/.local/share/prior/incoming/fusion/13.4.0/90961e04e782aed09356bae329ba422266ce973ea56b7b67c314119c30ab05e6/
+```
+
+| File | Bytes | Identity |
+|---|---|---|
+| `fusion-13.4.0.tar` | 28 219 392 | the deterministic, uncompressed tarball; `shasum -a 256` prints `2006ab2cbfa7dfda7fba08d4ce2225f19a317ab2b2a134c0639a827259d95f88` |
+| `fusion-13.4.0.tar.sha256` | 84 | the sidecar, one line: `2006ab2cbfa7dfda7fba08d4ce2225f19a317ab2b2a134c0639a827259d95f88  fusion-13.4.0.tar` |
+| `handover.json` | 2 403 | module id, version, both digests, both revisions, `go1.26.0`, the three targets and the build commands |
+
+All three are mode 0444; `shasum -a 256 -c fusion-13.4.0.tar.sha256`, run inside that directory, prints `fusion-13.4.0.tar: OK`. **The bundle digest is `sha256:90961e04e782aed09356bae329ba422266ce973ea56b7b67c314119c30ab05e6`**, the BundleIndex digest over the payload with `manifest_path` `module.json`. **The tarball's sha256 is `2006ab2cbfa7dfda7fba08d4ce2225f19a317ab2b2a134c0639a827259d95f88`.** As at 68 and 70, the first is what `--trust-digest` takes and the second is what the sidecar checks.
+
+**Identity.** `module.json`: `module_id` `fusion`, `version` `13.4.0`, `runtime_api` `"1"`, `schema_version` 1, `executable` `bin/fusion-module`, 70 `data` files, and the `lifecycle_hooks` declaration below. `build-identity.json` inside the tarball: `fusion_revision` `308650e1e49ae0d0addd0449df47205677f08471`, never `+dirty`; `prior_revision` `08c57fb4ec91df6b1e1e311fa2d063eb5ff08076`; `go_version` `go1.26.0`; and a new key, `install_tree_omitted` (see H8 below).
+
+**The payload, 1 625 tarball entries** (`tar -tf | wc -l`), every one with uid and gid 0 and mtime 0, 35 at mode 0500 and 1 590 at 0400:
+
+| Part | Entries | What it is |
+|---|---|---|
+| module data | 70 | `catalog.json`; `profiles/<id>.{md,json}` for 26 profiles; 14 `schemas/*.v1.json`; 3 `workflows/*.v1.json` (`entry`, `explorer`, `repair`). These alone are `module.json`'s `data` |
+| install tree | 1 549 | every file `git ls-files -s` lists at the build commit under the entries of `install.sh`'s copy loop, in the plugin's own layout at the payload root, outside `data`; mode 0500 for the 31 files git records as `100755`, 0400 for the rest |
+| module executables | 4 | `bin/fusion-module`, the `/bin/sh` launcher, and `bin/{darwin-arm64,linux-amd64,linux-arm64}/fusion-module` |
+| manifest and identity | 2 | `module.json`, `build-identity.json` |
+
+The 26 profiles are the eleven agents, fourteen skill profiles (every skill but `commit` and `cleanup`, see `### The 27 entries`) and `explorer`. The install tree's top-level entries, by `tar -tf` count: `.claude-plugin` 1, `agents` 11, `skills` 16, `rules` 15, `hooks` 230, `codec` 1 214, `bin` 31 (the helpers; the payload's `bin/` holds 35 with the module's four), `stilwerk` 4, `templates` 1, `docs` 23, `README.md`, `README-agents.md`, `README-hooks.md` 1 each. `install.sh`'s loop also names `LICENSE`, which git does not track. `hooks/dist/` carries no test file.
+
+**How it was built and verified** (plan step 24, recorded in `75187b06`'s message). At `308650e1`, with a clean tree: `build.sh build` twice into fresh directories, both printing this digest, and `diff -r` of the two outputs exited 0 (the first build's exit code was not captured; its output equals the second's); `build.sh verify` exited 0, Prior's own `InspectBundle` from a clone at the pin; `FUSION_BUNDLE_DIR=<out> PRIOR_REPO=… adapters/prior/stage.sh test` exited 0, **112 tests and 230 subtests passed, 0 failed, 0 skipped**, of which the conformance package ran 19 tests and 22 subtests; `build.sh deliver` exited 0, and its own build printed the same digest. The install tree is read from the git index at the build commit, not from the work tree: on a clean build the index equals `HEAD`, and `build.sh` refuses a tree that is not clean (`FUSION_BUILD_ALLOW_DIRTY=1` builds from the index and marks the identity `+dirty`, and such a build is never delivered).
+
+**Conformance against the built bundle, on macOS arm64** (`uname -s -m` prints `Darwin arm64`), against a fake host, as at 70:
+
+| Case | What it shows |
+|---|---|
+| the 11 explorer cases and the 6 repair cases of request 70 | unchanged, now run against this bundle |
+| `TestOneEntryPerClassRunsAgainstTheBuiltBundle` | one entry per class through `fusion.entry.v1`, from the launcher started as Prior's host starts it: `help` (`plain`), `reconcile` (`dispatches`), `memo` (`asks`). Each entry is read from the installed `catalog.json` with its kind, profile, class and `prior` support; the scripted role run calls only services inside the entry's `requires` and calls its class's service; the request and the envelope validate against the installed entry schemas; status `completed`, ending `success`/`answered`; one model call and one role run; nothing on stderr. The `dispatches` case sends fusion's proposed `host.dispatch.v1` input (question 13 below), built from the child entry's declared arguments |
+| `TestHookLayoutBundleEqualsPluginTree` | every command `hooks/hooks.json` registers, run from the unpacked payload and from the plugin tree on fusion's 27 payload files under `adapters/prior/testdata/hook-payloads/` (8 commands): the same exit code, stdout, stderr and files written, once the run paths, the minted checkout id and wall-clock stamps are normalised; and every reply measured against the declared `protocol_subset` in both directions (see `### The lifecycle_hooks declaration`) |
+
+The module's own unit suite drives the same three classes over the fixture payload, with a kill after each persisted boundary and a resume that reproduces the envelope with no further role run.
+
+**This is conformance, not acceptance.** The host is a fake and every model answer is scripted. `linux-amd64` (`8454b06b…`) and `linux-arm64` (`61e175be…`) are built, not qualified; `darwin-arm64` is `bfea3fe99f24c14774e1461908c711e34e8d5e03291415b3a7c096fc812d6a66`.
+
+### The codec the bundle carries
+
+**`sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`**, 700 116 bytes, fusion `aa4277d8`. `tar -xOf fusion-13.4.0.tar codec/dist/fusion-record.js | shasum -a 256` and `shasum -a 256 codec/dist/fusion-record.js` at `75187b06` print it. It is Prior's `QualifiedCodecDigest` since `08c57fb` (`Prior: internal/fusionhost/workbench.go` line 22 at `89fda50`), so **no re-pin request precedes this one**, and Prior's step 28 need not wait on one. `git log aa4277d8..75187b06 -- codec/dist codec/contract codec/schemas codec/package.json bin/fusion-record` prints nothing: no codec byte moved in this work.
+
+### The 27 entries
+
+`catalog.json` at C, byte-equal to the payload's (`sha256:927585e18bcfe98ec90a56cd42ab49da9eff3f4f0843b3bc4ab4e616fe29614b`): `schema` `fusion.catalog/v2` (decision D2), `roles` unchanged (16 roles), and `entries`, one per row of the hand-over's table, each `{id, kind, profile, class, arguments, requires, support}`. `support.claude-code` is `supported` for all 27. `jq '[.entries[].class]|group_by(.)|map({(.[0]):length})|add'` prints 14 `asks`, 2 `dispatches`, 11 `plain`, the hand-over's totals; every `kind` and `class` is the hand-over's. In the table, "q", "x" and "d" abbreviate `host.question.v1`, `host.exec.v1` and `host.dispatch.v1`; an argument is `name` (kind; values or note), and every argument is optional unless marked required.
+
+| Entry | Kind | Class | Profile | `prior` | `requires` | Arguments |
+|---|---|---|---|---|---|---|
+| `setup` | skill | asks | `skill-setup` | supported | q, x | none |
+| `check` | skill | asks | `skill-check` | supported | q, x | `--only` (option; `monitor`, `concurrency`, `assets`, `config`, `permissions`, `gitattributes`, `identity`, `gitignore`, `upstream`, `leftovers`, `claude-md`) |
+| `wp` | skill | plain | `skill-wp` | supported | x | `title-and-paragraph` (positional) |
+| `wp-order` | skill | plain | `skill-wp-order` | supported | x | `--format` (option; `text`, `tsv`, `markdown`, `json`, passed through unchecked) |
+| `reconcile` | skill | dispatches | `skill-reconcile` | supported | x, d | `brief` (positional), `--since` (option, a commit), `--domain` (option; `code`, `data`), `--force` (flag) |
+| `curate` | skill | asks | `skill-curate` | supported | q, x, d | `--full`, `--edges`, `--placement` (flags) |
+| `discuss` | skill | asks | `skill-discuss` | supported | q, x, d | `--begin` (option, a reference; no switch means `--begin`), `--infer`, `--close` (flags) |
+| `commit` | skill | asks | `skill-commit` | **unsupported** | q, x | `--all`, `--amend` (flags) |
+| `cleanup` | skill | plain | `skill-cleanup` | **unsupported** | x | `--dry-run`, `--no-push` (flags); any other argument is refused by name |
+| `archive` | skill | asks | `skill-archive` | supported | q, x | `tier` (positional; `tier-1`, `tier-2` or `tier-3`, optionally `<N>d`, or a natural-language description) |
+| `memo` | skill | asks | `skill-memo` | supported | q, x | `content` (positional; content, `task:`/`todo:`/`aufgabe:` content, or a conversational reference) |
+| `post` | skill | asks | `skill-post` | supported | q, x | `--since` (option, a commit) |
+| `news` | skill | asks | `skill-news` | supported | x | none |
+| `cadence` | skill | plain | `skill-cadence` | supported | x | none |
+| `migrate` | skill | asks | `skill-migrate` | supported | x | none |
+| `help` | skill | plain | `skill-help` | supported | x | `topic` (positional; `philosophy`, `daily`, `install`, `update`, `configure`) |
+| `orchestrator` | agent | asks | `orchestrator` | supported | x, d | `brief` (first-message); no dispatch parameters |
+| `requirements-designer` | agent | asks | `requirements-designer` | supported | q, x | `**Work package:**`, `**Parent task:**` (parameter-line); `request` (first-message, required) |
+| `implementation-planner` | agent | asks | `implementation-planner` | supported | q, x | `**Executors:**` (parameter-line; comma-separated, each `code-implementer`, `data-implementer` or `analyst`), `**Work package:**`, `**Audience:**` (`user`) (parameter-line); `request` (first-message, required) |
+| `code-implementer` | agent | plain | `code-implementer` | supported | x | `**Audience:**` (parameter-line; `user`); `task` (first-message, required) |
+| `data-implementer` | agent | plain | `data-implementer` | supported | x | as `code-implementer` |
+| `reviewer` | agent | plain | `reviewer` | supported | x | `**Review domain:**` (parameter-line; `code`, `ontology`, `both`), `**Audience:**` (`user`); `task` (first-message, required) |
+| `state-auditor` | agent | plain | `state-auditor` | supported | x | `**Domain:**` (parameter-line; `code`, `data`), `**Directive:**`, `**Since:**`, `**Audience:**` (`user`); `task` (first-message, required) |
+| `analyst` | agent | plain | `analyst` | supported | x | as `code-implementer` |
+| `document-editor` | agent | plain | `document-editor` | supported | x | `**Deliverable language:**` (parameter-line, required; `de`, `en`; absent halts); `task` (first-message, required) |
+| `policy-curator` | agent | asks | `policy-curator` | supported | x | `**Mode:**` (`survey`, `apply`), `**Ledger:**`, `**Approved:**` (each absent halts when `**Mode:**` is `apply`), `**Scope:**` (`anchored`, `full`), `**Placement:**`, `**Edges:**` (`on`, `off`), all parameter-line |
+| `consultant` | agent | dispatches | `consultant` | supported | x, d | `conversation` (first-message) |
+
+**`requires` is the set the entry's `prior` parts name**, enforced by the catalog suite (a supported entry's `requires` equals the services its `prior` parts mention), not the hand-over's class read as a service. So four `asks` entries carry no `host.question.v1`: `orchestrator` and `policy-curator` ask in chat, which Prior serves as a turn end (H2), and so do `news` and `migrate`; and `curate` and `discuss` carry `host.dispatch.v1` although their class is `asks`. On the user's ruling of 2026-10-25, `requirements-designer` and `implementation-planner` ask through `host.question.v1`. **`commit` and `cleanup` stay `prior: unsupported`**, held by `catalog/src/__tests__/prior-held-unsupported.test.ts`: their `prior` parts exist, and say that on Prior the entry has nothing of its own to commit, because the host integrates the run as its one commit; whether they become entries waits on question 1 below.
+
+### Host services required
+
+`workflows/entry.v1.json` (`fusion.entry.v1`, `revise_bound` 0) requires twelve services, which Prior is asked to find before module startup, as its preflight does for repair:
+
+- the six of request 69: `host.role.compose.v1`, `host.workspace.v1`, `host.capture.v1`, `host.integrate.v1`, `host.snapshot.v1`, `host.workbench.v1`, called under the common contract `workflows/repair.v1.json` states, with the operation id derived under capability `fusion.entry.v1`;
+- the three role services every workflow's role step uses: `host.role.read.v1`, `host.role.run.v1`, `host.role.complete.v1`;
+- the three of Prior's entry wire (`moduleapi/v1/entry_wire.go`, since `bfdddd0`): `host.question.v1`, `host.exec.v1`, `host.dispatch.v1`. These are tools of the role run, not module calls: the module holds no client for them, and `requires` names them so that Prior grants them to the run. Each entry's own `requires`, in the table above, is a subset of the definition's, and the run gets that subset.
+
+The steps, in order: `compose`, `workspace`, `run` (a `host_service: host.role.run.v1` step whose role is the invocation's `entry.profile`, `role_input_schema` `schemas/entry-request.v1.json`, `forwarded` `verbatim`, `recovery_ref` `audit_ref`; result `schemas/entry-result.v1.json`), `capture`, `integrate`, `snapshot`, and `workbench`, one read per control record among the snapshot's changed paths. **No step pushes:** no catalog entry declares a remote and none of the twelve services pushes; question 14 asks which service would.
+
+### The `lifecycle_hooks` declaration
+
+`module.json`, verbatim:
+
+```json
+"lifecycle_hooks": {
+  "path": "hooks/hooks.json",
+  "sha256": "d7f4d7ab1d327d68b9e1c431484577f63c99e8fabc197b81a1caaac2d4dbc4f3",
+  "protocol_subset": {
+    "events": ["SessionStart", "PreToolUse", "PostToolUse", "SubagentStop"],
+    "reply_forms": ["empty", "text", "json"],
+    "reply_fields": ["hookSpecificOutput.hookEventName", "hookSpecificOutput.systemMessage", "hookSpecificOutput.additionalContext"]
+  }
+}
+```
+
+`tar -xOf fusion-13.4.0.tar hooks/hooks.json | shasum -a 256` and `git show ca9eb60d:hooks/hooks.json | shasum -a 256` both print `d7f4d7ab…c4f3`. The subset is the one the hand-over names as Prior's, exactly, and it is measured rather than copied: the hook-layout case above fails if a reply falls outside it or if any event, form or field in it goes unobserved.
+
+**The hook files it covers are inside the install tree, at their plugin paths**, with no hook source changed: `hooks/hooks.json`; `hooks/dist/` (98 files, no test), which holds `session-start.js`, `session-id.js`, `identity-notice.js`, `guard.js`, `tracker.js`, `subagent-stop.js` and `hooks/dist/lib/`, three levels below the payload root as `resolveIdentity` requires; the helpers the hooks start, `bin/fusion-identity`, `bin/fusion-workbench-root`, `bin/fusion-count-sources`, `bin/fusion-claude-md-weight`, and `bin/fusion-commit-lock`; `agents/orchestrator.md`; `.claude-plugin/plugin.json`. The eight registered commands are five under `SessionStart` (the `FUSION_PLUGIN_ROOT` export, the banner, `session-start.js`, `session-id.js`, the identity export with `identity-notice.js`), `guard.js` under `PreToolUse`, `tracker.js` under `PostToolUse`, both with matcher `Write|Edit|MultiEdit|NotebookEdit|Bash|Task|Agent`, and `subagent-stop.js` under `SubagentStop`. **Node:** the carried `hooks/package.json` and `codec/package.json` state `engines.node` `>=20.12.0`.
+
+### What Prior is asked to run
+
+**Closes:** on fusion's side, the hand-over work of plan `261023-1854-plan-prior-full-surface-handover-h1-to-h9.md`; the tag `v13.4.0` and the marketplace bump wait for this answer, as `v13.1.0` waited for request 70. On Prior's side, its step 45 reads this section and its step 28 runs what follows. Preferred form: a Prior response document at a Prior commit that names the Prior commit it ran on, the bundle digest it ran, the platform and both source revisions it installed, and gives each of 76.1 to 76.4, each H row below, each carry item, each decision of `### Decisions Prior is asked to confirm` and each question of `### Questions for Prior` one verdict: accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for), with any defect named as such.
+
+#### 76.1 Inspect, install under explicit trust, activate
+
+As at 70.1, three distinct recorded actions: the sidecar's line against `shasum -a 256` of the tarball; `prior module inspect --archive <hand-over path>/fusion-13.4.0.tar`, comparing the reported identity with `{fusion, 13.4.0, sha256:90961e04…}`; `prior module install --runtime <runtime> --archive <hand-over path>/fusion-13.4.0.tar --trust-digest sha256:90961e04e782aed09356bae329ba422266ce973ea56b7b67c314119c30ab05e6`; `prior module activate --runtime <runtime> --module fusion --version 13.4.0 --digest sha256:90961e04e782aed09356bae329ba422266ce973ea56b7b67c314119c30ab05e6`.
+
+**Asked:** Does inspection report exactly that identity and 1 625 files, and does activation verify the complete installed payload, the 35 mode-0500 files included? Does install accept the `lifecycle_hooks` declaration (a declaration outside Prior's subset is refused at install, by name)?
+
+#### 76.2 Load the catalog's entries and the hook declaration
+
+`fusion.catalog/v2` decoded with `roles` and `entries`; the 25 entries supported on `prior` resolve to their profiles, each `profiles/<id>.md` and `.json` loading, every entry profile naming `schemas/entry-request.v1.json` and `schemas/entry-result.v1.json` except the three repair roles, which keep the repair schemas (D5); `workflows/entry.v1.json` resolves with its twelve `requires`; the declaration's `hooks/hooks.json` verified against its sha256 and handed to the lifecycle runtime. The explorer and repair workflows resolve as at 70.
+
+**Asked:** Does the loader accept the payload as it stands? Which profile bytes did it bind for each entry? Do the 17 frozen files of `catalog/schemas/FROZEN` at C equal the installed ones (the three entry assets are fusion's proposal in this request, not yet accepted)?
+
+#### 76.3 Conformance with a scripted backend, one entry per class
+
+`fusion.entry.v1` through the module process with the twelve services, a scripted backend making the class's service calls: one `plain`, one `dispatches` and one `asks` entry. Fusion ran `help`, `reconcile` and `memo`; any one per class serves.
+
+**Asked:** For each: the entry, the envelope's status and ending, the service calls the run made and their receipts, the capture and integration, and whether a kill at a persisted boundary and a restart reproduced the envelope with no further role run.
+
+#### 76.4 The identity Prior ran
+
+**Asked:** The bundle digest Prior ran (it must equal `sha256:90961e04e782aed09356bae329ba422266ce973ea56b7b67c314119c30ab05e6`), the tarball sha256, the platform, the selected binary's sha256, the fusion revision and the Prior pin it installed (expected `308650e1…` and `08c57fb…`), and the Prior host commit it ran on.
+
+### H1 to H9, row by row
+
+Each row is **met**, or **deliberately different** with fusion's reason. The landing commits are named so that Prior can read each change.
+
+| H | Verdict | What fusion did, and why it differs where it does |
+|---|---|---|
+| H1 | met, with three deliberate differences | `entries` beside `roles`, 27 entries in the proposed shape `{id, kind, profile, class, arguments, requires, support}` (`7fed356a`, `347d31d0`); qualification is not written into the catalog. (1) The document is `fusion.catalog/v2`, not v1 with a third key (D2): two decoders read it with exact key sets, and the name should say the shape. (2) The argument schema is the inventory's declaration `{items: [{name, kind, required, values?, note?}], note?}`, which Prior's admission already reads, derived from fusion's own sources; so these rows differ from Prior's `docs/qualification/fusion-surface/inventory.json` (fusion 13.3.0): `**Work-item:**` dropped from `code-implementer`, `data-implementer` and `analyst`, since no prompt parses it and `README-agents.md` `## Dispatch parameters` omits it; `**Round:**` dropped from `consultant`, which never reads it; `**Audience:**` gains the values `["user"]` on the six agents that take it, the only value `bin/fusion-rules` accepts; `archive`'s `tier` loses its closed value set, since the skill takes free text as a description, and the tiers move into the note; `implementation-planner`'s `**Executors:**` and `policy-curator`'s `**Ledger:**` and `**Approved:**` gain notes from the roster; `state-auditor` keeps `**Directive:**` and `**Since:**` as Prior has them. (3) `requires` follows the `prior` parts, not the class (`### The 27 entries`), and `commit` and `cleanup` stay `unsupported` (question 1). `catalog/schemas/FROZEN` gains only the three entry assets of H6; `catalog.json` is not a frozen asset. `FUSION-CATALOG` exits 0 |
+| H2 | met, deliberately different in mechanism | `orchestrator`, `consultant`, `analyst`, `requirements-designer` (`98a6c2ed`, `18b154cc`): each `agents/<id>.md` is split into ordered span parts `neutral`, `claude` and `prior` under `catalog/profiles/<id>/parts/`, and `npm run render -- claude` reproduces it byte for byte (D3: one mechanism for all 27). Setup's helper calls go through `host.exec.v1`, each dispatch through `host.dispatch.v1`; `requirements-designer` asks through `host.question.v1`, `orchestrator` in chat. A `prior` part spells the helper calls it runs, which a Prior render may do while `Agent(`, `AskUserQuestion` and slash commands stay refused (decision `261024-2111-may-an-entry-profiles-prior-part-spell-the-helper-calls-its-host-exec-runs.md`, option 1, 2026-10-24) |
+| H3 | met, with one stated difference | `implementation-planner`, `data-implementer`, `document-editor`, `policy-curator` as H2 (`65b02b31`, `5478386f`); `implementation-planner` asks through `host.question.v1`, `policy-curator` in chat. `code-implementer`, `reviewer` and `state-auditor` gain an entry-run branch in their `prior` parts beside the repair text (`5544cfca`), with `host.exec.v1`; their `profile.json` is unchanged (D5). Every agent in the catalog has a `prior` part. **Difference:** a `reviewer` entry run writes its evidence with `bin/fusion-write evidence`, which records `host` `claude-code`, `execution_policy` `claude-guided` and `subject.git_tree` `HEAD^{tree}` (`hooks/lib/record-write.ts`); on Prior that names the wrong host and the base revision's tree, not the reviewed workspace. The plan holds `hooks/` unchanged in this release, so fusion states it here and fixes it in a later one |
+| H4 | deliberately different | `setup`, `check`, `wp`, `wp-order`, `reconcile`, `curate`, `discuss`, `commit` (`87675d99`; renderer `eab95b30`). The neutral part is not read from `SKILL.md`: every skill body carries tokens the neutral-part lint refuses (`$FUSION_PLUGIN_ROOT`, `bin/fusion-*` paths, `$OUT_*`/`$SCAN_*` keys, `AskUserQuestion`, `Agent(`, slash commands), and ruling `261009-1024-fusion-is-the-one-source-of-role-texts-and-workflow-rules-for-both-hosts.md` keeps Claude mechanics out of Prior's role text. So the parts are the one source and `SKILL.md` is render output (D3, option 1); the acceptance reads "each Claude render equals the committed `SKILL.md` byte for byte", held by the catalog suite. `commit` has a profile but stays `prior: unsupported` |
+| H5 | deliberately different, as H4 | `cleanup`, `archive`, `memo`, `post`, `news`, `cadence`, `migrate`, `help` (`ec6c968e`, corrected by `db315ce3`). All 16 skills have profiles; `cleanup` stays `prior: unsupported` |
+| H6 | met, with two deliberate differences | `catalog/workflows/entry.v1.json`, `schemas/entry-request.v1.json`, `schemas/entry-result.v1.json`, added to `FROZEN` under a comment that they are fusion's proposal here (`a419215a`); the workflow validates against `workflow.schema.json`. (1) The run step is a `host_service: host.role.run.v1` step taking its role from the invocation's entry, since a generic workflow has no fixed role and the workflow shape admits `host_service` in place of `role` without a schema change. (2) `requires` names the three `host.role.*` services as well, twelve in all, because the run step uses them. No push step (question 14). Question 15 names two places where the frozen `entry-result.v1.json` describes what the module and Prior produce differently |
+| H7 | met, with two deliberate differences | `adapters/prior/fusionmodule/internal/entry/` interprets `entry.v1` on the existing executor, serves `fusion.entry.v1` beside the explorer and repair, observes before acting on restart (`d02e5cb8`); built-bundle conformance `2a35d604`, `1a7db7f8`. `FUSION-MODULE` and `adapters/prior/check-imports.sh` pass; conformance drives `help`, `reconcile` and `memo`. (1) `PRIOR_PIN` is `08c57fb`, not `bfdddd0` itself (`6be14760`): the head of Prior's `main` when the step ran, at or after `bfdddd0` as asked. (2) No new `internal/hostsvc/` client for the three entry services: Prior offers them as tools of the role run (`internal/supervisor/general_tools.go`), so the module calls none and declares them in `requires`. Three points where the module reaches past Prior's wire at the pin are question 17 |
+| H8 | deliberately different | The payload carries **the tree an install holds** (D4), not the hand-over's five parts (`ec3d9597`): `bin/fusion-paths` and `bin/fusion-rules` read `agents/<name>.md` and `skills/<name>/SKILL.md`, sixteen `bin/` helpers start `hooks/dist/*.js`, and `help` reads `docs/` and the three READMEs, so the listed parts do not run alone. A test parses `install.sh`'s copy loop and fails when the assembler's list differs. **The payload is that tree minus git links**: one at the build commit, `codec/fixtures/legacy-v12/workbench/shared/analyses/latest-benchmark.md` → `260906-1100-benchmark-run.md`, which `cp -R` keeps in an install, is left out and recorded in `build-identity.json` `install_tree_omitted`, because Prior's `InspectBundle` (`internal/module/bundle.go`) refuses `os.ModeSymlink`; only codec tests read it. The bytes come from the git index at the build commit. **Prior is asked to widen its mount list** (`internal/supervisor/exec.go` lines 76 to 77: `helperRequired` `bin`, `rules`, `codec/dist`; `helperDeferred` `hooks`, `agents/orchestrator.md`, `.claude-plugin/plugin.json`) to every top-level entry of the install tree under `/opt/fusion`: `.claude-plugin`, `agents`, `skills`, `rules`, `hooks`, `codec`, `bin`, `stilwerk`, `templates`, `docs`, `README.md`, `README-agents.md`, `README-hooks.md`. **`bin/` is shared:** it holds the helpers and the module's launcher and three native binaries, kept apart by the assembler's collision check, so a mount of `bin` shows the module's four files under `/opt/fusion/bin` in every helper container; Prior accepts that or asks for a split. Node's floor is the carried `engines` `>=20.12.0`. Built twice with one digest, verified and delivered (`### The bundle`) |
+| H9 | met, with one deliberate difference | The hook files sit in the install tree at their plugin paths, no hook source changed, and `module.json` carries the `lifecycle_hooks` declaration, its `protocol_subset` equal to Prior's. The hook-layout test (`4e53b552`) unpacks the bundle and runs every registered command from it and from the plugin tree; stdout and every file written are equal, timestamps aside; `FUSION-MODULE` and the hooks suite in a worktree pass. **Difference:** the payloads are fusion's own (`9bb1751e`, 27 files for 8 commands under `adapters/prior/testdata/hook-payloads/`), built from the field set of Prior's analysis of fusion's hook surfaces, `### 1. Per command`, because the hand-over states that step 38's run log is in neither repository |
+
+### The B2 question
+
+**Fusion has ruled.** Decision `261023-1854-under-prior-do-the-hook-rows-keep-going-to-orchestrator-events-jsonl.md`, answered by the user on 2026-10-23 with option 1: **the hook rows keep going to `orchestrator-events.jsonl` when Prior runs fusion's hooks**, because the bytes that write them are fusion's own and run unchanged. In the treatment row of `260922-1059_*_which-treatment-do-the-stores-and-root-files-the-nomenclature-table-omits-take.md` for `orchestrator-events.jsonl`, "New runtime events go to the Prior journal" now reads as Prior's own runtime events (its supervisor, tool and hook-run records), which Prior journals as it does today. The retention clause and "Old events must not re-trigger actions or approvals on import" stand unchanged. The ruling narrows that one row and no other row of `260922-1059`.
+
+So fusion's position agrees with B2: one writer of the log on both hosts, the compiled hooks, and no Prior-side filter on what a hook writes. The cost fusion accepts is that a Prior run's rows and a Claude Code session's rows interleave in one checkout's log, and the rows carry no field that names the host. Whether they should is a later question, and this request does not ask it.
+
+### Decisions Prior is asked to confirm
+
+Each is fusion's decision, answered by the user, and a proposal to Prior, which may correct it.
+
+1. **D2, `fusion.catalog/v2`** (`261023-1854-does-the-catalog-gain-entries-under-fusion-catalog-v1-or-as-v2.md`, option 2): `roles` unchanged, `entries` added, under a new version name. The 13.1.0 bundle Prior installed keeps its v1 document, so Prior's v1 decoder need not change; retiring it is Prior's choice. **Asked:** Does Prior's step-28 loader decode v2 with exactly `schema`, `roles` and `entries`?
+2. **D4, the install tree** (`261023-1854-which-plugin-tree-does-the-bundle-payload-carry-for-the-helper-runtime.md`, option 2), with the mount list and the shared `bin/` of the H8 row. **Asked:** Does Prior mount those thirteen entries, and does it accept the shared `bin/`?
+3. **D5, the workflow's schemas bind an entry run** (`261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role.md`, option 1): an entry run is validated against `entry.v1`'s declared schemas whatever the profile declares. One profile per agent; `code-implementer`, `reviewer` and `state-auditor` keep the repair schemas in their `profile.json`. **Asked:** Does Prior validate per workflow, not per profile?
+4. **The `entry.v1` run-step form:** a `host_service: host.role.run.v1` step whose `input_from.role` is the invocation's `entry.profile`, resolved through the catalog's entries. **Asked:** Does Prior accept a role taken from the invocation?
+5. **The workbench grant follows the workflow, as the schemas do** (`261024-2111-does-an-entry-run-of-a-repair-role-write-the-workbench-on-prior.md`, ruled "B1", 2026-10-24): `profile.json` of the three repair roles keeps `writes_workbench.prior` `false`, and an entry run of them writes the workbench because `entry.v1` grants it. **Asked:** Does Prior read the grant per workflow?
+6. **A path-scoped file grant** (`261025-1117-how-does-a-read-only-role-write-the-workbench-on-a-prior-entry-run.md`, option 2, 2026-10-26): `entry.v1` grants `create` and `write` scoped to `fusion-workbench/`, so that a role whose file tools are read-only writes records through that grant and not around its ceiling through `host.exec.v1`. The `reviewer` and `state-auditor` `prior` parts change once Prior answers. **Asked:** Does Prior offer that grant, and under which names?
+
+### Questions for Prior
+
+Questions 1 to 13 keep the numbers fusion's analysis of the skills gave them (`261025-2218-skill-span-map-for-entry-profiles.md`, `### Questions for request 76` and its addendum of 2026-10-26), because shipped `prior` parts cite them by number as "(request 76, question N)". Questions 14 to 19 are added here.
+
+1. **Commits inside an entry run.** Does `entry.v1` integrate the commits a run makes on the worktree's detached HEAD as made, for example one per split (`cleanup`), or does capture flatten them into one integration commit? May the run give the integration its message (`commit`)? If neither, does Prior want `commit` and `cleanup` as entries at all? They stay `prior: unsupported` until this is answered.
+2. **Workspace basis.** Is every entry workspace a fresh checkout at the base revision, or can it carry the user's uncommitted working-tree changes?
+3. **Per-checkout state.** Does Prior keep a project's class-L files (`.cadence-anchors`, `.check-stamps`, `.session-marker`, `monitor`) between entry runs, as it carries `.checkout-id`? If not, should a mark written inside a run be integrated, or dropped by the capture?
+4. **Network and remotes.** Can the `news` entry declare its remote for a fetch, and the `cleanup` entry for a push? What does the run see of the user's remote-tracking refs and `FETCH_HEAD`?
+5. **Scratch space.** Does the pin's `/tmp` rule (kept within one entry run and its child runs, 64 MiB, `noexec`, gone at the run's end; `internal/supervisor/tool_containers.go`, `internal/platform/container.go`) hold for entry runs as it does at the pin?
+6. **Command set.** Are these available beyond `bash`, `git`, `sed`, `head`, `od` and `node`: `python3`, `shasum`, `awk`, `find`, `sort`, `mktemp`, GNU `date`, GNU `ls`?
+7. **Session id.** Is `FUSION_SESSION_ID`, exported by the `SessionStart` hook through `CLAUDE_ENV_FILE`, present on every `host.exec.v1` call of an entry run, so that `check`'s identity fragment and the event-log rows carry it?
+8. **The index.** Does integration keep an index-only change such as `git rm --cached`?
+9. **Actor and attribution.** Which `--actor` token should a skill's entry run pass to `fusion-write` (the profile id, the entry id, or a host token), and what attribution line, if any, does Prior want on an integration commit?
+10. **Rendered profiles in the mount.** At what path under `/opt/fusion` will the `setup` entry find the `check` entry's Prior render?
+11. **One run, several turns.** Prior serves a chat question as a turn end and resumes the run with the reply. Does a run resumed this way keep its workspace, its dispatch results and its context, so that `discuss` can run every round, the ceiling extension and `--close` in one run, and `migrate` can put six chat questions in sequence?
+12. **Free-text answers.** Does `QuestionResult.text` carry a reply typed instead of an option when options are given, so that `curate`'s "reply with the ids, comma-separated" works through `host.question.v1`?
+13. **The dispatch input.** At the pin `host.dispatch.v1` takes `entry`, `description` and `input`, and `input` must decode to a JSON object (`moduleapi/v1/entry_wire.go` `DecodeDispatchCall`, `internal/supervisor/dispatch.go` `validDispatch`). Fusion's `prior` parts send `{"arguments": [{"name": "<declared argument name>", "value": "..."}, …]}`, each name one the child entry declares in `catalog.json` (a parameter line by its label, such as `**Mode:**`; a first-message argument by its name, such as `task`), and expect the host to compose the rest of the child's entry request against `schemas/entry-request.v1.json`. `discuss` passes `conversation` alone, with the round number as text in it. **Does Prior accept this shape, or correct it?**
+14. **Push.** The hand-over's H6 names "push when declared", and Prior's step 17 calls it "a typed operation after integration", but none of the twelve services pushes. Which service carries the push of `entry.v1`? Until Prior answers, `entry.v1` has no push step, and its `push` note says a push step comes with a later definition version and its service.
+15. **Who assembles an entry result's `questions`, and in which form are `commits[].changes`?** Two descriptions in the frozen `schemas/entry-result.v1.json` are contradicted by what the module and Prior produce at the pin. (a) `commits[].changes` is described as `One per changed path, "<status>\t<path>" in git's name-status form, from the snapshot's changed_paths.`; the module copies the snapshot's `changed_paths` as given, and Prior fills them with plain paths (`internal/fusionhost/repair_snapshot.go`). (b) The schema says `questions` and `commits` "are read from the host's receipts and copied, never composed by the model"; the module copies `questions` from the run's settled answer and has no access to `host.question.v1` receipts. Is an entry run's role output host-assembled or model text? Fusion leaves the frozen bytes as they are; a correction is a v2 schema beside them, as `### What fusion does with the answer` says.
+16. **Git identity in the exec container.** Every record write of every entry run goes through `bin/fusion-write`, which stops when `bin/fusion-identity` exits 1, and that helper reads `git config user.name` and `user.email`. Prior's `execPrelude` (`internal/supervisor/exec.go`) writes `$HOME/.gitconfig` with `safe.directory` alone, before every call, so a project that keeps its identity global, the common case, has none in the container, and a run cannot set one that survives to its next call. Will Prior make the user's git identity resolvable there, for example by writing `user.name` and `user.email` beside `safe.directory` from the identity it holds? And does the `.checkout-id` carry (`internal/fusionhost/entry_workspace.go` `EntryCarriedReadOnly`, present at `08c57fb`) apply to entry runs of this bundle?
+17. **Three wire points the module reaches past at the pin** (`adapters/prior/README.md` `### The entry workflow`): `api.DecodeRepairCall` admits a compose for the four repair roles only, so an entry profile such as `skill-memo` is refused there; the same decoder derives every workbench read's operation id from slot `record`, so a second read in one workflow would conflict, and `entry.v1` reads under `record:<path>`; the integration receipt carries no commit subject, so `commits[].subject` is `integration <id>`. Fusion's fake host accepts both forms. How will Prior's step-28 wire carry each?
+18. **Dispatching `policy-curator`.** Its arguments are parameter lines only, so the orchestrator's dispatch text has no declared argument to carry the task in. Should `policy-curator` declare a first-message argument, or does the host compose the task some other way?
+19. **One orchestrator run, many tasks.** On Claude Code the orchestrator commits once per task; an entry run integrates once, at its end. May one orchestrator entry run span many tasks with one integration, or should Prior allow a commit per task? The answer decides how the orchestrator's and the reviewer's `prior` parts state a review over uncommitted files (`**Reviewed-range:**` presumes two commits), which fusion changes after this answer.
+
+### What fusion does with the answer
+
+- **Accepted:** the answer is recorded here with the Prior commit that holds it, and the tag `v13.4.0` and the marketplace bump follow at C. The recorded digest must equal `sha256:90961e04e782aed09356bae329ba422266ce973ea56b7b67c314119c30ab05e6`; an answer naming another digest ran another build and does not close 76.
+- **Corrected:** a correction that changes the bundle is a new candidate under 13.4.1, a rebuild and a new digest, put to Prior in a new request; never an edit of this section. A correction to a frozen entry asset (`entry-request.v1.json`, `entry-result.v1.json`, `entry.v1.json`) is a new version beside it, never an edit under the same name. A correction to text alone (a `prior` part) still moves the digest, so it takes the same route.
+- **Refused or deferred:** no tag carries C, and the user rules.
+- **The answers to questions 1 to 19** go to the `prior` parts and catalog rows they name: question 1 decides whether `commit` and `cleanup` leave `catalog/src/__tests__/prior-held-unsupported.test.ts`; questions 15 and 17 may each need a new schema version or a module change; the evidence difference of the H3 row is fixed in fusion in a later release, whatever Prior answers.
+- A defect Prior names in the delivery is filed as an issue in fusion's workbench before the answer is recorded, and the answer is then not "accepted".
+
+#### Requests 64 and 67 to 76, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 | **complete** at Prior `34a2710`, for `dd4bf3d4`; `fb170361…` qualified, replaced as `QualifiedCodecDigest` by `dfab3f21…` at `d372bc0` | `Prior: docs/design/fusion-takeover-qualification-prior-response.md` `## 64 — Runtime snapshot and replay` |
+| 67 to 70 | as `### Requests 67 to 70, as they stand` above | the answer sections above |
+| 71 | **accepted** at Prior `8f59121`, 71(a), 71(b) and 71(c), no correction | `Prior: docs/design/fusion-recordless-migration-request71-prior-response.md` |
+| 72 and 73 | **complete** at Prior `01cf2fd` and `d372bc0`, for `ec76d4fd`; `dfab3f21…` qualified, replaced as `QualifiedCodecDigest` by `b4047458…` at `08c57fb`; answered at `3c29dcf` | `Prior: docs/design/fusion-recordless-migration-request72-73-prior-response.md` |
+| 74 | **accepted** at Prior `b711b62`, for `9ec788e1`: 74(a) the delta `dfab3f21…` → `d6fc9da0…` as the whole delta, no correction, never replayed against `d6fc9da0…`; 74(b)(1) and 74(b)(2) accepted; its count of unchanged schemas corrected to eight, confirmed at `8b505a8`. Its re-pin was taken up by 75(b) and its replay is covered by 75(b)'s | `Prior: docs/design/fusion-dependency-evaluation-request74-prior-response.md` |
+| 75 | **complete**. 75(a) **accepted** at Prior `8b505a8`, for `1bbd6c53`: the text delta `d6fc9da0…` → `b4047458…` as the whole delta, no correction. 75(b) **complete** at Prior `08c57fb`, for `aa4277d8`: both pins re-snapshotted (418 and 744 entries), `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d` qualified, 700 116 bytes, now `QualifiedCodecDigest`; 238 of 238 exchanges, 375 manifest cases (95 valid, 280 invalid), 13 goldens unchanged, `go test ./...` and `go vet ./...` passed | `Prior: docs/design/fusion-text-delta-request75-prior-response.md` (75(a)); `Prior: docs/design/fusion-text-delta-request75b-prior-response.md` (75(b)) |
+| 76 | **asked**: this section, the full fusion surface. Bundle `sha256:90961e04…` (13.4.0, built at `308650e1`, C = `ca9eb60d`, against Prior `08c57fb`), codec `b4047458…`; H1 to H9 row by row, the B2 ruling, the decisions and the questions above | — |
+
+These rows supersede the rows of `#### Requests 64 and 67 to 75, as they stand` above. Request 76 is the one open request.
