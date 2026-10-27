@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "82f2e22e-499a-457e-b763-2864bbd909df",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/decisions/261027-2224-does-the-orchestrators-revert-rule-change-on-prior-in-13-4-1.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "261027-2224-does-the-orchestrators-revert-rule-change-on-prior-in-13-4-1.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

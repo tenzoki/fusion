@@ -17,3 +17,6 @@ d9d98627201af82b64a568cb0ebace557f466814bc0ae4a76670ecc869e61031  schemas/review
 132866eaa330c0f753c3c57053755099c36d69b6a50651a5b6d2b3e90e4afa5f  schemas/entry-request.v1.json
 32bd64e1449f8df0ab1b37371ec76642a90cc1089a3da2c4e2fa99aab43d53f5  schemas/entry-result.v1.json
 bae94eef716d90ec230a468acf19107b10b39b78ed1e9a222ad120e082d92041  workflows/entry.v1.json
+# added at plan step 3 of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model under E1 (261027-1612-which-host-service-integrates-an-entry-run-under-the-step-17-model-and-what-does-it-replace, option 1): fusion's proposal in request 77, not yet accepted by Prior
+c39103ecfd61f9229f78c3e67b13fb9f89aa593c774b6f8b61df5e22ee20db66  schemas/entry-result.v2.json
+6ba29c8bccaab4c17ef57d6ae79acbcff2eb8985b103eb4706483cee33b97e41  workflows/entry.v2.json

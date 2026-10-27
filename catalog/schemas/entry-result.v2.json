@@ -1,0 +1,179 @@
+{
+  "$id": "urn:fusion:schema:fusion.entry-result/v2",
+  "title": "fusion.entry-result/v2",
+  "description": "fusion's proposal in request 77, not yet accepted by Prior: the result of the run step of fusion.entry.v2 and the module's envelope for the invocation, bound by workflows/entry.v2.json whatever the entry's profile declares (decision 261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role, option 1). It describes delivery on Prior's step-17 model (ruling 261024-0807-how-does-an-entry-run-deliver-its-result-into-the-users-repository; decision 261027-1612-which-host-service-integrates-an-entry-run-under-the-step-17-model-and-what-does-it-replace, option 1): the run's own commits fast-forward the user's branch as made, and its uncommitted changes are applied to the user's checkout and stay uncommitted there. status takes four values: completed, the run ended in success and every step after it completed; refused, the invocation, admission, an answer or a host step refused, with the reason in violations; recovery-required, a role or host effect is unknown or in flight, never a fabricated answer and never a terminal refusal written to end the run; ended, the run stopped, the user having ended the session through a question (Prior's question outcome ended) or by the stop the entry offers, which is neither a success nor an interruption that discards the workspace. ending is how the run ended in the class and reason form of Prior's fusion-surface comparison (internal/qualification/fusionsurface Ending), null only on recovery-required, which is no ending. questions are the run's host.question.v1 calls with their answers, in call order; commits and delta the integration's; all three are read from the host's receipts and copied, never composed by the model. Settlement is not acceptance: a settled run whose answer was refused stays settled, and a retry is a new invocation with a new workflow_id and run_id. No $schema keyword: the host compiles every bundle schema as draft 2020-12 and this file must carry no URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "ending", "questions", "commits", "delta", "violations"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["completed", "refused", "recovery-required", "ended"]
+    },
+    "ending": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "reason"],
+          "properties": {
+            "class": {
+              "description": "success, the role produced its final answer; refusal, the run or a step refused; stop, the run stopped before its final answer.",
+              "type": "string",
+              "enum": ["success", "refusal", "stop"]
+            },
+            "reason": {
+              "description": "A reason category, lowercase and hyphenated, such as stopped-by-user; never free model text.",
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,63}$"
+            }
+          }
+        }
+      ]
+    },
+    "questions": {
+      "description": "One entry per host.question.v1 call of the run, in call order; empty when the run asked nothing.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["call_id", "question", "options", "channel", "outcome", "selected", "text"],
+        "properties": {
+          "call_id": {
+            "description": "The call's slot within the run.",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192
+          },
+          "options": {
+            "description": "The call's options; empty on the chat-text channel.",
+            "type": "array",
+            "maxItems": 16,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["ask-user-question", "chat-text"]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": ["answered", "no-terminal", "interrupted", "ended"]
+          },
+          "selected": {
+            "description": "The options chosen, each among options; empty unless outcome is answered on ask-user-question.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "text": {
+            "description": "The answer's text; empty unless outcome is answered.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "commits": {
+      "description": "The run's own commits, fast-forwarded onto the user's branch as the run made them, oldest first, copied from the host.entry.integrate.v1 answer; empty when the run made no commit or no integration happened.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["commit", "reference", "subject", "changes"],
+        "properties": {
+          "commit": {
+            "type": "string",
+            "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+          },
+          "reference": {
+            "description": "The user's branch reference the commit was fast-forwarded onto, the one the user's HEAD named (such as refs/heads/main), the answer's reference.",
+            "type": "string",
+            "minLength": 1
+          },
+          "subject": {
+            "description": "The commit's own subject line, as the run wrote it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "changes": {
+            "description": "One per path the commit changed, in git's name-status form as the host assembles it: \"<status>\\t<path>\" for A, D, M and T, \"<status><score>\\t<old path>\\t<new path>\" for C and R; each path relative to the repository root.",
+            "type": "array",
+            "items": { "$ref": "#/$defs/name_status" }
+          }
+        }
+      }
+    },
+    "delta": {
+      "description": "The run's uncommitted changes, applied to the user's checkout and left uncommitted there, in the same name-status form, copied from the host.entry.integrate.v1 answer; empty when there were none or no integration happened.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/name_status" }
+    },
+    "violations": {
+      "description": "Why the answer is not completed; empty on completed.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "detail"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": { "type": "string" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "object", "properties": { "class": { "const": "success" } } },
+          "violations": { "type": "array", "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "refused" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "object", "properties": { "class": { "const": "refusal" } } },
+          "violations": { "type": "array", "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "ended" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "object", "properties": { "class": { "const": "stop" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "recovery-required" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "ending": { "type": "null" },
+          "violations": { "type": "array", "minItems": 1 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "name_status": {
+      "description": "One line of git's name-status form with the tab separators: a status letter and a path, or a C or R status with its similarity score and two paths. No path is absolute or empty, and none carries a tab or a newline.",
+      "type": "string",
+      "pattern": "^(?:[ADMT]\\t[^\\t\\n/][^\\t\\n]*|[CR][0-9]{1,3}\\t[^\\t\\n/][^\\t\\n]*\\t[^\\t\\n/][^\\t\\n]*)$"
+    }
+  }
+}

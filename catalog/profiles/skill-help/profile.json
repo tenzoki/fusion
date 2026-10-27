@@ -42,7 +42,7 @@
     { "file": "parts/26-neutral.md", "tag": "neutral" }
   ],
   "input_schema": "schemas/entry-request.v1.json",
-  "result_schema": "schemas/entry-result.v1.json",
+  "result_schema": "schemas/entry-result.v2.json",
   "tools_ceiling": ["read", "list", "search"],
   "may_delegate": false,
   "writes_workbench": { "claude-code": true, "prior": false },

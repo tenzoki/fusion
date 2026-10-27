@@ -1,0 +1,172 @@
+{
+  "id": "entry",
+  "capability": "fusion.entry.v2",
+  "steps": [
+    {
+      "id": "compose",
+      "host_service": "host.role.compose.v1",
+      "input_from": {
+        "invocation_schema": "schemas/entry-request.v1.json",
+        "host_services": {
+          "status": "fusion's proposal in request 77, not yet accepted by Prior. This definition delivers an entry run by Prior's step-17 model, fusion's one delivery model on Prior (ruling 261024-0807-how-does-an-entry-run-deliver-its-result-into-the-users-repository, condition (b)): the run's own commits fast-forward the branch the user's HEAD named and its uncommitted changes are applied to the user's checkout, a conflict refused with nothing written. One service, host.entry.integrate.v1, integrates the run (decision 261027-1612-which-host-service-integrates-an-entry-run-under-the-step-17-model-and-what-does-it-replace, option 1); fusion serves no other delivery route on Prior (decision 261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-entry-model, option 3). This object is the common contract of every host_service call below other than the host.role.*.v1 calls, stated here in the first step that makes one and read by every later step: the request-69 services host.role.compose.v1, host.workspace.v1 and host.workbench.v1 as Prior's answer 69 accepted them, and host.entry.integrate.v1 under the same contract. The three entry services host.question.v1, host.exec.v1 and host.dispatch.v1 are model tools of the role run (Prior's moduleapi/v1/entry_wire.go): the module calls none of them, and requires names them so that Prior grants them to the run.",
+          "common_request": {
+            "identity": "the SDK Identity, as every host.role.*.v1 call carries it",
+            "workflow_id": "the invocation's workflow_id, host-minted, ^[a-zA-Z0-9_-]{1,64}$; the connection scope binds both to the owner, the bundle digest, the task, the record and the grants, and a matching string alone grants nothing"
+          },
+          "request_rule": "a closed object: the common pair first, then the service's own fields; an unknown member or a null in a non-nullable field is refused",
+          "operation_id": "as answer 69 derives it (Prior's SDK api.RepairOperationID at the pin): \"repair:\" followed by the lowercase sha256 hex of the UTF-8 bytes of capability + \"\\n\" + workflow_id + \"\\n\" + slot, with capability fusion.entry.v2; the handler derives the slot from its validated request and the body is frozen separately, so a changed input under the same slot conflicts and buys no second effect. The role operation id stays capability + \":\" + run_id.",
+          "envelope": {
+            "state": "completed, refused or recovery-required",
+            "result": "the service's object on completed, null otherwise",
+            "code": "empty on completed; otherwise one of the stable codes"
+          },
+          "codes": [
+            "permission-denied",
+            "invalid-request",
+            "conflict",
+            "frame.oversize",
+            "context.limit",
+            "record-conflict",
+            "validation-failed",
+            "scope-violation",
+            "correction-required",
+            "operation-unknown"
+          ],
+          "refusal_rule": "an expected refusal is a reply in the envelope, never a handler error; a transport failure stays an unknown outcome; no raw backend error and no credential crosses the boundary",
+          "preflight": "Prior compares requires with its service map and finds all ten services before module startup; the module performs no preflight of its own",
+          "frames": "every fully encoded frame stays within the SDK's 1 MiB; deadlines and provider context limits stay host configuration and are no byte budget on the role texts",
+          "replay": "a completed receipt replays without effects; an accepted effect without a confirmed receipt requires recovery, so a restart never opens a second workspace or integrates a run twice because the module received no answer"
+        },
+        "request": {
+          "run_id": "the invocation's run_id",
+          "profile": "the invocation's entry.profile, which the module checks against the catalog's entry of that id before the call",
+          "task": "the invocation's entry, arguments and route, with no run_id, project_context or audit_ref, which the host adds or keeps"
+        },
+        "slot": "run_id",
+        "reply": {
+          "run_id": "the request's",
+          "profile": "the request's",
+          "role_input": "the composed object, valid against schemas/entry-request.v1.json and carrying no audit_ref",
+          "role_input_sha256": "sha256:<hex> over the exact compact JSON bytes the host froze"
+        },
+        "admission": "the host admits the entry before composition: an argument the entry's declaration does not name is unknown-argument, a route the entry is not qualified on is route-not-qualified, an open gap issue is open-gap-issue (Prior's admission_refusal); the invocation then ends refused and no role call is made"
+      },
+      "completion": {
+        "answer": "the reply above; a repeated identical composition answers the same bytes and a changed task conflicts before any model call",
+        "then": "workspace"
+      }
+    },
+    {
+      "id": "workspace",
+      "host_service": "host.workspace.v1",
+      "input_from": {
+        "request": {
+          "run_id": "the invocation's run_id"
+        },
+        "slot": "the run id",
+        "derived_by_host": "the base, the read scope, the writable scope and the executor mounts come from the prepared workflow, never from the request"
+      },
+      "completion": {
+        "answer": {
+          "root": "a host-selected label for the isolated workspace, never a path the module submits to acquire authority",
+          "base_revision": "the user's HEAD revision the host froze when it opened the workspace"
+        },
+        "basis": "on the step-17 model the workspace is a copy of the user's tree at that revision: its tracked files with their uncommitted changes, its untracked and ignored files and the workbench's local files, with fusion-workbench/.checkout-id read-only",
+        "bound": "one workspace for the one run; host.exec.v1 runs inside it and host.dispatch.v1 children share it; a repeated call answers the same workspace and recovery reopens it, never a second",
+        "then": "run"
+      }
+    },
+    {
+      "id": "run",
+      "host_service": "host.role.run.v1",
+      "input_from": {
+        "role": "the invocation's entry.profile: the role is taken from the invocation, not fixed by this definition; the module resolves it through the catalog's entries (entry.id names the entry, its profile the role) and refuses an entry whose prior support is unsupported",
+        "run": "the invocation's run_id",
+        "role_input": "the compose step's role_input",
+        "role_input_schema": "schemas/entry-request.v1.json",
+        "forwarded": "verbatim",
+        "recovery_ref": "audit_ref",
+        "services": "the role run may call host.question.v1, host.exec.v1 and host.dispatch.v1 as tools, each under the entry's own requires in the catalog, which is a subset of this definition's"
+      },
+      "completion": {
+        "role_state": "settled",
+        "result_schema": "schemas/entry-result.v2.json",
+        "schemas_bind": "this definition's two schemas bind the run whatever the profile's own input_schema and result_schema declare (decision 261023-1854-which-schemas-bind-an-entry-run-of-an-agent-that-is-also-a-workflow-role, option 1)",
+        "on_ending": {
+          "success": "integrate",
+          "stop": "integrate, as Claude Code keeps a stopped session's files; whether Prior integrates a stopped run is asked in request 77",
+          "refusal": "end: the envelope with status refused, commits and delta empty; nothing is integrated"
+        },
+        "settled_answer": "a settled answer with status recovery-required, or with a null ending, is refused as result.invalid and no integration is called"
+      }
+    },
+    {
+      "id": "integrate",
+      "host_service": "host.entry.integrate.v1",
+      "input_from": {
+        "request": {
+          "run_id": "the invocation's run_id"
+        },
+        "slot": "integration",
+        "from_host_receipts": "the host integrates the workspace it holds for the run, never a caller copy; there is no review step, revise_bound being 0"
+      },
+      "completion": {
+        "answer": {
+          "run_id": "the request's",
+          "base": "the user's HEAD revision when the workspace was opened, equal to the workspace step's base_revision",
+          "reference": "the reference the user's HEAD named, such as refs/heads/main, which the fast-forward moved",
+          "head": "that reference after the fast-forward; equal to base when the run made no commit",
+          "commits": "the run's own commits as it made them, oldest first, each {commit, subject, changes}: the commit hash, its own subject line and its changed paths in git's name-status form, assembled by the host; empty exactly when head equals base",
+          "delta": "the run's uncommitted changes the host applied to the user's checkout, which stay uncommitted there, in the same name-status form; empty when there were none"
+        },
+        "codec_check": "Prior's duty: before the first effect the host checks every changed workbench control record with its qualified codec, and a record the codec refuses is a refusal of this call with nothing written",
+        "refusals": "under the common contract above, each before any effect and with nothing written: a moved base (the user's branch or HEAD revision moved during the run), a run head that does not descend from base, and a path changed in the user's tree during the run or a read-only file changed by the run; fusion proposes conflict for these and record-conflict for the codec refusal, and request 77 asks Prior for its codes",
+        "receipt": "the module checks the answer: run_id is the run's; base equals the workspace's base_revision; reference is non-empty; commits is empty exactly when head equals base, and otherwise its last commit is head; every changes and delta item is in name-status form with a valid relative path; a receipt that fails a check ends the envelope refused with integration.invalid, and a host refusal ends it refused with integration.refused, the host's code in the detail",
+        "envelope": "commits is copied with the answer's reference added to each commit, and delta is copied as it stands",
+        "push": "none: no catalog entry declares a remote and no push service is among the ten this definition requires, so no step pushes; a push step comes with a later definition version and its service (ruling 261024-0807, condition (c))",
+        "bound": "once per workflow run; a refusal leaves nothing integrated, and an uncertain effect is recovery-required, whose recovery never integrates twice",
+        "then": "workbench"
+      }
+    },
+    {
+      "id": "workbench",
+      "host_service": "host.workbench.v1",
+      "input_from": {
+        "request": {
+          "action": "read",
+          "record": "each workbench control path among the paths of commits[].changes and delta whose status is not D, one call each"
+        },
+        "slot": "record:<control path>",
+        "page_request": {
+          "action": "page",
+          "handle": "the descriptor's handle",
+          "offset": "the descriptor's next_offset"
+        },
+        "page_slot": "page:<handle>:<offset>",
+        "when": "only when those paths name a workbench control record; otherwise the envelope ends after integrate"
+      },
+      "completion": {
+        "answer": {
+          "record": "the record's control data and the complete hash-verified narrative, assembled from the pages and checked against the descriptor's sha256 and total_bytes",
+          "revision": "the record's own revision"
+        },
+        "bound": "read-only, an observation: no close action is taken, there being no audit; a record the codec refuses to read is the violation record-conflict and ends the envelope refused, the integration standing",
+        "envelope_schema": "schemas/entry-result.v2.json",
+        "then": "end: the envelope with status completed when the run's ending is success, ended when it is stop"
+      }
+    }
+  ],
+  "revise_bound": 0,
+  "requires": [
+    "host.role.read.v1",
+    "host.role.run.v1",
+    "host.role.complete.v1",
+    "host.role.compose.v1",
+    "host.workspace.v1",
+    "host.entry.integrate.v1",
+    "host.workbench.v1",
+    "host.question.v1",
+    "host.exec.v1",
+    "host.dispatch.v1"
+  ]
+}
