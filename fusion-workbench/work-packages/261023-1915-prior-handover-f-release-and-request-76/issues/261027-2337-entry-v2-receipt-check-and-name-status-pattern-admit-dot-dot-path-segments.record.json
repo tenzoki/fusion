@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "826d4a15-8271-4750-a6d9-3665a4346ba3",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/issues/261027-2337-entry-v2-receipt-check-and-name-status-pattern-admit-dot-dot-path-segments.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

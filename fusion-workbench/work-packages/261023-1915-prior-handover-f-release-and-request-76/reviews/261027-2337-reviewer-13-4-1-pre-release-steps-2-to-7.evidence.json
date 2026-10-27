@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "9e79de43-37ab-4c12-bbcd-f0a8ba5d05e5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "0c7223b2006ada9a4a5bd0c0b9e05c43106b9783",
+    "git_range": null
+  },
+  "brief_revision": "sha256:b2113ba8d073b4ecc164b174022fc77beaba99579755bc940f8e276d17bc8227",
+  "plan_revision": "sha256:2b9686737467c53d9d8b62b9526b4214251359171ab24e595caeb1302ff7edc9",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.7"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/reviews/261027-2337-reviewer-13-4-1-pre-release-steps-2-to-7.md",
+    "sha256": "sha256:e71a838b9bc931404949a72292c962b5ca2cee48eccf93073447e3f2762b9719",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-27T22:40:24Z",
+  "extensions": {}
+}

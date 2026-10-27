@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "02fa5024-2b15-4ce6-a58e-55f9e53e92e0",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/issues/261027-2337-orchestrator-failure-table-rows-revert-a-file-setup-listed-as-the-users-uncommitted-work.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

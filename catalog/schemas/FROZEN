@@ -4,6 +4,7 @@
 e2af9a62957acd543ad029a7d2559865773855f63167ee63501807b437f80300  schemas/explorer-result.v1.json
 d33cbe3dea64861de63d9204195b8976a0b4ee57a9759964268b7290afb33d39  schemas/explorer-role-input.v1.json
 91141b018a6fc0f053d147274efb2ab83a90f7877a66706956e33c2e7c9f7ad6  workflows/explorer.v1.json
+# added at plan step 3 of 261023-1854-plan-prior-full-surface-handover-h1-to-h9: fusion's proposal in request 76, not yet accepted by Prior
 132866eaa330c0f753c3c57053755099c36d69b6a50651a5b6d2b3e90e4afa5f  schemas/entry-request.v1.json
 # added at plan step 3 of 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model under E1 (261027-1612-which-host-service-integrates-an-entry-run-under-the-step-17-model-and-what-does-it-replace, option 1): fusion's proposal in request 77, not yet accepted by Prior
 c39103ecfd61f9229f78c3e67b13fb9f89aa593c774b6f8b61df5e22ee20db66  schemas/entry-result.v2.json

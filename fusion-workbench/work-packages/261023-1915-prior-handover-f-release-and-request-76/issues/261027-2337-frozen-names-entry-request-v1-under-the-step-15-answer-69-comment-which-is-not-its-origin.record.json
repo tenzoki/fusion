@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d9d3db2a-e95b-46d9-907e-933f16559fc9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/issues/261027-2337-frozen-names-entry-request-v1-under-the-step-15-answer-69-comment-which-is-not-its-origin.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

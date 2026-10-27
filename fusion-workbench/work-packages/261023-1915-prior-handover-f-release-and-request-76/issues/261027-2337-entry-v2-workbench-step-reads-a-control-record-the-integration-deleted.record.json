@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d62e315d-81f4-4c74-b7d8-d792a1f997f5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/issues/261027-2337-entry-v2-workbench-step-reads-a-control-record-the-integration-deleted.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
