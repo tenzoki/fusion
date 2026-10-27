@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "c30c3284-35c1-4970-97df-da729ccf1cdd",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/decisions/261027-1612-does-the-module-keep-serving-fusion-entry-v1-beside-fusion-entry-v2.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
