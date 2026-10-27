@@ -398,3 +398,54 @@ func invocation(t *testing.T, runID string, roleInput json.RawMessage, auditRef 
 	t.Helper()
 	return fixture.Invocation(t, runID, roleInput, auditRef)
 }
+
+// readFixture, mustMarshal and copyTree are the helpers hooks_test.go and
+// entry_test.go share, kept here when repair_test.go, which held them, was
+// deleted with the repair workflow.
+
+func readFixture(t *testing.T, root, rel string) []byte {
+	t.Helper()
+	body, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return body
+}
+
+func mustMarshal(t *testing.T, v any) json.RawMessage {
+	t.Helper()
+	body, err := json.Marshal(v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return body
+}
+
+// copyTree copies the regular files under from to to, creating directories.
+func copyTree(t *testing.T, from, to string) {
+	t.Helper()
+	err := filepath.WalkDir(from, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(from, path)
+		if err != nil {
+			return err
+		}
+		target := filepath.Join(to, rel)
+		if d.IsDir() {
+			return os.MkdirAll(target, 0o755)
+		}
+		if !d.Type().IsRegular() {
+			return errors.New(path + " is not a regular file")
+		}
+		body, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(target, body, 0o644)
+	})
+	if err != nil {
+		t.Fatalf("copy %s: %v", from, err)
+	}
+}

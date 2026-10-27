@@ -4,12 +4,14 @@
 //
 // It decodes its identity from PRIOR_MODULE_IDENTITY and the connection secret
 // from PRIOR_MODULE_CONNECTION_SECRET, finds its payload above its own path,
-// reads the data files the manifest declares, loads the explorer, repair and
-// entry definitions, and serves fusion.explorer.v1, fusion.repair.v1 and
-// fusion.entry.v1 over stdin and stdout through the module API v1 server. It
-// writes nothing
-// to stdout before the handshake: a failure before Serve exits with a code
-// and a line on stderr, which the host discards.
+// reads the data files the manifest declares, loads the explorer and entry
+// definitions, and serves fusion.explorer.v1 and fusion.entry.v2 over stdin
+// and stdout through the module API v1 server, and no other capability: the
+// repair workflow was withdrawn in 13.4.1 (decision
+// 261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-entry-model)
+// and fusion.entry.v1 is not served beside its successor. It writes nothing to
+// stdout before the handshake: a failure before Serve exits with a code and a
+// line on stderr, which the host discards.
 //
 // Exit codes: 2 when the identity or the secret is missing or malformed, 3
 // when the payload cannot be read or a definition interpreted, 1 when the
@@ -24,7 +26,6 @@ import (
 
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/entry"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/explorer"
-	"github.com/kai/prior/integrationbuild/fusionmodule/internal/repair"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/steps"
 	api "github.com/kai/prior/moduleapi/v1"
 )
@@ -33,15 +34,11 @@ func main() {
 	os.Exit(run())
 }
 
-// workflows loads the three definitions from the payload and binds each to
+// workflows loads the two definitions from the payload and binds each to
 // its capability under the module's identity; two definitions claiming one
 // capability is a refused payload.
 func workflows(bundle *steps.Bundle, id api.Identity) (map[string]api.WorkflowHandler, error) {
 	explore, err := explorer.Load(bundle)
-	if err != nil {
-		return nil, err
-	}
-	fix, err := repair.Load(bundle)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +52,6 @@ func workflows(bundle *steps.Bundle, id api.Identity) (map[string]api.WorkflowHa
 		handler    api.WorkflowHandler
 	}{
 		{explore.Capability, explore.Handler(id, explorer.RemoteRoles(id))},
-		{fix.Capability, fix.Handler(id, repair.RemoteRoles(id))},
 		{run.Capability, run.Handler(id, entry.RemoteRoles(id))},
 	} {
 		if handlers[w.capability] != nil {

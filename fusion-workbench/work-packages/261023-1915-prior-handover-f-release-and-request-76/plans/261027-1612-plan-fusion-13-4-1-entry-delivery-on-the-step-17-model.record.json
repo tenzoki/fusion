@@ -33,7 +33,7 @@
       },
       {
         "id": "4",
-        "state": "open"
+        "state": "done"
       },
       {
         "id": "5",
@@ -45,7 +45,7 @@
       },
       {
         "id": "7",
-        "state": "open"
+        "state": "in_progress"
       },
       {
         "id": "8",

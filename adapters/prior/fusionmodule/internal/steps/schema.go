@@ -19,8 +19,9 @@ import (
 // annotation silently ignored: a schema change that reaches for
 // `patternProperties` or `format` fails here before a bundle ships rather
 // than passing input the host would refuse. `$ref` is implemented for the one
-// form the repair schemas use, a pointer into the document's own root
-// `$defs`; any other reference target is refused at compile.
+// form the shipped schemas use (entry-result.v2.json's name_status among
+// them), a pointer into the document's own root `$defs`; any other reference
+// target is refused at compile.
 
 // ErrSchema is returned for a schema this validator cannot compile.
 var ErrSchema = errors.New("unsupported schema")
@@ -75,7 +76,7 @@ type Schema struct {
 }
 
 // defsPrefix is the one reference form implemented: a pointer into the root
-// document's `$defs`, which is how every shipped repair schema uses `$ref`.
+// document's `$defs`, which is how every shipped schema uses `$ref`.
 const defsPrefix = "#/$defs/"
 
 // compiler carries the root `$defs` and the reference sites of one document

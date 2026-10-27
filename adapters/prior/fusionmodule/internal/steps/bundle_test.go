@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,9 +38,10 @@ func TestOpenBundleServesDeclaredDataOnly(t *testing.T) {
 	if _, err := b.Schema("catalog.json"); err == nil {
 		t.Error("a non-schema asset compiled as a schema")
 	}
-	for _, name := range []string{"explorer-request", "explorer-role-input", "explorer-envelope", "explorer-result"} {
-		if _, err := b.Schema("schemas/" + name + ".v1.json"); err != nil {
-			t.Errorf("%s: %v", name, err)
+	// Every published schema the payload carries compiles.
+	for _, p := range fixture.Schemas(t, fixture.CatalogDir(t)) {
+		if _, err := b.Schema(p); err != nil {
+			t.Errorf("%s: %v", p, err)
 		}
 	}
 	if _, err := OpenBundle("relative/path"); err == nil {
@@ -94,7 +96,8 @@ func TestLocateRoot(t *testing.T) {
 }
 
 func TestCatalogResolvesSupportedRolesOnly(t *testing.T) {
-	b, err := OpenBundle(fixture.Bundle(t, fixture.CatalogDir(t)))
+	catalogDir := fixture.CatalogDir(t)
+	b, err := OpenBundle(fixture.Bundle(t, catalogDir))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,34 +105,64 @@ func TestCatalogResolvesSupportedRolesOnly(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// The four roles the catalog supports on Prior since plan step 16
-	// resolve, the reviewer through its two aliases with their domains;
-	// every other role, and a name outside the catalog, refuses.
-	for name, want := range map[string]struct{ id, domain string }{"explorer": {"explorer", ""}, "code-implementer": {"code-implementer", ""}, "reviewer": {"reviewer", ""}, "code-reviewer": {"reviewer", "code"}, "data-reviewer": {"reviewer", "ontology"}, "state-auditor": {"state-auditor", ""}} {
-		role, domain, err := c.Resolve(name)
-		if err != nil || role.ID != want.id || domain != want.domain {
-			t.Errorf("%s: %+v %q %v", name, role, domain, err)
-		}
-	}
-	for _, name := range []string{"defect-fixer", "orchestrator", "data-implementer", "plan-reviewer", "analyst", "nobody"} {
-		if _, _, err := c.Resolve(name); err == nil {
-			t.Errorf("%s resolved", name)
-		}
-	}
-	p, err := LoadProfile(b, "explorer")
+	// Each role of the bundle's catalog, by its id and through each alias
+	// with its domain, resolves exactly when it is supported on prior; the
+	// expectation is read from the catalog, so a support state the catalog
+	// changes moves it with the data.
+	body, err := b.Asset("catalog.json")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if p.InputSchema != "schemas/explorer-role-input.v1.json" || p.ResultSchema != "schemas/explorer-result.v1.json" || p.MayDelegate || p.WritesWorkbench["prior"] {
-		t.Fatalf("profile %+v", p)
+	var doc struct {
+		Roles []Role `json:"roles"`
 	}
-	if p, err := LoadProfile(b, "reviewer"); err != nil || p.InputSchema != "schemas/review-request.v1.json" || p.ResultSchema != "schemas/review-response.v1.json" || p.MayDelegate || p.WritesWorkbench["prior"] {
-		t.Errorf("reviewer profile %+v: %v", p, err)
+	if err := json.Unmarshal(body, &doc); err != nil {
+		t.Fatal(err)
+	}
+	supported := 0
+	for _, r := range doc.Roles {
+		names := map[string]string{r.ID: ""}
+		for _, a := range r.Aliases {
+			names[a.ID] = a.Domain
+		}
+		for name, domain := range names {
+			role, got, err := c.Resolve(name)
+			if r.Support["prior"] != "supported" {
+				if err == nil {
+					t.Errorf("%s resolved, its role %s being %s on prior", name, r.ID, r.Support["prior"])
+				}
+				continue
+			}
+			if err != nil || role.ID != r.ID || got != domain {
+				t.Errorf("%s: %+v %q %v", name, role, got, err)
+			}
+		}
+		if r.Support["prior"] == "supported" {
+			supported++
+		}
+	}
+	if supported == 0 {
+		t.Fatal("no role of the catalog is supported on prior: the explorer workflow has no role")
+	}
+	if _, _, err := c.Resolve("nobody"); err == nil {
+		t.Error("a name outside the catalog resolved")
+	}
+	// Each profile the payload carries loads, and the input and result
+	// schemas it names resolve inside the payload.
+	for _, id := range fixture.PayloadProfiles(t, catalogDir) {
+		p, err := LoadProfile(b, id)
+		if err != nil {
+			t.Errorf("%s: %v", id, err)
+			continue
+		}
+		for _, schema := range []string{p.InputSchema, p.ResultSchema} {
+			if _, err := b.Schema(schema); err != nil {
+				t.Errorf("profile %s names %s, which the payload does not resolve: %v", id, schema, err)
+			}
+		}
 	}
 	// The commit skill is held unsupported on Prior and is the only
-	// referrer of its profile, so no referrer ships it. (The orchestrator
-	// is no example any more: its entry is supported, so its profile
-	// ships, while its role row stays unsupported, as the refusal loop above checks.)
+	// referrer of its profile, so no referrer ships it.
 	if _, err := LoadProfile(b, "skill-commit"); err == nil {
 		t.Error("an unsupported entry's absent profile loaded")
 	}

@@ -169,7 +169,7 @@ type Envelope struct {
 
 // Roles builds the step executor's role client over the workflow's
 // HostCaller; the module uses api.RemoteRoles, tests substitute a fake. It
-// is steps.Roles, shared with the repair workflow.
+// is steps.Roles, shared with the entry workflow.
 type Roles = steps.Roles
 
 // RemoteRoles is the module's Roles: the SDK's client over the host caller.

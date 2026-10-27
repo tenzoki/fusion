@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/fixture"
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/hostsvc"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/steps"
 	api "github.com/kai/prior/moduleapi/v1"
 )
@@ -21,9 +23,11 @@ import (
 // reconcile and memo are supported on prior: one entry per class, plain,
 // dispatches and asks. Each role run is scripted and makes its class's
 // entry service calls inside the run, as Prior's model loop would; the
-// module makes none of them. They prove the interpreter's step order, its
-// composition, its routing and its restart behaviour, not the installed
-// process: plan step 18 drives a built bundle.
+// module makes none of them. The fake integrates by the step-17 model: the
+// run's commits as made and its uncommitted paths as the delta. They prove
+// the interpreter's step order, its composition, its routing, its receipt
+// checks and its restart behaviour, not the installed process: the
+// conformance suite drives a built bundle.
 
 const (
 	workflowID = "wf-entry"
@@ -35,16 +39,19 @@ var supported = []string{"help", "reconcile", "memo"}
 
 // entryCase is one entry the tests drive, with its scripted run.
 type entryCase struct {
-	id, kind, profile, class string
-	arguments                []map[string]string
-	script                   fixture.Script
-	pageBytes                int
+	name, id, kind, profile, class string
+	arguments                      []map[string]string
+	script                         fixture.Script
+	pageBytes                      int
 }
 
-const packageRecord = "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/package.json"
+const (
+	packageRecord = "work-packages/261023-1846-prior-full-surface-handover-h1-to-h9/package.json"
+	memoPath      = "fusion-workbench/shared/memos/notes-kai.md"
+)
 
 func help() entryCase {
-	return entryCase{id: "help", kind: "skill", profile: "skill-help", class: "plain",
+	return entryCase{name: "help", id: "help", kind: "skill", profile: "skill-help", class: "plain",
 		arguments: []map[string]string{{"name": "topic", "value": "daily"}},
 		script: fixture.Script{Calls: []fixture.ScriptCall{
 			{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"bin/fusion-workbench-root"}},
@@ -52,7 +59,7 @@ func help() entryCase {
 }
 
 func reconcile() entryCase {
-	return entryCase{id: "reconcile", kind: "skill", profile: "skill-reconcile", class: "dispatches",
+	return entryCase{name: "reconcile", id: "reconcile", kind: "skill", profile: "skill-reconcile", class: "dispatches",
 		arguments: []map[string]string{{"name": "--force", "value": ""}},
 		script: fixture.Script{Calls: []fixture.ScriptCall{
 			{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"bin/fusion-work-order"}},
@@ -62,12 +69,26 @@ func reconcile() entryCase {
 }
 
 func memo() entryCase {
-	return entryCase{id: "memo", kind: "skill", profile: "skill-memo", class: "asks",
+	return entryCase{name: "memo", id: "memo", kind: "skill", profile: "skill-memo", class: "asks",
 		arguments: []map[string]string{{"name": "content", "value": "buy milk"}},
 		script: fixture.Script{Calls: []fixture.ScriptCall{
 			{Capability: api.QuestionCapability, CallID: "q-1", Question: "Note or task?", Options: []string{"note", "task"}, Channel: api.QuestionChannelAskUser, Answer: api.QuestionResult{Outcome: api.QuestionAnswered, Selected: []string{"note"}}},
-			{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"bin/fusion-memo", "note", "buy milk"}, Writes: []string{"fusion-workbench/shared/memos/notes-kai.md"}},
+			{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"bin/fusion-memo", "note", "buy milk"}, Writes: []string{memoPath}},
 		}}}
+}
+
+// twoCommits is help driven by a script whose first command commits twice,
+// the second commit taking a control record, and whose second command leaves
+// a path uncommitted: delivery case (i).
+func twoCommits() entryCase {
+	c := help()
+	c.name = "two commits"
+	c.script = fixture.Script{Calls: []fixture.ScriptCall{
+		{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"make", "fix"}, Writes: []string{"pkg/a/a.go", fixture.WorkbenchPrefix + packageRecord},
+			Commits: []fixture.ScriptCommit{{Subject: "Fix the failing test in pkg/a", Paths: []string{"pkg/a/a.go"}}, {Subject: "Record the fix in the package", Paths: []string{fixture.WorkbenchPrefix + packageRecord}}}},
+		{Capability: api.ExecCapability, CallID: "x-2", Argv: []string{"make", "notes"}, Writes: []string{"docs/notes.md"}},
+	}}
+	return c
 }
 
 type harness struct {
@@ -126,7 +147,12 @@ func (h *harness) raw(caller api.HostCaller, operation string, input json.RawMes
 
 func (h *harness) invoke(operation string, input json.RawMessage) Envelope {
 	h.t.Helper()
-	out, err := h.raw(h.host.Caller(), operation, input)
+	return h.invokeWith(h.host.Caller(), operation, input)
+}
+
+func (h *harness) invokeWith(caller api.HostCaller, operation string, input json.RawMessage) Envelope {
+	h.t.Helper()
+	out, err := h.raw(caller, operation, input)
 	if err != nil {
 		h.t.Fatalf("invoke: %v", err)
 	}
@@ -159,9 +185,11 @@ func (h *harness) effect(capability string) int {
 	return n
 }
 
+const integrate = hostsvc.EntryIntegrateCapability
+
 func TestLoadReadsTheDefinition(t *testing.T) {
 	def := definition(t)
-	if def.Capability != "fusion.entry.v1" || def.request == nil || def.roleInput == nil || def.result == nil || def.envelope == nil {
+	if def.Capability != "fusion.entry.v2" || def.request == nil || def.roleInput == nil || def.result == nil || def.envelope == nil {
 		t.Fatalf("definition %+v", def)
 	}
 	for _, id := range supported {
@@ -177,7 +205,7 @@ func TestLoadReadsTheDefinition(t *testing.T) {
 	}
 	live, err := Load(bundle)
 	if err != nil {
-		t.Fatalf("the live catalog, no entry supported: %v", err)
+		t.Fatalf("the live catalog: %v", err)
 	}
 	catalog, err := steps.LoadCatalog(bundle)
 	if err != nil {
@@ -185,6 +213,97 @@ func TestLoadReadsTheDefinition(t *testing.T) {
 	}
 	if len(live.entries) != len(catalog.Entries()) {
 		t.Fatalf("%d entries resolved of %d", len(live.entries), len(catalog.Entries()))
+	}
+}
+
+// loadEdited loads the fixture payload with workflows/entry.v2.json edited.
+func loadEdited(t *testing.T, edit func(w map[string]any)) error {
+	t.Helper()
+	root := fixture.EntryBundle(t, fixture.CatalogDir(t), supported...)
+	path := filepath.Join(root, filepath.FromSlash(WorkflowAsset))
+	body, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var w map[string]any
+	if err := json.Unmarshal(body, &w); err != nil {
+		t.Fatal(err)
+	}
+	edit(w)
+	if body, err = json.Marshal(w); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, body, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	bundle, err := steps.OpenBundle(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = Load(bundle)
+	return err
+}
+
+func step(w map[string]any, i int) map[string]any { return w["steps"].([]any)[i].(map[string]any) }
+
+func member(w map[string]any, i int, part string) map[string]any {
+	return step(w, i)[part].(map[string]any)
+}
+
+// One row per refusal Load makes: each edit breaks exactly one check, so a
+// row loads when its check is removed and the test turns red.
+func TestLoadRefusesEveryOtherShape(t *testing.T) {
+	if err := loadEdited(t, func(map[string]any) {}); err != nil {
+		t.Fatalf("the unedited definition: %v", err)
+	}
+	rows := []struct {
+		name string
+		edit func(w map[string]any)
+		want error
+	}{
+		{"a step fewer", func(w map[string]any) { w["steps"] = w["steps"].([]any)[:4] }, ErrDefinition},
+		{"integrate on host.integrate.v1", func(w map[string]any) { step(w, 3)["host_service"] = api.IntegrateCapability }, ErrDefinition},
+		{"a step renamed", func(w map[string]any) { step(w, 4)["id"] = "observe" }, ErrDefinition},
+		{"a step with a role", func(w map[string]any) { delete(step(w, 0), "host_service"); step(w, 0)["role"] = "explorer" }, ErrDefinition},
+		{"revise_bound 1", func(w map[string]any) { w["revise_bound"] = 1 }, ErrDefinition},
+		{"requires nine", func(w map[string]any) {
+			var kept []any
+			for _, s := range w["requires"].([]any) {
+				if s != integrate {
+					kept = append(kept, s)
+				}
+			}
+			w["requires"] = kept
+		}, ErrDefinition},
+		{"requires eleven", func(w map[string]any) { w["requires"] = append(w["requires"].([]any), api.CaptureCapability) }, ErrDefinition},
+		{"compose without an invocation schema", func(w map[string]any) { delete(member(w, 0, "input_from"), "invocation_schema") }, ErrDefinition},
+		{"compose under another slot", func(w map[string]any) { member(w, 0, "input_from")["slot"] = "profile" }, ErrDefinition},
+		{"run fixing its role", func(w map[string]any) { member(w, 2, "input_from")["role"] = "" }, ErrDefinition},
+		{"run without a run", func(w map[string]any) { delete(member(w, 2, "input_from"), "run") }, ErrDefinition},
+		{"run without a role input schema", func(w map[string]any) { delete(member(w, 2, "input_from"), "role_input_schema") }, ErrDefinition},
+		{"run not forwarded verbatim", func(w map[string]any) { member(w, 2, "input_from")["forwarded"] = "rebuilt" }, ErrDefinition},
+		{"run recovering under another reference", func(w map[string]any) { member(w, 2, "input_from")["recovery_ref"] = "run_id" }, ErrDefinition},
+		{"run step not an object", func(w map[string]any) { step(w, 2)["completion"] = []any{"settled"} }, ErrDefinition},
+		{"run completing answered", func(w map[string]any) { member(w, 2, "completion")["role_state"] = "answered" }, ErrDefinition},
+		{"run without a result schema", func(w map[string]any) { delete(member(w, 2, "completion"), "result_schema") }, ErrDefinition},
+		{"success not integrated", func(w map[string]any) {
+			member(w, 2, "completion")["on_ending"].(map[string]any)["success"] = "workbench"
+		}, ErrDefinition},
+		{"stop not integrated", func(w map[string]any) { member(w, 2, "completion")["on_ending"].(map[string]any)["stop"] = "end" }, ErrDefinition},
+		{"refusal integrated", func(w map[string]any) {
+			member(w, 2, "completion")["on_ending"].(map[string]any)["refusal"] = "integrate"
+		}, ErrDefinition},
+		{"integrate under another slot", func(w map[string]any) { member(w, 3, "input_from")["slot"] = "post-integration" }, ErrDefinition},
+		{"workbench under another slot", func(w map[string]any) { member(w, 4, "input_from")["slot"] = "record" }, ErrDefinition},
+		{"workbench without an envelope schema", func(w map[string]any) { delete(member(w, 4, "completion"), "envelope_schema") }, ErrDefinition},
+		{"a schema the payload does not carry", func(w map[string]any) { member(w, 2, "completion")["result_schema"] = "schemas/entry-result.v9.json" }, steps.ErrBundle},
+	}
+	for _, row := range rows {
+		t.Run(row.name, func(t *testing.T) {
+			if err := loadEdited(t, row.edit); !errors.Is(err, row.want) {
+				t.Fatalf("loaded: %v, want %v", err, row.want)
+			}
+		})
 	}
 }
 
@@ -221,71 +340,78 @@ func TestLoadRefusesASupportedEntryWithoutItsProfile(t *testing.T) {
 	}
 }
 
-// One entry per class runs to its envelope against the fake host: help
-// changes nothing and integrates nothing, reconcile dispatches a child that
-// changes a control record which the workbench step reads, memo asks a
-// question and writes a memo.
+// The common checks of every run that reaches its end: one model call, the
+// module calling none of the entry services, the run's calls each under the
+// run as actor, every role call forwarding the frozen bytes with no audit
+// reference, and one integration.
+func (h *harness) checkRun(env Envelope) {
+	t := h.t
+	t.Helper()
+	if h.host.ModelCalls != 1 {
+		t.Fatalf("%d model calls", h.host.ModelCalls)
+	}
+	for _, capability := range fixture.EntryCapabilities {
+		if n := h.host.CountSent(capability); n != 0 {
+			t.Fatalf("the module called %s %d times", capability, n)
+		}
+	}
+	var made, want []string
+	for _, call := range h.host.EntryCalls() {
+		made = append(made, call.Capability)
+		var binding struct{ Actor, WorkflowID string }
+		mustDecode(t, call.Input, &binding)
+		if binding.Actor != runID || call.OperationID != api.EntryOperationID(call.Capability, workflowID, runID, call.Slot) {
+			t.Fatalf("entry call %+v", call)
+		}
+	}
+	for _, step := range h.c.script.Calls {
+		want = append(want, step.Capability)
+	}
+	if strings.Join(made, " ") != strings.Join(want, " ") {
+		t.Fatalf("entry calls %v, want %v", made, want)
+	}
+	for _, call := range h.host.Host.Calls {
+		if string(call.Call.Input) != string(h.host.Composed(runID)) || call.Call.Profile != h.c.profile || call.Call.AuditRef != "" {
+			t.Fatalf("role call %+v", call)
+		}
+	}
+	var input struct {
+		WorkflowID string `json:"workflow_id"`
+		RunID      string `json:"run_id"`
+		Entry      entryRef
+		Arguments  []argument
+	}
+	mustDecode(t, h.host.Composed(runID), &input)
+	if input.WorkflowID != workflowID || input.RunID != runID || input.Entry != (entryRef{h.c.id, h.c.kind, h.c.profile}) || len(input.Arguments) != len(h.c.arguments) {
+		t.Fatalf("role input %s", h.host.Composed(runID))
+	}
+	if h.effect(integrate) != 1 || h.host.CountSent(api.CaptureCapability)+h.host.CountSent(api.IntegrateCapability)+h.host.CountSent(api.SnapshotCapability) != 0 {
+		t.Fatalf("effects %v, sent %v", h.host.Effects, h.host.Sent)
+	}
+}
+
+// One entry per class runs to a completed envelope against the fake host:
+// help changes nothing and its integration is empty, reconcile dispatches a
+// child that changes a control record which the workbench step reads, memo
+// asks a question and leaves a memo uncommitted (delivery case (ii), which
+// the v1 module refused for want of a commit).
 func TestOneEntryPerClassRunsAgainstTheFakeHost(t *testing.T) {
 	for _, c := range []entryCase{help(), reconcile(), memo()} {
 		t.Run(c.class+" "+c.id, func(t *testing.T) {
 			h := load(t, c)
 			env := h.invoke("op-1", h.input(""))
-			if env.Status != "completed" || env.Ending == nil || *env.Ending != (Ending{"success", "answered"}) || len(env.Violations) != 0 {
+			if env.Status != "completed" || env.Ending == nil || *env.Ending != (Ending{"success", "answered"}) || len(env.Violations) != 0 || len(env.Commits) != 0 {
 				t.Fatalf("envelope %+v", env)
 			}
-			if h.host.ModelCalls != 1 {
-				t.Fatalf("%d model calls", h.host.ModelCalls)
-			}
-			// The module called none of the three entry services; the run made
-			// its class's calls, each under the run as actor.
-			for _, capability := range fixture.EntryCapabilities {
-				if n := h.host.CountSent(capability); n != 0 {
-					t.Fatalf("the module called %s %d times", capability, n)
-				}
-			}
-			var made []string
-			for _, call := range h.host.EntryCalls() {
-				made = append(made, call.Capability)
-				var binding struct{ Actor, WorkflowID string }
-				mustDecode(t, call.Input, &binding)
-				if binding.Actor != runID || call.OperationID != api.EntryOperationID(call.Capability, workflowID, runID, call.Slot) {
-					t.Fatalf("entry call %+v", call)
-				}
-			}
-			var want []string
-			for _, step := range c.script.Calls {
-				want = append(want, step.Capability)
-			}
-			if strings.Join(made, " ") != strings.Join(want, " ") {
-				t.Fatalf("entry calls %v, want %v", made, want)
-			}
-			// Every role call forwarded the bytes the host froze; no audit
-			// reference was sent without one in the invocation.
-			for _, call := range h.host.Host.Calls {
-				if string(call.Call.Input) != string(h.host.Composed(runID)) || call.Call.Profile != c.profile || call.Call.AuditRef != "" {
-					t.Fatalf("role call %+v", call)
-				}
-			}
-			var input struct {
-				WorkflowID string `json:"workflow_id"`
-				RunID      string `json:"run_id"`
-				Entry      entryRef
-				Arguments  []argument
-			}
-			mustDecode(t, h.host.Composed(runID), &input)
-			if input.WorkflowID != workflowID || input.RunID != runID || input.Entry != (entryRef{c.id, c.kind, c.profile}) || len(input.Arguments) != len(c.arguments) {
-				t.Fatalf("role input %s", h.host.Composed(runID))
-			}
-
+			h.checkRun(env)
 			switch c.id {
 			case "help":
-				if len(env.Commits) != 0 || len(env.Questions) != 0 || h.effect(api.CaptureCapability) != 1 || h.effect(api.IntegrateCapability) != 0 || h.effect(api.SnapshotCapability) != 0 {
+				if len(env.Delta) != 0 || len(env.Questions) != 0 || h.effect(api.WorkbenchCapability) != 0 {
 					t.Fatalf("envelope %+v, effects %v", env, h.host.Effects)
 				}
 			case "reconcile":
-				commit := env.Commits
-				if len(commit) != 1 || commit[0].Reference != fixture.EntryReference || commit[0].Subject != "integration integration-1" || strings.Join(commit[0].Changes, ",") != fixture.WorkbenchPrefix+packageRecord {
-					t.Fatalf("commits %+v", env.Commits)
+				if strings.Join(env.Delta, ",") != "M\t"+fixture.WorkbenchPrefix+packageRecord {
+					t.Fatalf("delta %q", env.Delta)
 				}
 				if h.host.Effects[api.WorkbenchCapability+"/record:"+packageRecord] != 1 {
 					t.Fatalf("the control record was not read: %v", h.host.Effects)
@@ -308,8 +434,8 @@ func TestOneEntryPerClassRunsAgainstTheFakeHost(t *testing.T) {
 				if len(env.Questions) != 1 || json.Unmarshal(env.Questions[0], &q) != nil || q.CallID != "q-1" || q.Outcome != "answered" || strings.Join(q.Selected, ",") != "note" {
 					t.Fatalf("questions %s", env.Questions)
 				}
-				if len(env.Commits) != 1 || strings.Join(env.Commits[0].Changes, ",") != "fusion-workbench/shared/memos/notes-kai.md" || h.effect(api.WorkbenchCapability) != 0 {
-					t.Fatalf("commits %+v, effects %v", env.Commits, h.host.Effects)
+				if strings.Join(env.Delta, ",") != "M\t"+memoPath || h.effect(api.WorkbenchCapability) != 0 {
+					t.Fatalf("delta %q, effects %v", env.Delta, h.host.Effects)
 				}
 			}
 		})
@@ -320,6 +446,52 @@ func mustDecode(t *testing.T, body []byte, target any) {
 	t.Helper()
 	if err := json.Unmarshal(body, target); err != nil {
 		t.Fatalf("%s: %v", body, err)
+	}
+}
+
+// Delivery case (i): a run that commits twice and leaves a path uncommitted
+// carries both commits in order, each with its own subject, the user's
+// branch and its changes, and the path in delta; the control record the
+// second commit changed is read.
+func TestARunsCommitsAndItsDeltaReachTheEnvelope(t *testing.T) {
+	h := load(t, twoCommits())
+	env := h.invoke("op-1", h.input(""))
+	if env.Status != "completed" || len(env.Violations) != 0 {
+		t.Fatalf("envelope %+v", env)
+	}
+	h.checkRun(env)
+	if len(env.Commits) != 2 {
+		t.Fatalf("commits %+v", env.Commits)
+	}
+	for i, want := range []struct{ subject, change string }{{"Fix the failing test in pkg/a", "M\tpkg/a/a.go"}, {"Record the fix in the package", "M\t" + fixture.WorkbenchPrefix + packageRecord}} {
+		c := env.Commits[i]
+		if c.Subject != want.subject || c.Reference != fixture.UserReference || strings.Join(c.Changes, ",") != want.change || len(c.Commit) != 40 {
+			t.Fatalf("commit %d %+v", i, c)
+		}
+	}
+	if env.Commits[0].Commit == env.Commits[1].Commit {
+		t.Fatalf("one commit twice: %+v", env.Commits)
+	}
+	if strings.Join(env.Delta, ",") != "M\tdocs/notes.md" {
+		t.Fatalf("delta %q", env.Delta)
+	}
+	if h.host.Effects[api.WorkbenchCapability+"/record:"+packageRecord] != 1 {
+		t.Fatalf("the committed control record was not read: %v", h.host.Effects)
+	}
+}
+
+// Delivery case (iii): the host refuses the integration with a conflict, a
+// path changed in the user's tree during the run. Nothing is integrated, so
+// commits and delta are empty and no record is read.
+func TestAConflictRefusesTheIntegrationAndWritesNothing(t *testing.T) {
+	h := load(t, twoCommits())
+	h.host.Refuse[integrate+"/"+hostsvc.IntegrationSlot] = "conflict"
+	env := h.invoke("op-1", h.input(""))
+	if env.Status != "refused" || code(env) != "integration.refused" || !strings.Contains(env.Violations[0].Detail, "conflict") || env.Ending == nil || env.Ending.Reason != "integration-refused" {
+		t.Fatalf("envelope %+v", env)
+	}
+	if len(env.Commits) != 0 || len(env.Delta) != 0 || h.host.CountSent(api.WorkbenchCapability) != 0 {
+		t.Fatalf("envelope %+v, sent %v", env, h.host.Sent)
 	}
 }
 
@@ -345,10 +517,10 @@ func (k *killing) CallHost(ctx context.Context, inv api.Invocation) (json.RawMes
 // operation, reproduce the envelope of an uninterrupted invocation with no
 // further role run and no second effect. A boundary is every call the module
 // sends except a role read, which persists nothing: each compose, workspace,
-// run, completion, capture, integration, snapshot, read and page.
+// run, completion, integration, read and page.
 func TestAKillAfterEachPersistedBoundaryResumesToTheSameEnvelope(t *testing.T) {
-	for _, c := range []entryCase{help(), reconcile(), memo()} {
-		t.Run(c.id, func(t *testing.T) {
+	for _, c := range []entryCase{help(), reconcile(), memo(), twoCommits()} {
+		t.Run(c.name, func(t *testing.T) {
 			reference := load(t, c)
 			want, err := reference.raw(reference.host.Caller(), "op-1", reference.input(""))
 			if err != nil {
@@ -360,7 +532,7 @@ func TestAKillAfterEachPersistedBoundaryResumesToTheSameEnvelope(t *testing.T) {
 					boundaries = append(boundaries, i)
 				}
 			}
-			if len(boundaries) < 5 {
+			if len(boundaries) < 5 || reference.host.CountSent(integrate) != 1 {
 				t.Fatalf("boundaries %v of %v", boundaries, reference.host.Sent)
 			}
 			var named []string
@@ -451,36 +623,37 @@ func TestAnAcceptedRunIsRecoveryRequiredAndNeverRerun(t *testing.T) {
 	}
 }
 
-// A question answered ended stops the run: the envelope is ended with the
-// run's stop and its question, the capture finds nothing and nothing is
-// integrated.
+// A question answered ended stops the run before it changed anything: the
+// envelope is ended with the run's stop and its question, and the
+// integration it is still given is empty.
 func TestAQuestionAnsweredEndedEndsTheRun(t *testing.T) {
 	c := memo()
 	c.script.Calls[0].Answer = api.QuestionResult{Outcome: api.QuestionEnded}
 	h := load(t, c)
 	env := h.invoke("op-1", h.input(""))
-	if env.Status != "ended" || env.Ending == nil || *env.Ending != (Ending{"stop", "ended-by-question"}) || len(env.Questions) != 1 || len(env.Commits) != 0 {
+	if env.Status != "ended" || env.Ending == nil || *env.Ending != (Ending{"stop", "ended-by-question"}) || len(env.Questions) != 1 || len(env.Commits) != 0 || len(env.Delta) != 0 {
 		t.Fatalf("envelope %+v", env)
 	}
-	if h.effect(api.CaptureCapability) != 1 || h.effect(api.IntegrateCapability) != 0 || len(h.host.EntryCalls()) != 1 {
+	if h.effect(integrate) != 1 || len(h.host.EntryCalls()) != 1 {
 		t.Fatalf("effects %v, entry calls %d", h.host.Effects, len(h.host.EntryCalls()))
 	}
 }
 
-// A stopped run that changed the workspace is captured and integrated, and
-// the envelope stays ended with the commit.
+// A stopped run that changed the workspace is integrated, as Claude Code
+// keeps a stopped session's files, and the envelope stays ended with the
+// delta.
 func TestAStoppedRunThatChangedTheWorkspaceIsIntegrated(t *testing.T) {
 	c := memo()
 	c.script.Calls = []fixture.ScriptCall{c.script.Calls[1], c.script.Calls[0]}
 	c.script.Calls[1].Answer = api.QuestionResult{Outcome: api.QuestionEnded}
 	h := load(t, c)
 	env := h.invoke("op-1", h.input(""))
-	if env.Status != "ended" || len(env.Commits) != 1 || h.effect(api.IntegrateCapability) != 1 {
+	if env.Status != "ended" || strings.Join(env.Delta, ",") != "M\t"+memoPath || h.effect(integrate) != 1 {
 		t.Fatalf("envelope %+v, effects %v", env, h.host.Effects)
 	}
 }
 
-func TestARunThatRefusesEndsRefusedWithoutCapture(t *testing.T) {
+func TestARunThatRefusesEndsRefusedWithoutIntegration(t *testing.T) {
 	c := help()
 	c.script.Refuse = "nothing-to-explain"
 	h := load(t, c)
@@ -488,32 +661,50 @@ func TestARunThatRefusesEndsRefusedWithoutCapture(t *testing.T) {
 	if env.Status != "refused" || env.Ending == nil || *env.Ending != (Ending{"refusal", "nothing-to-explain"}) || code(env) != "nothing-to-explain" {
 		t.Fatalf("envelope %+v", env)
 	}
-	if h.effect(api.CaptureCapability) != 0 {
-		t.Fatal("a refused run was captured")
+	if h.host.CountSent(integrate) != 0 {
+		t.Fatal("a refused run was integrated")
 	}
+}
+
+// answering replaces the profile's model with a fixed answer.
+func (h *harness) answering(body string) {
+	h.host.Models[h.c.profile] = func(string, json.RawMessage) json.RawMessage { return json.RawMessage(body) }
 }
 
 // The rule the result schema cannot state: an option selected is among the
 // question's options.
 func TestASelectedOptionOutsideItsOptionsIsRefused(t *testing.T) {
 	h := load(t, memo())
-	h.host.Models["skill-memo"] = func(string, json.RawMessage) json.RawMessage {
-		return json.RawMessage(`{"status":"completed","ending":{"class":"success","reason":"answered"},"questions":[{"call_id":"q-1","question":"Note or task?","options":["note","task"],"channel":"ask-user-question","outcome":"answered","selected":["maybe"],"text":""}],"commits":[],"violations":[]}`)
-	}
+	h.answering(`{"status":"completed","ending":{"class":"success","reason":"answered"},"questions":[{"call_id":"q-1","question":"Note or task?","options":["note","task"],"channel":"ask-user-question","outcome":"answered","selected":["maybe"],"text":""}],"commits":[],"delta":[],"violations":[]}`)
 	env := h.invoke("op-1", h.input(""))
-	if env.Status != "refused" || code(env) != "result.invalid" || env.Ending.Reason != "result-invalid" || h.effect(api.CaptureCapability) != 0 {
+	if env.Status != "refused" || code(env) != "result.invalid" || env.Ending.Reason != "result-invalid" || h.host.CountSent(integrate) != 0 {
 		t.Fatalf("envelope %+v", env)
 	}
 }
 
 func TestASchemaInvalidAnswerIsRefused(t *testing.T) {
 	h := load(t, help())
-	h.host.Models["skill-help"] = func(string, json.RawMessage) json.RawMessage {
-		return json.RawMessage(`{"status":"completed","ending":{"class":"refusal","reason":"x"},"questions":[],"commits":[],"violations":[]}`)
-	}
+	h.answering(`{"status":"completed","ending":{"class":"refusal","reason":"x"},"questions":[],"commits":[],"delta":[],"violations":[]}`)
 	env := h.invoke("op-1", h.input(""))
-	if env.Status != "refused" || code(env) != "result.invalid" {
+	if env.Status != "refused" || code(env) != "result.invalid" || h.host.CountSent(integrate) != 0 {
 		t.Fatalf("envelope %+v", env)
+	}
+}
+
+// M1: a settled answer of status recovery-required, which the schema admits
+// (row er-recovery-required), is no recovery the host could ever resolve: the
+// run is settled and every resume would observe it so. It is refused, and
+// nothing is integrated.
+func TestASettledAnswerOfStatusRecoveryRequiredIsRefused(t *testing.T) {
+	h := load(t, memo())
+	h.answering(`{"status":"recovery-required","ending":null,"questions":[],"commits":[],"delta":[],"violations":[{"code":"x","detail":""}]}`)
+	env := h.invoke("op-1", h.input(""))
+	if env.Status != "refused" || code(env) != "result.invalid" || env.Ending == nil || env.Ending.Class != "refusal" || h.host.CountSent(integrate) != 0 {
+		t.Fatalf("envelope %+v, sent %v", env, h.host.Sent)
+	}
+	// A resume observes the settled run and answers the same refusal.
+	if again := h.invoke("op-2", h.input("")); again.Status != "refused" || code(again) != "result.invalid" || h.host.ModelCalls != 1 {
+		t.Fatalf("resume %+v", again)
 	}
 }
 
@@ -540,9 +731,11 @@ func TestEntriesThatCannotRunAreRefusedBeforeAnyHostCall(t *testing.T) {
 			t.Errorf("%s: %+v", name, env)
 		}
 	}
-	out, err := h.handler(context.Background(), api.Invocation{OperationID: "op", Capability: "fusion.other.v1", Input: h.input("")}, h.host.Caller())
-	if err != nil || !strings.Contains(string(out), `"invocation.capability"`) {
-		t.Errorf("unknown capability: %s %v", out, err)
+	for _, capability := range []string{"fusion.other.v1", "fusion.entry.v1"} {
+		out, err := h.handler(context.Background(), api.Invocation{OperationID: "op", Capability: capability, Input: h.input("")}, h.host.Caller())
+		if err != nil || !strings.Contains(string(out), `"invocation.capability"`) {
+			t.Errorf("%s: %s %v", capability, out, err)
+		}
 	}
 	if len(h.host.Sent) != 0 {
 		t.Fatalf("a refused invocation reached the host: %v", h.host.Sent)
@@ -551,13 +744,11 @@ func TestEntriesThatCannotRunAreRefusedBeforeAnyHostCall(t *testing.T) {
 
 func TestHostRefusalsRefuseTheInvocation(t *testing.T) {
 	cases := []struct {
-		c       entryCase
-		key     string
-		code    string
-		commits int
+		c     entryCase
+		key   string
+		code  string
+		delta int
 	}{
-		{memo(), api.CaptureCapability + "/" + runID, "scope-violation", 0},
-		{memo(), api.IntegrateCapability + "/integration", "correction-required", 0},
 		{reconcile(), api.WorkbenchCapability + "/record:" + packageRecord, "record-conflict", 1},
 		{help(), api.WorkspaceCapability + "/" + runID, "invalid-request", 0},
 		{help(), api.RoleComposeCapability + "/" + runID, "permission-denied", 0},
@@ -567,17 +758,39 @@ func TestHostRefusalsRefuseTheInvocation(t *testing.T) {
 			h := load(t, tc.c)
 			h.host.Refuse[tc.key] = tc.code
 			env := h.invoke("op-1", h.input(""))
-			if env.Status != "refused" || code(env) != "host."+tc.code || env.Ending == nil || env.Ending.Reason != "host-"+tc.code || len(env.Commits) != tc.commits {
+			if env.Status != "refused" || code(env) != "host."+tc.code || env.Ending == nil || env.Ending.Reason != "host-"+tc.code || len(env.Delta) != tc.delta {
 				t.Fatalf("envelope %+v", env)
 			}
 		})
 	}
-	h := load(t, memo())
-	h.host.Recover[api.SnapshotCapability+"/post-integration"] = true
-	env := h.invoke("op-1", h.input(""))
-	if env.Status != "recovery-required" || env.Ending != nil || code(env) != "host.recovery-required" || len(env.Commits) != 1 || len(env.Questions) != 1 {
-		t.Fatalf("envelope %+v", env)
+	// An integration whose effect is uncertain is recovery-required with
+	// nothing integrated; a read whose effect is uncertain keeps the
+	// integration, which stands.
+	for _, tc := range []struct {
+		c     entryCase
+		key   string
+		delta int
+	}{
+		{memo(), integrate + "/" + hostsvc.IntegrationSlot, 0},
+		{reconcile(), api.WorkbenchCapability + "/record:" + packageRecord, 1},
+	} {
+		h := load(t, tc.c)
+		h.host.Recover[tc.key] = true
+		env := h.invoke("op-1", h.input(""))
+		if env.Status != "recovery-required" || env.Ending != nil || code(env) != "host.recovery-required" || len(env.Delta) != tc.delta || len(env.Questions) != countQuestions(tc.c) {
+			t.Fatalf("%s: envelope %+v", tc.key, env)
+		}
 	}
+}
+
+func countQuestions(c entryCase) int {
+	n := 0
+	for _, s := range c.script.Calls {
+		if s.Capability == api.QuestionCapability {
+			n++
+		}
+	}
+	return n
 }
 
 type callerFunc func(context.Context, api.Invocation) (json.RawMessage, error)
@@ -586,53 +799,247 @@ func (f callerFunc) CallHost(ctx context.Context, inv api.Invocation) (json.RawM
 	return f(ctx, inv)
 }
 
-// The host freezes a schema-valid input that names another workflow, with a
-// digest that covers it: the module forwards only what names its own.
-func TestAFrozenInputNamingAnotherWorkflowIsRefused(t *testing.T) {
-	h := load(t, memo())
+// replying wraps the fake host and rewrites the completed result of every
+// reply of one capability before the module reads it.
+func (h *harness) replying(capability string, edit func(result map[string]any)) api.HostCaller {
 	caller := h.host.Caller()
-	tampered := callerFunc(func(ctx context.Context, inv api.Invocation) (json.RawMessage, error) {
+	return callerFunc(func(ctx context.Context, inv api.Invocation) (json.RawMessage, error) {
 		out, err := caller.CallHost(ctx, inv)
-		if err != nil || inv.Capability != api.RoleComposeCapability {
+		if err != nil || inv.Capability != capability {
 			return out, err
 		}
 		var reply struct {
-			State  string `json:"state"`
-			Result struct {
-				RunID           string          `json:"run_id"`
-				Profile         string          `json:"profile"`
-				RoleInput       json.RawMessage `json:"role_input"`
-				RoleInputSHA256 string          `json:"role_input_sha256"`
-			} `json:"result"`
-			Code string `json:"code"`
+			State  string         `json:"state"`
+			Result map[string]any `json:"result"`
+			Code   string         `json:"code"`
 		}
-		mustDecode(t, out, &reply)
-		reply.Result.RoleInput = json.RawMessage(strings.Replace(string(reply.Result.RoleInput), `"workflow_id":"wf-entry"`, `"workflow_id":"wf-other"`, 1))
-		reply.Result.RoleInputSHA256 = "sha256:" + fixture.Sha256Hex(reply.Result.RoleInput)
+		mustDecode(h.t, out, &reply)
+		edit(reply.Result)
 		return json.Marshal(reply)
 	})
-	out, err := h.raw(tampered, "op-1", h.input(""))
-	if err != nil {
-		t.Fatal(err)
+}
+
+// The host freezes a schema-valid input whose digest covers it but that is
+// not the run the module asked for: each of verify's checks refuses it
+// before any role call.
+func TestAFrozenInputThatIsNotTheRunIsRefused(t *testing.T) {
+	rows := map[string]func(result map[string]any){
+		"another run":     func(r map[string]any) { r["run_id"] = "run-other"; editRoleInput(r, "", "") },
+		"another profile": func(r map[string]any) { r["profile"] = "skill-help"; editRoleInput(r, "", "") },
+		// A host member the task does not carry, so only the schema sees it.
+		"not the input schema": func(r map[string]any) {
+			r["role_input"].(map[string]any)["project_context"] = map[string]any{"instructions": []any{}, "extra": true}
+			editRoleInput(r, "", "")
+		},
+		"not the task":     func(r map[string]any) { editRoleInput(r, `"buy milk"`, `"buy bread"`) },
+		"another workflow": func(r map[string]any) { editRoleInput(r, `"workflow_id":"wf-entry"`, `"workflow_id":"wf-other"`) },
 	}
-	if env := decode(t, out); env.Status != "refused" || code(env) != "role_input.invalid" || len(h.host.Host.Calls) != 0 {
-		t.Fatalf("envelope %+v, role calls %d", env, len(h.host.Host.Calls))
+	for name, edit := range rows {
+		t.Run(name, func(t *testing.T) {
+			h := load(t, memo())
+			env := h.invokeWith(h.replying(api.RoleComposeCapability, edit), "op-1", h.input(""))
+			if env.Status != "refused" || code(env) != "role_input.invalid" || len(h.host.Host.Calls) != 0 {
+				t.Fatalf("envelope %+v, role calls %d", env, len(h.host.Host.Calls))
+			}
+		})
 	}
 }
 
-func TestControlRecordsAreTheWorkbenchJSONPaths(t *testing.T) {
-	got := controlRecords([]string{
-		"pkg/a/a.go",
-		"fusion-workbench/shared/memos/notes-kai.md",
-		"fusion-workbench/" + packageRecord,
-		"M\tfusion-workbench/issues/x.record.json",
-		"fusion-workbench/" + packageRecord,
-		"fusion-workbench/a:b.json",
-		"fusion-workbench/orchestrator-events.jsonl",
+// editRoleInput replaces old by new in a compose result's role_input, none
+// when old is empty, and recomputes the digest over the bytes the reply then
+// carries, so the reply stays well-formed whatever the edit.
+func editRoleInput(r map[string]any, old, new string) {
+	body, _ := json.Marshal(r["role_input"])
+	edited := string(body)
+	if old != "" {
+		edited = strings.Replace(edited, old, new, 1)
+	}
+	var v any
+	_ = json.Unmarshal([]byte(edited), &v)
+	compact, _ := json.Marshal(v)
+	r["role_input"] = json.RawMessage(compact)
+	r["role_input_sha256"] = "sha256:" + fixture.Sha256Hex(compact)
+}
+
+// The role step's own refusals: a role input that would not fit the frame
+// of a role call, a host refusal of the run, and a run that never reached a
+// settled answer.
+func TestTheRoleStepRefusesWhatItCannotRun(t *testing.T) {
+	t.Run("oversize role input", func(t *testing.T) {
+		h := load(t, memo())
+		h.host.ContextText = strings.Repeat("x", api.DefaultMaxFrame)
+		env := h.invoke("op-1", h.input(""))
+		if env.Status != "refused" || code(env) != "frame.oversize" || len(h.host.Host.Calls) != 0 {
+			t.Fatalf("envelope %+v", env)
+		}
 	})
-	if strings.Join(got, " ") != packageRecord+" issues/x.record.json" {
+	t.Run("run refused", func(t *testing.T) {
+		h := load(t, memo())
+		caller := h.host.Caller()
+		refusing := callerFunc(func(ctx context.Context, inv api.Invocation) (json.RawMessage, error) {
+			if inv.Capability == api.RoleRunCapability {
+				return json.RawMessage(`{"state":"refused","code":"permission-denied"}`), nil
+			}
+			return caller.CallHost(ctx, inv)
+		})
+		env := h.invokeWith(refusing, "op-1", h.input(""))
+		if env.Status != "refused" || code(env) != "host.permission-denied" || h.host.ModelCalls != 0 {
+			t.Fatalf("envelope %+v", env)
+		}
+	})
+	t.Run("never settled", func(t *testing.T) {
+		h := load(t, memo())
+		caller := h.host.Caller()
+		reads := 0
+		unsettled := callerFunc(func(ctx context.Context, inv api.Invocation) (json.RawMessage, error) {
+			out, err := caller.CallHost(ctx, inv)
+			if err == nil && inv.Capability == api.RoleReadCapability {
+				if reads++; reads == 3 {
+					return json.RawMessage(strings.Replace(string(out), `"state":"settled"`, `"state":"answered"`, 1)), nil
+				}
+			}
+			return out, err
+		})
+		env := h.invokeWith(unsettled, "op-1", h.input(""))
+		if env.Status != "refused" || code(env) != "role.answered" || h.host.CountSent(integrate) != 0 {
+			t.Fatalf("envelope %+v", env)
+		}
+	})
+}
+
+// One row per receipt check: each edit of the integration answer breaks
+// exactly one check, so with that check removed the receipt passes and the
+// row turns red. A failed check refuses with integration.invalid, keeps
+// nothing of the receipt and reads no record.
+func TestEveryReceiptCheckRefusesAnIntegrationThatIsNotTheRuns(t *testing.T) {
+	other := strings.Repeat("e", 40)
+	rows := []struct {
+		name, detail string
+		edit         func(r map[string]any)
+	}{
+		{"another run", "run_id", func(r map[string]any) { r["run_id"] = "run-other" }},
+		{"another base", "base is not", func(r map[string]any) { r["base"] = other }},
+		{"no reference", "reference is empty", func(r map[string]any) { r["reference"] = "" }},
+		{"head moved without a commit", "no commit", func(r map[string]any) { r["commits"] = []any{}; r["head"] = other }},
+		{"commits that leave head at base", "head is base", func(r map[string]any) {
+			commits := r["commits"].([]any)
+			commits[len(commits)-1].(map[string]any)["commit"] = fixture.BaseRevision
+			r["head"] = fixture.BaseRevision
+		}},
+		{"head not the last commit", "last commit", func(r map[string]any) { r["head"] = other }},
+		{"a commit that is no hash", "commit hash", func(r map[string]any) {
+			commits := r["commits"].([]any)
+			commits[len(commits)-1].(map[string]any)["commit"] = "HEAD"
+			r["head"] = "HEAD"
+		}},
+		{"a commit without a subject", "commit hash with a subject", func(r map[string]any) {
+			r["commits"].([]any)[0].(map[string]any)["subject"] = ""
+		}},
+		{"a change outside name-status form", "changes item", func(r map[string]any) {
+			r["commits"].([]any)[0].(map[string]any)["changes"] = []any{"Q\tpkg/a/a.go"}
+		}},
+		{"a delta item outside name-status form", "delta item", func(r map[string]any) { r["delta"] = []any{"M\t/etc/passwd"} }},
+	}
+	for _, row := range rows {
+		t.Run(row.name, func(t *testing.T) {
+			h := load(t, twoCommits())
+			env := h.invokeWith(h.replying(integrate, row.edit), "op-1", h.input(""))
+			if env.Status != "refused" || code(env) != "integration.invalid" || !strings.Contains(env.Violations[0].Detail, row.detail) {
+				t.Fatalf("envelope %+v", env)
+			}
+			if len(env.Commits) != 0 || len(env.Delta) != 0 || h.host.CountSent(api.WorkbenchCapability) != 0 {
+				t.Fatalf("envelope %+v, sent %v", env, h.host.Sent)
+			}
+		})
+	}
+}
+
+// The receipt check admits exactly the name-status lines the result schema
+// admits: the module's pattern is the schema's own text.
+func TestTheNameStatusCheckIsTheSchemasPattern(t *testing.T) {
+	body, err := os.ReadFile(filepath.Join(fixture.CatalogDir(t), "schemas", "entry-result.v2.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var schema struct {
+		Defs struct {
+			NameStatus struct {
+				Pattern string `json:"pattern"`
+			} `json:"name_status"`
+		} `json:"$defs"`
+	}
+	mustDecode(t, body, &schema)
+	if schema.Defs.NameStatus.Pattern == "" || nameStatus.String() != schema.Defs.NameStatus.Pattern {
+		t.Fatalf("module pattern %q, schema pattern %q", nameStatus.String(), schema.Defs.NameStatus.Pattern)
+	}
+	for line, want := range map[string]bool{
+		"A\ta": true, "M\tpkg/a.go": true, "D\tx": true, "T\tx": true, "R100\told\tnew": true, "C75\ta\tb": true,
+		"Q\tx": false, "M\t": false, "M\t/abs": false, "R100\tone": false, "M x": false, "M\ta\tb": false, "R1000\ta\tb": false, "M\ta\nb": false,
+	} {
+		if got := nameStatus.MatchString(line); got != want {
+			t.Errorf("%q: %v, want %v", line, got, want)
+		}
+	}
+}
+
+// The control records are the workbench JSON paths of the commits' changes
+// and then the delta, each once, a D line excluded and an R line read at its
+// new path.
+func TestControlRecordsAreTheWorkbenchJSONPathsNotDeleted(t *testing.T) {
+	commits := []Commit{{Changes: []string{
+		"M\tpkg/a/a.go",
+		"A\tfusion-workbench/shared/memos/notes-kai.md",
+		"M\tfusion-workbench/" + packageRecord,
+		"D\tfusion-workbench/issues/gone.record.json",
+	}}, {Changes: []string{
+		"R100\tfusion-workbench/issues/old.record.json\tfusion-workbench/issues/new.record.json",
+		"M\tfusion-workbench/" + packageRecord,
+	}}}
+	delta := []string{"M\tfusion-workbench/a:b.json", "M\tfusion-workbench/orchestrator-events.jsonl", "A\tfusion-workbench/decisions/d.record.json"}
+	got := controlRecords(commits, delta)
+	if strings.Join(got, " ") != packageRecord+" issues/new.record.json decisions/d.record.json" {
 		t.Fatalf("records %v", got)
 	}
+}
+
+// L1: an envelope over the frame bound on a run that integrated is refused
+// frame.oversize and still carries the integration, which stands, with the
+// questions emptied; only when the integration alone does not fit is it the
+// bare refusal.
+func TestAnOversizeEnvelopeKeepsTheIntegrationThatStands(t *testing.T) {
+	t.Run("questions over the bound", func(t *testing.T) {
+		h := load(t, twoCommits())
+		scripted := h.host.Models[h.c.profile]
+		h.host.Models[h.c.profile] = func(runID string, input json.RawMessage) json.RawMessage {
+			var answer map[string]any
+			mustDecode(t, scripted(runID, input), &answer)
+			var questions []any
+			for i := 0; len(questions)*8192 <= api.DefaultMaxFrame; i++ {
+				questions = append(questions, map[string]any{"call_id": fmt.Sprintf("q-%d", i), "question": strings.Repeat("q", 8192), "options": []any{}, "channel": "chat-text", "outcome": "interrupted", "selected": []any{}, "text": ""})
+			}
+			answer["questions"] = questions
+			body, _ := json.Marshal(answer)
+			return body
+		}
+		env := h.invoke("op-1", h.input(""))
+		if env.Status != "refused" || code(env) != "frame.oversize" || len(env.Questions) != 0 {
+			t.Fatalf("envelope status %s, violations %+v, %d questions", env.Status, env.Violations, len(env.Questions))
+		}
+		if len(env.Commits) != 2 || env.Commits[1].Subject != "Record the fix in the package" || strings.Join(env.Delta, ",") != "M\tdocs/notes.md" {
+			t.Fatalf("the integration was dropped: commits %+v, delta %q", env.Commits, env.Delta)
+		}
+	})
+	t.Run("the integration over the bound", func(t *testing.T) {
+		h := load(t, twoCommits())
+		var delta []any
+		for i := 0; len(delta)*24 <= api.DefaultMaxFrame; i++ {
+			delta = append(delta, fmt.Sprintf("M\tpkg/generated/f-%06d.go", i))
+		}
+		env := h.invokeWith(h.replying(integrate, func(r map[string]any) { r["delta"] = delta }), "op-1", h.input(""))
+		if env.Status != "refused" || code(env) != "frame.oversize" || len(env.Commits) != 0 || len(env.Delta) != 0 {
+			t.Fatalf("envelope status %s, violations %+v, %d commits, %d delta", env.Status, env.Violations, len(env.Commits), len(env.Delta))
+		}
+	})
 }
 
 func TestReasonOf(t *testing.T) {
@@ -644,8 +1051,7 @@ func TestReasonOf(t *testing.T) {
 }
 
 // The handler behind the SDK server, over pipes, against the SDK client with
-// the twelve fake services offered: every host call framed as Prior frames
-// it.
+// the fake services offered: every host call framed as Prior frames it.
 func TestServeOverPipes(t *testing.T) {
 	h := load(t, memo())
 	secret := make([]byte, 32)
@@ -657,15 +1063,15 @@ func TestServeOverPipes(t *testing.T) {
 	moduleReads, hostWrites := io.Pipe()
 	served := make(chan error, 1)
 	go func() { served <- server.Serve(context.Background(), moduleReads, moduleWrites) }()
-	client, err := api.ConnectWithServices(context.Background(), duplex{hostReads, hostWrites}, fixture.Identity, secret, []string{"fusion.entry.v1"}, h.host.Services())
+	client, err := api.ConnectWithServices(context.Background(), duplex{hostReads, hostWrites}, fixture.Identity, secret, []string{"fusion.entry.v2"}, h.host.Services())
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err := client.Invoke(context.Background(), api.Invocation{OperationID: "op-1", Capability: "fusion.entry.v1", Input: h.input("")})
+	out, err := client.Invoke(context.Background(), api.Invocation{OperationID: "op-1", Capability: "fusion.entry.v2", Input: h.input("")})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if env := decode(t, out); env.Status != "completed" || len(env.Commits) != 1 || h.host.ModelCalls != 1 {
+	if env := decode(t, out); env.Status != "completed" || len(env.Delta) != 1 || h.host.ModelCalls != 1 {
 		t.Fatalf("envelope %+v", env)
 	}
 	client.Close()

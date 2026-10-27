@@ -22,10 +22,11 @@ type schemaCase struct {
 // ajv suite (catalog/src/__tests__/schema-cases.test.ts) asserts the same rows
 // of the same tables, so a keyword this subset validator reads differently
 // from a full draft 2020-12 validator turns one of the two suites red. The
-// repair table covers the frozen repair schemas, the entry table the two
-// entry.v1 schemas.
+// one table is fusion.entry.v2's, over entry-request.v1.json and
+// entry-result.v2.json; no table holds explorer rows, the explorer's schemas
+// being held by their freeze.
 func TestSharedSchemaCases(t *testing.T) {
-	for _, table := range []string{"repair-schema-cases.v1.json", "entry-schema-cases.v1.json"} {
+	for _, table := range []string{"entry-schema-cases.v2.json"} {
 		t.Run(table, func(t *testing.T) { runSchemaCases(t, table) })
 	}
 }

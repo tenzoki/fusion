@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 
@@ -11,57 +12,63 @@ import (
 	api "github.com/kai/prior/moduleapi/v1"
 )
 
-// The decoders and the read entry.v1 adds: a capture with no review binding,
-// an integration with no reviewer, and a read under a slot of its own.
+// The integrate call and the read the entry workflow adds: the integration
+// answer decoded as closed objects, and a read under a slot of its own.
 
 func completedReply(capability, result string) Reply {
 	return Reply{Capability: capability, Slot: "s", State: "completed", Result: json.RawMessage(result)}
 }
 
-func TestUnboundCaptureDecodesFiveMembers(t *testing.T) {
-	diff := "diff --git a/x b/x\n"
-	good := `{"base_revision":"b","tree":"t","diff":` + quote(diff) + `,"diff_sha256":"` + Digest([]byte(diff)) + `","validations":[]}`
-	got, err := completedReply(api.CaptureCapability, good).UnboundCapture()
-	if err != nil || got.Diff != diff || got.Tree != "t" {
+const integration = `{"run_id":"run-entry","base":"b","reference":"refs/heads/main","head":"h","commits":[{"commit":"h","subject":"Add the memo","changes":["A\tnotes.md"]}],"delta":["M\tREADME.md"]}`
+
+func TestEntryIntegrationDecodesClosedObjects(t *testing.T) {
+	got, err := completedReply(EntryIntegrateCapability, integration).EntryIntegration()
+	if err != nil || got.RunID != "run-entry" || got.Reference != "refs/heads/main" || got.Head != "h" || len(got.Commits) != 1 || got.Commits[0].Subject != "Add the memo" || strings.Join(got.Commits[0].Changes, ",") != "A\tnotes.md" || strings.Join(got.Delta, ",") != "M\tREADME.md" {
 		t.Fatalf("%+v %v", got, err)
 	}
-	empty := `{"base_revision":"b","tree":"t","diff":"","diff_sha256":"` + Digest(nil) + `","validations":[]}`
-	if got, err := completedReply(api.CaptureCapability, empty).UnboundCapture(); err != nil || got.Diff != "" {
-		t.Fatalf("an empty diff: %+v %v", got, err)
+	empty := `{"run_id":"run-entry","base":"b","reference":"r","head":"b","commits":[],"delta":[]}`
+	if got, err := completedReply(EntryIntegrateCapability, empty).EntryIntegration(); err != nil || got.Commits == nil || len(got.Commits) != 0 || len(got.Delta) != 0 {
+		t.Fatalf("an empty integration: %+v %v", got, err)
+	}
+	// The decoder checks the shape only: an empty member is the workflow's
+	// to refuse, being a statement about the run.
+	if _, err := completedReply(EntryIntegrateCapability, strings.Replace(integration, `"reference":"refs/heads/main"`, `"reference":""`, 1)).EntryIntegration(); err != nil {
+		t.Fatalf("an empty reference is not a shape violation: %v", err)
 	}
 	for name, body := range map[string]string{
-		"a binding member":         strings.Replace(good, `"validations":[]`, `"validations":[],"binding":{}`, 1),
-		"digest not the diff's":    strings.Replace(good, Digest([]byte(diff)), Digest([]byte("x")), 1),
-		"validations not an array": strings.Replace(good, `"validations":[]`, `"validations":{}`, 1),
-		"tree empty":               strings.Replace(good, `"tree":"t"`, `"tree":""`, 1),
+		"a member added":            strings.Replace(integration, `"delta":`, `"tree":"t","delta":`, 1),
+		"a member missing":          strings.Replace(integration, `"head":"h",`, ``, 1),
+		"a member null":             strings.Replace(integration, `"delta":["M\tREADME.md"]`, `"delta":null`, 1),
+		"commits null":              strings.Replace(integration, `"commits":[{"commit":"h","subject":"Add the memo","changes":["A\tnotes.md"]}]`, `"commits":null`, 1),
+		"a commit member added":     strings.Replace(integration, `"subject":"Add the memo",`, `"subject":"Add the memo","reference":"r",`, 1),
+		"a commit member missing":   strings.Replace(integration, `"subject":"Add the memo",`, ``, 1),
+		"a commit's changes null":   strings.Replace(integration, `"changes":["A\tnotes.md"]`, `"changes":null`, 1),
+		"a delta item not a string": strings.Replace(integration, `"delta":["M\tREADME.md"]`, `"delta":[1]`, 1),
+		"commits not an array":      strings.Replace(integration, `"commits":[{"commit":"h","subject":"Add the memo","changes":["A\tnotes.md"]}]`, `"commits":{}`, 1),
 	} {
-		if _, err := completedReply(api.CaptureCapability, body).UnboundCapture(); err == nil {
-			t.Errorf("%s was accepted", name)
+		if _, err := completedReply(EntryIntegrateCapability, body).EntryIntegration(); !errors.Is(err, ErrReply) {
+			t.Errorf("%s: %v", name, err)
 		}
 	}
+	if _, err := completedReply(api.WorkspaceCapability, integration).EntryIntegration(); !errors.Is(err, ErrNotCompleted) {
+		t.Fatalf("another service's reply decoded: %v", err)
+	}
+	if _, err := (Reply{Capability: EntryIntegrateCapability, State: "refused", Code: "conflict"}).EntryIntegration(); !errors.Is(err, ErrNotCompleted) {
+		t.Fatalf("a refusal decoded: %v", err)
+	}
 }
 
-func quote(s string) string {
-	body, _ := json.Marshal(s)
-	return string(body)
-}
-
-func TestUnreviewedIntegrationNeedsAnEmptyReviewer(t *testing.T) {
-	members := map[string]any{"id": "i", "state": "integrated", "reference": "r", "base": "b", "tree": "t", "commit": "c", "record_name": "n", "record_revision": "1", "author": "a", "reviewer": "", "checks": []any{}, "validations": []any{}, "correction": ""}
-	body, _ := json.Marshal(members)
-	if _, err := completedReply(api.IntegrateCapability, string(body)).UnreviewedIntegration(); err != nil {
-		t.Fatal(err)
+func TestEntryIntegrateSendsTheRunUnderSlotIntegration(t *testing.T) {
+	op := api.RepairOperationID(EntryIntegrateCapability, workflowID, IntegrationSlot)
+	host := &scripted{replies: map[string]string{op: completed(integration)}}
+	c := Client{Host: host, Identity: fixture.Identity, WorkflowID: workflowID}
+	reply, err := c.EntryIntegrate(context.Background(), "run-entry")
+	if err != nil || !reply.Completed() || reply.Slot != IntegrationSlot || reply.Capability != EntryIntegrateCapability {
+		t.Fatalf("%+v %v", reply, err)
 	}
-	if _, err := completedReply(api.IntegrateCapability, string(body)).Integration(); err == nil {
-		t.Fatal("a reviewed integration accepted an empty reviewer")
-	}
-	members["reviewer"] = "principal:reviewer"
-	body, _ = json.Marshal(members)
-	if _, err := completedReply(api.IntegrateCapability, string(body)).UnreviewedIntegration(); err == nil {
-		t.Fatal("an unreviewed integration accepted a reviewer")
-	}
-	if _, err := completedReply(api.IntegrateCapability, string(body)).Integration(); err != nil {
-		t.Fatal(err)
+	var call api.RepairCall
+	if err := api.Decode(host.calls[0].Input, &call); err != nil || call.RunID != "run-entry" || call.Identity != fixture.Identity || call.WorkflowID != workflowID {
+		t.Fatalf("request %s: %v", host.calls[0].Input, err)
 	}
 }
 

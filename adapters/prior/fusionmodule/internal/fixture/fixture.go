@@ -1,9 +1,10 @@
 // Package fixture serves the adapter's tests: a payload directory built from
 // fusion's catalog, a fake host whose three host.role.* services are durable
-// in memory, in repair.go a fake host that adds the six repair services of
-// Prior's answer 69 over it, and in entry.go a fake host for entry.v1 that
-// serves those six to the module and the three entry services to a scripted
-// role run. Nothing here is linked into the module executable.
+// in memory, and in entry.go a fake host for fusion.entry.v2 that serves the
+// request-69 services compose, workspace and workbench and the proposed
+// host.entry.integrate.v1 to the module and the three entry services to a
+// scripted role run, over the journal of journal.go. Nothing here is linked
+// into the module executable.
 package fixture
 
 import (
@@ -12,6 +13,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"testing"
@@ -32,23 +34,6 @@ func CatalogDir(t *testing.T) string {
 		t.Skip("FUSION_CATALOG_DIR unset: run through adapters/prior/stage.sh")
 	}
 	return dir
-}
-
-// Profiles are the four roles the repair host serves on Prior. The payload
-// carries their profiles among PayloadProfiles.
-var Profiles = []string{"explorer", "code-implementer", "reviewer", "state-auditor"}
-
-// Workflows are the definitions the payload carries.
-var Workflows = []string{"explorer", "repair", "entry"}
-
-// Schemas are the published schemas, as catalog/schemas/FROZEN lists them.
-var Schemas = []string{
-	"explorer-request", "explorer-role-input", "explorer-envelope", "explorer-result",
-	"repair-request", "repair-result",
-	"implementer-request", "implementer-result",
-	"review-request", "review-response",
-	"audit-request", "audit-result",
-	"entry-request", "entry-result",
 }
 
 // PayloadProfiles are the profiles the live catalog ships on Prior, chosen as
@@ -146,11 +131,61 @@ func DataFiles(t *testing.T, catalogDir string) []string {
 	for _, id := range PayloadProfiles(t, catalogDir) {
 		out = append(out, "profiles/"+id+".json", "profiles/"+id+".md")
 	}
-	for _, id := range Workflows {
-		out = append(out, "workflows/"+id+".v1.json")
+	out = append(out, Workflows(t, catalogDir)...)
+	return append(out, Schemas(t, catalogDir)...)
+}
+
+// versioned is a published asset's file name, <id>.v<n>.json for a positive
+// n, the form the bundle assembler selects; a meta-schema *.schema.json is
+// not one.
+var versioned = regexp.MustCompile(`^[a-z][a-z0-9-]*\.v[1-9][0-9]*\.json$`)
+
+// Workflows are the definitions the payload carries, read from the catalog's
+// workflows/ as the assembler selects them, in name order, each as its
+// payload path.
+func Workflows(t *testing.T, catalogDir string) []string {
+	t.Helper()
+	dir, err := os.ReadDir(filepath.Join(catalogDir, "workflows"))
+	if err != nil {
+		t.Fatal(err)
 	}
-	for _, name := range Schemas {
-		out = append(out, "schemas/"+name+".v1.json")
+	var out []string
+	for _, e := range dir {
+		if e.Type().IsRegular() && versioned.MatchString(e.Name()) {
+			out = append(out, "workflows/"+e.Name())
+		}
+	}
+	if len(out) == 0 {
+		t.Fatal("catalog/workflows holds no definition")
+	}
+	return out
+}
+
+// Schemas are the published schemas, read from the schemas/ lines of
+// catalog/schemas/FROZEN, in its order, each as its payload path: the freeze
+// names exactly the published set (catalog/src/__tests__/frozen.test.ts), so
+// a withdrawn schema leaves this list with its line.
+func Schemas(t *testing.T, catalogDir string) []string {
+	t.Helper()
+	body, err := os.ReadFile(filepath.Join(catalogDir, "schemas", "FROZEN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var out []string
+	for _, line := range strings.Split(string(body), "\n") {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		hash, path, ok := strings.Cut(line, "  ")
+		if !ok || len(hash) != 64 {
+			t.Fatalf("FROZEN line %q is not <sha256>  <path>", line)
+		}
+		if strings.HasPrefix(path, "schemas/") {
+			out = append(out, path)
+		}
+	}
+	if len(out) == 0 {
+		t.Fatal("FROZEN names no schema")
 	}
 	return out
 }
@@ -200,11 +235,8 @@ func EntryBundle(t *testing.T, catalogDir string, supported ...string) string {
 		write("profiles/"+id+".md", []byte("fixture entry profile text\n"))
 		data = append(data, "profiles/"+id+".json", "profiles/"+id+".md")
 	}
-	for _, id := range Workflows {
-		copyFile("workflows/"+id+".v1.json", "workflows/"+id+".v1.json")
-	}
-	for _, name := range Schemas {
-		copyFile("schemas/"+name+".v1.json", "schemas/"+name+".v1.json")
+	for _, rel := range append(Workflows(t, catalogDir), Schemas(t, catalogDir)...) {
+		copyFile(rel, rel)
 	}
 	for _, id := range payload {
 		profileBytes, err := os.ReadFile(filepath.Join(catalogDir, "profiles", id, "profile.json"))
@@ -288,7 +320,7 @@ func EntryProfile(id string) []byte {
 	body, _ := json.Marshal(map[string]any{
 		"id":               id,
 		"input_schema":     "schemas/entry-request.v1.json",
-		"result_schema":    "schemas/entry-result.v1.json",
+		"result_schema":    "schemas/entry-result.v2.json",
 		"tools_ceiling":    []string{"read", "list", "search", "create", "write", "process"},
 		"may_delegate":     false,
 		"writes_workbench": map[string]bool{"claude-code": true, "prior": true},

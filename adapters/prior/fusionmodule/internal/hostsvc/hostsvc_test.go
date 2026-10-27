@@ -13,18 +13,14 @@ import (
 	api "github.com/kai/prior/moduleapi/v1"
 )
 
-// These are unit tests of the service client over the fake repair host of
-// internal/fixture and over scripted callers, in-process: the request each
-// service sends, the operation id it mints, the envelope it decodes and the
-// pages it assembles.
+// These are unit tests of the service client over scripted callers,
+// in-process: the request each service sends, the operation id it mints, the
+// envelope it decodes and the pages it assembles.
 
-const workflowID = "wf-hostsvc"
-
-func client(t *testing.T) (Client, *fixture.RepairHost) {
-	t.Helper()
-	host := fixture.NewRepairHost(t, fixture.CatalogDir(t), workflowID, fixture.DefaultRuns())
-	return Client{Host: host.Caller(), Identity: fixture.Identity, WorkflowID: workflowID}, host
-}
+const (
+	workflowID = "wf-hostsvc"
+	recordPath = "work-packages/261023-1200-fixture-package/package.json"
+)
 
 // scripted answers each operation id from a table, recording the calls.
 type scripted struct {
@@ -41,55 +37,95 @@ func (s *scripted) CallHost(_ context.Context, inv api.Invocation) (json.RawMess
 	return json.RawMessage(body), nil
 }
 
-func completed(result string) string { return `{"state":"completed","result":` + result + `,"code":""}` }
+func completed(result string) string {
+	return `{"state":"completed","result":` + result + `,"code":""}`
+}
 
-func TestEveryRequestIsClosedWithTheSlotsOfAnswer69(t *testing.T) {
-	c, host := client(t)
+// paging is a workbench that serves one record's object under any read slot,
+// cut into pages of size bytes, and refuses a page slot named in refuse.
+type paging struct {
+	object []byte
+	size   int
+	refuse map[string]string
+	calls  []api.Invocation
+	slots  []string
+}
+
+func (p *paging) CallHost(_ context.Context, inv api.Invocation) (json.RawMessage, error) {
+	p.calls = append(p.calls, inv)
+	var call api.RepairCall
+	if err := api.Decode(inv.Input, &call); err != nil || inv.Capability != api.WorkbenchCapability {
+		return nil, api.ErrCapability
+	}
+	handle := fixture.Sha256Hex([]byte(workflowID + ":read:" + recordPath))
+	slot, offset := "record", 0
+	if call.Action == "page" {
+		slot, offset = "page:"+call.Handle+":"+strconv.FormatInt(*call.Offset, 10), int(*call.Offset)
+	}
+	p.slots = append(p.slots, slot)
+	if code := p.refuse[slot]; code != "" {
+		return json.RawMessage(`{"state":"refused","result":null,"code":"` + code + `"}`), nil
+	}
+	return json.RawMessage(completed(string(fixture.PageDescriptor(p.size, handle, p.object, offset)))), nil
+}
+
+func newPaging(size int) *paging {
+	return &paging{object: []byte(`{"record":{"control":{"kind":"package","state":"active","revision":"3"},"narrative":"# Fixture package\n"},"revision":"3"}`), size: size, refuse: map[string]string{}}
+}
+
+// Every request is a closed object with identity first and workflow_id
+// second, under the operation id of its slot: the run id for compose and
+// workspace, integration for the integrate call, record and
+// record:<control path> for reads, page:<handle>:<offset> for a page. The
+// requests Prior's pinned decoder knows are admitted by it under the same
+// slot.
+func TestEveryRequestIsClosedUnderItsSlot(t *testing.T) {
 	ctx := context.Background()
+	recorder := &scripted{replies: map[string]string{}}
+	c := Client{Host: recorder, Identity: fixture.Identity, WorkflowID: workflowID}
+	offset := int64(40)
+	handle := strings.Repeat("c", 64)
 	calls := []struct {
-		call func() (Reply, error)
-		slot string
-		keys string
+		call   func() (Reply, error)
+		slot   string
+		keys   string
+		pinned bool
 	}{
-		{func() (Reply, error) { return c.Compose(ctx, "run-explore", "explorer", json.RawMessage(`{"question":"q"}`)) }, "run-explore", "identity,workflow_id,run_id,profile,task"},
-		{func() (Reply, error) { return c.Workspace(ctx, "run-impl-0") }, "run-impl-0", "identity,workflow_id,run_id"},
-		{func() (Reply, error) { return c.Capture(ctx, "run-impl-0") }, "run-impl-0", "identity,workflow_id,run_id"},
-		{func() (Reply, error) { return c.Integrate(ctx, "run-review-0") }, "integration", "identity,workflow_id,run_id"},
-		{func() (Reply, error) { return c.Snapshot(ctx) }, "post-integration", "identity,workflow_id"},
-		{func() (Reply, error) { return c.ReadRecord(ctx, fixture.RecordPath) }, "record", "identity,workflow_id,action,record"},
-		{func() (Reply, error) { return c.Close(ctx, "run-audit") }, "close", "identity,workflow_id,action,audit_run_id"},
+		{func() (Reply, error) {
+			return c.Compose(ctx, "run-explore", "explorer", json.RawMessage(`{"question":"q"}`))
+		}, "run-explore", "identity,workflow_id,run_id,profile,task", true},
+		{func() (Reply, error) { return c.Workspace(ctx, "run-entry") }, "run-entry", "identity,workflow_id,run_id", true},
+		{func() (Reply, error) { return c.EntryIntegrate(ctx, "run-entry") }, "integration", "identity,workflow_id,run_id", false},
+		{func() (Reply, error) { return c.ReadRecord(ctx, recordPath) }, "record", "identity,workflow_id,action,record", true},
+		{func() (Reply, error) { return c.ReadRecordAt(ctx, "record:"+recordPath, recordPath) }, "record:" + recordPath, "identity,workflow_id,action,record", false},
+		{func() (Reply, error) {
+			return c.call(ctx, api.WorkbenchCapability, "page:"+handle+":40", api.RepairCall{Action: "page", Handle: handle, Offset: &offset})
+		}, "page:" + handle + ":40", "identity,workflow_id,action,handle,offset", true},
 	}
 	for i, tc := range calls {
-		reply, err := tc.call()
-		if err != nil {
+		// The scripted host knows no operation: every call is a transport
+		// error after it was sent, which is what this test reads.
+		if _, err := tc.call(); !errors.Is(err, api.ErrCapability) {
 			t.Fatalf("call %d: %v", i, err)
 		}
-		recorded := host.Calls[len(host.Calls)-1]
-		if reply.Slot != tc.slot || recorded.Slot != tc.slot || recorded.OperationID != api.RepairOperationID(recorded.Capability, workflowID, tc.slot) {
-			t.Fatalf("call %d: slot %q, recorded %+v", i, reply.Slot, recorded)
+		sent := recorder.calls[len(recorder.calls)-1]
+		if sent.OperationID != api.RepairOperationID(sent.Capability, workflowID, tc.slot) {
+			t.Fatalf("call %d: operation id %s is not slot %q's", i, sent.OperationID, tc.slot)
 		}
-		if _, slot, err := api.DecodeRepairCall(api.Invocation{OperationID: recorded.OperationID, Capability: recorded.Capability, Input: recorded.Input}); err != nil || slot != tc.slot {
-			t.Fatalf("call %d: the host's decoder refuses the request: %v", i, err)
-		}
-		if got := memberOrder(t, recorded.Input); got != tc.keys {
+		if got := memberOrder(t, sent.Input); got != tc.keys {
 			t.Fatalf("call %d: members %s, want %s", i, got, tc.keys)
 		}
-		if !strings.HasPrefix(string(recorded.Input), `{"identity":{"module_id":"fusion",`) {
-			t.Fatalf("call %d: identity is not first: %s", i, recorded.Input)
+		if !strings.HasPrefix(string(sent.Input), `{"identity":{"module_id":"fusion",`) {
+			t.Fatalf("call %d: identity is not first: %s", i, sent.Input)
+		}
+		if tc.pinned {
+			if _, slot, err := api.DecodeRepairCall(sent); err != nil || slot != tc.slot {
+				t.Fatalf("call %d: the pinned decoder refuses the request: %v", i, err)
+			}
 		}
 	}
-	// The workbench read followed no page: the record fits one page, and the
-	// capture, integrate, snapshot and close were refused for want of their
-	// preconditions, as replies rather than errors.
-	states := []string{}
-	for _, c := range host.Calls {
-		states = append(states, c.Capability+"/"+c.Slot)
-	}
-	if strings.Join(states, " ") != "host.role.compose.v1/run-explore host.workspace.v1/run-impl-0 host.capture.v1/run-impl-0 host.integrate.v1/integration host.snapshot.v1/post-integration host.workbench.v1/record host.workbench.v1/close" {
-		t.Fatalf("calls %v", states)
-	}
-	if reply, _ := c.Capture(ctx, "run-impl-0"); reply.State != "refused" || reply.Code != "conflict" {
-		t.Fatalf("a capture without a settled implementer was %+v", reply)
+	if got := recorder.calls[2].Capability; got != EntryIntegrateCapability {
+		t.Fatalf("the integrate call went to %s", got)
 	}
 }
 
@@ -116,9 +152,9 @@ func memberOrder(t *testing.T, body []byte) string {
 }
 
 func TestPagedReadIsAssembledAndChecked(t *testing.T) {
-	c, host := client(t)
-	host.PageBytes = 7
-	reply, err := c.ReadRecord(context.Background(), fixture.RecordPath)
+	host := newPaging(7)
+	c := Client{Host: host, Identity: fixture.Identity, WorkflowID: workflowID}
+	reply, err := c.ReadRecord(context.Background(), recordPath)
 	if err != nil || !reply.Completed() || reply.Slot != "record" {
 		t.Fatalf("reply %+v, %v", reply, err)
 	}
@@ -126,41 +162,37 @@ func TestPagedReadIsAssembledAndChecked(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if record.Revision != host.Revision || string(record.Record) != string(host.Record) {
+	if record.Revision != "3" || string(reply.Result) != string(host.object) {
 		t.Fatalf("assembled %+v", record)
 	}
-	handle := fixture.Sha256Hex([]byte(workflowID + ":read:" + fixture.RecordPath))
+	handle := fixture.Sha256Hex([]byte(workflowID + ":read:" + recordPath))
 	expected := []string{"record"}
-	for offset := 7; offset < len(reply.Result); offset += 7 {
+	for offset := 7; offset < len(host.object); offset += 7 {
 		expected = append(expected, "page:"+handle+":"+itoa(offset))
 	}
-	var slots []string
-	for _, call := range host.Calls {
-		slots = append(slots, call.Slot)
+	if strings.Join(host.slots, " ") != strings.Join(expected, " ") {
+		t.Fatalf("slots %v, want %v", host.slots, expected)
 	}
-	if strings.Join(slots, " ") != strings.Join(expected, " ") {
-		t.Fatalf("slots %v, want %v", slots, expected)
-	}
-	if len(slots) < 3 {
-		t.Fatalf("the read was not paged: %v", slots)
+	if len(host.slots) < 3 {
+		t.Fatalf("the read was not paged: %v", host.slots)
 	}
 }
 
 func itoa(n int) string { return strconv.Itoa(n) }
 
 func TestARefusedPageIsReturnedAsItsOwnReply(t *testing.T) {
-	c, host := client(t)
-	host.PageBytes = 7
-	handle := fixture.Sha256Hex([]byte(workflowID + ":read:" + fixture.RecordPath))
-	host.Refuse[api.WorkbenchCapability+"/page:"+handle+":14"] = "permission-denied"
-	reply, err := c.ReadRecord(context.Background(), fixture.RecordPath)
+	host := newPaging(7)
+	handle := fixture.Sha256Hex([]byte(workflowID + ":read:" + recordPath))
+	host.refuse["page:"+handle+":14"] = "permission-denied"
+	c := Client{Host: host, Identity: fixture.Identity, WorkflowID: workflowID}
+	reply, err := c.ReadRecord(context.Background(), recordPath)
 	if err != nil || reply.State != "refused" || reply.Code != "permission-denied" || reply.Slot != "page:"+handle+":14" || reply.Result != nil {
 		t.Fatalf("reply %+v, %v", reply, err)
 	}
 }
 
-// tampering wraps the fake host and rewrites one descriptor member on the
-// page at a given offset.
+// tampering wraps a host and rewrites one descriptor member on the page at a
+// given offset.
 type tampering struct {
 	base   api.HostCaller
 	offset string
@@ -209,10 +241,8 @@ func TestAPageThatDoesNotAddUpIsAnError(t *testing.T) {
 	}
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			c, host := client(t)
-			host.PageBytes = 7
-			c.Host = tampering{host.Caller(), tc.offset, tc.edit}
-			_, err := c.ReadRecord(context.Background(), fixture.RecordPath)
+			c := Client{Host: tampering{newPaging(7), tc.offset, tc.edit}, Identity: fixture.Identity, WorkflowID: workflowID}
+			_, err := c.ReadRecord(context.Background(), recordPath)
 			if !errors.Is(err, ErrReply) {
 				t.Fatalf("err %v", err)
 			}
@@ -226,11 +256,11 @@ func TestAPageThatMakesNoProgressIsAnError(t *testing.T) {
 	// The host answers the same empty page however often it is asked; an
 	// assembler that followed next_offset here would never stop.
 	host := &scripted{replies: map[string]string{
-		api.RepairOperationID(api.WorkbenchCapability, workflowID, "close"):             empty,
+		api.RepairOperationID(api.WorkbenchCapability, workflowID, "record"):            empty,
 		api.RepairOperationID(api.WorkbenchCapability, workflowID, "page:"+handle+":0"): empty,
 	}}
 	c := Client{Host: host, Identity: fixture.Identity, WorkflowID: workflowID}
-	_, err := c.Close(context.Background(), "run-audit")
+	_, err := c.ReadRecord(context.Background(), recordPath)
 	if !errors.Is(err, ErrReply) {
 		t.Fatalf("err %v", err)
 	}
@@ -239,50 +269,13 @@ func TestAPageThatMakesNoProgressIsAnError(t *testing.T) {
 	}
 }
 
-func TestCloseIsInlineOrPaged(t *testing.T) {
-	closure := `{"record":"issues/one.record.json","before":"7","after":"8","reconciled":true}`
-	inline := &scripted{replies: map[string]string{api.RepairOperationID(api.WorkbenchCapability, workflowID, "close"): completed(closure)}}
-	c := Client{Host: inline, Identity: fixture.Identity, WorkflowID: workflowID}
-	reply, err := c.Close(context.Background(), "run-audit")
-	if err != nil || !reply.Completed() {
-		t.Fatalf("reply %+v, %v", reply, err)
-	}
-	if got, err := reply.Closure(); err != nil || got.After != "8" || !got.Reconciled {
-		t.Fatalf("closure %+v, %v", got, err)
-	}
-	if len(inline.calls) != 1 {
-		t.Fatalf("inline close made %d calls", len(inline.calls))
-	}
-
-	handle := strings.Repeat("c", 64)
-	page := func(offset, n int, next string) string {
-		return completed(`{"handle":"` + handle + `","sha256":"` + Digest([]byte(closure)) + `","total_bytes":` + itoa(len(closure)) + `,"offset":` + itoa(offset) + `,"page_bytes":` + itoa(n) + `,"data_base64":"` + base64.StdEncoding.EncodeToString([]byte(closure[offset:offset+n])) + `","next_offset":` + next + `}`)
-	}
-	paged := &scripted{replies: map[string]string{
-		api.RepairOperationID(api.WorkbenchCapability, workflowID, "close"):                          page(0, 40, "40"),
-		api.RepairOperationID(api.WorkbenchCapability, workflowID, "page:"+handle+":40"):             page(40, len(closure)-40, "null"),
-		api.RepairOperationID(api.WorkbenchCapability, workflowID, "page:"+handle+":"+itoa(len(closure))): completed(`{}`),
-	}}
-	c.Host = paged
-	reply, err = c.Close(context.Background(), "run-audit")
-	if err != nil || !reply.Completed() || reply.Slot != "close" || string(reply.Result) != closure {
-		t.Fatalf("reply %+v, %v", reply, err)
-	}
-	if len(paged.calls) != 2 {
-		t.Fatalf("paged close made %d calls", len(paged.calls))
-	}
-	var call api.RepairCall
-	if err := api.Decode(paged.calls[1].Input, &call); err != nil || call.Action != "page" || call.Handle != handle || call.Offset == nil || *call.Offset != 40 {
-		t.Fatalf("page request %s", paged.calls[1].Input)
-	}
-}
-
 func TestAnOversizeRequestIsRefusedBeforeAnyCall(t *testing.T) {
-	c, host := client(t)
+	host := &scripted{replies: map[string]string{}}
+	c := Client{Host: host, Identity: fixture.Identity, WorkflowID: workflowID}
 	task := json.RawMessage(`{"question":"` + strings.Repeat("q", api.DefaultMaxFrame) + `"}`)
 	_, err := c.Compose(context.Background(), "run-explore", "explorer", task)
-	if !errors.Is(err, ErrOversize) || len(host.Calls) != 0 {
-		t.Fatalf("err %v, calls %d", err, len(host.Calls))
+	if !errors.Is(err, ErrOversize) || len(host.calls) != 0 {
+		t.Fatalf("err %v, calls %d", err, len(host.calls))
 	}
 }
 
@@ -293,9 +286,9 @@ func TestAMalformedEnvelopeIsAnError(t *testing.T) {
 		`{"state":"refused","result":null,"code":"raw backend error"}`,
 		`[]`,
 	} {
-		s := &scripted{replies: map[string]string{api.RepairOperationID(api.WorkspaceCapability, workflowID, "run-impl-0"): body}}
+		s := &scripted{replies: map[string]string{api.RepairOperationID(api.WorkspaceCapability, workflowID, "run-entry"): body}}
 		c := Client{Host: s, Identity: fixture.Identity, WorkflowID: workflowID}
-		if _, err := c.Workspace(context.Background(), "run-impl-0"); !errors.Is(err, ErrReply) {
+		if _, err := c.Workspace(context.Background(), "run-entry"); !errors.Is(err, ErrReply) {
 			t.Errorf("%s: err %v", body, err)
 		}
 	}
@@ -325,25 +318,5 @@ func TestComposedChecksTheDigestOverTheCompactBytes(t *testing.T) {
 	}
 	if _, err := (Reply{Capability: api.RoleComposeCapability, State: "refused", Code: "conflict"}).Composed(); !errors.Is(err, ErrNotCompleted) {
 		t.Fatalf("a refusal decoded: %v", err)
-	}
-}
-
-func TestCaptureChecksTheDiffDigest(t *testing.T) {
-	op := api.RepairOperationID(api.CaptureCapability, workflowID, "run-impl-0")
-	fields := func(digest string) string {
-		return completed(`{"base_revision":"` + fixture.BaseRevision + `","tree":"t","diff":"d","diff_sha256":"` + digest + `","validations":[],"criteria_sha256":"` + Digest([]byte("c")) + `","inputs_sha256":"` + Digest([]byte("i")) + `","binding":{}}`)
-	}
-	c := Client{Identity: fixture.Identity, WorkflowID: workflowID, Host: &scripted{replies: map[string]string{op: fields(Digest([]byte("d")))}}}
-	r, err := c.Capture(context.Background(), "run-impl-0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if captured, err := r.Capture(); err != nil || captured.Tree != "t" {
-		t.Fatalf("capture %+v, %v", captured, err)
-	}
-	c.Host = &scripted{replies: map[string]string{op: fields(Digest([]byte("other")))}}
-	r, _ = c.Capture(context.Background(), "run-impl-0")
-	if _, err := r.Capture(); !errors.Is(err, ErrReply) {
-		t.Fatalf("a wrong diff digest was accepted: %v", err)
 	}
 }

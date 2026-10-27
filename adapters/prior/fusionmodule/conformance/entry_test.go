@@ -373,7 +373,7 @@ func TestOneEntryPerClassRunsAgainstTheBuiltBundle(t *testing.T) {
 			case "dispatches":
 				// The child changed a control record: integrated, snapshotted,
 				// and the record read in more than one page.
-				if len(env.Questions) != 0 || len(env.Commits) != 1 || env.Commits[0].Reference != fixture.EntryReference || strings.Join(env.Commits[0].Changes, ",") != fixture.WorkbenchPrefix+entryPackageRecord {
+				if len(env.Questions) != 0 || len(env.Commits) != 1 || env.Commits[0].Reference != fixture.UserReference || strings.Join(env.Commits[0].Changes, ",") != fixture.WorkbenchPrefix+entryPackageRecord {
 					t.Fatalf("envelope %s", out)
 				}
 				if effect(api.IntegrateCapability) != 1 || effect(api.SnapshotCapability) != 1 || host.Effects[api.WorkbenchCapability+"/record:"+entryPackageRecord] != 1 {

@@ -1,33 +1,42 @@
 // Package entry interprets the bundle's generic entry workflow definition,
-// workflows/entry.v1.json, over the step executor of internal/steps and the
+// workflows/entry.v2.json, over the step executor of internal/steps and the
 // host service client of internal/hostsvc, and serves it as the module
-// capability fusion.entry.v1: one run of any catalog entry, an agent or a
-// skill, a user starts.
+// capability fusion.entry.v2: one run of any catalog entry, an agent or a
+// skill, a user starts, delivered by Prior's step-17 model.
 //
-// The definition is fusion's proposal in request 76 (plan step 3 of the H1-H9
-// hand-over). Seven steps run in order: compose, workspace, run, capture,
-// integrate, snapshot and workbench. The run step takes its role from the
-// invocation: the module resolves entry.id through the catalog's entries,
-// checks kind and profile against the entry, and refuses an entry whose prior
-// support is not supported before any host call. The definition's two schemas
-// bind the run whatever the entry's profile declares (decision D5): the
-// invocation and the frozen role input are validated against
-// entry-request.v1.json, the settled answer and the envelope against
-// entry-result.v1.json.
+// The definition is fusion's proposal in request 77 (plan step 3 of
+// 261027-1612-plan-fusion-13-4-1-entry-delivery-on-the-step-17-model). Five
+// steps run in order: compose, workspace, run, integrate and workbench. The
+// run step takes its role from the invocation: the module resolves entry.id
+// through the catalog's entries, checks kind and profile against the entry,
+// and refuses an entry whose prior support is not supported before any host
+// call. The definition's two schemas bind the run whatever the entry's
+// profile declares (decision D5): the invocation and the frozen role input
+// are validated against entry-request.v1.json, the settled answer and the
+// envelope against entry-result.v2.json.
+//
+// A run that ends in success or stop is integrated by one call,
+// host.entry.integrate.v1: the host fast-forwards the branch the user's HEAD
+// named with the run's commits and applies its uncommitted delta to the
+// user's checkout. The module checks the answer against what it knows of the
+// run before it copies commits and delta into the envelope; a receipt that
+// fails a check is integration.invalid, a host refusal integration.refused.
+// The workbench step then reads each control record the integration names,
+// as an observation.
 //
 // The three entry services, host.question.v1, host.exec.v1 and
 // host.dispatch.v1, are model tools of the role run, bound by Prior
 // (internal/supervisor/general_tools.go). The module calls none of them: the
 // definition's requires names them so that Prior grants them to the run, and
-// load checks that every entry's requires is among them. The run's questions
-// reach the envelope as the settled answer carries them.
+// the catalog admits no other service in an entry's requires. The run's
+// questions reach the envelope as the settled answer carries them.
 //
-// Restart is repair's (69.3): the role is read before it is run, through
-// steps.Execute, so a run at settled is reused without a model call, one at
-// answered is completed with the invocation's audit_ref on that completion
-// alone, one at accepted is recovery-required and never rerun. A host
-// service with a completed receipt replays its frozen request on the same
-// operation id, so a restart after any persisted boundary reproduces the
+// Restart is the common contract's (69.3): the role is read before it is
+// run, through steps.Execute, so a run at settled is reused without a model
+// call, one at answered is completed with the invocation's audit_ref on that
+// completion alone, one at accepted is recovery-required and never rerun. A
+// host service with a completed receipt replays its frozen request on the
+// same operation id, so a restart after any persisted boundary reproduces the
 // envelope with no second effect and no second role run.
 package entry
 
@@ -46,7 +55,7 @@ import (
 )
 
 // WorkflowAsset is where the definition lives in the payload.
-const WorkflowAsset = "workflows/entry.v1.json"
+const WorkflowAsset = "workflows/entry.v2.json"
 
 // WorkbenchPrefix is the workbench's place in the repository: a changed path
 // below it ending in .json is a control record, read by its path relative to
@@ -63,17 +72,20 @@ var expected = []struct{ id, service string }{
 	{"compose", api.RoleComposeCapability},
 	{"workspace", api.WorkspaceCapability},
 	{"run", api.RoleRunCapability},
-	{"capture", api.CaptureCapability},
-	{"integrate", api.IntegrateCapability},
-	{"snapshot", api.SnapshotCapability},
+	{"integrate", hostsvc.EntryIntegrateCapability},
 	{"workbench", api.WorkbenchCapability},
 }
 
-// services are the twelve the definition must declare: the three role
-// services, the six of request 69 and the three entry services. The module
+// services are the ten the definition must declare, no more and no fewer:
+// the three role services, compose, workspace, the integrate service, the
+// workbench and the three entry services (decision E1, option 1). The module
 // makes no preflight against the host; this is the definition's own
 // consistency.
-var services = append(append(append([]string(nil), steps.RoleCapabilities...), api.RoleComposeCapability, api.WorkspaceCapability, api.CaptureCapability, api.IntegrateCapability, api.SnapshotCapability, api.WorkbenchCapability), steps.EntryServices...)
+var services = append(append(append([]string(nil), steps.RoleCapabilities...), api.RoleComposeCapability, api.WorkspaceCapability, hostsvc.EntryIntegrateCapability, api.WorkbenchCapability), steps.EntryServices...)
+
+// recordSlot is the workbench read's slot as the definition names it; the
+// module derives record:<control path> from it.
+const recordSlot = "record:<control path>"
 
 type composeFrom struct {
 	InvocationSchema string `json:"invocation_schema"`
@@ -91,6 +103,15 @@ type runFrom struct {
 type runCompletion struct {
 	RoleState    string `json:"role_state"`
 	ResultSchema string `json:"result_schema"`
+	OnEnding     struct {
+		Success string `json:"success"`
+		Stop    string `json:"stop"`
+		Refusal string `json:"refusal"`
+	} `json:"on_ending"`
+}
+
+type slotFrom struct {
+	Slot string `json:"slot"`
 }
 
 type workbenchCompletion struct {
@@ -108,11 +129,10 @@ type Definition struct {
 	envelope   *steps.Schema
 }
 
-// Load reads the definition, checks its seven steps against the ones this
+// Load reads the definition, checks its five steps against the ones this
 // executor runs and the hand-over and completion members it reads, compiles
-// the four schemas, and resolves the catalog's entries: every entry's
-// requires must be among the definition's, and every entry supported on
-// prior must have its profile in the payload.
+// the four schemas, and resolves the catalog's entries: every entry supported
+// on prior must have its profile in the payload.
 func Load(b *steps.Bundle) (*Definition, error) {
 	w, err := steps.LoadWorkflow(b, WorkflowAsset)
 	if err != nil {
@@ -130,8 +150,8 @@ func Load(b *steps.Bundle) (*Definition, error) {
 	if w.ReviseBound != 0 {
 		return nil, fmt.Errorf("%w: revise_bound %d, this executor runs one attempt", ErrDefinition, w.ReviseBound)
 	}
-	if !w.Declares(services...) {
-		return nil, fmt.Errorf("%w: requires must name the twelve host services", ErrDefinition)
+	if len(w.Requires) != len(services) || !w.Declares(services...) {
+		return nil, fmt.Errorf("%w: requires must name exactly the ten host services", ErrDefinition)
 	}
 	var compose composeFrom
 	if json.Unmarshal(w.Steps[0].InputFrom, &compose) != nil || compose.InvocationSchema == "" || compose.Slot != "run_id" {
@@ -148,8 +168,20 @@ func Load(b *steps.Bundle) (*Definition, error) {
 	if done.RoleState != "settled" || done.ResultSchema == "" {
 		return nil, fmt.Errorf("%w: run completion must be a settled role with a result schema", ErrDefinition)
 	}
+	// The endings this executor routes: success and stop integrate, a
+	// refusal ends the envelope with nothing integrated.
+	if done.OnEnding.Success != "integrate" || !strings.HasPrefix(done.OnEnding.Stop, "integrate") || !strings.HasPrefix(done.OnEnding.Refusal, "end") {
+		return nil, fmt.Errorf("%w: run must integrate on success and stop and end on refusal", ErrDefinition)
+	}
+	var integrate, read slotFrom
+	if json.Unmarshal(w.Steps[3].InputFrom, &integrate) != nil || integrate.Slot != hostsvc.IntegrationSlot {
+		return nil, fmt.Errorf("%w: integrate must name slot %s", ErrDefinition, hostsvc.IntegrationSlot)
+	}
+	if json.Unmarshal(w.Steps[4].InputFrom, &read) != nil || read.Slot != recordSlot {
+		return nil, fmt.Errorf("%w: workbench must name slot %s", ErrDefinition, recordSlot)
+	}
 	var closing workbenchCompletion
-	if json.Unmarshal(w.Steps[len(w.Steps)-1].Completion, &closing) != nil || closing.EnvelopeSchema == "" {
+	if json.Unmarshal(w.Steps[4].Completion, &closing) != nil || closing.EnvelopeSchema == "" {
 		return nil, fmt.Errorf("%w: workbench must name the envelope schema", ErrDefinition)
 	}
 	d := &Definition{Capability: w.Capability, entries: map[string]steps.Entry{}}
@@ -165,10 +197,10 @@ func Load(b *steps.Bundle) (*Definition, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Every entry's requires is among the definition's without a check here:
+	// LoadCatalog admits only the three entry services in an entry's
+	// requires, and the requires check above holds all three.
 	for _, e := range catalog.Entries() {
-		if !w.Declares(e.Requires...) {
-			return nil, fmt.Errorf("%w: entry %q requires a service the definition does not", ErrDefinition, e.ID)
-		}
 		if e.Support["prior"] == "supported" {
 			if _, err := steps.LoadProfile(b, e.Profile); err != nil {
 				return nil, err
@@ -192,7 +224,8 @@ type Violation struct {
 	Detail string `json:"detail"`
 }
 
-// Commit is one commit the integrate step put on the accepted reference.
+// Commit is one of the run's own commits the integration fast-forwarded onto
+// the user's branch, with that branch's reference.
 type Commit struct {
 	Commit    string   `json:"commit"`
 	Reference string   `json:"reference"`
@@ -200,13 +233,14 @@ type Commit struct {
 	Changes   []string `json:"changes"`
 }
 
-// Envelope is the answer to a fusion.entry.v1 invocation,
-// schemas/entry-result.v1.json.
+// Envelope is the answer to a fusion.entry.v2 invocation,
+// schemas/entry-result.v2.json.
 type Envelope struct {
 	Status     string            `json:"status"`
 	Ending     *Ending           `json:"ending"`
 	Questions  []json.RawMessage `json:"questions"`
 	Commits    []Commit          `json:"commits"`
+	Delta      []string          `json:"delta"`
 	Violations []Violation       `json:"violations"`
 }
 
@@ -277,8 +311,10 @@ func recoveryRequired(code, detail string) *outcome {
 	return &outcome{status: "recovery-required", code: code, detail: detail}
 }
 
-// answer is the part of a settled run's result the envelope copies.
+// answer is the part of a settled run's result the module reads: its status,
+// and what the envelope copies.
 type answer struct {
+	Status     string            `json:"status"`
 	Ending     *Ending           `json:"ending"`
 	Questions  []json.RawMessage `json:"questions"`
 	Violations []Violation       `json:"violations"`
@@ -294,6 +330,7 @@ type workflow struct {
 
 	answer  *answer
 	commits []Commit
+	delta   []string
 }
 
 func (d *Definition) invoke(ctx context.Context, id api.Identity, inv api.Invocation, client steps.RoleClient, host api.HostCaller) (*Envelope, error) {
@@ -338,7 +375,7 @@ func (d *Definition) admit(ref entryRef) *outcome {
 	return nil
 }
 
-// run executes the seven steps and returns how the workflow stopped early,
+// run executes the five steps and returns how the workflow stopped early,
 // nil when it ran to its end. An error is an unknown outcome and is returned
 // as is.
 func (w *workflow) run(ctx context.Context) (*outcome, error) {
@@ -372,61 +409,43 @@ func (w *workflow) run(ctx context.Context) (*outcome, error) {
 	case "refusal":
 		return &outcome{status: "refused", role: true}, nil
 	case "success", "stop":
-		// A stopped run may have changed the workspace; only the capture
-		// can say, so both go on to it (completion.on_ending).
+		// A stopped run keeps what it changed, as Claude Code keeps a
+		// stopped session's files, so both integrate (completion.on_ending).
 	default:
 		return refused("result.invalid", "ending class "+w.answer.Ending.Class), nil
 	}
 
-	reply, err = w.host.Capture(ctx, runID)
-	if stop, err := w.service(reply, err); err != nil || stop != nil {
-		return stop, err
+	reply, err = w.host.EntryIntegrate(ctx, runID)
+	if errors.Is(err, hostsvc.ErrOversize) {
+		return refused("frame.oversize", err.Error()), nil
 	}
-	captured, err := reply.UnboundCapture()
 	if err != nil {
 		return nil, err
 	}
-	if captured.BaseRevision != ws.BaseRevision {
-		return refused("capture.invalid", "base_revision is not the workspace's"), nil
+	switch reply.State {
+	case "completed":
+	case "recovery-required":
+		return recoveryRequired("host.recovery-required", reply.Capability+" "+reply.Slot+": "+reply.Code), nil
+	default:
+		// Nothing was integrated: the host refuses before any effect.
+		return refused("integration.refused", reply.Capability+" "+reply.Slot+": "+reply.Code), nil
 	}
-	if captured.Diff == "" {
-		return nil, nil
-	}
-
-	reply, err = w.host.Integrate(ctx, runID)
-	if stop, err := w.service(reply, err); err != nil || stop != nil {
-		return stop, err
-	}
-	integrated, err := reply.UnreviewedIntegration()
+	integrated, err := reply.EntryIntegration()
 	if err != nil {
 		return nil, err
 	}
-	if integrated.State != "integrated" || integrated.Correction != "" || integrated.Base != ws.BaseRevision || integrated.Tree != captured.Tree {
-		return refused("integration.invalid", "the receipt is not an integration of the captured tree from the workspace's base"), nil
+	if err := checkReceipt(integrated, runID, ws.BaseRevision); err != nil {
+		return refused("integration.invalid", err.Error()), nil
 	}
-	// The integration stands from here on: a later refusal keeps the commit.
-	// The receipt carries no commit subject, so the subject names the
-	// integration the host recorded (request 76 asks for the subject).
-	w.commits = []Commit{{Commit: integrated.Commit, Reference: integrated.Reference, Subject: "integration " + integrated.ID, Changes: []string{}}}
+	// The integration stands from here on: a later refusal keeps its commits
+	// and its delta in the envelope.
+	w.commits = make([]Commit, 0, len(integrated.Commits))
+	for _, c := range integrated.Commits {
+		w.commits = append(w.commits, Commit{Commit: c.Commit, Reference: integrated.Reference, Subject: c.Subject, Changes: c.Changes})
+	}
+	w.delta = integrated.Delta
 
-	reply, err = w.host.Snapshot(ctx)
-	if stop, err := w.service(reply, err); err != nil || stop != nil {
-		return stop, err
-	}
-	raw, err := reply.Snapshot()
-	if err != nil {
-		return nil, err
-	}
-	var snapshot api.RepairSnapshot
-	if err := json.Unmarshal(raw, &snapshot); err != nil {
-		return nil, err
-	}
-	if snapshot.Commit != integrated.Commit || snapshot.Reference != integrated.Reference || snapshot.Tree != integrated.Tree {
-		return refused("snapshot.invalid", "the snapshot is not of the integration"), nil
-	}
-	w.commits[0].Changes = append(w.commits[0].Changes, snapshot.ChangedPaths...)
-
-	for _, record := range controlRecords(snapshot.ChangedPaths) {
+	for _, record := range controlRecords(w.commits, w.delta) {
 		reply, err := w.host.ReadRecordAt(ctx, "record:"+record, record)
 		if stop, err := w.service(reply, err); err != nil || stop != nil {
 			return stop, err
@@ -438,17 +457,73 @@ func (w *workflow) run(ctx context.Context) (*outcome, error) {
 	return nil, nil
 }
 
-// controlRecords are the workbench control records among the changed paths,
-// relative to the workbench and in the shape the host's read accepts, each
-// once, in the snapshot's order. A path in git's name-status form is read
-// after its tab.
-func controlRecords(changed []string) []string {
+// nameStatus is one line of git's name-status form as entry-result.v2.json's
+// $defs/name_status states it: a status of A, D, M or T and one path, or C or
+// R with a similarity score and two paths; no path empty, absolute or
+// carrying a tab or a newline. The receipt check accepts exactly what the
+// schema accepts, so a receipt it admits is an envelope the schema admits.
+var nameStatus = regexp.MustCompile(`^(?:[ADMT]\t[^\t\n/][^\t\n]*|[CR][0-9]{1,3}\t[^\t\n/][^\t\n]*\t[^\t\n/][^\t\n]*)$`)
+
+// commitHash is a commit hash as entry-result.v2.json admits it.
+var commitHash = regexp.MustCompile(`^([0-9a-f]{40}|[0-9a-f]{64})$`)
+
+// checkReceipt checks an integration answer against what the module knows of
+// the run: it is this run's, from the workspace's base, onto a named
+// reference; its commits are empty exactly when head is base and otherwise end
+// at head, each a commit hash with a subject; and every path line is in
+// name-status form. The first failure is returned.
+func checkReceipt(r hostsvc.EntryIntegration, runID, base string) error {
+	switch {
+	case r.RunID != runID:
+		return errors.New("run_id is not the run's")
+	case r.Base != base:
+		return errors.New("base is not the workspace's base_revision")
+	case r.Reference == "":
+		return errors.New("reference is empty")
+	case len(r.Commits) == 0 && r.Head != base:
+		return errors.New("no commit, but head is not base")
+	case len(r.Commits) > 0 && r.Head == base:
+		return errors.New("commits, but head is base")
+	case len(r.Commits) > 0 && r.Commits[len(r.Commits)-1].Commit != r.Head:
+		return errors.New("the last commit is not head")
+	}
+	for i, c := range r.Commits {
+		if !commitHash.MatchString(c.Commit) || c.Subject == "" {
+			return fmt.Errorf("commits[%d] is not a commit hash with a subject", i)
+		}
+		for _, line := range c.Changes {
+			if !nameStatus.MatchString(line) {
+				return fmt.Errorf("commits[%d].changes item %q is not in name-status form", i, line)
+			}
+		}
+	}
+	for _, line := range r.Delta {
+		if !nameStatus.MatchString(line) {
+			return fmt.Errorf("delta item %q is not in name-status form", line)
+		}
+	}
+	return nil
+}
+
+// controlRecords are the workbench control records among the paths the
+// integration names, the commits' changes in order and then the delta, each
+// line whose status is not D: relative to the workbench, in the shape the
+// host's read accepts, each once. A line's path is its last field, the new
+// path of a C or R line.
+func controlRecords(commits []Commit, delta []string) []string {
+	var lines []string
+	for _, c := range commits {
+		lines = append(lines, c.Changes...)
+	}
+	lines = append(lines, delta...)
 	var out []string
 	seen := map[string]bool{}
-	for _, p := range changed {
-		if i := strings.LastIndexByte(p, '\t'); i >= 0 {
-			p = p[i+1:]
+	for _, line := range lines {
+		status, _, _ := strings.Cut(line, "\t")
+		if status == "D" {
+			continue
 		}
+		p := line[strings.LastIndexByte(line, '\t')+1:]
 		record, ok := strings.CutPrefix(p, WorkbenchPrefix)
 		if !ok || !strings.HasSuffix(record, ".json") || !fs.ValidPath(record) || strings.ContainsAny(record, "\\:\x00\r\n") || seen[record] {
 			continue
@@ -522,14 +597,18 @@ func (w *workflow) role(ctx context.Context, roleInput json.RawMessage) (*outcom
 	if err := selectedAmongOptions(a.Questions); err != nil {
 		return refused("result.invalid", err.Error()), nil
 	}
-	w.answer = &a
-	if a.Ending == nil {
-		return &outcome{status: "recovery-required", role: true}, nil
+	// The schema admits a recovery-required answer, but a settled answer is
+	// terminal: recovery-required means an effect unknown or in flight, which
+	// a settled answer never is, and every resume would observe it settled
+	// again. It is refused, and nothing is integrated.
+	if a.Status == "recovery-required" || a.Ending == nil {
+		return refused("result.invalid", "a settled answer of status recovery-required"), nil
 	}
+	w.answer = &a
 	return nil, nil
 }
 
-// selectedAmongOptions is the rule entry-result.v1.json cannot state: on the
+// selectedAmongOptions is the rule entry-result.v2.json cannot state: on the
 // ask-user-question channel every option selected is one the question
 // offered, each once.
 func selectedAmongOptions(questions []json.RawMessage) error {
@@ -558,7 +637,7 @@ func selectedAmongOptions(questions []json.RawMessage) error {
 
 // service routes a host service's reply: completed continues,
 // recovery-required stays recovery-required, any refusal refuses the
-// invocation (entry.v1 escalates nowhere: it has no review to escalate to).
+// invocation (the entry workflow escalates nowhere: it has no review).
 // A module-side frame refusal is a refusal; any other error is an unknown
 // outcome.
 func (w *workflow) service(reply hostsvc.Reply, err error) (*outcome, error) {
@@ -608,12 +687,15 @@ func reasonOf(code string) string {
 // the run answered copies its ending and violations; any other refusal is the
 // module's, with an ending of class refusal named after its code;
 // recovery-required has no ending. The questions are the settled answer's
-// whenever there is one; the commits are whatever the integration put on the
-// reference before the stop.
+// whenever there is one; commits and delta are the integration's whenever it
+// stands, a later stop included.
 func (w *workflow) envelope(stop *outcome) *Envelope {
-	env := &Envelope{Questions: []json.RawMessage{}, Commits: []Commit{}, Violations: []Violation{}}
+	env := &Envelope{Questions: []json.RawMessage{}, Commits: []Commit{}, Delta: []string{}, Violations: []Violation{}}
 	if w.commits != nil {
 		env.Commits = w.commits
+	}
+	if w.delta != nil {
+		env.Delta = w.delta
 	}
 	if w.answer != nil && w.answer.Questions != nil {
 		env.Questions = w.answer.Questions
@@ -639,15 +721,24 @@ func (w *workflow) envelope(stop *outcome) *Envelope {
 
 // encode marshals the envelope, checks it against the frame bound and
 // against its own schema. An envelope that would not fit the wire is
-// replaced by a refusal that says so.
+// replaced by a refusal that says so and still carries the integration's
+// commits and delta, which stand whatever the envelope says, with the
+// questions emptied, being what can grow without bound; only if that still
+// does not fit is it the bare refusal.
 func (d *Definition) encode(operationID string, env *Envelope) (json.RawMessage, error) {
 	body, err := json.Marshal(env)
 	if err != nil {
 		return nil, err
 	}
 	if err := steps.CheckFrame("module.result", api.Result{OperationID: operationID, Output: body}); err != nil {
-		if body, err = json.Marshal((&workflow{}).envelope(refused("frame.oversize", err.Error()))); err != nil {
+		stop := refused("frame.oversize", err.Error())
+		if body, err = json.Marshal((&workflow{commits: env.Commits, delta: env.Delta}).envelope(stop)); err != nil {
 			return nil, err
+		}
+		if steps.CheckFrame("module.result", api.Result{OperationID: operationID, Output: body}) != nil {
+			if body, err = json.Marshal((&workflow{}).envelope(stop)); err != nil {
+				return nil, err
+			}
 		}
 	}
 	parsed, err := steps.Parse(body)
