@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "bd2bf543-d016-43b5-90fb-6c2dec21c726",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/decisions/261028-2204-which-gitignore-takes-the-settings-line-when-grant-runs-in-a-worktree.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e35d73e8-046b-4d3f-9522-5f551d324262",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/issues/261028-2204-an-unparseable-settings-layer-reads-as-no-sandbox-and-the-deny-is-written.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
