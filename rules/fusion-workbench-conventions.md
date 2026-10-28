@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the Origin Rule, the operative half of path resolution, the work-package grammar, each record kind's states and the operations that move them, filename patterns, issue and decision filing, inline tracking, timestamps, and the project's two language declarations.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the Origin Rule, the operative half of path resolution, the work-package grammar, each record kind's states and the operations that move them, filename patterns, issue and decision filing, inline tracking, intermediate files, timestamps, and the project's two language declarations.
 
 **This document is the definition** of everything it still states in full. Topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
 
@@ -551,6 +551,12 @@ remain true. What no longer happens is a new file arriving in one of those direc
 digests the corpus (`/fusion:cadence` is the one that does) states in its own output that the
 session-log record ends at the cut, so an empty recent stretch reads as a store that closed and
 never as a quiet week.
+
+## Intermediate files
+
+A file read after its writer exits goes in the directory `bin/fusion-tmp path` prints, not `/tmp`,
+`/var/folders`, `$TMPDIR`, a `<root>/tmp` link or bare `mktemp`; a helper's self-removed scratch
+is exempt.
 
 ## Security
 
