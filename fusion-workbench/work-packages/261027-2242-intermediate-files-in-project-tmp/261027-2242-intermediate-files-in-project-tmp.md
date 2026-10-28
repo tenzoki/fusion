@@ -20,6 +20,6 @@ The location changes from `<root>/tmp/` to `~/.fusion-tmp/<checkout-id>`, on the
 
 - On the sandbox: "sandbox ohne deny".
 - On the location: "Dann könnte man überlegen, den tmp Folder generell nach ~/.fusion-tmp/<checkout-id> legen und nicht in die workbench oder den projekt folder."
-- After the discussion `discussions/261028-0708-perfect-location-for-fusion-intermediate-files.md` converged: option 1, close and revise the plan with a view-only `<root>/tmp` symlink.
+- After the discussion `261028-0708-perfect-location-for-fusion-intermediate-files.md` converged: option 1, close and revise the plan with a view-only `<root>/tmp` symlink.
 
 The "Reached when" clause of the Directive reads accordingly. The intermediate-file root is `~/.fusion-tmp/<checkout-id>`, granted without prompts through `.claude/settings.local.json`. It is not under the project. `<root>/tmp` is an optional view-only symlink to it.
