@@ -6588,3 +6588,26 @@ The closing review of request 76's module left issues that Prior's preview `## 4
 | 77 | **asked**: this section. Bundle `sha256:c61f9033…` (13.4.1, built at `ce3719e1`, C′ = `67cece9a`, against Prior `08c57fb`), codec `b4047458…`; `fusion.entry.v2` and `host.entry.integrate.v1` on the step-17 model, repair withdrawn, 77.1 to 77.4 and questions 1 to 13 | — |
 
 These rows supersede the rows of `#### Requests 64 and 67 to 76, as they stand` above. Requests 76 and 77 are open, and one answer naming the 13.4.1 digest closes both.
+
+### Correction to request 77 (operation id)
+
+**The sentence is wrong.** The common-contract paragraph of `` ### `fusion.entry.v2` and `host.entry.integrate.v1` `` ("The common contract, as `entry.v2` states it") derives the operation id of every non-role `host_service` call "with capability `fusion.entry.v2`". The frozen `catalog/workflows/entry.v2.json` says the same in its `compose` step, `input_from.host_services.operation_id`. Both are wrong, and the line above is left as it stands, this file being append-only.
+
+**The correct derivation** is the one the module, its fake host and Prior already use. The capability is that of the host service called, never the workflow's:
+
+- operation id = `"repair:"` followed by the lowercase sha256 hex of `capability + "\n" + workflow_id + "\n" + slot`, Prior's SDK `api.RepairOperationID(capability, workflowID, slot)` (`moduleapi/v1/repair_wire.go:45-48`);
+- the module calls `api.RepairOperationID(capability, c.WorkflowID, slot)` in `call`, with the capability of the method that calls it (`adapters/prior/fusionmodule/internal/hostsvc/hostsvc.go`):
+  - compose: `host.role.compose.v1`, slot the run id;
+  - workspace: `host.workspace.v1`, slot the run id, so `api.RepairOperationID("host.workspace.v1", workflow_id, run_id)`;
+  - integrate: `host.entry.integrate.v1`, slot `integration`, so `api.RepairOperationID("host.entry.integrate.v1", workflow_id, "integration")`;
+  - workbench: `host.workbench.v1`, slot `record:<control path>` for a read and `page:<handle>:<offset>` for a page;
+- the module's test `TestEveryRequestIsClosedUnderItsSlot` (`internal/hostsvc/hostsvc_test.go`) asserts `sent.OperationID == api.RepairOperationID(sent.Capability, workflowID, tc.slot)`, and the fake host refuses any call whose `inv.OperationID != api.RepairOperationID(inv.Capability, call.WorkflowID, slot)` (`internal/fixture/entry.go`, `decodeProposedEntryCall`);
+- Prior checks `RepairOperationID(inv.Capability, call.WorkflowID, slot)` (`moduleapi/v1/repair_wire.go:141`) and derives its own integrate id as `api.RepairOperationID(api.IntegrateCapability, call.WorkflowID, "integration")` (`internal/fusionhost/repair_integration.go:180`), both at `187df6f`.
+
+The role operation id stays `capability + ":" + run_id`, as the paragraph says.
+
+**The bundle is unaffected.** `sha256:c61f9033…` stands: the module already derives the id per service, so only the text of `entry.v2.json` and of request 77 is wrong. `entry.v2.json` is frozen (`catalog/schemas/FROZEN`) and its bytes do not change; its text is corrected in the v3 that question 12 promises, beside the two defects of that question. The defect is filed as `261028-0810-entry-v2-and-request-77-derive-the-operation-id-from-the-workflow-capability-where-the-module-uses-the-services.md`, from finding 1 of `261028-0810-reviewer-closing-review-of-prior-handover-f-13-4-1-and-request-77.md`.
+
+**Question 14** (numbered within 77, after question 13; request 76 question 14, on the push, is a different question and stands). **The operation id per service.** Does Prior confirm that the operation id of every non-role `host_service` call of `fusion.entry.v2` is derived with the capability of the host service called (`host.role.compose.v1`, `host.workspace.v1`, `host.entry.integrate.v1`, `host.workbench.v1`), as `moduleapi/v1/repair_wire.go:141` checks it, and not with `fusion.entry.v2`? Fusion carries the answer into the v3 of question 12.
+
+Request 77 now also carries question 14 (the correction above): where the row and `### What fusion does with the answer` say questions 1 to 13, read questions 1 to 14.
