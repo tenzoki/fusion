@@ -81,8 +81,9 @@
  *   - `commit-message` — a file whose name says it holds a commit message AND
  *     that no artefact store owns. A fault of its own kind: item 3 of
  *     `agents/orchestrator.md` `### Step 4 — commit` prescribes
- *     `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` because `/tmp` is
- *     swept and the workbench is not, and `.commit-msg-tmp` is what improvising
+ *     `~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt`
+ *     because that directory is outside every git tree and the workbench is the
+ *     tree git status reports on, and `.commit-msg-tmp` is what improvising
  *     instead leaves behind. The session half is a separate defect's answer
  *     (`260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`)
  *     and does not reach this classifier, which reads workbench-internal names
@@ -151,7 +152,7 @@
  * `npm test` instead of leaving the mechanism telling the model to use a path
  * the prompt no longer names.
  */
-export declare const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt";
+export declare const PRESCRIBED_MESSAGE_PATH = "~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt";
 /**
  * The live-state surfaces, by exact workbench-relative name. Together with
  * `LIVE_PREFIXES` below, the list is exactly class L, class R2 and class R3 of

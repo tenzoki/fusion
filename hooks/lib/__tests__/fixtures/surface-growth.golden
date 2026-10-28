@@ -18,19 +18,19 @@
   data-implementer.md 16036
   document-editor.md 13230
   implementation-planner.md 20617
-  orchestrator.md 95734
+  orchestrator.md 95709
   policy-curator.md 79045
   requirements-designer.md 17664
   reviewer.md 13819
   state-auditor.md 21781
-  total 324684
+  total 324659
 
 [skills bytes]
-  archive/SKILL.md 26184
+  archive/SKILL.md 26242
   cadence/SKILL.md 23482
   check/SKILL.md 32828
-  cleanup/SKILL.md 6911
-  commit/SKILL.md 6119
+  cleanup/SKILL.md 6960
+  commit/SKILL.md 6148
   curate/SKILL.md 12587
   discuss/SKILL.md 15700
   help/SKILL.md 17841
@@ -42,7 +42,7 @@
   setup/SKILL.md 16017
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 227773
+  total 227909
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
@@ -51,7 +51,7 @@
   citation-grammar-boundaries.test.ts 255
   citation-sweep.test.ts 744
   claude-md-weight.test.ts 209
-  commit-message-path.test.ts 385
+  commit-message-path.test.ts 401
   committed-dist.test.ts 328
   config.test.ts 950
   context-manifest.test.ts 507
@@ -116,7 +116,8 @@
   staging-drift.test.ts 733
   store-name-migration.test.ts 316
   surface-growth-bound.test.ts 557
+  temp-path-lint.test.ts 98
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 26277
+  total 26391

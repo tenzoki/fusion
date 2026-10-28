@@ -244,7 +244,7 @@ echo '{"op":"list"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"path"
 **After Step 4, over `$KEEP`.** `STAMP` and `SLUG` are this run's, as Step 7's roll takes them. The two JSON surfaces of filter 1 are refused by name; a container holding a control file, a control file, or a Markdown file with one beside it goes to the survey; the rest stays in `$KEEP`.
 
 ```bash
-C="${TMPDIR:-/tmp}/fusion-archive-$STAMP-$SLUG"; : > "$C.candidates"; rm -f "$C.survey"
+C="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)/fusion-archive-$STAMP-$SLUG"; : > "$C.candidates"; rm -f "$C.survey"
 hc() { find "$@" \( -name package.json -o -name '*.record.json' -o -name '*.evidence.json' \) -print 2>/dev/null | head -n 1; }
 K=""; while IFS= read -r f; do [ -n "$f" ] || continue; r="${f#"$WORKBENCH"/}"; case "$r" in workbench.json|.json-state|.json-state/*) echo "  refused (safety filter 1): $r"; continue ;; esac; if [ -d "$f" ]; then h="$(hc "$f")"; else s="$(basename "${f%.md}")"; h="$(hc "$(dirname "$f")" -maxdepth 1 \( -name package.json -o -name "$s" -o -name "$s.record.json" -o -name "$s.evidence.json" -o -name "$s.*.evidence.json" \))"; fi; if [ -n "$h" ]; then echo "$r" >> "$C.candidates"; else K="$K$f
 "; fi; done <<EOF
@@ -259,7 +259,7 @@ Step 5 names every `candidate=` unit, and every `held=` and `refused=` line with
 **Step 7, before the `mv` of `$KEEP`:**
 
 ```bash
-C="${TMPDIR:-/tmp}/fusion-archive-$STAMP-$SLUG"
+C="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)/fusion-archive-$STAMP-$SLUG"
 if grep -q '^candidate=' "$C.survey" 2>/dev/null; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" move --survey "$C.survey" --into "$STAMP-$SLUG"; echo "move exit=$?"; fi
 ```
 
