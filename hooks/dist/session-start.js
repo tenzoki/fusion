@@ -102,6 +102,16 @@
  * ruling D3 option 4). The durable trace is the file itself, weighed afresh at
  * each start, because a stored count can show a file as over after it is lean.
  *
+ * ## The temp-root line
+ *
+ * Last, where a workbench is found and `fusion-workbench/.checkout-id` reads,
+ * a line names whichever of `CLAUDE_CODE_TMPDIR` and `TMPDIR` is unset or does
+ * not resolve to `~/.fusion-tmp/<id>`, and says to start sessions with
+ * `fusion`, the launcher that exports both (`lib/temp-paths.ts`
+ * `tempRootLine`). No id is no line: the question is then undecidable. It
+ * reads the environment this hook was started with, so a sandbox's replaced
+ * Bash `TMPDIR` is invisible to it.
+ *
  * ## The second product: this session's `session_start` row
  *
  * Since the substrate step of the ceremony cut, this hook also appends one
@@ -156,7 +166,8 @@ import { dueChecks, dueLine, pluginVersion } from "./lib/checks-due.js";
 import { countsFromHelperOutput, domainFor } from "./lib/domain-cascade.js";
 import { failOpen } from "./lib/fail-open.js";
 import { git, GIT_TIMED_OUT } from "./lib/git.js";
-import { emitSessionStartEvent, } from "./lib/orchestrator-events.js";
+import { emitSessionStartEvent, readCheckoutId, } from "./lib/orchestrator-events.js";
+import { tempRootLine } from "./lib/temp-paths.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 /**
  * The warning text for a session whose working directory is `cwd`, given the
@@ -343,7 +354,12 @@ function claudeMdWeightLine(root) {
 async function main() {
     const cwd = resolve(process.cwd());
     const root = findWorkbenchRoot(cwd);
-    emitEnvelope([subdirectoryWarning(cwd, root), checksDueLine(root), claudeMdWeightLine(root)]);
+    emitEnvelope([
+        subdirectoryWarning(cwd, root),
+        checksDueLine(root),
+        claudeMdWeightLine(root),
+        root === null ? null : tempRootLine(process.env, process.env.HOME, readCheckoutId(root)),
+    ]);
     // Everything below is the addendum. No workbench, no log to append to.
     if (root === null)
         return;

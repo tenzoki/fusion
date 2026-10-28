@@ -110,14 +110,15 @@
   review-coverage.test.ts 927
   rules-emission-golden.test.ts 1189
   rules-voice-profile.test.ts 319
-  sentence-identifier-containment.test.ts 456
+  sentence-identifier-containment.test.ts 465
   session-start-event.test.ts 150
   session-start-subdirectory.test.ts 289
   staging-drift.test.ts 733
   store-name-migration.test.ts 316
   surface-growth-bound.test.ts 557
-  temp-path-lint.test.ts 98
+  temp-path-lint.test.ts 91
+  temp-paths.test.ts 128
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 26391
+  total 26521

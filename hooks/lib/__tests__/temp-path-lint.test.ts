@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
-import { SYSTEM_TEMP_PREFIXES } from "../temp-paths.js";
+import { systemTempTokens } from "../temp-paths.js";
 
 // ---------------------------------------------------------------------------
 // No shipped prompt, rule or helper names a system temp directory.
@@ -23,16 +23,9 @@ import { SYSTEM_TEMP_PREFIXES } from "../temp-paths.js";
 // The allow-list is exact file-and-token pairs, not files: the rule section
 // names the paths it forbids, and `bin/fusion-tmp` names them as its prefix
 // list, its `/tmp` ignore line, and in its header (the sandbox's
-// `/tmp/claude-<uid>` among them). The prefixes are `temp-paths.ts`'s own.
+// `/tmp/claude-<uid>` among them). The predicate is `temp-paths.ts`'s
+// `systemTempTokens`, which the tracker's job 0d shares.
 // ---------------------------------------------------------------------------
-
-const PREFIX = [...SYSTEM_TEMP_PREFIXES].sort((a, b) => b.length - a.length).join("|");
-const TEMP_PATH = new RegExp(`(?<![A-Za-z0-9_.~/>})])(?:${PREFIX})(?![A-Za-z0-9_-])(?:/[^\\s\`'"]*)?`, "g");
-
-/** Every literal system temp path a line names, trailing punctuation dropped. */
-function tempTokens(line: string): string[] {
-  return [...line.matchAll(TEMP_PATH)].map((m) => m[0].replace(/[.,;:)]+$/, ""));
-}
 
 const ALLOWED: ReadonlySet<string> = new Set([
   "rules/fusion-workbench-conventions.md /tmp",
@@ -62,7 +55,7 @@ function scannedFiles(): string[] {
 function hits(): { pair: string; where: string }[] {
   return scannedFiles().flatMap((rel) =>
     readFileSync(join(pluginRoot, rel), "utf-8").split("\n").flatMap((line, i) =>
-      tempTokens(line).map((t) => ({ pair: `${rel} ${t}`, where: `${rel}:${i + 1}: ${t}` })),
+      systemTempTokens(line).map((t) => ({ pair: `${rel} ${t}`, where: `${rel}:${i + 1}: ${t}` })),
     ),
   );
 }
@@ -82,8 +75,8 @@ describe("temp-path lint: agents, skills, rules and bin name no system temp path
   });
 
   it("negative control: a fixture line naming /tmp/x fails the same predicate", () => {
-    expect(tempTokens("write the report to /tmp/x first")).toEqual(["/tmp/x"]);
-    expect(tempTokens('C="${TMPDIR:-/tmp}/a"; cd /private/tmp; ls /var/folders/ab/T/x')).toEqual([
+    expect(systemTempTokens("write the report to /tmp/x first")).toEqual(["/tmp/x"]);
+    expect(systemTempTokens('C="${TMPDIR:-/tmp}/a"; cd /private/tmp; ls /var/folders/ab/T/x')).toEqual([
       "/tmp",
       "/private/tmp",
       "/var/folders/ab/T/x",
@@ -92,7 +85,7 @@ describe("temp-path lint: agents, skills, rules and bin name no system temp path
 
   it("positive control: the boundary spares project and fusion-tmp paths", () => {
     for (const line of ["<root>/tmp", "${ROOT}/tmp/x", "$(pwd)/tmp", "~/.fusion-tmp/ab12cd34/x", "./tmp/x", "tmp/x", "/tmpfoo"]) {
-      expect(tempTokens(line), line).toEqual([]);
+      expect(systemTempTokens(line), line).toEqual([]);
     }
   });
 });

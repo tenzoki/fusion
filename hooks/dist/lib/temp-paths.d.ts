@@ -8,6 +8,11 @@
  * the location is `~/.fusion-tmp/<checkout-id>` and not a project or system
  * temp directory is argued in the helper's header, and is not restated here.
  *
+ * It also owns the one boundary for a literal system temp path
+ * (`systemTempTokens`), which the shipped-text lint gates with and the
+ * tracker's job 0d reads `Bash` commands with, and the session-start line
+ * (`tempRootLine`). Both only report; nothing here blocks.
+ *
  * ## The merge only adds
  *
  * `mergeSettings` adds each missing string to `permissions.allow`,
@@ -40,6 +45,8 @@ export declare const FUSION_TMP_BASE = ".fusion-tmp";
 export declare const SYSTEM_TEMP_PREFIXES: readonly ["/tmp", "/private/tmp", "/var/folders", "/private/var/folders"];
 /** Claude Code's absolute-path form is `//path`, so each prefix gains one slash. */
 export declare const DENY_ENTRIES: readonly string[];
+/** Every literal system temp path a line names, trailing punctuation dropped. */
+export declare function systemTempTokens(line: string): string[];
 export interface GrantEntries {
     /** For `permissions.allow`: default mode stops prompting for writes there. */
     allow: string;
@@ -72,3 +79,20 @@ export declare function mergeSettings(settings: Record<string, unknown>, opts: {
 export declare function mergeSettingsFile(path: string, id: string, deny: boolean, dryRun: boolean): MergeResult;
 /** True when any of the files parses and sets `sandbox.enabled: true`. Unreadable files are skipped. */
 export declare function sandboxEnabled(paths: string[]): boolean;
+/**
+ * What a `Bash` command's text names in the system temp directories: each
+ * literal path at the lint's boundary, and each bare `mktemp`. A path under
+ * the project root or under `~/.fusion-tmp`, either as spelled or resolved, is
+ * dropped: a project or a scratch `HOME` can itself lie under `/var/folders`.
+ * The text is read for what it names, never for what it will do.
+ */
+export declare function systemTempMentions(command: string, root: string, home?: string): string[];
+/** The tracker's one sentence for a non-empty `systemTempMentions`. */
+export declare function tempSentence(mentions: string[]): string;
+/**
+ * The session-start line, or `null`: no checkout id or no `$HOME` (the
+ * question is then undecidable), or both variables already resolve to
+ * `~/.fusion-tmp/<id>`. It reads the environment the hook was started with,
+ * so a sandbox's replaced Bash `TMPDIR` is invisible to it.
+ */
+export declare function tempRootLine(env: NodeJS.ProcessEnv, home: string | undefined, id: string | undefined): string | null;

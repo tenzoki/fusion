@@ -1,7 +1,7 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Three jobs, each on its own narrow trigger, and NONE of them on the
+ * Four jobs, each on its own narrow trigger, and NONE of them on the
  * every-tool-call path:
  *
  *   0a. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
@@ -33,6 +33,16 @@
  *      and reporting the whole corpus would report somebody else's violation at
  *      this writer's keystroke. See lib/citation-form.ts and
  *      `measureCitationFormForModel`.
+ *
+ *   0d. SYSTEM TEMP PATHS, on `Bash` inside a workbench: the command's text
+ *      names a literal `/tmp`, `/private/tmp` or `/var/folders` path, or a
+ *      bare `mktemp`, outside the project and `~/.fusion-tmp`. One sentence
+ *      says files there are lost at a reboot and names `bin/fusion-tmp path`;
+ *      nothing is blocked, and there is no event row and no throttle. It is
+ *      not the retired classifier and not a fourth sibling of the family
+ *      below: it predicts nothing about what the command will do, it reports
+ *      what the text literally names, which is decidable. See
+ *      lib/temp-paths.ts and `observeTempPathsForModel`.
  *
  * Three jobs left before them and none was replaced. A job 0 ran on EVERY
  * guarded tool call until 2026-08-15: session-state drift, comparing
@@ -111,6 +121,7 @@ import { foldCase } from "./lib/paths.js";
 import { coverageSentence, isMeasuredReview, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
 import { headMoved, measureStagingDrift, readStagingState, stagingSentence, writeStagingState, } from "./lib/staging-drift.js";
 import { citationFormSentence, lastReportedCitationForm, measureCitationForm, readRecord, recordReportedCitationForm, workbenchRecordPath, writtenLines, } from "./lib/citation-form.js";
+import { systemTempMentions, tempSentence } from "./lib/temp-paths.js";
 /**
  * The four tools whose payload NAMES the path they write.
  *
@@ -473,6 +484,24 @@ function measureCitationFormForModel(input) {
     bestEffort("tracker", () => emitEvent("citation_form", input.tool_name, written, detail));
     return sentence;
 }
+/**
+ * Job 0d: the system temp paths a `Bash` command names, as one sentence, or
+ * `null`. Read from the text, so it answers what the command says and not
+ * what it does; a path built at run time is not seen. Correct work names no
+ * such path, so the commonest path is silent.
+ */
+function observeTempPathsForModel(input) {
+    if (input.tool_name !== "Bash")
+        return null;
+    const command = input.tool_input.command;
+    if (typeof command !== "string")
+        return null;
+    const root = findWorkbenchRoot();
+    if (root === null)
+        return null;
+    const mentions = systemTempMentions(command, root, process.env.HOME);
+    return mentions.length === 0 ? null : tempSentence(mentions);
+}
 async function main() {
     // Read hook input from stdin
     const chunks = [];
@@ -552,6 +581,11 @@ async function main() {
     bestEffort("tracker", () => {
         citations = measureCitationFormForModel(input);
     });
+    // Job 0d, the system temp paths a `Bash` command names: reports, never blocks.
+    let temp = null;
+    bestEffort("tracker", () => {
+        temp = observeTempPathsForModel(input);
+    });
     // Nothing stands down here. A plugin-repo gate used to sit at this line and
     // govern CHURN and nothing else — the workbench root is fusion's own
     // repository, so a fusion developer's own edits were not counted as churn —
@@ -574,7 +608,7 @@ async function main() {
     // and the rule they established is not — nothing may run between these
     // measurements and `respond`. Joined rather than chosen between, for the same
     // reason.
-    const parts = [coverage, staging, citations];
+    const parts = [coverage, staging, citations, temp];
     const context = parts.filter((s) => s !== null).join(" ");
     respond(context === "" ? undefined : context);
 }

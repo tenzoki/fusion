@@ -8,6 +8,11 @@
  * the location is `~/.fusion-tmp/<checkout-id>` and not a project or system
  * temp directory is argued in the helper's header, and is not restated here.
  *
+ * It also owns the one boundary for a literal system temp path
+ * (`systemTempTokens`), which the shipped-text lint gates with and the
+ * tracker's job 0d reads `Bash` commands with, and the session-start line
+ * (`tempRootLine`). Both only report; nothing here blocks.
+ *
  * ## The merge only adds
  *
  * `mergeSettings` adds each missing string to `permissions.allow`,
@@ -36,7 +41,7 @@
  */
 
 import { mkdirSync, readFileSync, realpathSync, renameSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** The directory under `$HOME` that holds one directory per checkout. */
@@ -47,6 +52,23 @@ export const SYSTEM_TEMP_PREFIXES = ["/tmp", "/private/tmp", "/var/folders", "/p
 
 /** Claude Code's absolute-path form is `//path`, so each prefix gains one slash. */
 export const DENY_ENTRIES: readonly string[] = SYSTEM_TEMP_PREFIXES.map((p) => `Edit(/${p}/**)`);
+
+/**
+ * A literal system temp path in a line of text. The boundary is the one
+ * `__tests__/temp-path-lint.test.ts` states and gates the shipped text with:
+ * no letter, digit, `_`, `.`, `~`, `/`, `>`, `}` or `)` before it, so
+ * `<root>/tmp`, `${…}/tmp`, `$(…)/tmp` and `.fusion-tmp` never match, and no
+ * name character after the prefix, so `/tmpfoo` does not either.
+ */
+const TEMP_PATH = new RegExp(
+  `(?<![A-Za-z0-9_.~/>})])(?:${[...SYSTEM_TEMP_PREFIXES].sort((a, b) => b.length - a.length).join("|")})(?![A-Za-z0-9_-])(?:/[^\\s\`'"]*)?`,
+  "g",
+);
+
+/** Every literal system temp path a line names, trailing punctuation dropped. */
+export function systemTempTokens(line: string): string[] {
+  return [...line.matchAll(TEMP_PATH)].map((m) => m[0].replace(/[.,;:)]+$/, ""));
+}
 
 export interface GrantEntries {
   /** For `permissions.allow`: default mode stops prompting for writes there. */
@@ -163,6 +185,88 @@ export function sandboxEnabled(paths: string[]): boolean {
       return false;
     }
   });
+}
+
+/**
+ * `/private/tmp/x` and `/tmp/x` name one file on macOS, so a token and a root
+ * are compared with the `/private` spelling folded away.
+ */
+function folded(p: string): string {
+  return p.replace(/^\/private(?=\/(?:tmp|var)(?:\/|$))/, "");
+}
+
+function realOrSelf(p: string): string {
+  try {
+    return realpathSync(p);
+  } catch {
+    return resolve(p);
+  }
+}
+
+/** A `mktemp` call with its words up to the next shell separator. */
+const MKTEMP = /(?<![A-Za-z0-9_./-])mktemp(?![A-Za-z0-9_.-])([^;&|)`\n]*)/g;
+
+/**
+ * True when a `mktemp` call names no place: no template operand and no `-p` or
+ * `--tmpdir`. With no template macOS `mktemp` ignores `TMPDIR`, so the file
+ * lands in the system temp directory whatever the launcher exported.
+ */
+function bareMktemp(args: string): boolean {
+  const words = args.trim().split(/\s+/).filter((w) => w !== "");
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i].replace(/^["']|["']$/g, "");
+    if (w === "-p" || w.startsWith("--tmpdir") || /^-[A-Za-z]*p/.test(w)) return false;
+    if (w === "-t" || w === "--suffix") i++;
+    else if (!w.startsWith("-")) return false;
+  }
+  return true;
+}
+
+/**
+ * What a `Bash` command's text names in the system temp directories: each
+ * literal path at the lint's boundary, and each bare `mktemp`. A path under
+ * the project root or under `~/.fusion-tmp`, either as spelled or resolved, is
+ * dropped: a project or a scratch `HOME` can itself lie under `/var/folders`.
+ * The text is read for what it names, never for what it will do.
+ */
+export function systemTempMentions(command: string, root: string, home?: string): string[] {
+  const bases = [root, realOrSelf(root)];
+  if (home) bases.push(join(home, FUSION_TMP_BASE), realOrSelf(join(home, FUSION_TMP_BASE)));
+  const spared = bases.map(folded);
+  const paths = systemTempTokens(command).filter(
+    (t) => !spared.some((b) => folded(t) === b || folded(t).startsWith(b + "/")),
+  );
+  const bare = [...command.matchAll(MKTEMP)].filter((m) => bareMktemp(m[1])).map((m) => `mktemp${m[1]}`.trim());
+  return [...new Set([...paths, ...bare])];
+}
+
+/** The tracker's one sentence for a non-empty `systemTempMentions`. */
+export function tempSentence(mentions: string[]): string {
+  return (
+    `fusion: this command names ${mentions.map((m) => `\`${m}\``).join(", ")} in the system temp directory, ` +
+    "where files are lost at a reboot. Write intermediate files under the directory " +
+    "`\"$FUSION_PLUGIN_ROOT/bin/fusion-tmp\" path` prints, and give `mktemp` a template there " +
+    "(`rules/fusion-workbench-conventions.md` `## Intermediate files`). Nothing was blocked."
+  );
+}
+
+/**
+ * The session-start line, or `null`: no checkout id or no `$HOME` (the
+ * question is then undecidable), or both variables already resolve to
+ * `~/.fusion-tmp/<id>`. It reads the environment the hook was started with,
+ * so a sandbox's replaced Bash `TMPDIR` is invisible to it.
+ */
+export function tempRootLine(env: NodeJS.ProcessEnv, home: string | undefined, id: string | undefined): string | null {
+  if (!id || !home) return null;
+  const want = join(home, FUSION_TMP_BASE, id);
+  const wanted = realOrSelf(want);
+  const off = (["CLAUDE_CODE_TMPDIR", "TMPDIR"] as const).flatMap((name) => {
+    const v = env[name];
+    if (!v) return [`${name} is unset`];
+    return realOrSelf(v) === wanted ? [] : [`${name} is ${v}`];
+  });
+  if (off.length === 0) return null;
+  return `fusion: start sessions with \`fusion\` rather than \`claude\`: ${off.join(", ")}, so temp files go where a reboot empties them; both should name ${want}.`;
 }
 
 const USAGE = "usage: temp-paths.js <settings path> <id> <yes|no> [--dry-run] | --sandbox <settings path>...";
