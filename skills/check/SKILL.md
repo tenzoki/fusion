@@ -1,11 +1,11 @@
 ---
-description: Run fusion's eleven periodic installation checks — the shipped assets, the project's own files, the git settings, this checkout's identity and where it stands. Optional --only <selector> runs exactly one.
+description: Run fusion's periodic installation checks — the shipped assets, the project's own files, the git settings, this checkout's identity and where it stands. Optional --only <selector> runs exactly one.
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Periodic checks
 
-These eleven checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.check-stamps`, which never leaves this checkout, therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
+These checks ran at the top of every session until the ramp-up was cut. **None of them is a fact about this session**, and each answers the same way for days at a time. `fusion-workbench/.check-stamps`, which never leaves this checkout, therefore records, per selector, the date the check last ran and the plugin version it ran against; `/fusion:setup` asks for a selector again only when the version differs or that date is more than 30 days old, and runs it by reading this body.
 
 **Run them all, or run one.** `/fusion:check` runs every selector below; `--only <selector>` runs exactly one. A selector this run does not perform keeps its stamp, so a `--only` run never claims coverage it did not take.
 
@@ -22,6 +22,7 @@ These eleven checks ran at the top of every session until the ramp-up was cut. *
 | `upstream` | how far this checkout is behind what it last saw of the remote |
 | `leftovers` | files written by mechanisms fusion no longer ships |
 | `claude-md` | where `CLAUDE.md` carries its weight |
+| `tmp` | Claude may write its intermediate-file directory without a prompt |
 
 **Nothing here blocks anything.** `permissions` asks one question on a normal run; `assets`, `identity` and `leftovers` each ask at most one when they find something to ask about. Everything else reports and continues. Report what every selector you ran had to say, then run the stamp at the end.
 
@@ -115,7 +116,7 @@ done
 6. **`case5-missing-local`** — the project has no copy (the profile copy in `/fusion:setup` failed or was skipped), so `bin/fusion-rules` emits no path for that profile. Name it in the Done report with that consequence; presence is that step's job.
 7. **`case6-missing-shipped`** — the resolved root has no copy: a broken install or an unexpected root. Name it in the Done report as that; the project's file is neither changed nor stamped.
 
-**One `AskUserQuestion` covers every file in cases 0 and 2 together — never one per file, and none when that set is empty.** The `permissions` selector is the one that asks on a normal run, and that is the budget. Ask in the project's chat language per `rules/fusion-workbench-conventions.md` `## Project language`, following `rules/user-facing-output.md` and the chat profile. Specified here in English:
+**One `AskUserQuestion` covers every file in cases 0 and 2 together — never one per file, and none when that set is empty.** Ask in the project's chat language per `rules/fusion-workbench-conventions.md` `## Project language`, following `rules/user-facing-output.md` and the chat profile. Specified here in English:
 
 > These workbench files differ from the ones this fusion version ships: *&lt;list&gt;*. Replace them with the shipped copies? Any edits you made to those files are lost. For *&lt;the case-0 files&gt;* fusion has no record of what it originally copied, so it cannot tell whether you adapted the file or the module moved on.
 
@@ -143,9 +144,7 @@ Report in the Done report: which files were replaced, printed `replace-failed`, 
 
 fusion reads `./fusion.json` at the project root and merges it over its own built-in defaults, so this file is where a project declares which of its non-Markdown files carry record citations (`hooks/lib/config.ts`; the seeded template declares nothing and therefore inherits everything). It belongs in version control: every change to which files fusion's citation helpers read has to show up in a diff.
 
-It lands at the project root, beside `fusion-workbench/` rather than inside it, in the directory `pwd` reports. The "never prepend `cd`" rule at the top of this workflow is what keeps it there.
-
-First check whether the project already has one. This is read-only and always allowed:
+Read-only:
 
 ```bash
 [ -f ./fusion.json ] && echo "fusion.json present" || echo "fusion.json absent"
@@ -160,7 +159,7 @@ First check whether the project already has one. This is read-only and always al
 
 This selector does nothing about a leftover `fusion-guard.json`, nor about a retired key inside `fusion.json`. Naming either is the configuration loader's job, which does it once per guarded tool call until the file or the key is deleted. Do not read the old file here, and do not offer to move anything out of it.
 
-If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, report it and continue. An absent `fusion.json` costs the project one thing and only one: fusion's citation helpers read the Markdown corpus alone, because that file is the only place a project declares anything else.
+If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, report it and continue.
 
 ## permissions — the project's permission file
 
@@ -170,11 +169,11 @@ A fresh consuming project has no permission source of its own, so every `Write`,
 
 One `AskUserQuestion`, in the project's chat language, naming the file and what the setting does in plain words rather than behind the term:
 
-> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Write it?
+> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Claude is also granted its intermediate-file directory and, without a sandbox, kept out of the system temp directories. Write it?
 
 Two options. **"Yes, write it" is the default and the recommended choice.** "No, keep the prompts" is the other; nothing is written and the run continues.
 
-Read `.claude/settings.local.json` first if it exists. **A file that does not parse as JSON gets no question and no write**: report it in §3 as a file the user fixes by hand, naming the path, and continue. Otherwise note `permissions.defaultMode`. Already `bypassPermissions` — skip the question, still union the `allow` list (§2, item 3), and report the union (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
+Read `.claude/settings.local.json` first if it exists. **A file that does not parse as JSON gets no question and no write**: report it in §3 as a file the user fixes by hand, naming the path, and continue. Otherwise note `permissions.defaultMode`. Already `bypassPermissions` — skip the question, still union the `allow` list (§2, items 3 and 4), and report the union (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
 
 ### 2. On "yes", write it
 
@@ -196,23 +195,22 @@ Desired contents:
 1. `mkdir -p .claude`.
 2. Read `.claude/settings.local.json` if present. If absent, create it with the JSON above.
 3. If present, parse it and union the `allow` list with the values above, **preserving every existing entry — only add, never remove**; that guarantee is about the `allow` list and reaches no other field. Set `permissions.defaultMode` to `"bypassPermissions"` only when the file carries no `defaultMode`, or when the question named the existing value the user agreed to replace — a scalar is replaced, not merged, so it is never set silently. Write back with two-space indentation and a trailing newline.
-4. Ensure the file is gitignored. Check `.gitignore` for either `.claude/settings.local.json` or `.claude/`; if neither matches, append `.claude/settings.local.json` to `.gitignore`. This step is not optional — a seeded local settings file that lands in a commit is a worse outcome than an unseeded one.
+4. Run `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" grant`: it adds the intermediate-file grants, the deny entries and their ignore line, and removes nothing.
+5. Ensure the file is gitignored. Check `.gitignore` for either `.claude/settings.local.json` or `.claude/`; if neither matches, append `.claude/settings.local.json` to `.gitignore`. This step is not optional — a seeded local settings file that lands in a commit is a worse outcome than an unseeded one.
 
 **Never** write this file outside `pwd`, never into a subfolder, and never touch `.claude/settings.json`, which is the shared checked-in file and not this one.
 
 ### 3. Report either way, in the Done report
 
-- **Wrote it:** name the path, say the permission change takes effect **on the next session** — Claude Code reads permission settings only at startup, so this session still prompts — and say whether `.gitignore` was modified. If a `defaultMode` was replaced, name the old value beside the new one. Do not claim the current session is now unlocked.
+- **Wrote it:** name the path, say the permission change takes effect **on the next session** — Claude Code reads permission settings only at startup, so this session still prompts — and say whether `.gitignore` was modified and `grant`'s `deny=` value. If a `defaultMode` was replaced, name the old value beside the new one. Do not claim the current session is now unlocked.
 - **Declined:** say plainly that per-tool approval prompts stay on for this project, and that this check can seed the file on a later run.
 
-If the project already had `defaultMode: "bypassPermissions"`, say so, say the `allow` list was unioned, and skip the question — there is nothing to decide. Any other existing `defaultMode` survives the run untouched unless the user answered yes to the question that named it.
+If the project already had `defaultMode: "bypassPermissions"`, say so and that the `allow` list was unioned.
 - **Malformed:** name the path, say the file did not parse and was left exactly as it was, and that the offer returns once it parses.
 
 ## gitattributes — the union merge driver for the event log
 
 `fusion-workbench/orchestrator-events.jsonl` is the one workbench file every checkout appends to, so git's default text merge turns two checkouts' sessions into a conflict nobody should resolve by hand. This step asks git whether a merge driver already applies there and declares `merge=union` only where none does. `rules/workbench-tracking.md` `## The event log carries a union merge driver` holds the reasoning, including why the question is `git check-attr` and never a text search of `.gitattributes`; do not restate it here.
-
-Like `config` and `permissions`, the write lands at the project root: `./.gitattributes` in the directory `pwd` reports, outside `fusion-workbench/` and never in a subfolder. **This selector asks the user nothing**, which is what keeps `permissions` the only one that asks on a normal run.
 
 ```bash
 if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
@@ -236,8 +234,6 @@ fi
 
 **One condition here asks**, at most once per checkout: a checkout with no registry entry.
 
-A second stood beside it and went with the unit-of-work container it was about. That container's record travelled between checkouts while the local pointer naming the running one did not, so a clone taken mid-run held a record that said "running" with no pointer beside it, and this selector offered to write one. No record carries a running state now and no such pointer is read anywhere, so the condition is unreachable rather than unchecked: a work package's `package.json` names the checkout that holds it (`claim.checkout_id`), which is a fact every checkout reads the same way off the file it pulled.
-
 **This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`; its header documents the mint and the six exit codes, and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as your own Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 
 ```bash
@@ -260,7 +256,7 @@ The rest: that helper's header.
 
 ## gitignore — a tracked workbench against the four-class partition
 
-`rules/workbench-tracking.md` `## The four classes` says which root entries travel and which stay; decisions `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md` and `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md` say what fusion does when a tracked workbench's `.gitignore` departs from it: repair an excluded R2/R3 entry with a negation line, report a tracked class L entry, repair `.checkout-id` alone (the one whose tracking gives a wrong answer, not noise), never touch an R1 exclusion, ask nothing. Only in a git work tree that already tracks `fusion-workbench/`; the choice not to track is the project's. The question is `git check-ignore -q`, never a text read of `.gitignore`, for the reason the rule gives for `git check-attr`. A class L entry that is neither tracked nor ignored is reported as well: no rule covers it, so it stands as `??` in `git status` from the moment it holds a byte, and the next `git add` of a directory commits it. **That entry is found with `git ls-files --others --exclude-standard` over it** — what git would actually pick up — and never with `check-ignore` on the entry's own path, which is the wrong question for a directory covered by the `dir/*` form (defect `260905-2234_*_step-0js-new-unignored-branch-fires-on-a-directory-whose-contents-are-ignored-by-the-dir-star-form.md`). The existence test that stood in front of it went with the question it guarded. Reported and not repaired, because nothing is tracked yet and the direction-B criterion repairs a wrong answer, not a risk (defect `260828-0853_*_setup-step-0j-misses-a-class-l-entry-that-is-untracked-but-not-ignored.md`).
+`rules/workbench-tracking.md` `## The four classes` says which root entries travel and which stay; decisions `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md` and `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md` say what fusion does when a tracked workbench's `.gitignore` departs from it: repair an excluded R2/R3 entry with a negation line, report a tracked class L entry, repair `.checkout-id` alone (the one whose tracking gives a wrong answer, not noise), never touch an R1 exclusion, ask nothing. Only in a git work tree that already tracks `fusion-workbench/`; the choice not to track is the project's. The question is `git check-ignore -q`, never a text read of `.gitignore`, for the reason the rule gives for `git check-attr`. A class L entry that is neither tracked nor ignored is reported as well: no rule covers it, so it stands as `??` in `git status` from the moment it holds a byte, and the next `git add` of a directory commits it. **That entry is found with `git ls-files --others --exclude-standard` over it** — what git would actually pick up — and never with `check-ignore` on the entry's own path, which is the wrong question for a directory covered by the `dir/*` form (defect `260905-2234_*_step-0js-new-unignored-branch-fires-on-a-directory-whose-contents-are-ignored-by-the-dir-star-form.md`). Reported and not repaired, because nothing is tracked yet and the direction-B criterion repairs a wrong answer, not a risk (defect `260828-0853_*_setup-step-0j-misses-a-class-l-entry-that-is-untracked-but-not-ignored.md`).
 
 ```bash
 if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-files --error-unmatch fusion-workbench >/dev/null 2>&1; then
@@ -284,7 +280,7 @@ Every line printed goes into the Done report verbatim; nothing printed means not
 
 ## upstream — whether this checkout is behind its upstream (advisory)
 
-This step reads how far the current branch is behind its upstream and **does not fetch**. The read is local, so what it answers is "behind what this checkout last saw", and the age of that view is reported together with the number in every case. A count printed without its age is the one shape this step may not produce (issue `260905-1850_*_setup-does-not-notice-that-the-checkout-is-behind-its-remote.md`). Fetching would answer the sharper question and was refused for what it costs in a session's mandatory first step; the reasons are in that issue's `Resolved:` note. Fetching stays the user's move.
+This step reads how far the current branch is behind its upstream and **does not fetch**. The read is local, so what it answers is "behind what this checkout last saw", and the age of that view is reported together with the number in every case. A count printed without its age is the one shape this step may not produce (issue `260905-1850_*_setup-does-not-notice-that-the-checkout-is-behind-its-remote.md`). Fetching stays the user's move.
 
 ```bash
 if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" != "true" ]; then echo "upstream=no-work-tree"; else
@@ -347,6 +343,14 @@ if [ -x "$H" ]; then "$H"; else echo "claude-md=unread"; fi
 ```
 
 Report what it printed and nothing past it. `clean` and `absent` are one line, **not a warning**; on `weighed`, the `over` rows and the last line's route: `/fusion:curate --placement`, then `### Relocating in a consuming project`. It writes nothing and never fails the session; each session start names an over file until it is lean. `unread` — this install lacks the helper: the check was **not taken**, which is not the same as a clean file. The rest: that helper's header.
+
+## tmp — the intermediate-file directory
+
+```bash
+T="$FUSION_PLUGIN_ROOT/bin/fusion-tmp"; if [ -x "$T" ]; then "$T" check; echo "exit=$?"; else echo "tmp=unread"; fi
+```
+
+`present=no`, `grants=missing`, `deny=missing` or `ignored=no`: run `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path`, then its `grant`, which only add, and report their lines. Reported, not repaired: `ignored=tracked`, untrack the `settings=` file; `link=occupied`, `<root>/tmp` is something else, moved by hand to get the view link; `long=yes`, Python sockets break under it, so such a tool gets a shorter `TMPDIR`; `deny=present-under-sandbox`, the four `Edit(//…)` deny entries make the sandbox's `TMPDIR` unwritable and are removed by hand; `grants=unparseable`, the settings file is fixed by hand. Name `size_kb=` and each `other=` line and offer nothing: nothing in fusion deletes them. `tmp=unread` or a non-zero `exit=`: not taken.
 
 ## Stamp what you ran
 

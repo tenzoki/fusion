@@ -60,6 +60,14 @@
 # unwritable. Entries written before a sandbox was enabled are reported as
 # `deny=present-under-sandbox` and are never removed here.
 #
+# One entry of each pair covers both spellings. Measured 2026-10-28, Claude
+# Code 2.1.312, `claude -p --permission-mode default`, a project outside git, a
+# Write to each spelling: with `Edit(//tmp/**)` alone, or with
+# `Edit(//private/tmp/**)` alone, both Writes were denied by the setting; with
+# neither, both were refused only as not yet granted. The `var/folders` pair
+# had measured the same way before. All four ship anyway; a redundant entry is
+# harmless.
+#
 # ---------------------------------------------------------------------------
 # Output
 #

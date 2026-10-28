@@ -186,7 +186,7 @@ describe("the due list (lib/checks-due.ts), moved unchanged out of setup Step 0"
   it("makes every selector due with no stamps, or with stamps that do not parse as an object", () => {
     expect(dueSelectors(null, "1.0.0", now)).toEqual([...CHECK_SELECTORS]);
     expect(dueSelectors(42, "1.0.0", now)).toEqual([...CHECK_SELECTORS]);
-    expect(CHECK_SELECTORS).toHaveLength(11);
+    expect(CHECK_SELECTORS).toHaveLength(12);
   });
 
   it("is due on another version, at 30 days or older, and on an unparseable date", () => {

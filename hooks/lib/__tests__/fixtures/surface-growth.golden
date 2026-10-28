@@ -28,7 +28,7 @@
 [skills bytes]
   archive/SKILL.md 26242
   cadence/SKILL.md 23482
-  check/SKILL.md 32828
+  check/SKILL.md 32243
   cleanup/SKILL.md 6960
   commit/SKILL.md 6148
   curate/SKILL.md 12587
@@ -39,10 +39,10 @@
   news/SKILL.md 8223
   post/SKILL.md 6694
   reconcile/SKILL.md 6792
-  setup/SKILL.md 16017
+  setup/SKILL.md 16345
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 227909
+  total 227652
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
