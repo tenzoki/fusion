@@ -1,0 +1,286 @@
+#!/usr/bin/env bash
+# fusion-tmp — the one owner of where fusion's intermediate files go, and of
+# the grants that let Claude write there without a prompt.
+#
+# Usage:
+#   fusion-tmp path     create ~/.fusion-tmp/<checkout-id> and print it
+#   fusion-tmp grant    grant it in the settings file Claude Code reads
+#   fusion-tmp link     make <root>/tmp a view-only link to it
+#   fusion-tmp check    report all of the above, writing nothing
+#
+# ---------------------------------------------------------------------------
+# Why the location is outside the project
+#
+# The reasoning is the closed discussion
+# `261028-0708-perfect-location-for-fusion-intermediate-files.md`, claims C1 to
+# C16; what follows names the claims this program rests on.
+#
+#   - The directory is `$HOME/.fusion-tmp/<checkout-id>`. `$HOME` survives a
+#     reboot, which the system temp directories do not, and no OS cleaner
+#     targets it. It is outside every git tree, so `git clean -xdf` cannot
+#     reach it (C1), nothing needs ignoring for it, and it never enters a
+#     commit. The checkout id keeps worktrees and second clones apart.
+#   - A write through a `<root>/tmp` symlink still prompts, because Claude
+#     Code resolves the link to its target (C5). The link is for the user to
+#     look through; agents write through the real path only. Its ignore line
+#     is `/tmp` with no trailing slash, which is what matches a symlink (C8).
+#   - Two grants are needed: `permissions.allow` `Edit(~/.fusion-tmp/<id>/**)`
+#     for default mode, and `permissions.additionalDirectories`
+#     `~/.fusion-tmp/<id>` for `acceptEdits` and the sandbox (C10).
+#   - The grants go into `.claude/settings.local.json`, which must stay
+#     ignored: a tracked one brings back Claude Code's trust step, and Claude
+#     Code saves "don't ask again" approvals into it, so it is merged entry by
+#     entry and never overwritten (C15).
+#   - In a git worktree Claude Code reads that file at the main checkout's
+#     root, not the worktree's (C16). Claude Code's settings documentation
+#     names four exceptions where it stays beside the project's own
+#     `.claude/`: outside a git repository, a repository rooted at `$HOME`,
+#     Windows, and a file the user does not own. Each is a named branch in
+#     `settings_file` below.
+#
+# ---------------------------------------------------------------------------
+# The scope split
+#
+# A file anything reads after the process that wrote it has exited goes here.
+# A helper's own scratch file, removed before the helper exits, may stay where
+# `mktemp` puts it.
+#
+# **Nothing in fusion deletes this directory or its siblings.** `check` names
+# the size and lists the directories of earlier identities of this project;
+# removing anything is the user's.
+#
+# ---------------------------------------------------------------------------
+# The deny entries
+#
+# `grant` also writes `Edit(//tmp/**)`, `Edit(//private/tmp/**)`,
+# `Edit(//var/folders/**)` and `Edit(//private/var/folders/**)` into
+# `permissions.deny`, but only when no settings layer read here enables the
+# sandbox and `pwd -P` is not itself under one of those prefixes. Under the
+# sandbox Bash's `TMPDIR` is `/tmp/claude-<uid>`, and the deny would make it
+# unwritable. Entries written before a sandbox was enabled are reported as
+# `deny=present-under-sandbox` and are never removed here.
+#
+# ---------------------------------------------------------------------------
+# Output
+#
+#   path    one line, the absolute directory. Past 71 bytes one stderr line
+#           warns that AF_UNIX socket paths (104 bytes on macOS) break under it
+#           for Python multiprocessing. It never blocks.
+#   grant   settings=<file>  added=<n>
+#           deny=written|present|skipped-sandbox|skipped-under-temp|
+#                present-under-sandbox|skipped-tracked
+#           ignored=yes|added|tracked|not-a-repo, then gitignore=<file> when
+#           a line was appended there
+#   link    link=created|ours|occupied|not-a-repo, then gitignore=<file> when
+#           the `/tmp` line was appended
+#   check   tmp= present= path_len= long= size_kb= settings= grants= deny=
+#           ignored= link=, then one `other=<dir> earlier-identity
+#           registered|unregistered` per directory under ~/.fusion-tmp whose
+#           `.origin` names this root and whose name is not this checkout's id.
+#           `deny=missing` and `ignored=no` are where `grant` would write.
+#
+# Exit codes: 0; 1 no workbench above pwd, no CHECKOUT= from fusion-identity, or
+# $HOME unset; 2 usage; 3 the compiled hooks are missing; 4 the settings file
+# does not parse (nothing was written).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/lib/temp-paths.js"
+
+# Equal to FUSION_TMP_BASE and SYSTEM_TEMP_PREFIXES in hooks/lib/temp-paths.ts;
+# hooks/lib/__tests__/fusion-tmp.test.ts pins both.
+TMP_BASE='.fusion-tmp'
+TEMP_PREFIXES='/tmp /private/tmp /var/folders /private/var/folders'
+
+die() { printf 'fusion-tmp: %s\n' "$2" >&2; exit "$1"; }
+
+usage() {
+  printf 'usage: fusion-tmp path|grant|link|check\n' >&2
+  exit 2
+}
+
+[ "$#" -eq 1 ] || usage
+cmd="$1"
+case "$cmd" in path|grant|link|check) ;; *) usage ;; esac
+
+[ -n "${HOME:-}" ] || die 1 'HOME is not set, so there is no place for ~/.fusion-tmp.'
+root="$("$here/fusion-workbench-root" 2>/dev/null)" || die 1 "no fusion workbench above $(pwd). Run /fusion:setup."
+id="$("$here/fusion-identity" 2>/dev/null | sed -n 's/^CHECKOUT=//p' || true)"
+[ -n "$id" ] || die 1 'fusion-identity printed no CHECKOUT=, so the directory has no name.'
+
+root_real="$(cd "$root" && pwd -P)"
+dir="$HOME/$TMP_BASE/$id"
+
+in_git() { git -C "$1" rev-parse --is-inside-work-tree >/dev/null 2>&1; }
+
+# --- path -------------------------------------------------------------------
+
+ensure_dir() {
+  if [ ! -d "$dir" ]; then
+    (umask 077 && mkdir -p "$dir")
+  fi
+  if [ ! -e "$dir/.origin" ]; then
+    ( set -C; printf '%s\n' "$root_real" > "$dir/.origin" ) 2>/dev/null || true
+  fi
+}
+
+warn_long() {
+  if [ "${#dir}" -gt 71 ]; then
+    printf 'fusion-tmp: %s is %s bytes; past 71, AF_UNIX socket paths under it can exceed the 104-byte limit (Python multiprocessing fails, Claude Code moves its socket to the system temp directory).\n' "$dir" "${#dir}" >&2
+  fi
+}
+
+# --- the settings file Claude Code reads --------------------------------------
+
+# Prints the settings file, then the directory whose git and .gitignore govern it.
+settings_file() {
+  local local_file="$root/.claude/settings.local.json"
+  if ! in_git "$root"; then
+    printf '%s\n%s\n' "$local_file" "$root"; return   # exception: outside a git repository
+  fi
+  case "$(uname -s 2>/dev/null)" in
+    MINGW*|MSYS*|CYGWIN*) printf '%s\n%s\n' "$local_file" "$root"; return ;;   # exception: Windows
+  esac
+  local common main
+  common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  if [ "$(basename "$common")" = ".git" ]; then main="$(dirname "$common")"; else main="$root"; fi
+  if [ "$(cd "$main" && pwd -P)" = "$(cd "$HOME" 2>/dev/null && pwd -P)" ]; then
+    printf '%s\n%s\n' "$local_file" "$root"; return   # exception: a repository rooted at $HOME
+  fi
+  local main_file="$main/.claude/settings.local.json"
+  if [ -e "$main_file" ] && [ ! -O "$main_file" ]; then
+    printf '%s\n%s\n' "$local_file" "$root"; return   # exception: a file the user does not own
+  fi
+  printf '%s\n%s\n' "$main_file" "$main"
+}
+
+# yes | tracked | no | not-a-repo, for the settings file under its governing directory.
+ignore_state() {
+  local file="$1" gov="$2" rel
+  in_git "$gov" || { echo not-a-repo; return; }
+  rel="${file#"$gov"/}"
+  if git -C "$gov" ls-files --error-unmatch -- "$rel" >/dev/null 2>&1; then echo tracked
+  elif git -C "$gov" check-ignore -q -- "$rel"; then echo yes
+  else echo no; fi
+}
+
+append_line() {
+  local gi="$1" line="$2"
+  if [ -s "$gi" ] && [ -n "$(tail -c1 "$gi")" ]; then printf '\n' >> "$gi"; fi
+  printf '%s\n' "$line" >> "$gi"
+}
+
+under_temp() {
+  local here_p p
+  here_p="$(pwd -P)/"
+  for p in $TEMP_PREFIXES; do
+    case "$here_p" in "$p"/*) return 0 ;; esac
+  done
+  return 1
+}
+
+sandbox_on() {
+  local file="$1"
+  [ "$(node "$entry" --sandbox "$HOME/.claude/settings.json" "$root/.claude/settings.json" "$file" \
+        '/Library/Application Support/ClaudeCode/managed-settings.json' \
+        '/etc/claude-code/managed-settings.json')" = "sandbox=yes" ]
+}
+
+need_entry() { [ -f "$entry" ] || die 3 "$entry is missing — the plugin's compiled hooks are not installed."; }
+
+# Sets: settings gov ignored added grants deny. $1 = write|dry.
+evaluate() {
+  local mode="$1" out rc lines deny_missing want
+  lines="$(settings_file)"
+  settings="$(printf '%s\n' "$lines" | sed -n 1p)"
+  gov="$(printf '%s\n' "$lines" | sed -n 2p)"
+  ignored="$(ignore_state "$settings" "$gov")"
+
+  rc=0; out="$(node "$entry" "$settings" "$id" no --dry-run)" || rc=$?
+  [ "$rc" -eq 0 ] || return "$rc"
+  grants="$(printf '%s\n' "$out" | sed -n 's/^grants_missing=//p')"
+  deny_missing="$(printf '%s\n' "$out" | sed -n 's/^deny_missing=//p')"
+  [ "$grants" = 0 ] && grants=present || grants=missing
+
+  want=no
+  if sandbox_on "$settings"; then
+    if [ "$deny_missing" -lt 4 ]; then deny=present-under-sandbox; else deny=skipped-sandbox; fi
+  elif under_temp; then deny=skipped-under-temp
+  elif [ "$deny_missing" = 0 ]; then deny=present
+  else deny=missing; want=yes; fi
+
+  added=0
+  [ "$mode" = write ] || return 0
+  if [ "$ignored" = tracked ]; then
+    [ "$deny" = missing ] && deny=skipped-tracked
+    return 0
+  fi
+  if [ "$ignored" = no ]; then
+    append_line "$gov/.gitignore" '.claude/settings.local.json'
+    ignored=added
+  fi
+  out="$(node "$entry" "$settings" "$id" "$want")" || return $?
+  added="$(printf '%s\n' "$out" | sed -n 's/^added=//p')"
+  [ "$deny" = missing ] && deny=written
+  return 0
+}
+
+# --- link -------------------------------------------------------------------
+
+link_state() {
+  local l="$root/tmp"
+  if [ -L "$l" ] && [ "$(readlink "$l")" = "$dir" ]; then echo ours
+  elif [ -e "$l" ] || [ -L "$l" ]; then echo occupied
+  else echo absent; fi
+}
+
+# --- dispatch ---------------------------------------------------------------
+
+case "$cmd" in
+  path)
+    ensure_dir
+    warn_long
+    printf '%s\n' "$dir"
+    ;;
+  grant)
+    need_entry
+    rc=0; evaluate write || rc=$?
+    [ "$rc" -eq 0 ] || exit "$rc"
+    printf 'settings=%s\nadded=%s\ndeny=%s\nignored=%s\n' "$settings" "$added" "$deny" "$ignored"
+    if [ "$ignored" = added ]; then printf 'gitignore=%s\n' "$gov/.gitignore"; fi
+    ;;
+  link)
+    ensure_dir
+    if ! in_git "$root"; then echo 'link=not-a-repo'; exit 0; fi
+    state="$(link_state)"
+    if [ "$state" != absent ]; then echo "link=$state"; exit 0; fi
+    if ! git -C "$root" check-ignore -q -- tmp; then
+      append_line "$root/.gitignore" '/tmp'
+      appended=1
+    fi
+    ln -s "$dir" "$root/tmp"
+    echo 'link=created'
+    if [ -n "${appended:-}" ]; then printf 'gitignore=%s\n' "$root/.gitignore"; fi
+    ;;
+  check)
+    need_entry
+    if [ -d "$dir" ]; then present=yes; size="$(du -sk "$dir" | cut -f1)"; else present=no; size=0; fi
+    [ "${#dir}" -gt 71 ] && long=yes || long=no
+    rc=0; evaluate dry || rc=$?
+    if [ "$rc" -eq 4 ]; then grants=unparseable; deny=unknown
+    elif [ "$rc" -ne 0 ]; then exit "$rc"; fi
+    link="$(link_state)"
+    printf 'tmp=%s\npresent=%s\npath_len=%s\nlong=%s\nsize_kb=%s\n' "$dir" "$present" "${#dir}" "$long" "$size"
+    printf 'settings=%s\ngrants=%s\ndeny=%s\nignored=%s\nlink=%s\n' "$settings" "$grants" "$deny" "$ignored" "$link"
+    for other in "$HOME/$TMP_BASE"/*/; do
+      [ -d "$other" ] || continue
+      other="${other%/}"
+      name="$(basename "$other")"
+      [ "$name" != "$id" ] || continue
+      [ "$(head -1 "$other/.origin" 2>/dev/null || true)" = "$root_real" ] || continue
+      if [ -e "$root/fusion-workbench/shared/checkouts/$name.md" ]; then reg=registered; else reg=unregistered; fi
+      printf 'other=%s earlier-identity %s\n' "$other" "$reg"
+    done
+    ;;
+esac
