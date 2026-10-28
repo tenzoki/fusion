@@ -1,0 +1,24 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a89e6e4a-93e6-4850-beaf-e6d8fafd44dc",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "discussion",
+  "narrative": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/discussions/261028-0708-perfect-location-for-fusion-intermediate-files.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "participants": [],
+    "outcome_refs": []
+  }
+}

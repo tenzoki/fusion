@@ -13,3 +13,13 @@ Reached when, in a fusion project: `<root>/tmp/` exists and is gitignored; a fus
 - `permissions.deny` blocks under `bypassPermissions` and under `--dangerously-skip-permissions`, but only in the `Edit(//path/**)` form; a `Write(...)` rule never matches (Claude Code warns at start). `/tmp` and `/private/tmp` need one entry each. An `Edit` deny on `/tmp/…` did **not** stop `echo hi > /tmp/…` in Bash, although the docs say redirection targets are covered.
 - 9 source files name a system temp path today: 1 under `agents/`, 2 under `skills/`, 5 under `hooks/lib/`, 1 under `bin/`; `commit-message-path.test.ts` pins the `/tmp` commit-message path.
 - `tmp/` is not ignored in this repository today.
+
+## Brief revised (2026-10-28)
+
+The location changes from `<root>/tmp/` to `~/.fusion-tmp/<checkout-id>`, on the user's word, in three turns (de).
+
+- On the sandbox: "sandbox ohne deny".
+- On the location: "Dann könnte man überlegen, den tmp Folder generell nach ~/.fusion-tmp/<checkout-id> legen und nicht in die workbench oder den projekt folder."
+- After the discussion `discussions/261028-0708-perfect-location-for-fusion-intermediate-files.md` converged: option 1, close and revise the plan with a view-only `<root>/tmp` symlink.
+
+The "Reached when" clause of the Directive reads accordingly. The intermediate-file root is `~/.fusion-tmp/<checkout-id>`, granted without prompts through `.claude/settings.local.json`. It is not under the project. `<root>/tmp` is an optional view-only symlink to it.
