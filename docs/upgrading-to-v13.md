@@ -273,8 +273,35 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
 
 - **Your citations.** The grammar is unchanged, and a marked basename cited with its marker
   wildcarded resolves as before.
-- **`fusion.json`, your `.claude/` settings, your commit lock and your voice profiles.** Unchanged.
+- **`fusion.json`, your `.claude/` settings, your commit lock and your voice profiles.** The
+  migration leaves them unchanged. 13.4.0 adds entries to `.claude/settings.local.json`; see below.
 - **The archive.** Nothing in `archive/` is rewritten; the migration adds its receipt there.
+
+## 13.4.0: intermediate files leave the system temp directory
+
+Agents now write files they read back later to `~/.fusion-tmp/<checkout-id>`, which a reboot and
+`git clean -xdf` leave alone, instead of `/tmp` or `/var/folders`. Once per project:
+
+1. Run `fusion --update` and restart the session, so the checks below are the 13.4.0 ones.
+2. Run `/fusion:check --only tmp`, then `/fusion:check --only permissions`. They create the
+   directory and add its grants, and without a sandbox the system-temp deny entries, to
+   `.claude/settings.local.json`. Nothing is removed from that file.
+3. Start sessions with `fusion`, not `claude`. Only the launcher points Claude Code's temp root
+   and `TMPDIR` there; a session started otherwise is named at every start, and the marketplace
+   path's two `export`s are in `README.md`, in the section on the `fusion` launcher.
+
+What stays unenforced:
+
+- **Programs.** A tool that hard-codes `/tmp`, or builds a temp path at run time, still writes
+  there. A hook reports a system temp path only when a `Bash` command's text names one, and the
+  deny entries stop Claude's `Write` and `Edit`, not a shell redirect.
+- **The sandbox.** With Claude Code's sandbox on, the Bash tool's `TMPDIR` is `/tmp/claude-<uid>`
+  whatever was exported, and no deny entry is written, since it would break the sandbox.
+- **Sessions without the launcher** keep their scratchpad and `TMPDIR` in the system directories.
+- **`/var/tmp`** is not among the paths reported or denied.
+
+The rule agents follow is `rules/fusion-workbench-conventions.md` `## Intermediate files`; the
+location, grants and outputs are documented in the header of `bin/fusion-tmp`.
 
 ## Where to read more
 
