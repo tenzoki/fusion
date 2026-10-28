@@ -3,7 +3,7 @@
   "id": "b49d6666-63a0-4d1d-bde0-1d4fef0a86e9",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -69,7 +69,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "fusion 13.4.1 released at C′ 67cece9a (entry delivery on the step-17 model, repair withdrawn), bundle sha256:c61f9033… delivered, request 77 appended at ea1e91b8 with its correction at ebd16cdb",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "f4426687-c342-4f0a-95ee-ba6ed2bc6db9",
+          "revision": "sha256:083dd04c0d265bff57c8e278555145d8173d0be1ba2dc91e0b2fdd4ff56bcbbc"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
