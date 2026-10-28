@@ -118,6 +118,13 @@
 // D, the transfer sequence Prior's answer to 62 adds. The checkout is switched
 // by rewriting `.checkout-id`, as a copy of the project would carry another.
 //
+// A twelfth case (plan 261027-2252 step 6) runs the INSTALLED launcher with a
+// stub `claude` that prints the two temp variables, `HOME` a scratch
+// directory. In a set-up project both name `$HOME/.fusion-tmp/<checkout-id>`
+// over inherited values; outside one the launcher sets neither and an
+// inherited `TMPDIR` passes through. Neither `install.sh` nor the launcher it
+// writes names a fixed system temp path.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -1118,6 +1125,46 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const r = run(join(install.home, "bin", "fusion-migrate"), ["survey"], { cwd: root, env: { PATH: noNode, HOME: home } });
     expect([r.status, r.stdout, r.stderr]).toEqual([4, "", `fusion-migrate: Node ${want} or later is required and \`node\` is not on PATH. Nothing was read or written.\n`]);
     expect([tree(wb), readdirSync(home)]).toEqual([before, []]);
+  });
+
+  it("the installed launcher exports CLAUDE_CODE_TMPDIR and TMPDIR as ~/.fusion-tmp/<checkout-id> inside a set-up project, sets neither outside one, and names no fixed system temp path", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const launcher = join(install.bin, "fusion");
+    for (const [name, text] of [["install.sh", readFileSync(join(install.src, "install.sh"), "utf-8")], ["the launcher", readFileSync(launcher, "utf-8")]]) {
+      const hits = text.split("\n").filter((l) => l.includes("/tmp"));
+      expect(hits, `${name} names a fixed temp path`).toEqual([]);
+    }
+    // A claude stub ahead of the install's own, printing what the launcher handed it.
+    const stubDir = join(install.tmp, "path-claude-env");
+    mkdirSync(stubDir);
+    stub(stubDir, "claude", ['printf \'CLAUDE_CODE_TMPDIR=%s\\n\' "${CLAUDE_CODE_TMPDIR-<unset>}"', 'printf \'TMPDIR=%s\\n\' "${TMPDIR-<unset>}"', 'printf \'FUSION_PLUGIN_ROOT=%s\\n\' "${FUSION_PLUGIN_ROOT-<unset>}"'].join("\n"));
+    const home = join(install.tmp, "home-launcher");
+    mkdirSync(home);
+    const base = identityEnv();
+    const env = (extra: NodeJS.ProcessEnv) => ({ ...base, PATH: `${stubDir}${delimiter}${base.PATH}`, HOME: home, ...extra });
+    const launch = (cwd: string, extra: NodeJS.ProcessEnv) => run(launcher, ["-p", "x"], { cwd, env: env(extra) });
+
+    // Outside a fusion project: nothing exported, the inherited TMPDIR untouched, no ~/.fusion-tmp made.
+    const outside = join(install.tmp, "launcher-outside");
+    mkdirSync(outside);
+    const out = launch(outside, { TMPDIR: "/inherited/" });
+    expect([out.status, kv(out.stdout, "CLAUDE_CODE_TMPDIR"), kv(out.stdout, "TMPDIR"), kv(out.stdout, "FUSION_PLUGIN_ROOT")], out.stderr).toEqual([0, "<unset>", "/inherited/", install.home]);
+    const bare = launch(outside, {});
+    expect([bare.status, kv(bare.stdout, "CLAUDE_CODE_TMPDIR"), kv(bare.stdout, "TMPDIR")], bare.stderr).toEqual([0, "<unset>", "<unset>"]);
+    expect(existsSync(join(home, ".fusion-tmp"))).toBe(false);
+
+    // Inside a set-up project, from a subdirectory: both name the checkout's directory, over inherited values.
+    const p = project("launcher-project");
+    const sub = join(p.root, "src", "deep");
+    mkdirSync(sub, { recursive: true });
+    const inside = launch(sub, { TMPDIR: "/inherited/", CLAUDE_CODE_TMPDIR: "/inherited" });
+    expect(inside.status, inside.stderr).toBe(0);
+    const id = readFileSync(join(p.root, "fusion-workbench", ".checkout-id"), "utf-8").trim();
+    expect(id).toMatch(/^[0-9a-f]{8}$/);
+    const dir = join(home, ".fusion-tmp", id);
+    expect([kv(inside.stdout, "CLAUDE_CODE_TMPDIR"), kv(inside.stdout, "TMPDIR"), kv(inside.stdout, "FUSION_PLUGIN_ROOT")]).toEqual([dir, `${dir}/`, install.home]);
+    expect(lstatSync(dir).isDirectory()).toBe(true);
   });
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {
