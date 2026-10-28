@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8a237280-a2bf-4b9a-be6c-1fae89f2f7e1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/issues/261028-0810-readme-agents-catalog-row-still-names-repair-v1-as-one-of-the-two-workflow-definitions.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ea58bb7d-689a-448f-8477-9065a7bfc50a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261023-1915-prior-handover-f-release-and-request-76/issues/261028-0810-entry-v2-and-request-77-derive-the-operation-id-from-the-workflow-capability-where-the-module-uses-the-services.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
