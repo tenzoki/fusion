@@ -23,3 +23,13 @@ The location changes from `<root>/tmp/` to `~/.fusion-tmp/<checkout-id>`, on the
 - After the discussion `261028-0708-perfect-location-for-fusion-intermediate-files.md` converged: option 1, close and revise the plan with a view-only `<root>/tmp` symlink.
 
 The "Reached when" clause of the Directive reads accordingly. The intermediate-file root is `~/.fusion-tmp/<checkout-id>`, granted without prompts through `.claude/settings.local.json`. It is not under the project. `<root>/tmp` is an optional view-only symlink to it.
+
+## Closure (2026-10-29)
+
+Closed `done`, outcome `completed`. The commit range runs from `a43c0829` to `96424bb3`, released as fusion 13.4.0, tag `v13.4.0`. The marketplace entry is bumped in `tenzoki/claude-plugins` `897cd1a`.
+
+- All nine plan steps are done. The user confirmed that all seven stop conditions hold.
+- There were three reviews: 261028-2204 (revise), 261029-0647 (revise) and 261029-1255 (revise, the evidence record bound here). Every Medium or higher finding is fixed.
+- `fusion-review-coverage --since v13.3.9` leaves six commits unreviewed. Four are workbench-only. The other two are the doc-only fix `d70a84f1` and the issue closures in `96424bb3`.
+- Still open in this container: the six Low findings of 261028-2204, plus N3 and N4 of 261029-0647. One of the six Low findings is the real-HOME use in `store-name-migration.test.ts`. The shared issue 261028-1225 (two dangling-link codec tests) is also open.
+- bypassPermissions was not measured beyond the one observed redirect.
