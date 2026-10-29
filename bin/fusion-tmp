@@ -55,10 +55,21 @@
 # `grant` also writes `Edit(//tmp/**)`, `Edit(//private/tmp/**)`,
 # `Edit(//var/folders/**)` and `Edit(//private/var/folders/**)` into
 # `permissions.deny`, but only when no settings layer read here enables the
-# sandbox and `pwd -P` is not itself under one of those prefixes. Under the
-# sandbox Bash's `TMPDIR` is `/tmp/claude-<uid>`, and the deny would make it
-# unwritable. Entries written before a sandbox was enabled are reported as
-# `deny=present-under-sandbox` and are never removed here.
+# sandbox, `pwd -P` is not itself under one of those prefixes, and neither is
+# the real path of `~/.fusion-tmp/<id>` (`deny=skipped-home-under-temp`: with
+# a `HOME` under such a prefix, as in many containers, the deny would refuse
+# fusion's own directory, since deny beats allow). Under the sandbox Bash's `TMPDIR` is
+# `/tmp/claude-<uid>`, and the deny would make it unwritable. Entries written
+# before a sandbox was enabled are reported as `deny=present-under-sandbox` and
+# are never removed here.
+#
+# **Without the launcher the deny refuses Claude's own scratchpad.** A session
+# started with bare `claude`, or on the marketplace path without the two
+# exports `README.md` gives, keeps its scratchpad under `/private/tmp`, and in
+# a project without a sandbox Claude's `Write` and `Edit` there are denied
+# (measured, plan 261027-2252 step 1 (e)). Accepted: no exemption is written
+# for the scratchpad. Start the session with `fusion`, or export the two
+# variables, and the scratchpad moves under `~/.fusion-tmp/<id>`.
 #
 # One entry of each pair covers both spellings. Measured 2026-10-28, Claude
 # Code 2.1.312, `claude -p --permission-mode default`, a project outside git, a
@@ -73,10 +84,12 @@
 #
 #   path    one line, the absolute directory. Past 71 bytes one stderr line
 #           warns that AF_UNIX socket paths (104 bytes on macOS) break under it
-#           for Python multiprocessing. It never blocks.
+#           for Python multiprocessing. It never blocks. Every subcommand
+#           passes `fusion-identity`'s mint notice to stderr and drops the
+#           rest of its stderr.
 #   grant   settings=<file>  added=<n>
 #           deny=written|present|skipped-sandbox|skipped-under-temp|
-#                present-under-sandbox|skipped-tracked
+#                skipped-home-under-temp|present-under-sandbox|skipped-tracked
 #           ignored=yes|added|tracked|not-a-repo, then gitignore=<file> when
 #           a line was appended there
 #   link    link=created|ours|occupied|not-a-repo, then gitignore=<file> when
@@ -114,7 +127,9 @@ case "$cmd" in path|grant|link|check) ;; *) usage ;; esac
 
 [ -n "${HOME:-}" ] || die 1 'HOME is not set, so there is no place for ~/.fusion-tmp.'
 root="$("$here/fusion-workbench-root" 2>/dev/null)" || die 1 "no fusion workbench above $(pwd). Run /fusion:setup."
-id="$("$here/fusion-identity" 2>/dev/null | sed -n 's/^CHECKOUT=//p' || true)"
+# Of fusion-identity's stderr only the mint notice passes: when this is the
+# first reader after `git clean -xdf`, it is the one place a re-mint is seen.
+id="$( { "$here/fusion-identity" 2>&1 >&3 3>&- | { grep -E '^fusion-identity: (minted |this workbench already)' >&2 || true; }; } 3>&1 | sed -n 's/^CHECKOUT=//p' || true)"
 [ -n "$id" ] || die 1 'fusion-identity printed no CHECKOUT=, so the directory has no name.'
 
 root_real="$(cd "$root" && pwd -P)"
@@ -179,11 +194,13 @@ append_line() {
   printf '%s\n' "$line" >> "$gi"
 }
 
+# Whether the real path of $1, an existing directory or not, lies under a prefix.
 under_temp() {
-  local here_p p
-  here_p="$(pwd -P)/"
+  local d="$1" rest="" real p
+  while [ ! -d "$d" ]; do rest="/$(basename "$d")$rest"; d="$(dirname "$d")"; done
+  real="$(cd "$d" && pwd -P)$rest/"
   for p in $TEMP_PREFIXES; do
-    case "$here_p" in "$p"/*) return 0 ;; esac
+    case "$real" in "$p"/*) return 0 ;; esac
   done
   return 1
 }
@@ -214,7 +231,8 @@ evaluate() {
   want=no
   if sandbox_on "$settings"; then
     if [ "$deny_missing" -lt 4 ]; then deny=present-under-sandbox; else deny=skipped-sandbox; fi
-  elif under_temp; then deny=skipped-under-temp
+  elif under_temp "$(pwd)"; then deny=skipped-under-temp
+  elif under_temp "$dir"; then deny=skipped-home-under-temp
   elif [ "$deny_missing" = 0 ]; then deny=present
   else deny=missing; want=yes; fi
 

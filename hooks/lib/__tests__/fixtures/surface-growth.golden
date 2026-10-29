@@ -18,19 +18,19 @@
   data-implementer.md 16036
   document-editor.md 13230
   implementation-planner.md 20617
-  orchestrator.md 95709
+  orchestrator.md 95696
   policy-curator.md 79045
   requirements-designer.md 17664
   reviewer.md 13819
   state-auditor.md 21781
-  total 324659
+  total 324646
 
 [skills bytes]
-  archive/SKILL.md 26242
+  archive/SKILL.md 26498
   cadence/SKILL.md 23482
-  check/SKILL.md 32243
-  cleanup/SKILL.md 6960
-  commit/SKILL.md 6148
+  check/SKILL.md 32319
+  cleanup/SKILL.md 6979
+  commit/SKILL.md 6167
   curate/SKILL.md 12587
   discuss/SKILL.md 15700
   help/SKILL.md 17841
@@ -42,7 +42,7 @@
   setup/SKILL.md 16345
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 227652
+  total 228022
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
@@ -75,7 +75,7 @@
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   fusion-stores.test.ts 32
-  fusion-tmp.test.ts 301
+  fusion-tmp.test.ts 332
   fusion-work-order.test.ts 154
   glob-nomatch-lint.test.ts 138
   guard-bash-integration.test.ts 334
@@ -121,4 +121,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 26521
+  total 26552

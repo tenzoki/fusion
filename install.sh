@@ -165,8 +165,10 @@ export FUSION_PLUGIN_ROOT="\$FUSION_DIR"
 # inherited value; bin/fusion-tmp owns that location and creates it. Outside a
 # project it exits non-zero, nothing is exported and the environment passes
 # through unchanged. No length test here: Setup and /fusion:check report a long
-# path, and it blocks nothing.
-fusion_tmp="\$("\$FUSION_DIR/bin/fusion-tmp" path 2>/dev/null || true)"
+# path, and it blocks nothing. Of its stderr only fusion-identity's mint notice
+# reaches the terminal: after \`git clean -xdf\` this is the first reader of the
+# swept .checkout-id, and the notice is how a re-mint is seen.
+fusion_tmp="\$( { "\$FUSION_DIR/bin/fusion-tmp" path 2>&1 >&3 3>&- | { grep '^fusion-identity: ' >&2 || true; }; } 3>&1 || true)"
 if [ -n "\$fusion_tmp" ] && [ -d "\$fusion_tmp" ]; then
   export CLAUDE_CODE_TMPDIR="\$fusion_tmp"
   export TMPDIR="\$fusion_tmp/"

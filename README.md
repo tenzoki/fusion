@@ -84,7 +84,7 @@ fusion code-implementer -p "..." # extra args after the agent pass straight to c
 fusion --help            # full usage
 ```
 
-Inside a project set up with `/fusion:setup`, the launcher points Claude Code's temp root and `TMPDIR` at `~/.fusion-tmp/<checkout-id>`, which a reboot and `git clean -xdf` leave alone, and agents write their intermediate files there. Setup grants that directory so writes to it need no approval, and links `<root>/tmp` to it for you to look through; the link is for viewing only. Nothing deletes the directory: clear it yourself when you want the space back. On the marketplace path, which has no launcher, export both variables before `claude`, with the path the `tmp=` line of `/fusion:check --only tmp` prints:
+Inside a project set up with `/fusion:setup`, the launcher points Claude Code's temp root and `TMPDIR` at `~/.fusion-tmp/<checkout-id>`, which a reboot and `git clean -xdf` leave alone, and agents write their intermediate files there. Setup grants that directory so writes to it need no approval, and links `<root>/tmp` to it for you to look through; the link is for viewing only. Nothing deletes the directory: clear it yourself when you want the space back. On the marketplace path, which has no launcher, export both variables before `claude`, with the path the `tmp=` line of `/fusion:check --only tmp` prints. Without them, and without a sandbox, Claude's `Write` and `Edit` into its own scratchpad under `/private/tmp` are denied by the entries setup writes; the header of `bin/fusion-tmp` says why:
 
 ```bash
 export CLAUDE_CODE_TMPDIR="$HOME/.fusion-tmp/<checkout-id>" TMPDIR="$HOME/.fusion-tmp/<checkout-id>/"

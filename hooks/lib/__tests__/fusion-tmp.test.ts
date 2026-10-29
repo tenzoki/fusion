@@ -15,8 +15,9 @@ import { DENY_ENTRIES, FUSION_TMP_BASE, SYSTEM_TEMP_PREFIXES, UnparseableSetting
 //
 // Two fixture bases. Projects under the OS temp directory exercise everything
 // except the deny entries, which the helper refuses to write from a directory
-// under a system temp prefix. The deny cases therefore run in a project under
-// the ignored `hooks/node_modules/`, which lies under no such prefix.
+// under a system temp prefix, or when `~/.fusion-tmp/<id>` is. The deny cases
+// therefore run in a project, and with a HOME, under the ignored
+// `hooks/node_modules/`, which lies under no such prefix.
 
 const script = join(pluginRoot, "bin", "fusion-tmp");
 const scratch: string[] = [];
@@ -66,6 +67,11 @@ function home(): string {
   return mk(tmpdir(), "fusion-tmp-h-");
 }
 
+/** A scratch HOME under no system temp prefix, for the cases that expect the deny written. */
+function homeOutside(): string {
+  return mk(outsideBase, "fusion-tmp-h-");
+}
+
 interface Run {
   status: number;
   stdout: string;
@@ -102,6 +108,18 @@ describe("bin/fusion-tmp path", () => {
     const r2 = run(root, h, "path");
     expect(r2.stdout).toBe(r1.stdout);
     expect(readFileSync(join(dir, ".origin"), "utf-8")).toBe("kept\n");
+  });
+
+  it("passes fusion-identity's mint notice to stderr, and nothing on a later call", () => {
+    const root = project();
+    const h = home();
+    const r1 = run(root, h, "path");
+    expect(r1.status, r1.stderr).toBe(0);
+    // The long-path warning may follow, since this HOME sits deep under tmpdir(); it is not the subject.
+    const ident = (r: Run) => r.stderr.split("\n").filter((l) => l.startsWith("fusion-identity:"));
+    expect(ident(r1)).toEqual([expect.stringMatching(new RegExp(`^fusion-identity: minted ${id(root)}, `))]);
+    const r2 = run(root, h, "path");
+    expect([r2.status, ident(r2)]).toEqual([0, []]);
   });
 
   it("warns on stderr at 72 bytes and not at 71, and exits 0 both times", () => {
@@ -163,7 +181,10 @@ describe("bin/fusion-tmp grant", () => {
     git(main, "worktree", "add", "-q", wt);
     mkdirSync(join(wt, "fusion-workbench"));
     writeFileSync(join(wt, "fusion-workbench", ".fusion-setup"), "{}\n");
-    const r = run(wt, home(), "grant");
+    const h = home();
+    // `check` names the same file: the permissions selector writes its half to it.
+    expect(run(wt, h, "check").kv.settings).toBe(settingsOf(main));
+    const r = run(wt, h, "grant");
     expect(r.status, r.stderr).toBe(0);
     expect(r.kv.settings).toBe(settingsOf(main));
     expect(r.kv.gitignore).toBe(join(main, ".gitignore"));
@@ -196,7 +217,7 @@ describe("bin/fusion-tmp grant", () => {
 describe("bin/fusion-tmp grant: the deny entries", () => {
   it("writes them without a sandbox, then reports present-under-sandbox and removes nothing", () => {
     const root = project({ outsideTemp: true });
-    const h = home();
+    const h = homeOutside();
     const r1 = run(root, h, "grant");
     expect(r1.status, r1.stderr).toBe(0);
     expect(r1.kv).toMatchObject({ added: "6", deny: "written" });
@@ -211,8 +232,18 @@ describe("bin/fusion-tmp grant: the deny entries", () => {
     const root = project({ outsideTemp: true });
     mkdirSync(join(root, ".claude"));
     writeFileSync(join(root, ".claude", "settings.json"), JSON.stringify({ sandbox: { enabled: true } }));
-    const r = run(root, home(), "grant");
+    const r = run(root, homeOutside(), "grant");
     expect(r.kv).toMatchObject({ added: "2", deny: "skipped-sandbox" });
+    expect(json(settingsOf(root)).permissions.deny).toBeUndefined();
+  });
+
+  it("skips them when ~/.fusion-tmp/<id> lies under a system temp prefix, which they would deny", () => {
+    const root = project({ outsideTemp: true });
+    const h = home();
+    expect(run(root, h, "check").kv.deny).toBe("skipped-home-under-temp");
+    const r = run(root, h, "grant");
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.kv).toMatchObject({ added: "2", deny: "skipped-home-under-temp" });
     expect(json(settingsOf(root)).permissions.deny).toBeUndefined();
   });
 });

@@ -123,7 +123,9 @@
 // directory. In a set-up project both name `$HOME/.fusion-tmp/<checkout-id>`
 // over inherited values; outside one the launcher sets neither and an
 // inherited `TMPDIR` passes through. Neither `install.sh` nor the launcher it
-// writes names a fixed system temp path.
+// writes names a fixed system temp path. `fusion-identity`'s mint notice
+// reaches stderr on the first start and after `.checkout-id` is removed, and
+// only then.
 //
 // ## Loud, never silent
 //
@@ -1151,7 +1153,7 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const out = launch(outside, { TMPDIR: "/inherited/" });
     expect([out.status, kv(out.stdout, "CLAUDE_CODE_TMPDIR"), kv(out.stdout, "TMPDIR"), kv(out.stdout, "FUSION_PLUGIN_ROOT")], out.stderr).toEqual([0, "<unset>", "/inherited/", install.home]);
     const bare = launch(outside, {});
-    expect([bare.status, kv(bare.stdout, "CLAUDE_CODE_TMPDIR"), kv(bare.stdout, "TMPDIR")], bare.stderr).toEqual([0, "<unset>", "<unset>"]);
+    expect([bare.status, kv(bare.stdout, "CLAUDE_CODE_TMPDIR"), kv(bare.stdout, "TMPDIR"), bare.stderr]).toEqual([0, "<unset>", "<unset>", ""]);
     expect(existsSync(join(home, ".fusion-tmp"))).toBe(false);
 
     // Inside a set-up project, from a subdirectory: both name the checkout's directory, over inherited values.
@@ -1165,6 +1167,16 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const dir = join(home, ".fusion-tmp", id);
     expect([kv(inside.stdout, "CLAUDE_CODE_TMPDIR"), kv(inside.stdout, "TMPDIR"), kv(inside.stdout, "FUSION_PLUGIN_ROOT")]).toEqual([dir, `${dir}/`, install.home]);
     expect(lstatSync(dir).isDirectory()).toBe(true);
+
+    // The mint notice reaches the terminal: on the first start, not on the next, and again after the id is swept.
+    const minted = (r: { stderr: string }) => r.stderr.split("\n").filter((l) => l.startsWith("fusion-identity: minted "));
+    expect(minted(inside)).toEqual([expect.stringContaining(`minted ${id},`)]);
+    const again = launch(sub, {});
+    expect([again.status, again.stderr]).toEqual([0, ""]);
+    rmSync(join(p.root, "fusion-workbench", ".checkout-id"));
+    const reminted = launch(sub, {});
+    const id2 = readFileSync(join(p.root, "fusion-workbench", ".checkout-id"), "utf-8").trim();
+    expect([reminted.status, id2 === id, minted(reminted)], reminted.stderr).toEqual([0, false, [expect.stringContaining(`minted ${id2},`)]]);
   });
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {

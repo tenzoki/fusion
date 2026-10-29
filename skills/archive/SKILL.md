@@ -244,7 +244,7 @@ echo '{"op":"list"}' | "$FUSION_PLUGIN_ROOT/bin/fusion-record" | grep -o '"path"
 **After Step 4, over `$KEEP`.** `STAMP` and `SLUG` are this run's, as Step 7's roll takes them. The two JSON surfaces of filter 1 are refused by name; a container holding a control file, a control file, or a Markdown file with one beside it goes to the survey; the rest stays in `$KEEP`.
 
 ```bash
-C="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)/fusion-archive-$STAMP-$SLUG"; : > "$C.candidates"; rm -f "$C.survey"
+T="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)"; C="${T:?fusion-tmp path failed}/fusion-archive-$STAMP-$SLUG"; : > "$C.candidates"; rm -f "$C.survey"
 hc() { find "$@" \( -name package.json -o -name '*.record.json' -o -name '*.evidence.json' \) -print 2>/dev/null | head -n 1; }
 K=""; while IFS= read -r f; do [ -n "$f" ] || continue; r="${f#"$WORKBENCH"/}"; case "$r" in workbench.json|.json-state|.json-state/*) echo "  refused (safety filter 1): $r"; continue ;; esac; if [ -d "$f" ]; then h="$(hc "$f")"; else s="$(basename "${f%.md}")"; h="$(hc "$(dirname "$f")" -maxdepth 1 \( -name package.json -o -name "$s" -o -name "$s.record.json" -o -name "$s.evidence.json" -o -name "$s.*.evidence.json" \))"; fi; if [ -n "$h" ]; then echo "$r" >> "$C.candidates"; else K="$K$f
 "; fi; done <<EOF
@@ -254,13 +254,13 @@ KEEP="$K"
 if [ -s "$C.candidates" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" survey --candidates "$C.candidates" > "$C.survey"; echo "survey exit=$?"; grep -E '^(candidate|held|refused)=' "$C.survey"; fi
 ```
 
-Step 5 names every `candidate=` unit, and every `held=` and `refused=` line with what it gives (the binding's source, pointer and target, or the state), as a safety filter in the manifest too. Exit 6 means every unit is held; any other non-zero exit moves no record unit this run, and Step 5 says why from stderr. A changed scope at Step 6 re-runs this block.
+Step 5 names every `candidate=` unit, and every `held=` and `refused=` line with what it gives (the binding's source, pointer and target, or the state), as a safety filter in the manifest too. Exit 6 means every unit is held; any other non-zero exit moves no record unit this run, and Step 5 says why from stderr. A changed scope at Step 6 re-runs this block. `fusion-tmp path failed` on stderr, here or at Step 7, halts the run before any `mv`.
 
 **Step 7, before the `mv` of `$KEEP`:**
 
 ```bash
-C="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)/fusion-archive-$STAMP-$SLUG"
-if grep -q '^candidate=' "$C.survey" 2>/dev/null; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" move --survey "$C.survey" --into "$STAMP-$SLUG"; echo "move exit=$?"; fi
+T="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)"; C="${T:?fusion-tmp path failed}/fusion-archive-$STAMP-$SLUG"
+if [ ! -e "$C.survey" ]; then echo survey=absent; elif grep -q '^candidate=' "$C.survey"; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" move --survey "$C.survey" --into "$STAMP-$SLUG"; echo "move exit=$?"; fi
 ```
 
 | Exit | Report |
@@ -271,6 +271,7 @@ if grep -q '^candidate=' "$C.survey" 2>/dev/null; then "$FUSION_PLUGIN_ROOT/bin/
 | 8 | the move or its verification failed and every file is back; nothing archived |
 | 7 | **the store is left fenced and every codec write is refused.** Name the `bin/fusion-archive resume --inventory <file>` and `abandon` stderr gives. Never delete the fence by hand |
 | 1, 2, 3, 4 | nothing moved; quote stderr |
+| `survey=absent` | no record unit was surveyed; none moves |
 
 ## Guardrails
 

@@ -169,15 +169,15 @@ A fresh consuming project has no permission source of its own, so every `Write`,
 
 One `AskUserQuestion`, in the project's chat language, naming the file and what the setting does in plain words rather than behind the term:
 
-> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Claude is also granted its intermediate-file directory and, without a sandbox, kept out of the system temp directories. Write it?
+> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Setup has also granted Claude its intermediate-file directory and, without a sandbox, denied its `Write` and `Edit`, not shell redirects, in the system temp directories, which hold Claude's scratchpad unless the session started with `fusion` (`bin/fusion-tmp` header). Write it?
 
 Two options. **"Yes, write it" is the default and the recommended choice.** "No, keep the prompts" is the other; nothing is written and the run continues.
 
-Read `.claude/settings.local.json` first if it exists. **A file that does not parse as JSON gets no question and no write**: report it in §3 as a file the user fixes by hand, naming the path, and continue. Otherwise note `permissions.defaultMode`. Already `bypassPermissions` — skip the question, still union the `allow` list (§2, items 3 and 4), and report the union (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
+Read the target (§2) first if it exists. **A file that does not parse as JSON gets no question and no write**: report it in §3 as a file the user fixes by hand, naming the path, and continue. Otherwise note `permissions.defaultMode`. Already `bypassPermissions` — skip the question, still union the `allow` list (§2, items 3 and 4), and report the union (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
 
 ### 2. On "yes", write it
 
-Target: `.claude/settings.local.json` in `pwd` — the project root. Merge into any existing file; never overwrite one.
+Target: the `settings=` file of `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" check`, the one `grant` writes; in a worktree, the main checkout's. A non-zero exit: report it, write nothing. Merge into any existing file; never overwrite one.
 
 Desired contents:
 
@@ -192,13 +192,12 @@ Desired contents:
 
 **Bare tool names only** — no scoped path form may be written here under any wording, because none of them match.
 
-1. `mkdir -p .claude`.
-2. Read `.claude/settings.local.json` if present. If absent, create it with the JSON above.
+1. `mkdir -p` its directory.
+2. Read it if present. If absent, create it with the JSON above.
 3. If present, parse it and union the `allow` list with the values above, **preserving every existing entry — only add, never remove**; that guarantee is about the `allow` list and reaches no other field. Set `permissions.defaultMode` to `"bypassPermissions"` only when the file carries no `defaultMode`, or when the question named the existing value the user agreed to replace — a scalar is replaced, not merged, so it is never set silently. Write back with two-space indentation and a trailing newline.
-4. Run `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" grant`: it adds the intermediate-file grants, the deny entries and their ignore line, and removes nothing.
-5. Ensure the file is gitignored. Check `.gitignore` for either `.claude/settings.local.json` or `.claude/`; if neither matches, append `.claude/settings.local.json` to `.gitignore`. This step is not optional — a seeded local settings file that lands in a commit is a worse outcome than an unseeded one.
+4. Run `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" grant`: it adds the intermediate-file grants, the deny entries and the file's ignore line, and removes nothing. `ignored=tracked`: the file is committed; report that it must be untracked.
 
-**Never** write this file outside `pwd`, never into a subfolder, and never touch `.claude/settings.json`, which is the shared checked-in file and not this one.
+**Never** write another settings file, and never touch `.claude/settings.json`, which is the shared checked-in file and not this one.
 
 ### 3. Report either way, in the Done report
 
@@ -350,7 +349,7 @@ Report what it printed and nothing past it. `clean` and `absent` are one line, *
 T="$FUSION_PLUGIN_ROOT/bin/fusion-tmp"; if [ -x "$T" ]; then "$T" check; echo "exit=$?"; else echo "tmp=unread"; fi
 ```
 
-`present=no`, `grants=missing`, `deny=missing` or `ignored=no`: run `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path`, then its `grant`, which only add, and report their lines. Reported, not repaired: `ignored=tracked`, untrack the `settings=` file; `link=occupied`, `<root>/tmp` is something else, moved by hand to get the view link; `long=yes`, Python sockets break under it, so such a tool gets a shorter `TMPDIR`; `deny=present-under-sandbox`, the four `Edit(//…)` deny entries make the sandbox's `TMPDIR` unwritable and are removed by hand; `grants=unparseable`, the settings file is fixed by hand. Name `size_kb=` and each `other=` line and offer nothing: nothing in fusion deletes them. `tmp=unread` or a non-zero `exit=`: not taken.
+`present=no`, `grants=missing`, `deny=missing` or `ignored=no`: run `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path`, then its `grant`, which only add, and report their lines. Reported, not repaired: `ignored=tracked`, untrack the `settings=` file; `link=occupied`, `<root>/tmp` is something else, moved by hand to get the view link; `long=yes`, Python sockets break under it, so such a tool gets a shorter `TMPDIR`; `deny=skipped-home-under-temp`, `~/.fusion-tmp` is under a system temp prefix the deny would cover; `deny=present-under-sandbox`, the four `Edit(//…)` deny entries make the sandbox's `TMPDIR` unwritable and are removed by hand; `grants=unparseable`, the settings file is fixed by hand. Name `size_kb=` and each `other=` line and offer nothing: nothing in fusion deletes them. `tmp=unread` or a non-zero `exit=`: not taken.
 
 ## Stamp what you ran
 

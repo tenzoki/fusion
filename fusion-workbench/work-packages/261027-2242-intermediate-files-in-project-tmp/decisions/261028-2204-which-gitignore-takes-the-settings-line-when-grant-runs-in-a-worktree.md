@@ -23,3 +23,6 @@ The plan left open question 4 for a ruling at approval, and none is recorded. Th
 ## Recommendation
 
 None from the reviewer: both satisfy C15. The user rules.
+
+---
+Answered: 261028-2204-which-gitignore-takes-the-settings-line-when-grant-runs-in-a-worktree.md (this record) — the main checkout's tracked .gitignore takes the settings line, as implemented; ruled by user, Kai Stalmann <ks@qantr.com>

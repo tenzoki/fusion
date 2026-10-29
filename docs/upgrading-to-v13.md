@@ -297,7 +297,10 @@ What stays unenforced:
   deny entries stop Claude's `Write` and `Edit`, not a shell redirect.
 - **The sandbox.** With Claude Code's sandbox on, the Bash tool's `TMPDIR` is `/tmp/claude-<uid>`
   whatever was exported, and no deny entry is written, since it would break the sandbox.
-- **Sessions without the launcher** keep their scratchpad and `TMPDIR` in the system directories.
+- **Sessions without the launcher** keep their scratchpad and `TMPDIR` in the system directories,
+  and without a sandbox the deny entries refuse Claude's `Write` and `Edit` into that scratchpad.
+  Accepted, with no exemption: start with `fusion`, or export the two variables. The header of
+  `bin/fusion-tmp`, the deny entries, says why.
 - **`/var/tmp`** is not among the paths reported or denied.
 
 The rule agents follow is `rules/fusion-workbench-conventions.md` `## Intermediate files`; the

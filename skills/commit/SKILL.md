@@ -83,7 +83,7 @@ defends against commit absorption if no path is staged outside it.
 
 **`<msg-file>` is `~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<something-unique>.txt`**,
 written absolute, in the directory `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path`
-prints, and nowhere else. Never inside `fusion-workbench/`: the workbench is the
+prints (stop if it fails), and nowhere else. Never inside `fusion-workbench/`: the workbench is the
 tree `git status` reports on, so a message file written there survives as a
 leftover. Measured — `fusion-workbench/.commit-msg-tmp`, holding one commit's
 message, at a path no helper in `agents/`, `skills/`, `bin/` or `hooks/` names
