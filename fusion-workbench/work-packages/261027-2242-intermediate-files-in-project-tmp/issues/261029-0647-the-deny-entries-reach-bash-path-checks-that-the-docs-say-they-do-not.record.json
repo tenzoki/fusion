@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "bc7e12e0-57e4-4fa5-818b-235b2f89a73f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/issues/261029-0647-the-deny-entries-reach-bash-path-checks-that-the-docs-say-they-do-not.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

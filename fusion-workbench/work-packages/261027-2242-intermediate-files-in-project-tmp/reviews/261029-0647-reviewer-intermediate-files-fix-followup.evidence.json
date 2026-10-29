@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "1ac99051-5d8e-4279-81fb-d19a10aa7e37",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "517df9ca8c03a3b88278735fcc1aa44ea78317f3",
+    "git_range": null
+  },
+  "brief_revision": "sha256:cfe932cbb703358481a20402bea30325795fe0450124ffca07216f0a61cce10e",
+  "plan_revision": "sha256:09623776e6907eb9e395150acca8b86fd1294ec3c220ba849ebb8376e9c335d1",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.3.9"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/reviews/261029-0647-reviewer-intermediate-files-fix-followup.md",
+    "sha256": "sha256:775768794fb29be0ea1b7c978c215d3be38862bfd8287652933c4763eb2c5a58",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-10-29T05:50:25Z",
+  "extensions": {}
+}
