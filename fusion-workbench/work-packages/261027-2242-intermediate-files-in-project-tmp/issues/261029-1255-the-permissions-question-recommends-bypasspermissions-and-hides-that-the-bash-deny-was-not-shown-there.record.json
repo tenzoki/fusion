@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "e642895e-e963-4d7e-91b0-1d8dab872eb6",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/issues/261029-1255-the-permissions-question-recommends-bypasspermissions-and-hides-that-the-bash-deny-was-not-shown-there.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
