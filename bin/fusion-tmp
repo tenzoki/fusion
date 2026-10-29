@@ -67,7 +67,8 @@
 # started with bare `claude`, or on the marketplace path without the two
 # exports `README.md` gives, keeps its scratchpad under `/private/tmp`, and in
 # a project without a sandbox Claude's `Write` and `Edit` there are denied
-# (measured, plan 261027-2252 step 1 (e)). Accepted: no exemption is written
+# (measured, plan 261027-2252 step 1 (e)), and so are Bash's file commands
+# (the table below). Accepted: no exemption is written
 # for the scratchpad. Start the session with `fusion`, or export the two
 # variables, and the scratchpad moves under `~/.fusion-tmp/<id>`.
 #
@@ -78,6 +79,21 @@
 # neither, both were refused only as not yet granted. The `var/folders` pair
 # had measured the same way before. All four ship anyway; a redundant entry is
 # harmless.
+#
+# **They reach Bash's file commands too, not scripts.** Measured 2026-10-29,
+# Claude Code 2.1.312, `claude -p --output-format json --model haiku`, a
+# project outside git whose `.claude/settings.json` allows `Bash` and holds the
+# four entries; each command into a probe directory under both spellings of
+# the `tmp` root, read from `permission_denials` and from the disk:
+#
+#   command                    default   acceptEdits   control (no deny)
+#   rm, echo x >, touch,       denied    denied        ran
+#   mkdir, cp
+#   python3 -c "open(..,'w')"  ran       ran           ran
+#
+# Both spellings gave the same row. `bypassPermissions` was not measured here;
+# the package narrative `261027-2242-intermediate-files-in-project-tmp.md`
+# observed a redirect pass an `Edit` deny under it.
 #
 # ---------------------------------------------------------------------------
 # Output

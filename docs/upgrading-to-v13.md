@@ -293,8 +293,11 @@ Agents now write files they read back later to `~/.fusion-tmp/<checkout-id>`, wh
 What stays unenforced:
 
 - **Programs.** A tool that hard-codes `/tmp`, or builds a temp path at run time, still writes
-  there. A hook reports a system temp path only when a `Bash` command's text names one, and the
-  deny entries stop Claude's `Write` and `Edit`, not a shell redirect.
+  there. A hook reports a system temp path only when a `Bash` command's text names one. The
+  deny entries stop Claude's `Write` and `Edit`, and, measured in `default` and `acceptEdits`
+  mode, the file commands Claude Code reads in a `Bash` call (`rm`, `>`, `touch`, `mkdir`,
+  `cp`); not a script that opens the file itself, such as `python3 -c`. `bypassPermissions`
+  was not measured that way. The table is in the header of `bin/fusion-tmp`, the deny entries.
 - **The sandbox.** With Claude Code's sandbox on, the Bash tool's `TMPDIR` is `/tmp/claude-<uid>`
   whatever was exported, and no deny entry is written, since it would break the sandbox.
 - **Sessions without the launcher** keep their scratchpad and `TMPDIR` in the system directories,

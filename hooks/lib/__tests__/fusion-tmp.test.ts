@@ -1,7 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { DENY_ENTRIES, FUSION_TMP_BASE, SYSTEM_TEMP_PREFIXES, UnparseableSettings, grantEntries, mergeSettings } from "../temp-paths.js";
@@ -13,36 +12,59 @@ import { DENY_ENTRIES, FUSION_TMP_BASE, SYSTEM_TEMP_PREFIXES, UnparseableSetting
 // system layers are cut off for the same reason, and an identity is supplied
 // through a scratch global config so `bin/fusion-identity` prints a CHECKOUT=.
 //
-// Two fixture bases. Projects under the OS temp directory exercise everything
-// except the deny entries, which the helper refuses to write from a directory
-// under a system temp prefix, or when `~/.fusion-tmp/<id>` is. The deny cases
-// therefore run in a project, and with a HOME, under the ignored
-// `hooks/node_modules/`, which lies under no such prefix.
+// Two fixture bases, neither taken from `os.tmpdir()`: the launcher points
+// `TMPDIR` at `~/.fusion-tmp/<id>/`, which lies under no system temp prefix, and
+// a `TMPDIR` inside a git work tree once let a fixture's `grant` resolve the
+// enclosing repository and write its settings file. `TEMP_BASE` is the real
+// path of `/tmp`, for everything except the deny entries, which the helper
+// refuses to write from a directory under a system temp prefix, or when
+// `~/.fusion-tmp/<id>` is. `OUTSIDE_BASE` is the real path of `/var/tmp`, under
+// no such prefix, for the cases that expect the deny written.
+//
+// `assertNoEnclosingRepo` runs on both bases at load and on every fixture
+// before git touches it, so a fixture inside a git work tree it did not create
+// fails the file before any subcommand runs.
 
 const script = join(pluginRoot, "bin", "fusion-tmp");
 const scratch: string[] = [];
-const outsideBase = join(pluginRoot, "hooks", "node_modules", ".fusion-tmp-test");
 afterAll(() => {
   for (const d of scratch) rmSync(d, { recursive: true, force: true });
-  try {
-    rmdirSync(outsideBase); // only when empty: a concurrent run may still hold a project there
-  } catch {
-    /* not empty, or already gone */
-  }
 });
 
-function mk(base: string, prefix: string): string {
-  mkdirSync(base, { recursive: true });
-  const d = mkdtempSync(join(base, prefix));
-  scratch.push(d);
-  return realpathSync(d);
+// The variables that point git at a repository other than the one found by
+// walking up from the working directory; none may reach a fixture.
+const GIT_LOCATORS = ["GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE", "GIT_CEILING_DIRECTORIES", "GIT_DISCOVERY_ACROSS_FILESYSTEM"];
+const cleanEnv = (): NodeJS.ProcessEnv => {
+  const e = { ...process.env };
+  for (const k of GIT_LOCATORS) delete e[k];
+  return e;
+};
+
+function assertNoEnclosingRepo(dir: string): void {
+  const r = spawnSync("git", ["-C", dir, "rev-parse", "--show-toplevel"], { encoding: "utf-8", env: cleanEnv() });
+  if (r.status === 0) throw new Error(`fixture ${dir} lies inside the git work tree ${r.stdout.trim()}; refusing to run bin/fusion-tmp there`);
 }
 
-const gitconfig = join(mk(tmpdir(), "fusion-tmp-cfg-"), "gitconfig");
+const underTempPrefix = (d: string) => SYSTEM_TEMP_PREFIXES.some((p) => (d + "/").startsWith(p + "/"));
+const TEMP_BASE = realpathSync("/tmp");
+const OUTSIDE_BASE = realpathSync("/var/tmp");
+if (!underTempPrefix(TEMP_BASE)) throw new Error(`${TEMP_BASE} is under no system temp prefix`);
+if (underTempPrefix(OUTSIDE_BASE)) throw new Error(`${OUTSIDE_BASE} is under a system temp prefix`);
+assertNoEnclosingRepo(TEMP_BASE);
+assertNoEnclosingRepo(OUTSIDE_BASE);
+
+function mk(base: string, prefix: string): string {
+  const d = realpathSync(mkdtempSync(join(base, prefix)));
+  scratch.push(d);
+  assertNoEnclosingRepo(d);
+  return d;
+}
+
+const gitconfig = join(mk(TEMP_BASE, "fusion-tmp-cfg-"), "gitconfig");
 writeFileSync(gitconfig, "[user]\n\tname = Test Person\n\temail = t@example.com\n");
 
 function env(home: string): NodeJS.ProcessEnv {
-  return { ...process.env, HOME: home, GIT_CONFIG_GLOBAL: gitconfig, GIT_CONFIG_NOSYSTEM: "1" };
+  return { ...cleanEnv(), HOME: home, GIT_CONFIG_GLOBAL: gitconfig, GIT_CONFIG_NOSYSTEM: "1" };
 }
 
 function git(cwd: string, ...args: string[]): string {
@@ -53,7 +75,7 @@ function git(cwd: string, ...args: string[]): string {
 
 /** A set-up project: the workbench marker, and optionally a git repository with one commit. */
 function project(opts: { git?: boolean; outsideTemp?: boolean } = {}): string {
-  const root = mk(opts.outsideTemp ? outsideBase : tmpdir(), "fusion-tmp-p-");
+  const root = mk(opts.outsideTemp ? OUTSIDE_BASE : TEMP_BASE, "fusion-tmp-p-");
   mkdirSync(join(root, "fusion-workbench"));
   writeFileSync(join(root, "fusion-workbench", ".fusion-setup"), "{}\n");
   if (opts.git !== false) {
@@ -64,12 +86,12 @@ function project(opts: { git?: boolean; outsideTemp?: boolean } = {}): string {
 }
 
 function home(): string {
-  return mk(tmpdir(), "fusion-tmp-h-");
+  return mk(TEMP_BASE, "fusion-tmp-h-");
 }
 
 /** A scratch HOME under no system temp prefix, for the cases that expect the deny written. */
 function homeOutside(): string {
-  return mk(outsideBase, "fusion-tmp-h-");
+  return mk(OUTSIDE_BASE, "fusion-tmp-h-");
 }
 
 interface Run {
@@ -115,7 +137,7 @@ describe("bin/fusion-tmp path", () => {
     const h = home();
     const r1 = run(root, h, "path");
     expect(r1.status, r1.stderr).toBe(0);
-    // The long-path warning may follow, since this HOME sits deep under tmpdir(); it is not the subject.
+    // The long-path warning may follow, depending on the HOME's length; it is not the subject.
     const ident = (r: Run) => r.stderr.split("\n").filter((l) => l.startsWith("fusion-identity:"));
     expect(ident(r1)).toEqual([expect.stringMatching(new RegExp(`^fusion-identity: minted ${id(root)}, `))]);
     const r2 = run(root, h, "path");
@@ -304,7 +326,7 @@ describe("bin/fusion-tmp check", () => {
 
 describe("bin/fusion-tmp exits", () => {
   it("1 with no workbench, 1 with no HOME, 2 on usage", () => {
-    const bare = mk(tmpdir(), "fusion-tmp-bare-");
+    const bare = mk(TEMP_BASE, "fusion-tmp-bare-");
     const r = run(bare, home(), "path");
     expect(r.status).toBe(1);
     expect(r.stderr).toContain("no fusion workbench");
@@ -313,6 +335,16 @@ describe("bin/fusion-tmp exits", () => {
     expect(run(root, undefined, "path").status).toBe(1);
     expect(run(root, home(), "nope").status).toBe(2);
     expect(run(root, home()).status).toBe(2);
+  });
+});
+
+describe("the fixture guard", () => {
+  it("refuses a directory inside a git work tree the fixture did not create", () => {
+    const repo = mk(TEMP_BASE, "fusion-tmp-guard-");
+    git(repo, "init", "-q");
+    const inner = join(repo, "inner");
+    mkdirSync(inner);
+    expect(() => assertNoEnclosingRepo(inner)).toThrow(/lies inside the git work tree/);
   });
 });
 

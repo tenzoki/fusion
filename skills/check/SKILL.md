@@ -169,7 +169,7 @@ A fresh consuming project has no permission source of its own, so every `Write`,
 
 One `AskUserQuestion`, in the project's chat language, naming the file and what the setting does in plain words rather than behind the term:
 
-> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Setup has also granted Claude its intermediate-file directory and, without a sandbox, denied its `Write` and `Edit`, not shell redirects, in the system temp directories, which hold Claude's scratchpad unless the session started with `fusion` (`bin/fusion-tmp` header). Write it?
+> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Setup also granted Claude its intermediate-file directory and, without a sandbox, denied its `Write`, `Edit` and, by mode, Bash file commands, in system temp directories, which hold Claude's scratchpad unless the session started with `fusion` (`bin/fusion-tmp` header). Write it?
 
 Two options. **"Yes, write it" is the default and the recommended choice.** "No, keep the prompts" is the other; nothing is written and the run continues.
 

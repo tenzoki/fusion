@@ -28,7 +28,7 @@
 [skills bytes]
   archive/SKILL.md 26498
   cadence/SKILL.md 23482
-  check/SKILL.md 32319
+  check/SKILL.md 32320
   cleanup/SKILL.md 6979
   commit/SKILL.md 6167
   curate/SKILL.md 12587
@@ -42,7 +42,7 @@
   setup/SKILL.md 16345
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 228022
+  total 228023
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
@@ -75,7 +75,7 @@
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
   fusion-stores.test.ts 32
-  fusion-tmp.test.ts 332
+  fusion-tmp.test.ts 364
   fusion-work-order.test.ts 154
   glob-nomatch-lint.test.ts 138
   guard-bash-integration.test.ts 334
@@ -117,8 +117,8 @@
   store-name-migration.test.ts 316
   surface-growth-bound.test.ts 557
   temp-path-lint.test.ts 91
-  temp-paths.test.ts 128
+  temp-paths.test.ts 135
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 26552
+  total 26591

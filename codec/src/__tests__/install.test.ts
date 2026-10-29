@@ -137,7 +137,7 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { platform, release, tmpdir } from "node:os";
+import { platform, release } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -197,8 +197,21 @@ function run(cmd: string, args: string[], opts: { cwd?: string; input?: string; 
   return spawnSync(cmd, args, { encoding: "utf-8", ...opts });
 }
 
+// The fixtures sit under the real path of `/tmp`, not `os.tmpdir()`: a `TMPDIR`
+// inside a git work tree or a fusion project would put every fixture, and the
+// launcher case's "outside a fusion project", inside one. Checked before use.
+function assertOutsideRepoAndWorkbench(dir: string): void {
+  const git = run("git", ["-C", dir, "rev-parse", "--show-toplevel"], { env: { PATH: process.env.PATH } });
+  if (git.status === 0) throw new Error(`fixture base ${dir} lies inside the git work tree ${git.stdout.trim()}`);
+  for (let d = dir; ; d = dirname(d)) {
+    if (existsSync(join(d, "fusion-workbench", ".fusion-setup"))) throw new Error(`fixture base ${dir} lies inside the fusion project ${d}`);
+    if (dirname(d) === d) break;
+  }
+}
+
 beforeAll(() => {
-  const tmp = mkdtempSync(join(tmpdir(), "fusion-install-"));
+  const tmp = realpathSync(mkdtempSync(join(realpathSync("/tmp"), "fusion-install-")));
+  assertOutsideRepoAndWorkbench(tmp);
   const src = join(tmp, "src", "fusion-head");
   install = { tmp, src, tarball: join(tmp, "fusion-head.tar.gz"), path: join(tmp, "path"), home: join(tmp, "home"), bin: join(tmp, "bin"), status: null, stdout: "", stderr: "", failure: null };
   const fail = (why: string): void => {
@@ -1134,7 +1147,8 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     expect(install.status).toBe(0);
     const launcher = join(install.bin, "fusion");
     for (const [name, text] of [["install.sh", readFileSync(join(install.src, "install.sh"), "utf-8")], ["the launcher", readFileSync(launcher, "utf-8")]]) {
-      const hits = text.split("\n").filter((l) => l.includes("/tmp"));
+      // The launcher embeds the install's own paths, which lie under /tmp here.
+      const hits = text.split(install.tmp).join("<install>").split("\n").filter((l) => l.includes("/tmp"));
       expect(hits, `${name} names a fixed temp path`).toEqual([]);
     }
     // A claude stub ahead of the install's own, printing what the launcher handed it.

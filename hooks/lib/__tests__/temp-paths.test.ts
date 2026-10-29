@@ -1,4 +1,5 @@
 import { describe, it, expect, afterAll } from "vitest";
+import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -12,11 +13,16 @@ import { CASE_TIMEOUT, runSessionStart, runTracker, withProject } from "./helper
 
 const scratch: string[] = [];
 afterAll(() => scratch.forEach((d) => rmSync(d, { recursive: true, force: true })));
-function mk(prefix: string): string {
-  const d = realpathSync(mkdtempSync(join(tmpdir(), prefix)));
+function mk(prefix: string, base = tmpdir()): string {
+  const d = realpathSync(mkdtempSync(join(base, prefix)));
   scratch.push(d);
   return d;
 }
+
+// The per-user temp directory under /var/folders, asked of the system rather
+// than read from `TMPDIR`, which the launcher points at `~/.fusion-tmp/<id>/`.
+// Elsewhere than macOS there is none, and `tmpdir()` stands in.
+const VAR_FOLDERS = process.platform === "darwin" ? spawnSync("getconf", ["DARWIN_USER_TEMP_DIR"], { encoding: "utf-8" }).stdout.trim() : tmpdir();
 
 const ROOT = "/Users/me/p";
 const HOME = "/Users/me";
@@ -47,8 +53,9 @@ describe("systemTempMentions: the lint's boundary, read over a Bash command", ()
   });
 
   it("spares a root and a HOME that themselves lie under /var/folders, in either spelling", () => {
-    const root = mk("tp-root-");
-    const home = mk("tp-home-");
+    const root = mk("tp-root-", VAR_FOLDERS);
+    const home = mk("tp-home-", VAR_FOLDERS);
+    if (process.platform === "darwin") expect(root.startsWith("/private/var/folders/"), root).toBe(true);
     const short = root.replace(/^\/private(?=\/var\/)/, "");
     const cmd = `ls ${root}/a ${short}/b ${home}/.fusion-tmp/${ID}/c`;
     expect(systemTempMentions(cmd, root, home)).toEqual([]);
