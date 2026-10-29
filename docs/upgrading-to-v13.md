@@ -296,12 +296,15 @@ What stays unenforced:
   there. A hook reports a system temp path only when a `Bash` command's text names one. The
   deny entries stop Claude's `Write` and `Edit`, and, measured in `default` and `acceptEdits`
   mode, the file commands Claude Code reads in a `Bash` call (`rm`, `>`, `touch`, `mkdir`,
-  `cp`); not a script that opens the file itself, such as `python3 -c`. `bypassPermissions`
-  was not measured that way. The table is in the header of `bin/fusion-tmp`, the deny entries.
+  `cp`); not a script that opens the file itself, such as `python3 -c`. Under
+  `bypassPermissions`, or the launcher's `--yolo`, only `Write` and `Edit` were shown stopped:
+  a `Bash` redirect was seen passing the deny, and the other commands were not measured. The
+  table is in the header of `bin/fusion-tmp`, the deny entries.
 - **The sandbox.** With Claude Code's sandbox on, the Bash tool's `TMPDIR` is `/tmp/claude-<uid>`
   whatever was exported, and no deny entry is written, since it would break the sandbox.
 - **Sessions without the launcher** keep their scratchpad and `TMPDIR` in the system directories,
-  and without a sandbox the deny entries refuse Claude's `Write` and `Edit` into that scratchpad.
+  and without a sandbox the deny entries refuse Claude's `Write` and `Edit` into that scratchpad,
+  and in `default` and `acceptEdits` mode also `Bash`'s `rm`, `>`, `touch`, `mkdir` and `cp`.
   Accepted, with no exemption: start with `fusion`, or export the two variables. The header of
   `bin/fusion-tmp`, the deny entries, says why.
 - **`/var/tmp`** is not among the paths reported or denied.
