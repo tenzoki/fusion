@@ -6611,3 +6611,103 @@ The role operation id stays `capability + ":" + run_id`, as the paragraph says.
 **Question 14** (numbered within 77, after question 13; request 76 question 14, on the push, is a different question and stands). **The operation id per service.** Does Prior confirm that the operation id of every non-role `host_service` call of `fusion.entry.v2` is derived with the capability of the host service called (`host.role.compose.v1`, `host.workspace.v1`, `host.entry.integrate.v1`, `host.workbench.v1`), as `moduleapi/v1/repair_wire.go:141` checks it, and not with `fusion.entry.v2`? Fusion carries the answer into the v3 of question 12.
 
 Request 77 now also carries question 14 (the correction above): where the row and `### What fusion does with the answer` say questions 1 to 13, read questions 1 to 14.
+
+### Prior's answer to 76 and 77 at 52a2703
+
+**Read at:** Prior commit `52a2703` (`52a27030a7552f1e62ac32f671e8556e7670a894`, 2026-11-03 12:20, "docs(design): Prior's response to fusion requests 76 and 77, corrected on the 13.4.1 bundle"), parent `894914e`. The answer is `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md`, 251 lines, 34 895 bytes, `sha256:c028d3479def2e3a8178ca27771a5b85934c2114f03d77d8da80de8aeb9d5c14` as `git show 52a2703:<path> | shasum -a 256` prints it. It was read from the commit, not from a working tree, and is cited from here on as that path at `52a2703`. Prior read this file at fusion `ac0be562`, and the response is its one answer to both requests. This section records the verdicts and does not transcribe the response: every row's evidence and `path:line` citations stand in the response's own row, at `27e64e6` unless it names another commit.
+
+**Prior's verdict, quoted:** "**Corrected.** Prior ran the delivered 13.4.1 bundle `sha256:c61f9033485a5389a05c87ac3eda9eec01324a1df4ef9324a3528a46d45a064f` on its entry host. Prior's host meets request 77 in its own part. One defect in the delivery stands: the module reads every `.json` under `fusion-workbench/` as a control record (D-F1, under `### Defects` below), so 77.3 is corrected and the combined answer is not "accepted". By request 77 `### What fusion does with the answer`, that correction changes the bundle: **`v13.4.1` is not tagged at C′ on this evidence.**"
+
+**The digest is the one request 77 requires,** `sha256:c61f9033485a5389a05c87ac3eda9eec01324a1df4ef9324a3528a46d45a064f`, so this answer ran the delivered build. Prior also states that the 13.4.0 digest `sha256:90961e04…` closes nothing and was run nowhere.
+
+**What ran.** Prior's run is recorded at Prior `27e64e6`, its evidence under `Prior: docs/qualification/fusion-request77-2026-11-01/`. The binary was built from `34ec8bc` with eleven Go files uncommitted in the working tree, which `27e64e6` commits; Prior marks byte equality between the built tree and `27e64e6` as an inference, not a record. `319ea46` and `894914e` follow the run and are shown by their own tests, not by a re-run of Prior's step 28.
+
+**The tally, recounted from the response's verdict columns at `52a2703`.** It equals the figures in the commit message.
+
+| Table in the response | Items | Accepted | Corrected | Deferred | Refused |
+|---|---|---|---|---|---|
+| 77.1 to 77.4 | 4 | 3 | 1 | 0 | 0 |
+| Request 77, questions 1 to 14 | 14 | 13 | 1 | 0 | 0 |
+| Request 76, H rows | 7 | 7 | 0 | 0 | 0 |
+| Request 76, carry items, sections and decisions | 13 | 13 | 0 | 0 | 0 |
+| Request 76, questions 1 to 19 except 17 | 18 | 16 | 1 | 1 | 0 |
+| Replaced by request 77 | 1 | 1 | 0 | 0 | 0 |
+| Readings | 11 | 1 | 10 | 0 | 0 |
+| **total** | **68** | **54** | **13** | **1** | **0** |
+
+#### 77.1 to 77.4
+
+| Item | Prior's verdict | As Prior states it |
+|---|---|---|
+| 77.1 inspect, install under trust, activate | **accepted** | actions 1 to 4 exit 0; `fusion`, `13.4.1`, 1 616 files; the 13.1.0 runtimes' fingerprint is the same before and after. The acceptance of `lifecycle_hooks` and the verification of the mode-0500 files rest on exit 0 and the code, not on printed output |
+| 77.2 entries, workflows, hook declaration | **accepted** | 25 entries bound, `commit` and `cleanup` refused by name, `workflows/entry.v2.json` with its `requires`, the explorer resolves, no repair workflow resolves; the `FROZEN` files equal, the `WITHDRAWN` paths absent, the hooks digest equal |
+| 77.3 one entry per class, delivery (i) to (iii), kill and restart | **corrected** | see the next table |
+| 77.4 the identity Prior ran | **accepted** | with the limit `**What ran.**` above states |
+
+#### What Prior did not simply accept
+
+| Item | Prior's verdict | The correction, or what it waits for |
+|---|---|---|
+| 77.3 | **corrected** | The correction is D-F1: case `probe-issue-c-guard-state` ends `refused`/`host-permission-denied` on `record:.guard-state/staging-drift.json` after its integration stood. The three delivery cases end as asked, and every reached cut reproduces the envelope, except `integrate-accepted-before-receipt`, which restarts `recovery-required` with the checkout unchanged. Limits G1 to G9 |
+| 77 question 12 | **corrected** | Prior agrees with (a) and (b) as fusion states them and applies both now, whatever the v2 bytes say. The correction adds items for the same v3: the operation-id text (D-F2, S59-1), the `C`/`R` branch (S59-2), the compose admission codes (S60-1), the `reference` of a detached HEAD (S60-3) |
+| 76 question 6 | **corrected** | Prior guarantees `bash`, `node`, `git`, `sed`, `head` and `od`, and a `prior` part may rely on those alone. `python3`, `shasum`, `awk`, `find`, `sort`, `mktemp`, GNU `date` and GNU `ls` were not measured, because no Docker daemon was available |
+| S59-1 operation id | **corrected** | The id takes the called service's capability, not `fusion.entry.v2`. The frozen `catalog/workflows/entry.v2.json` and request 77's common-contract paragraph say otherwise; fusion's own correction `ebd16cdb` agrees with Prior |
+| S59-2 status letters | **corrected** | Prior admits and emits only `A`, `D`, `M` and `T`. The frozen `entry-result.v2.json` also defines `C` and `R`, which Prior never emits, and Prior asks whether fusion keeps that branch in v3 for another host or drops it |
+| S59-3 `.` and `..` segments | **corrected** | A path with an empty, `.` or `..` segment is refused now, whatever v2 says. This is question 12 (b) |
+| S60-1 admission codes | **corrected** | Compose answers `unknown-argument`, `route-not-qualified` and `open-gap-issue`, as `entry.v2`'s compose `admission` text names them, although the common contract's `codes` list lacks them. v3 should list them |
+| S60-2 committed paths in `delta` | **corrected** | A committed path is listed in `delta` when the working tree changed it after the commit, for example `D` for a path added in a commit and then deleted. Otherwise committed paths stay out of `delta` |
+| S60-3 detached HEAD | **corrected** | `reference` is `HEAD` when the user's `HEAD` names no branch, not `""` as request 77 question 5 point 2 says, because the module requires a non-empty value |
+| S60-4 last status | **corrected** | The codec check and the read admission select a record by its last status, in commit order and then in the delta. This is question 12 (a) |
+| S63-1 what counts as a stop | **corrected** | `stop` is settled only when the run's last question was answered `ended`. Request 77's "or by the stop the entry offers" has no other observable form on Prior |
+| S63-2 violations | **corrected** | Violations are listed only on a refusal, as the schema's `allOf` requires (`maxItems: 0` on `completed`) |
+| S63-3 `reference` on each commit | **corrected** | Each settled or enveloped commit carries `reference`, as `entry-result.v2` requires, which the integrate answer's commit lacks |
+| 76 question 4 network and remotes | **deferred** | On Prior issue `261023-0835-git-fetch-origin-fails-in-the-container-because-refs-remotes-is-read-only.md` (open). The command container has no network, so `news` cannot fetch and ends at exit 6, and no entry can declare a remote for a push. Prior names its egress gateway as the likely route for a declared fetch, marked as an inference; the issue decides it |
+
+Of the items accepted, H3, H4, H5, H8 and H9 are accepted as deliberate differences as fusion states them. Question 7 of request 77 records Prior's new ruling, which supersedes `261024-0900`: repair is replaced, and Prior removes its repair code in a work package of its own once `fusion.entry.v2` runs on Prior in production. Questions 7 to 11 ask nothing of fusion.
+
+#### The defects Prior names on fusion's side
+
+| Id | Defect | State, as Prior states it |
+|---|---|---|
+| D-F1 | the 13.4.1 module selects every `.json` under `fusion-workbench/` as a control record (`controlRecords`, `adapters/prior/fusionmodule/internal/entry/entry.go:513` at fusion `67cece9a`) | **In the delivery.** Fusion's hooks write `.guard-state/staging-drift.json`, `citation-form.json` and `dispatch-map.json`; Prior's host reads only the codec's record names and refuses the rest, so the envelope ends refused although the integration stood. Correction asked: the module selects by the codec's names, Prior's own predicate; widening Prior's selection would end `record-conflict` instead. That every ordinary run ends this way is Prior's inference (limit G4), and the probe wrote the file by hand. Prior's issue: `261101-2130-fusion-13-4-1-module-reads-every-workbench-json-as-a-control-record.md` (open) |
+| D-F2 | operation-id text of `entry.v2.json` and request 77 | fusion's own correction `ebd16cdb`; the bundle is unaffected; for v3 (S59-1) |
+| D-F3 | question 12 (a), the read of a path whose last status is `D` | fusion-declared; for v3. Prior applies the last-status rule now (S60-4) |
+| D-F4 | question 12 (b), `.` and `..` segments in `name_status` | fusion-declared; for v3. Prior refuses the segments now (S59-3) |
+| D-F5 | H3's evidence difference: a `reviewer` entry run's evidence names host `claude-code` and the base tree | fusion-declared; accepted as stated, fixed in a later fusion release |
+
+Checked from fusion's root, read-only: `git show 67cece9a:adapters/prior/fusionmodule/internal/entry/entry.go` has `func controlRecords` at line 513, and its selecting condition, line 528, tests the workbench prefix, the `.json` suffix, path validity, forbidden characters and the seen-set, and no record name. `Prior: docs/qualification/fusion-request77-2026-11-01/summary.json` holds case `probe-issue-c-guard-state`.
+
+#### Prior's own open items, not fusion's
+
+- **D-P2:** defects 6 to 8 of step 28's first run (an output schema refused by the responses and Ollama adapters and no `ReplyInput` in the Anthropic codec, a strict reserved-token check, a create in a missing directory ending `recovery-required`), open on Prior issue `261102-0001-step-28-defects-6-to-8-adapters-reserved-tokens-and-missing-parent-directory.md`.
+- **D-P4:** `git fetch origin` fails in the container, open on Prior issue `261023-0835-git-fetch-origin-fails-in-the-container-because-refs-remotes-is-read-only.md`; 76 question 4 is deferred on it.
+
+Prior states that D-P1 (`894914e`) and D-P3 (`319ea46`) are fixed, and that none of its own defects changes a fusion verdict.
+
+#### Prior's evidence limits
+
+| Limit | What it covers, in brief |
+|---|---|
+| G1 | no case reaches the first-workbench-read cut; reads are unit-tested, restart at that cut is not shown end to end |
+| G2 | delivery (iii) is refused before the integrate cuts, by design; no effect |
+| **G3** | no contained executor, because no Docker daemon was available: `host.exec.v1` refuses every container and no script calls it. Limit on H2, H8, D4 and 76 questions 5, 6, 7 and 16 |
+| **G4** | lifecycle hooks did not run, because they run only in the contained executor. Limit on H9, carry 4, the hooks section and 76 question 7, and it hides D-F1 in the ordinary cases |
+| G5 | the test made delivery (i)'s commits and the probe's `.guard-state` write between model turns; no model-driven `git commit` through `host.exec.v1` is shown |
+| G6 | role-call authority and context admission allow every call; route authority was not under test |
+| **G7** | the Docker tests of the exec container did not run (`1c50a69`, `319ea46`). Limit on H8, D4 and 76 questions 7, 10 and 16 |
+| **G8** | production `prior fusion run` refuses an installed-bundle run after admission and before the module starts: no model backend, contained executor or codec process yet. Limit on the whole response, since the host is reached through the test assembly; no item asks for a production run, so nothing is deferred on it |
+| G9 | the codec check before integration never fired in step 28; `record-conflict` is unit-tested only |
+
+#### What fusion does with this answer
+
+`v13.4.1` is not tagged at C′, by the **Corrected** clause of request 77's `### What fusion does with the answer`. D-F1 is filed in fusion's workbench as `261105-1012-the-13-4-1-module-reads-every-workbench-json-as-a-control-record.md`. It changes the module binary, so the corrected candidate takes a new patch version, a rebuild, a new digest and a new request, which is being planned under work package `261105-1009-prior-answer-76-77-and-corrected-candidate`; this section names no number and no content for that request. Prior states that the v3 of the v2 assets can take D-F2, D-F3, D-F4 and the readings S59-2, S60-1 and S60-3 in the same rebuild. Two questions stay open for the user's ruling: whether v3 keeps or drops the `C`/`R` branch (S59-2), and the deferred fetch item (76 question 4) with the tag that waits on it. D-F1 rules the tag out at C′ whichever way the second falls.
+
+#### Requests 64 and 67 to 77, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 and 67 to 75 | as `#### Requests 64 and 67 to 76, as they stand` above | the answer sections above |
+| 76 | **corrected** at Prior `52a2703`, answered together with 77: question 6 corrected, question 4 deferred on Prior issue `261023-0835-…`, every other standing item accepted | `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` |
+| 77 | **corrected** at Prior `52a2703`, for bundle `sha256:c61f9033485a5389a05c87ac3eda9eec01324a1df4ef9324a3528a46d45a064f`: 77.1, 77.2 and 77.4 accepted, 77.3 corrected by D-F1, question 12 corrected, the other questions accepted; no tag at C′ | `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` |
+
+These rows supersede the rows for 76 and 77 of the earlier `#### Requests 64 and 67 to 77, as they stand` above, which stays as it was, this file being append-only. No request is open with Prior until the corrected candidate's request stands here.
