@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "044e1dd2-1394-4520-bab3-be824b26bc32",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261105-1009-prior-answer-76-77-and-corrected-candidate/decisions/261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

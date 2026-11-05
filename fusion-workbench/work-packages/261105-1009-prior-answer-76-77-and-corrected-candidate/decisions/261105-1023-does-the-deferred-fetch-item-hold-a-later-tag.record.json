@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6fcb804d-9f4a-44cd-83dd-2d9072718a79",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261105-1009-prior-answer-76-77-and-corrected-candidate/decisions/261105-1023-does-the-deferred-fetch-item-hold-a-later-tag.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
