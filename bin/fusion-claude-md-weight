@@ -10,7 +10,7 @@
 #
 # Three output shapes, and no fourth:
 #
-#   claude-md=absent root=/tmp/scratch threshold=4000 writes=none
+#   claude-md=absent root=/Users/me/project threshold=4000 writes=none
 #
 #   claude-md=clean root=/p bytes=1840 lines=48 headings=5 threshold=4000 over=0 writes=none
 #

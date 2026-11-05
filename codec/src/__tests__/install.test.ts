@@ -118,6 +118,15 @@
 // D, the transfer sequence Prior's answer to 62 adds. The checkout is switched
 // by rewriting `.checkout-id`, as a copy of the project would carry another.
 //
+// A twelfth case (plan 261027-2252 step 6) runs the INSTALLED launcher with a
+// stub `claude` that prints the two temp variables, `HOME` a scratch
+// directory. In a set-up project both name `$HOME/.fusion-tmp/<checkout-id>`
+// over inherited values; outside one the launcher sets neither and an
+// inherited `TMPDIR` passes through. Neither `install.sh` nor the launcher it
+// writes names a fixed system temp path. `fusion-identity`'s mint notice
+// reaches stderr on the first start and after `.checkout-id` is removed, and
+// only then.
+//
 // ## Loud, never silent
 //
 // `git archive` failing, a tool absent from the host, or the installer
@@ -128,7 +137,7 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { platform, release, tmpdir } from "node:os";
+import { platform, release } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -188,8 +197,21 @@ function run(cmd: string, args: string[], opts: { cwd?: string; input?: string; 
   return spawnSync(cmd, args, { encoding: "utf-8", ...opts });
 }
 
+// The fixtures sit under the real path of `/tmp`, not `os.tmpdir()`: a `TMPDIR`
+// inside a git work tree or a fusion project would put every fixture, and the
+// launcher case's "outside a fusion project", inside one. Checked before use.
+function assertOutsideRepoAndWorkbench(dir: string): void {
+  const git = run("git", ["-C", dir, "rev-parse", "--show-toplevel"], { env: { PATH: process.env.PATH } });
+  if (git.status === 0) throw new Error(`fixture base ${dir} lies inside the git work tree ${git.stdout.trim()}`);
+  for (let d = dir; ; d = dirname(d)) {
+    if (existsSync(join(d, "fusion-workbench", ".fusion-setup"))) throw new Error(`fixture base ${dir} lies inside the fusion project ${d}`);
+    if (dirname(d) === d) break;
+  }
+}
+
 beforeAll(() => {
-  const tmp = mkdtempSync(join(tmpdir(), "fusion-install-"));
+  const tmp = realpathSync(mkdtempSync(join(realpathSync("/tmp"), "fusion-install-")));
+  assertOutsideRepoAndWorkbench(tmp);
   const src = join(tmp, "src", "fusion-head");
   install = { tmp, src, tarball: join(tmp, "fusion-head.tar.gz"), path: join(tmp, "path"), home: join(tmp, "home"), bin: join(tmp, "bin"), status: null, stdout: "", stderr: "", failure: null };
   const fail = (why: string): void => {
@@ -1118,6 +1140,57 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const r = run(join(install.home, "bin", "fusion-migrate"), ["survey"], { cwd: root, env: { PATH: noNode, HOME: home } });
     expect([r.status, r.stdout, r.stderr]).toEqual([4, "", `fusion-migrate: Node ${want} or later is required and \`node\` is not on PATH. Nothing was read or written.\n`]);
     expect([tree(wb), readdirSync(home)]).toEqual([before, []]);
+  });
+
+  it("the installed launcher exports CLAUDE_CODE_TMPDIR and TMPDIR as ~/.fusion-tmp/<checkout-id> inside a set-up project, sets neither outside one, and names no fixed system temp path", () => {
+    expect(install.failure).toBeNull();
+    expect(install.status).toBe(0);
+    const launcher = join(install.bin, "fusion");
+    for (const [name, text] of [["install.sh", readFileSync(join(install.src, "install.sh"), "utf-8")], ["the launcher", readFileSync(launcher, "utf-8")]]) {
+      // The launcher embeds the install's own paths, which lie under /tmp here.
+      const hits = text.split(install.tmp).join("<install>").split("\n").filter((l) => l.includes("/tmp"));
+      expect(hits, `${name} names a fixed temp path`).toEqual([]);
+    }
+    // A claude stub ahead of the install's own, printing what the launcher handed it.
+    const stubDir = join(install.tmp, "path-claude-env");
+    mkdirSync(stubDir);
+    stub(stubDir, "claude", ['printf \'CLAUDE_CODE_TMPDIR=%s\\n\' "${CLAUDE_CODE_TMPDIR-<unset>}"', 'printf \'TMPDIR=%s\\n\' "${TMPDIR-<unset>}"', 'printf \'FUSION_PLUGIN_ROOT=%s\\n\' "${FUSION_PLUGIN_ROOT-<unset>}"'].join("\n"));
+    const home = join(install.tmp, "home-launcher");
+    mkdirSync(home);
+    const base = identityEnv();
+    const env = (extra: NodeJS.ProcessEnv) => ({ ...base, PATH: `${stubDir}${delimiter}${base.PATH}`, HOME: home, ...extra });
+    const launch = (cwd: string, extra: NodeJS.ProcessEnv) => run(launcher, ["-p", "x"], { cwd, env: env(extra) });
+
+    // Outside a fusion project: nothing exported, the inherited TMPDIR untouched, no ~/.fusion-tmp made.
+    const outside = join(install.tmp, "launcher-outside");
+    mkdirSync(outside);
+    const out = launch(outside, { TMPDIR: "/inherited/" });
+    expect([out.status, kv(out.stdout, "CLAUDE_CODE_TMPDIR"), kv(out.stdout, "TMPDIR"), kv(out.stdout, "FUSION_PLUGIN_ROOT")], out.stderr).toEqual([0, "<unset>", "/inherited/", install.home]);
+    const bare = launch(outside, {});
+    expect([bare.status, kv(bare.stdout, "CLAUDE_CODE_TMPDIR"), kv(bare.stdout, "TMPDIR"), bare.stderr]).toEqual([0, "<unset>", "<unset>", ""]);
+    expect(existsSync(join(home, ".fusion-tmp"))).toBe(false);
+
+    // Inside a set-up project, from a subdirectory: both name the checkout's directory, over inherited values.
+    const p = project("launcher-project");
+    const sub = join(p.root, "src", "deep");
+    mkdirSync(sub, { recursive: true });
+    const inside = launch(sub, { TMPDIR: "/inherited/", CLAUDE_CODE_TMPDIR: "/inherited" });
+    expect(inside.status, inside.stderr).toBe(0);
+    const id = readFileSync(join(p.root, "fusion-workbench", ".checkout-id"), "utf-8").trim();
+    expect(id).toMatch(/^[0-9a-f]{8}$/);
+    const dir = join(home, ".fusion-tmp", id);
+    expect([kv(inside.stdout, "CLAUDE_CODE_TMPDIR"), kv(inside.stdout, "TMPDIR"), kv(inside.stdout, "FUSION_PLUGIN_ROOT")]).toEqual([dir, `${dir}/`, install.home]);
+    expect(lstatSync(dir).isDirectory()).toBe(true);
+
+    // The mint notice reaches the terminal: on the first start, not on the next, and again after the id is swept.
+    const minted = (r: { stderr: string }) => r.stderr.split("\n").filter((l) => l.startsWith("fusion-identity: minted "));
+    expect(minted(inside)).toEqual([expect.stringContaining(`minted ${id},`)]);
+    const again = launch(sub, {});
+    expect([again.status, again.stderr]).toEqual([0, ""]);
+    rmSync(join(p.root, "fusion-workbench", ".checkout-id"));
+    const reminted = launch(sub, {});
+    const id2 = readFileSync(join(p.root, "fusion-workbench", ".checkout-id"), "utf-8").trim();
+    expect([reminted.status, id2 === id, minted(reminted)], reminted.stderr).toEqual([0, false, [expect.stringContaining(`minted ${id2},`)]]);
   });
 
   it("the installer warns, in the guard.js words, when the source carries no codec bundle", () => {

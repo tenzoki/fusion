@@ -102,6 +102,16 @@
  * ruling D3 option 4). The durable trace is the file itself, weighed afresh at
  * each start, because a stored count can show a file as over after it is lean.
  *
+ * ## The temp-root line
+ *
+ * Last, where a workbench is found and `fusion-workbench/.checkout-id` reads,
+ * a line names whichever of `CLAUDE_CODE_TMPDIR` and `TMPDIR` is unset or does
+ * not resolve to `~/.fusion-tmp/<id>`, and says to start sessions with
+ * `fusion`, the launcher that exports both (`lib/temp-paths.ts`
+ * `tempRootLine`). No id is no line: the question is then undecidable. It
+ * reads the environment this hook was started with, so a sandbox's replaced
+ * Bash `TMPDIR` is invisible to it.
+ *
  * ## The second product: this session's `session_start` row
  *
  * Since the substrate step of the ceremony cut, this hook also appends one

@@ -26,7 +26,7 @@
 # Overrides (optional env vars):
 #   FUSION_REF   git ref to fetch (default: heads/main). Pin a tagged
 #                release with FUSION_REF=tags/v<version> — e.g.
-#                FUSION_REF=tags/v13.4.2 for the current release. Not every
+#                FUSION_REF=tags/v13.4.0. Not every
 #                release has a tag; `git tag` lists the ones that do.
 #   FUSION_HOME  install dir (default: ~/.fusion)
 #   FUSION_BIN   launcher dir (default: ~/.local/bin)
@@ -109,8 +109,8 @@ set -euo pipefail
 FUSION_DIR="$INSTALL_DIR"
 case "\${1:-}" in
   --update)
-    curl -fsSL "https://raw.githubusercontent.com/$REPO/main/install.sh" -o /tmp/fusion-install.sh \
-      && bash /tmp/fusion-install.sh
+    # The documented install command, piped: no installer copy is left behind.
+    curl -fsSL "https://raw.githubusercontent.com/$REPO/main/install.sh" | bash
     exit \$?
     ;;
   --uninstall)
@@ -159,6 +159,20 @@ esac
 # not reliably propagate into Bash tool calls). Always the exact dir passed to
 # --plugin-dir, so bin/ and rules/ resolve correctly even with multiple installs.
 export FUSION_PLUGIN_ROOT="\$FUSION_DIR"
+
+# Inside a fusion project, Claude Code's own temp root and the TMPDIR every
+# child inherits are the checkout's ~/.fusion-tmp/<checkout-id>, overriding an
+# inherited value; bin/fusion-tmp owns that location and creates it. Outside a
+# project it exits non-zero, nothing is exported and the environment passes
+# through unchanged. No length test here: Setup and /fusion:check report a long
+# path, and it blocks nothing. Of its stderr only fusion-identity's mint notice
+# reaches the terminal: after \`git clean -xdf\` this is the first reader of the
+# swept .checkout-id, and the notice is how a re-mint is seen.
+fusion_tmp="\$( { "\$FUSION_DIR/bin/fusion-tmp" path 2>&1 >&3 3>&- | { grep '^fusion-identity: ' >&2 || true; }; } 3>&1 || true)"
+if [ -n "\$fusion_tmp" ] && [ -d "\$fusion_tmp" ]; then
+  export CLAUDE_CODE_TMPDIR="\$fusion_tmp"
+  export TMPDIR="\$fusion_tmp/"
+fi
 exec claude \$SKIP --plugin-dir "\$FUSION_DIR" --agent "\$TARGET" "\$@"
 EOF
 chmod +x "$LAUNCHER"

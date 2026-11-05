@@ -25,15 +25,3 @@ Report in the Done report: which files were replaced, printed `replace-failed`, 
 
 fusion reads `./fusion.json` at the project root and merges it over its own built-in defaults, so this file is where a project declares which of its non-Markdown files carry record citations (`hooks/lib/config.ts`; the seeded template declares nothing and therefore inherits everything). It belongs in version control: every change to which files fusion's citation helpers read has to show up in a diff.
 
-It lands at the project root, beside `fusion-workbench/` rather than inside it, in the directory `pwd` reports. The "never prepend `cd`" rule at the top of this workflow is what keeps it there.
-
-First check whether the project already has one. This is read-only and always allowed:
-
-```bash
-[ -f ./fusion.json ] && echo "fusion.json present" || echo "fusion.json absent"
-```
-
-- **`present`** — nothing to do. Do not run the copy anyway: the template declares nothing, so copying it over a project's filled-in file would replace a real setting with an empty inheritance.
-- **`absent`** — seed the template. The copy is idempotent and never overwrites:
-
-  ```bash

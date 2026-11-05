@@ -81,8 +81,9 @@
  *   - `commit-message` — a file whose name says it holds a commit message AND
  *     that no artefact store owns. A fault of its own kind: item 3 of
  *     `agents/orchestrator.md` `### Step 4 — commit` prescribes
- *     `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` because `/tmp` is
- *     swept and the workbench is not, and `.commit-msg-tmp` is what improvising
+ *     `~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt`
+ *     because that directory is outside every git tree and the workbench is the
+ *     tree git status reports on, and `.commit-msg-tmp` is what improvising
  *     instead leaves behind. The session half is a separate defect's answer
  *     (`260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`)
  *     and does not reach this classifier, which reads workbench-internal names
@@ -174,7 +175,7 @@ const GIT_STATUS_TIMEOUT_MS = 20_000;
  * `npm test` instead of leaving the mechanism telling the model to use a path
  * the prompt no longer names.
  */
-export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt";
+export const PRESCRIBED_MESSAGE_PATH = "~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt";
 /**
  * The live-state surfaces, by exact workbench-relative name. Together with
  * `LIVE_PREFIXES` below, the list is exactly class L, class R2 and class R3 of
@@ -679,9 +680,9 @@ export function stagingSentence(report) {
     if (messages.length > 0) {
         parts.push(`A commit-message-shaped file that no artefact store owns is sitting in the workbench: ` +
             `${messages.map((r) => r.path).join(", ")}. ` +
-            `The orchestrator's commit step writes the message to ${PRESCRIBED_MESSAGE_PATH} — /tmp is swept ` +
-            `and the workbench is not, ` +
-            "and the workbench is the tree git status reports on. Read the file before you act on it: if it is a " +
+            `The orchestrator's commit step writes the message to ${PRESCRIBED_MESSAGE_PATH}, in the directory ` +
+            "bin/fusion-tmp path prints, which is outside every git tree; " +
+            "the workbench is the tree git status reports on. Read the file before you act on it: if it is a " +
             "leftover commit message, delete it and write the next one to the prescribed path; if it is something " +
             "a session authored, name it to the user and stage it instead. This class is decided by the file's " +
             "NAME once every store has declined to claim it, so a false positive can enter it, and deleting an " +

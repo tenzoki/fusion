@@ -1,2 +1,2 @@
-C="${TMPDIR:-/tmp}/fusion-archive-$STAMP-$SLUG"
-if grep -q '^candidate=' "$C.survey" 2>/dev/null; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" move --survey "$C.survey" --into "$STAMP-$SLUG"; echo "move exit=$?"; fi
+T="$("$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path)"; C="${T:?fusion-tmp path failed}/fusion-archive-$STAMP-$SLUG"
+if [ ! -e "$C.survey" ]; then echo survey=absent; elif grep -q '^candidate=' "$C.survey"; then "$FUSION_PLUGIN_ROOT/bin/fusion-archive" move --survey "$C.survey" --into "$STAMP-$SLUG"; echo "move exit=$?"; fi

@@ -71,6 +71,7 @@ import type { StagingReport, StagingRow } from "../staging-drift.js";
 import { citationFormSentence } from "../citation-form.js";
 import type { CitationFormReport } from "../citation-form.js";
 import type { CitationHit } from "../citation-scan.js";
+import { tempSentence } from "../temp-paths.js";
 
 const trackerPath = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "tracker.ts");
 
@@ -271,6 +272,13 @@ const REGISTRY: Record<string, { run: (input: never) => string; branches: Branch
       { branch: "more than the sentence spells", input: citations([12, 40, 55, 70, 88, 91].map(hit)) },
     ],
   },
+  tempSentence: {
+    run: tempSentence as (input: never) => string,
+    branches: [
+      { branch: "one path", input: ["/tmp/x"] },
+      { branch: "a path and a bare mktemp", input: ["/var/folders/ab/T/x", "mktemp -d"] },
+    ],
+  },
 };
 
 describe("hook sentences carry only the identifiers their input supplied", () => {
@@ -404,6 +412,7 @@ describe("the completeness check sees a third builder in every import form it cl
       '} from "./lib/review-coverage.js";',
       'import { headMoved, stagingSentence } from "./lib/staging-drift.js";',
       'import { citationFormSentence, measureCitationForm } from "./lib/citation-form.js";',
+      'import { systemTempMentions, tempSentence } from "./lib/temp-paths.js";',
       third,
     ].join("\n");
 

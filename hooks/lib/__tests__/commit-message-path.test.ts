@@ -1,5 +1,6 @@
 /**
- * The commit-message file belongs under `/tmp` — enforced, not only prescribed.
+ * The commit-message file belongs under `~/.fusion-tmp/<checkout-id>/` —
+ * enforced, not only prescribed.
  *
  * ## The defect
  *
@@ -24,7 +25,7 @@
  * and the prompts agree on the path.
  *
  * **Test time** — this file. It pins the prescription: the prompts must name a
- * `/tmp` path, the module constant must be that same path, and no shipped
+ * path under `MESSAGE_DIR`, the module constant must be that same path, and no shipped
  * prompt may name a commit-message file inside `fusion-workbench/`, wherever
  * inside it that path points.
  *
@@ -56,9 +57,19 @@
  * case-insensitive filesystem folding `L1-RECONCILE` onto `L1-reconcile`
  * (issue `260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`).
  * So this file pins two properties of the same path and not one: it is under
- * `/tmp`, AND it carries a per-session discriminator. A future edit that keeps
+ * its directory, AND it carries a per-session discriminator. A future edit that keeps
  * the prefix and drops the discriminator restores a defect that already
  * happened, so it fails here as loudly as a move into the workbench does.
+ *
+ * ## Why the location moved out of `/tmp`
+ *
+ * The system temp directory is lost at a reboot and is outside the grants that
+ * let Claude write without a prompt, so the file moved to the directory
+ * `bin/fusion-tmp path` prints: it survives a reboot and `git clean -xdf`, and
+ * is outside every tree `git status` reports on. It is per checkout, so the
+ * cross-project collision is gone, but two sessions in one checkout still share
+ * it, so the discriminator stays. The reasoning is the closed discussion
+ * `261028-0708-perfect-location-for-fusion-intermediate-files.md`.
  */
 
 import { describe, it, expect } from "vitest";
@@ -75,9 +86,12 @@ const read = (...p: string[]) => readFileSync(join(pluginRoot, ...p), "utf-8");
 const orchestrator = () => read("agents", "orchestrator.md");
 const commitSkill = () => read("skills", "commit", "SKILL.md");
 
-/** Every `/tmp/…` path a text names. */
+/** The directory the prompts name the message file under. */
+const MESSAGE_DIR = "~/.fusion-tmp/<checkout-id>/";
+
+/** Every path under `MESSAGE_DIR` a text names. */
 function tmpPaths(text: string): string[] {
-  return [...text.matchAll(/\/tmp\/[A-Za-z0-9._<>-]+/g)].map((m) => m[0]);
+  return [...text.matchAll(/~\/\.fusion-tmp\/<checkout-id>\/[A-Za-z0-9._<>-]+/g)].map((m) => m[0]);
 }
 
 /**
@@ -134,7 +148,7 @@ function workbenchMessagePaths(text: string): string[] {
  * The one workbench-internal commit-message path a shipped prompt may name.
  *
  * Two lines name it, both as the defect: `agents/orchestrator.md` under `### Step 4 — commit`,
- * item 3's reason for `/tmp`, and `skills/commit/SKILL.md` in the shorter form of the
+ * item 3's reason for its location, and `skills/commit/SKILL.md` in the shorter form of the
  * same sentence. Every other workbench-internal commit-message path is an
  * offence, with no reading of the prose around it.
  *
@@ -152,26 +166,26 @@ function workbenchMessagePaths(text: string): string[] {
 const NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp";
 
 describe("commit-message path: the prescription is pinned", () => {
-  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 names a /tmp path, and item 5 reads the same one", () => {
+  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 names a path under MESSAGE_DIR, and item 5 reads the same one", () => {
     const text = orchestrator();
     const paths = tmpPaths(text).filter((p) => p.includes("commit-msg"));
     expect(
       paths.length,
-      "agents/orchestrator.md names no /tmp commit-message path — `### Step 4 — commit` item 3 was reworded; update this parser or restore the path",
+      "agents/orchestrator.md names no commit-message path under ~/.fusion-tmp/<checkout-id>/ — `### Step 4 — commit` item 3 was reworded; update this parser or restore the path",
     ).toBeGreaterThan(0);
 
     // The message must reach git as `-F <that path>`, not as a `-m` argument:
     // the file exists so the shell never sees the prose (commit 045a14f, cut
     // off at an apostrophe).
     expect(text).toMatch(
-      /git commit -F \/tmp\/fusion-commit-msg-<session-id>-[^\s'"]+/,
+      /git commit -F ~\/\.fusion-tmp\/<checkout-id>\/fusion-commit-msg-<session-id>-[^\s'"]+/,
     );
   });
 
-  it("every /tmp path it names carries the per-session discriminator", () => {
-    // `/tmp` alone was the first half of the answer and is not the whole of it:
-    // the path is machine-global, so without a per-session part two projects'
-    // sessions write one file whenever their task ids agree (issue
+  it("every such path it names carries the per-session discriminator", () => {
+    // The location is the first half of the answer and not the whole of it:
+    // two sessions in one checkout share the directory, so without a
+    // per-session part they write one file whenever their task ids agree (issue
     // `260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`).
     // Every occurrence, not just one — the write at step 3 and the `-F` read at
     // step 5 must name the same file, and a path that keeps only one of them
@@ -187,12 +201,12 @@ describe("commit-message path: the prescription is pinned", () => {
   });
 
   it("`agents/orchestrator.md` `### Step 4 — commit` item 3 states WHY the path is per-session, not merely that it is", () => {
-    // Same reasoning as the `/tmp` justification below: a prescription with no
-    // reason is one an agent improvises around. The two facts that decide this
-    // one are that `/tmp` is shared machine-wide and that the task id is not a
-    // discriminator.
+    // Same reasoning as the location justification below: a prescription with
+    // no reason is one an agent improvises around. The two facts that decide
+    // this one are that the directory is shared by a checkout's sessions and
+    // that the task id is not a discriminator.
     const text = orchestrator();
-    expect(text).toMatch(/`?\/tmp`? is machine-global/);
+    expect(text).toMatch(/two sessions in one checkout share it/);
     expect(text).toMatch(/task ids are short and conventional/);
   });
 
@@ -201,7 +215,7 @@ describe("commit-message path: the prescription is pinned", () => {
     // constant, so a prompt that moved the path while the constant stayed would
     // have the mechanism telling the model to use a path nothing prescribes.
     expect(orchestrator()).toContain(PRESCRIBED_MESSAGE_PATH);
-    expect(PRESCRIBED_MESSAGE_PATH.startsWith("/tmp/")).toBe(true);
+    expect(PRESCRIBED_MESSAGE_PATH.startsWith(MESSAGE_DIR)).toBe(true);
     // Both halves of the prescription, in the constant the hook quotes back.
     expect(carriesSessionDiscriminator(PRESCRIBED_MESSAGE_PATH)).toBe(true);
   });
@@ -214,26 +228,28 @@ describe("commit-message path: the prescription is pinned", () => {
     ).toBe(false);
     expect(
       carriesSessionDiscriminator(
-        "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt",
+        "~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt",
       ),
     ).toBe(true);
   });
 
-  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 states WHY the location is /tmp, not merely that it is", () => {
+  it("`agents/orchestrator.md` `### Step 4 — commit` item 3 states WHY the location is MESSAGE_DIR, not merely that it is", () => {
     // A prescription with no reason is one an agent improvises around, which is
-    // exactly what happened. The two facts that decide it: /tmp is swept, and
-    // the workbench is the tree git status reports on.
+    // exactly what happened. The facts that decide it: the directory survives a
+    // reboot and `git clean -xdf` and is outside every tree git status reports
+    // on, and the workbench is that tree.
     const text = orchestrator();
-    expect(text).toMatch(/`?\/tmp`? is swept/);
+    expect(text).toMatch(/survives a reboot and `?git clean -xdf`?/);
+    expect(text).toMatch(/outside every tree `?git status`? reports on/);
     expect(text).toMatch(/is the tree `?git status`? reports on/);
   });
 
-  it("the commit skill pins its own <msg-file> to /tmp", () => {
+  it("the commit skill pins its own <msg-file> to MESSAGE_DIR", () => {
     // /fusion:commit runs the same stage-and-commit shape and left `<msg-file>`
     // an unbounded placeholder. /fusion:cleanup defers to it, so pinning it here
     // covers both.
     const text = commitSkill();
-    expect(text).toMatch(/`?\/tmp\/fusion-commit-msg-/);
+    expect(text).toContain(`${MESSAGE_DIR}fusion-commit-msg-`);
     expect(text).toMatch(/[Nn]ever inside\s+`?fusion-workbench\/`?/);
   });
 });

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "47e48bc4-d8fc-4238-b7ef-77e1c7707f29",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261028-1225-two-codec-tests-on-a-dangling-link-in-a-removal-entry-fail-at-head.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -31,6 +31,8 @@
     { "file": "parts/19-claude.md", "tag": "claude" },
     { "file": "parts/19-prior.md", "tag": "prior" },
     { "file": "parts/20-neutral.md", "tag": "neutral" },
+    { "file": "parts/20b-claude.md", "tag": "claude" },
+    { "file": "parts/20c-neutral.md", "tag": "neutral" },
     { "file": "parts/21-claude.md", "tag": "claude" },
     { "file": "parts/21-prior.md", "tag": "prior" },
     { "file": "parts/22-neutral.md", "tag": "neutral" },

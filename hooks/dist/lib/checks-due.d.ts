@@ -24,8 +24,8 @@
  * Nothing here writes, and nothing here spawns: the session-start hook imports
  * it on every session start.
  */
-/** The eleven selectors of `/fusion:check`, in its order. */
-export declare const CHECK_SELECTORS: readonly ["monitor", "concurrency", "assets", "config", "permissions", "gitattributes", "identity", "gitignore", "upstream", "leftovers", "claude-md"];
+/** The selectors of `/fusion:check`, in its order. */
+export declare const CHECK_SELECTORS: readonly ["monitor", "concurrency", "assets", "config", "permissions", "gitattributes", "identity", "gitignore", "upstream", "leftovers", "claude-md", "tmp"];
 /** The selectors due against parsed stamps (anything `JSON.parse` returns, or `null`). */
 export declare function dueSelectors(stamps: unknown, version: string, now?: number): string[];
 /** The selectors due in the project whose root holds `fusion-workbench/`. */

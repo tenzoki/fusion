@@ -28,10 +28,10 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-/** The eleven selectors of `/fusion:check`, in its order. */
+/** The selectors of `/fusion:check`, in its order. */
 export const CHECK_SELECTORS = [
   "monitor", "concurrency", "assets", "config", "permissions", "gitattributes",
-  "identity", "gitignore", "upstream", "leftovers", "claude-md",
+  "identity", "gitignore", "upstream", "leftovers", "claude-md", "tmp",
 ] as const;
 
 const THIRTY_DAYS_MS = 30 * 864e5;

@@ -273,8 +273,47 @@ it: a test that asserts it, or, for an absence, the search that finds no reader,
 
 - **Your citations.** The grammar is unchanged, and a marked basename cited with its marker
   wildcarded resolves as before.
-- **`fusion.json`, your `.claude/` settings, your commit lock and your voice profiles.** Unchanged.
+- **`fusion.json`, your `.claude/` settings, your commit lock and your voice profiles.** The
+  migration leaves them unchanged. 13.4.0 adds entries to `.claude/settings.local.json`; see below.
 - **The archive.** Nothing in `archive/` is rewritten; the migration adds its receipt there.
+
+## 13.4.0: intermediate files leave the system temp directory
+
+Two lines each released a 13.4.0. This section is the tag `v13.4.0`; the other 13.4.0, followed by
+13.4.1 and 13.4.2, added the Prior surface. 13.4.3 joins them, so these steps apply from either.
+
+Agents now write files they read back later to `~/.fusion-tmp/<checkout-id>`, which a reboot and
+`git clean -xdf` leave alone, instead of `/tmp` or `/var/folders`. Once per project:
+
+1. Run `fusion --update` and restart the session, so the checks below are the 13.4.0 ones.
+2. Run `/fusion:check --only tmp`, then `/fusion:check --only permissions`. They create the
+   directory and add its grants, and without a sandbox the system-temp deny entries, to
+   `.claude/settings.local.json`. Nothing is removed from that file.
+3. Start sessions with `fusion`, not `claude`. Only the launcher points Claude Code's temp root
+   and `TMPDIR` there; a session started otherwise is named at every start, and the marketplace
+   path's two `export`s are in `README.md`, in the section on the `fusion` launcher.
+
+What stays unenforced:
+
+- **Programs.** A tool that hard-codes `/tmp`, or builds a temp path at run time, still writes
+  there. A hook reports a system temp path only when a `Bash` command's text names one. The
+  deny entries stop Claude's `Write` and `Edit`, and, measured in `default` and `acceptEdits`
+  mode, the file commands Claude Code reads in a `Bash` call (`rm`, `>`, `touch`, `mkdir`,
+  `cp`); not a script that opens the file itself, such as `python3 -c`. Under
+  `bypassPermissions`, or the launcher's `--yolo`, only `Write` and `Edit` were shown stopped:
+  a `Bash` redirect was seen passing the deny, and the other commands were not measured. The
+  table is in the header of `bin/fusion-tmp`, the deny entries.
+- **The sandbox.** With Claude Code's sandbox on, the Bash tool's `TMPDIR` is `/tmp/claude-<uid>`
+  whatever was exported, and no deny entry is written, since it would break the sandbox.
+- **Sessions without the launcher** keep their scratchpad and `TMPDIR` in the system directories,
+  and without a sandbox the deny entries refuse Claude's `Write` and `Edit` into that scratchpad,
+  and in `default` and `acceptEdits` mode also `Bash`'s `rm`, `>`, `touch`, `mkdir` and `cp`.
+  Accepted, with no exemption: start with `fusion`, or export the two variables. The header of
+  `bin/fusion-tmp`, the deny entries, says why.
+- **`/var/tmp`** is not among the paths reported or denied.
+
+The rule agents follow is `rules/fusion-workbench-conventions.md` `## Intermediate files`; the
+location, grants and outputs are documented in the header of `bin/fusion-tmp`.
 
 ## Where to read more
 

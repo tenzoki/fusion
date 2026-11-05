@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "bea67e1f-328e-40da-9026-dc2009162e64",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261027-2242-intermediate-files-in-project-tmp/issues/261028-2204-the-settings-file-exceptions-for-home-rooted-repos-and-foreign-owned-files-are-untested.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

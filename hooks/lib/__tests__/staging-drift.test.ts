@@ -163,7 +163,7 @@ describe("staging drift: the defect it was built for", () => {
         // The prescribed path is quoted, not described — the whole point of the
         // commit-message class is to say where the file belongs instead.
         expect(res.stdout).toContain(
-          "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt",
+          "~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt",
         );
       });
     },

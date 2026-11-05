@@ -1,7 +1,7 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Three jobs, each on its own narrow trigger, and NONE of them on the
+ * Four jobs, each on its own narrow trigger, and NONE of them on the
  * every-tool-call path:
  *
  *   0a. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
@@ -33,6 +33,16 @@
  *      and reporting the whole corpus would report somebody else's violation at
  *      this writer's keystroke. See lib/citation-form.ts and
  *      `measureCitationFormForModel`.
+ *
+ *   0d. SYSTEM TEMP PATHS, on `Bash` inside a workbench: the command's text
+ *      names a literal `/tmp`, `/private/tmp` or `/var/folders` path, or a
+ *      bare `mktemp`, outside the project and `~/.fusion-tmp`. One sentence
+ *      says files there are lost at a reboot and names `bin/fusion-tmp path`;
+ *      nothing is blocked, and there is no event row and no throttle. It is
+ *      not the retired classifier and not a fourth sibling of the family
+ *      below: it predicts nothing about what the command will do, it reports
+ *      what the text literally names, which is decidable. See
+ *      lib/temp-paths.ts and `observeTempPathsForModel`.
  *
  * Three jobs left before them and none was replaced. A job 0 ran on EVERY
  * guarded tool call until 2026-08-15: session-state drift, comparing

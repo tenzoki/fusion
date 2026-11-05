@@ -94,6 +94,14 @@ console.log("marker=" + (after !== before ? "written" : "unchanged"));
 
 **`checks_due=unread` says no due list was computed, and its parenthesis says why.** On `(no node on PATH)` the shell fallback writes a missing marker, or sets `plugin_version` in place and keeps every other key, so the workbench is set up; and every fusion hook is a node program, so none of them is running either. Report both facts and continue. On any other reason node ran and wrote the marker: report the reason alone and continue.
 
+## Step 0t — The intermediate-file directory
+
+Create it, grant it, link `tmp` to it; `fusion-tmp=absent` blocks nothing:
+
+```bash
+T="$FUSION_PLUGIN_ROOT/bin/fusion-tmp"; [ -x "$T" ] && for c in path grant link; do "$T" $c || echo "fusion-tmp $c: exit $?"; done || echo "fusion-tmp=absent"
+```
+
 ## Step 0d — Ensure stylometric profiles are present locally
 
 Two profile families seed the project's user-facing voice, both at `./fusion-workbench/stilwerk/` so each project can edit them without affecting other projects or the module:
@@ -172,4 +180,4 @@ Name each line in the Done report.
 
 ## Done
 
-Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or claim a work package.
+Only after every step above completes may you begin the user's task. Report Setup complete with: the workspace path, what Step 0's marker block reported (`marker=`, `checks_due=`, or `marker-version-unresolved`), every Step 0t line and warning, which checks Step 1 ran and what each said, and every helper Step 2 found in the work tree and not in the install. End with the two usual next moves: name a task, or claim a work package.
