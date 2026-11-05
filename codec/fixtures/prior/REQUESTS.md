@@ -6711,3 +6711,378 @@ Prior states that D-P1 (`894914e`) and D-P3 (`319ea46`) are fixed, and that none
 | 77 | **corrected** at Prior `52a2703`, for bundle `sha256:c61f9033485a5389a05c87ac3eda9eec01324a1df4ef9324a3528a46d45a064f`: 77.1, 77.2 and 77.4 accepted, 77.3 corrected by D-F1, question 12 corrected, the other questions accepted; no tag at C′ | `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` |
 
 These rows supersede the rows for 76 and 77 of the earlier `#### Requests 64 and 67 to 77, as they stand` above, which stays as it was, this file being append-only. No request is open with Prior until the corrected candidate's request stands here.
+
+## The corrected candidate 13.4.2 (request 78)
+
+### Written against
+
+**C″ = `a3274f239632e5866e2dd9d3f151906fdce80959`** on `main` (2026-11-05 13:29, "release(fusion): 13.4.2, the corrected candidate for Prior (13.4.2 step 6)"), version `13.4.2` in `.claude-plugin/plugin.json`. No tag `v13.4.2` exists, and `v13.4.1` was never made. The bundle below was built at C″ itself, so `fusion_revision` is C″, with no `+dirty`. `git rev-parse HEAD` printed `a3274f239632e5866e2dd9d3f151906fdce80959` just before this section was appended, so its parent is C″, or a later commit touching `fusion-workbench/` alone, which holds the same shipped tree.
+
+**Prior was read at `d04f457`** (`d04f457f2930091c73406aa8075f54c663b26d59`, 2026-11-05 13:20, "feat(qualification): add the hook-surface replay and record the gap rulings"), the head of its `main`, from committed objects only, since its working tree holds uncommitted changes. That head is two commits past the answer at `52a2703`. Neither touches `docs/design` or either `UPSTREAM.json`, and `git diff --stat 52a2703 d04f457 -- moduleapi internal/fusionhost internal/supervisor/exec.go` prints nothing, so every Prior citation below is the same line at both commits. Prior paths below are read with `git show d04f457:<path>`.
+
+**The two pins.** `adapters/prior/PRIOR_PIN` is still **`08c57fb4ec91df6b1e1e311fa2d063eb5ff08076`**. `git diff --stat 08c57fb d04f457 -- moduleapi go.mod go.sum schemas/module-api` names two new files, `moduleapi/v1/entry_service_wire.go` and its test. The module defines its own decoders and Prior ran 13.4.1 at this pin, so the pin does not move, and `stage.sh` clones the pin, so the bundle does not depend on Prior's working tree. The codec pin is **`sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`**, Prior's `QualifiedCodecDigest` (`Prior: internal/fusionhost/workbench.go:22`).
+
+`EW` stands for `Prior: internal/fusionhost/entry_workspace.go` and `ESW` for `Prior: moduleapi/v1/entry_service_wire.go`, as read at `d04f457`.
+
+### What 78 does
+
+**It answers the corrected** on 77.3 (D-F1) and on request 76 question 6, and **it replaces 77's bundle.** Prior's answer is `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` at `52a2703`, recorded above under `### Prior's answer to 76 and 77 at 52a2703`. Nothing above this line is edited.
+
+**An answer naming `sha256:c61f9033485a5389a05c87ac3eda9eec01324a1df4ef9324a3528a46d45a064f` closes nothing new.** Only an answer naming the digest of `### The bundle` below answers 78.
+
+**It leaves standing, without re-asking, every item Prior accepted at `52a2703`:**
+
+| Where | Items that stand |
+|---|---|
+| Request 77 | 77.1, 77.2 and 77.4 as verdicts on the 13.4.1 digest; questions 1 to 11, 13 and 14 |
+| Request 76, H rows | H1, H2, H3 apart from its repair text, H4, H5, H8, H9, with the limits and deliberate differences as Prior states them |
+| Request 76, carry items and sections | carry 1 to 6, `### The 27 entries`, `### The lifecycle_hooks declaration`, `### The B2 question` |
+| Request 76, decisions | decision 1 (D2), decision 2 (D4), decision 4 (the run-step form), decision 6 (the path-scoped file grant) |
+| Request 76, questions | 1, 2, 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19; the row "replaced by request 77" |
+| Readings | S65-1 |
+
+78.1, 78.2 and 78.4 below re-run the identity steps for the new digest, because a digest is what they verify. They do not reopen a verdict. Question 12 of request 77 is corrected, and its module half is carried here; its asset half is question 1 below.
+
+### The bundle
+
+The absolute hand-over path, as `adapters/prior/build.sh deliver` printed it on 2026-11-05:
+
+```
+/Users/kai/.local/share/prior/incoming/fusion/13.4.2/439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153
+```
+
+| File | Bytes | Identity |
+|---|---|---|
+| `fusion-13.4.2.tar` | 28 043 776 | the deterministic, uncompressed tarball; `shasum -a 256` prints `f02035582695f6612ec81de3451f281c6440dab77f2a616224554d7c8f425d4c` |
+| `fusion-13.4.2.tar.sha256` | 84 | the sidecar, one line: `f02035582695f6612ec81de3451f281c6440dab77f2a616224554d7c8f425d4c  fusion-13.4.2.tar`; its own sha256 `8e1164c1e5488305558fa5fc4551d77e7e90ba7466f9dd692d0846d73fd0f9a0` |
+| `handover.json` | 2 403 | module id, version, both digests, both revisions, `go1.26.0`, the three targets and the build commands; sha256 `b7cb91e2651b11226cc2a748343c104e3ddde050c4af870106fa5754c5479f09` |
+
+All three are mode 0444; `shasum -a 256 -c fusion-13.4.2.tar.sha256`, run inside that directory, prints `fusion-13.4.2.tar: OK`. **The bundle digest is `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153`**, the BundleIndex digest over the payload with `manifest_path` `module.json`. **The tarball's sha256 is `f02035582695f6612ec81de3451f281c6440dab77f2a616224554d7c8f425d4c`.** As at 76 and 77, the first is what `--trust-digest` takes and the second is what the sidecar checks. The 13.4.1 hand-over directory of request 77 is unchanged.
+
+**Identity.** `module.json`: `schema_version` 1, `module_id` `fusion`, `version` `13.4.2`, `runtime_api` `"1"`, `executable` `bin/fusion-module`, **61 `data` files**. Its `lifecycle_hooks` declaration is unchanged: `hooks/hooks.json`, `sha256:d7f4d7ab1d327d68b9e1c431484577f63c99e8fabc197b81a1caaac2d4dbc4f3`, events `SessionStart`, `PreToolUse`, `PostToolUse`, `SubagentStop`; reply forms `empty`, `text`, `json`; reply fields `hookSpecificOutput.hookEventName`, `hookSpecificOutput.systemMessage`, `hookSpecificOutput.additionalContext`. `build-identity.json` inside the tarball: `fusion_revision` `a3274f239632e5866e2dd9d3f151906fdce80959`, never `+dirty`; `prior_revision` `08c57fb4ec91df6b1e1e311fa2d063eb5ff08076`; `go_version` `go1.26.0`; `install_tree_omitted` as at 76 and 77, one git link, `codec/fixtures/legacy-v12/workbench/shared/analyses/latest-benchmark.md` → `260906-1100-benchmark-run.md`.
+
+**The payload, 1 616 tarball entries** (`tar -tf | wc -l`), all regular files, every one with uid and gid 0 and mtime 0, 35 at mode 0500 and 1 581 at 0400:
+
+| Part | Entries | What it is |
+|---|---|---|
+| module data | 61 | `catalog.json` 1; `profiles/<id>.{md,json}` 52, for 26 profiles; `schemas/` 6; `workflows/` 2. These alone are `module.json`'s `data` |
+| install tree | 1 549 | as at 76 and 77: every file `git ls-files -s` lists at C″ under the entries of `install.sh`'s copy loop, at its plugin path, minus the one git link (`install_tree_omitted`) |
+| module executables | 4 | `bin/fusion-module`, the launcher, 1 415 bytes, and `bin/{darwin-arm64,linux-amd64,linux-arm64}/fusion-module` |
+| manifest and identity | 2 | `module.json`, `build-identity.json` |
+
+By first path segment: `.claude-plugin` 1, top level 6, `agents` 11, `bin` 35, `codec` 1214, `docs` 23, `hooks` 230, `profiles` 52, `rules` 15, `schemas` 6, `skills` 16, `stilwerk` 4, `templates` 1, `workflows` 2.
+
+**`workflows/` and `schemas/` in the tarball are exactly the eight assets `FROZEN` names at C″**, each with the sha256 of its `FROZEN` line: `schemas/entry-request.v1.json`, `schemas/entry-result.v2.json`, `schemas/explorer-envelope.v1.json`, `schemas/explorer-request.v1.json`, `schemas/explorer-result.v1.json`, `schemas/explorer-role-input.v1.json`, `workflows/entry.v2.json`, `workflows/explorer.v1.json`. None of the eleven withdrawn paths is in the payload. `tar -xOf fusion-13.4.2.tar catalog.json | shasum -a 256` prints `54638b43fd7ad34c6624fd19537cd519069897f5615026863fb8aba4472e8008`, equal to `catalog/catalog.json` at `67cece9a` and at C″.
+
+**The target binaries:**
+
+| Path | Bytes | sha256 |
+|---|---|---|
+| `bin/darwin-arm64/fusion-module` | 4 347 202 | `7aad13acb465a313e7a91addb15428a67f623b71528335246d0886c154594ec1` |
+| `bin/linux-amd64/fusion-module` | 4 521 584 | `8504014ccb0a2cbaf8e37ca55d59f7b7743f8b71880f9f2d1399e1f932ecd3b1` |
+| `bin/linux-arm64/fusion-module` | 4 349 113 | `3bbbaea673dfc0ca39f7a3685c9a79f23fc2fc3f73c61bc6a36fbf507c6a5b82` |
+
+The two Linux targets are built, not qualified.
+
+**How it was built and verified** (plan step 7). At C″, with a tree clean outside `fusion-workbench/`: `build.sh build` twice into fresh directories, both printing this digest, which differs from `c61f9033…`, and `diff -r` of the two outputs exited 0; `build.sh verify` exited 0 ("1616 files, executable bin/fusion-module, 61 data files"); the conformance suite with `FUSION_BUNDLE_DIR` set to the build passed; `build.sh deliver` printed the path above.
+
+**Conformance against the built bundle**, on macOS arm64 against a fake host, with `go1.26.0`: **94 tests and 249 subtests, 343 in all, passed, 0 failed, 0 skipped.**
+
+| Package | Tests | Subtests | Against 13.4.1 |
+|---|---|---|---|
+| `cmd/fusion-bundle` | 8 | 0 | equal |
+| `cmd/fusion-module` | 2 | 0 | equal |
+| `conformance` | 16 | 7 | 6 to 7 subtests |
+| `internal/controlrecord` | 1 | 0 | new |
+| `internal/entry` | 25 | 80 | 54 to 80 subtests |
+| `internal/explorer` | 14 | 0 | equal |
+| `internal/hostsvc` | 11 | 10 | equal |
+| `internal/steps` | 17 | 152 | equal |
+
+`internal/fixture` has no test files.
+
+**This is conformance, not acceptance, and this bundle has run on no Prior host.** The host is a fake on macOS arm64, every model answer is scripted, and no party has run the bundle against Prior's entry host, its contained executor or its lifecycle runtime. Prior's run is what answers the corrected candidate.
+
+### The codec
+
+**Unchanged: `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`**, 700 116 bytes, fusion `aa4277d8`, the codec 76 and 77 carried. `tar -xOf fusion-13.4.2.tar codec/dist/fusion-record.js | shasum -a 256` and `shasum -a 256 codec/dist/fusion-record.js` at C″ print it, and it is Prior's `QualifiedCodecDigest`. So **no re-pin request precedes this one.** `git diff --stat 67cece9a a3274f23 -- codec/dist codec/src codec/contract codec/schemas` prints nothing.
+
+### The delta from 13.4.1
+
+Regenerate it with one line:
+
+```
+git diff --stat 67cece9a a3274f239632e5866e2dd9d3f151906fdce80959 -- agents skills rules hooks bin templates stilwerk docs README.md README-agents.md README-hooks.md install.sh catalog adapters .claude-plugin
+```
+
+It ends `79 files changed, 693 insertions(+), 175 deletions(-)`. The base `67cece9a` is 13.4.1's C′. The commits touching these paths are `6f6088ef`, `c0ae5468`, `af36d055`, `c15aeabd` and `a3274f23`. Item by item, which sums to that line:
+
+| Item | Files | Insertions, deletions | What it means |
+|---|---|---|---|
+| The module and its tests | `adapters/prior/fusionmodule/internal/controlrecord/controlrecord.go` and its test (new); `internal/entry/entry.go` and `entry_test.go`; `internal/fixture/entry.go`; `conformance/entry_test.go`, `conformance/hooks_test.go`; `adapters/prior/README.md`; `adapters/prior/testdata/hook-payloads/README.md` | 9 files, 358, 75 | `### D-F1 and the last status` below. The READMEs state the rule, the v2 reading pointer and `hookSession`'s real order |
+| The `prior` parts | 60 `catalog/profiles/*/parts/*-prior.md` | with the next row: 61 files, 93, 93 | `` ### The `prior` parts and 76 question 6 `` below. `skill-commit` and `skill-cleanup` stay `prior: unsupported` and unchanged |
+| The help paragraph | `catalog/profiles/skill-help/parts/21-claude.md`, the one non-`prior` part that moved, and `21-prior.md`, which is among the 60 | | the upgrade paragraph covers 13.4.2: a Prior entry run no longer ends refused over a workbench file that is not a record, and a Claude Code session behaves as in 13.4.1 |
+| The catalog's docs and tests | `catalog/README.md`; `catalog/src/__tests__/prior-commands.test.ts` (new); `catalog/src/__tests__/render.test.ts` | 3 files, 235, 0 | the v2 reading pointer; the watch-list test; the token lint over every `prior` part, whatever its support state |
+| The release | `.claude-plugin/plugin.json` (the version), the pin examples of `install.sh` and `README.md`, the `catalog/` row of `README-agents.md`, `skills/help/SKILL.md` (rendered), `hooks/lib/__tests__/fixtures/surface-growth.golden` (regenerated) | 6 files, 7, 7 | the version; the row no longer names `repair.v1` as a live workflow; the rendered paragraph. No bound moved and no baseline was edited |
+
+**`FROZEN` and every frozen asset are byte-unchanged.** `git diff --exit-code 67cece9a a3274f23 -- catalog/schemas catalog/workflows` exits 0, so `catalog/schemas/FROZEN`, `catalog/schemas/WITHDRAWN`, the eight assets and the workflow schema hold the bytes request 77 delivered. No neutral part moved (`git diff --name-only 67cece9a a3274f23 -- 'catalog/profiles/*/parts/*-neutral.md'` prints nothing), and `agents`, `rules`, `bin`, `templates`, `stilwerk`, `docs`, `README-hooks.md` and every hook source are unchanged. Besides the version, the Claude Code distribution changes only in `README.md`, `README-agents.md`, `install.sh`, `skills/help/SKILL.md` and the golden.
+
+This file moves as well, and it is outside the listing's paths: see `` ### `REQUESTS.md`'s digest moved ``.
+
+### D-F1 and the last status
+
+**What the module now selects.** `controlRecords` (`adapters/prior/fusionmodule/internal/entry/entry.go`) reads a path only when `controlrecord.Select` names it and its last status, in commit order and then in the delta, is not `D`, each record once in the order it first appears. The module's new leaf package `internal/controlrecord` holds the rule, and the fake host's `workbench` read applies the same function, answering `permission-denied` for a path it refuses, as Prior does.
+
+**The predicate, stated as Prior's.** A path under `fusion-workbench/` whose workbench-relative part is a valid relative path without `\`, `:`, NUL, tab, CR or LF, with no segment starting with a dot and a first segment that is not `archive`, and whose last segment is `package.json` or ends `.record.json` or `.evidence.json`. That is `entryControlRecord` (`EW:284`), and it is the codec's rule (`codec/src/store.ts:446` `isControlFile`, `:454` `controlFiles`). The codec's `controlFiles` also reads the disk, which no path-only function can decide, and Prior's function has the same limit. `Select` was compared with `entryControlRecord` over 3 000 000 generated paths, 140 306 of them selected, with **0 differences**, by a scratch program holding both functions verbatim, which is not in the tree. Reading S60-4's `entryControlRecords` is `EW:307`.
+
+**The last-status rule is Prior's on `A`, `D`, `M` and `T` only.** On those letters the module's selection and `entryControlRecords` were measured equal, order included, on 500 000 random streams, by the same kind of scratch program. **The module's treatment of `R` and `C` is its own reading of v2's `name_status`, not Prior's rule.** Prior never emits those lines (`ESW:225` admits `A`, `D`, `M` and `T`; `EW:1286` reads with `--no-renames`), and its selection would not read them: `strings.Cut` leaves `old\tnew` as the path, which `entryControlRecord` refuses. The two differ on those lines, unreachably on Prior:
+
+| Lines | Module | Prior's function |
+|---|---|---|
+| `R100 old new` | `new` | none |
+| `M old`, `R100 old new` | `new` | `old` |
+| `C75 old new` | `new` | none |
+
+**The receipt check.** `checkReceipt` also refuses a `changes` or `delta` path with an empty, `.` or `..` segment, `integration.invalid`, in a separate check beside the frozen `name_status` pattern, which stays the schema's text. Prior's host cannot trigger it: `EntryIntegrateAnswer.Validate` refuses the same paths first, and 1 343 630 paths Prior admits produced 0 refusals in a scratch measurement.
+
+**The tests that turn red.** Measured on 2026-11-05 at C″, in scratch copies, none committed:
+
+- **`TestTheThreeDeliveryCasesRunAgainstTheBuiltBundle/a_class-L_file_in_the_delta_is_not_read`**, run with `FUSION_BUNDLE_DIR` at the delivered 13.4.1 directory, exits 1 with `status` `refused`, `reason` `host-permission-denied` and the violation `host.workbench.v1 record:.guard-state/staging-drift.json`, which is the ending Prior's case `probe-issue-c-guard-state` recorded. Against this bundle it passes. So the conformance suite, green on D-F1 at 13.4.1, can now fail on it.
+- **`TestControlRecordsAreTheCodecsNamesByLastStatus`**, with `Select` replaced by the old `.json` test in `controlRecords`, turns seven rows red: the hooks' guard state, a JSON file of another name at the root and in a store, a dot directory that begins with `json`, a record below a dot directory, a package in the root's archive, a colon in a record's name.
+- **The same test**, with the last-status rule replaced by "any non-`D` line", turns four rows red: `M` in a commit then `D` in the delta, `A` then `D` across commits, a rename that leaves a path changed earlier deleted, and the order row.
+
+**The fake host's limit.** `fixture/entry.go` `integrate` emits `M` only, so **conformance cannot fail on last status**; only the unit rows above hold it (issue `261105-1113-the-fake-host-admits-a-read-of-a-record-deleted-later-so-conformance-cannot-fail-on-last-status.md`, open). That is why 78.3 asks Prior for a last-status case.
+
+**The `hookSession` measurement replaces limit G4's inference on fusion's side.** Prior marked as an inference that hooks would leave such files on every ordinary run. `assertHooksWroteNoControlRecord` (`conformance/hooks_test.go`) now runs in `TestHookLayoutBundleEqualsPluginTree`: it requires `.guard-state/staging-drift.json` among what the session wrote, so it cannot pass on nothing, and it asserts that `Select` refuses every `.json` the session wrote. Run against the delivered bundle on 2026-11-05, both the bundle's and the plugin tree's session wrote the same four: `fusion-workbench/.guard-state/citation-form.json`, `dispatch-map.json`, `review-coverage.json` and `staging-drift.json`. Prior named the other three of these; `review-coverage.json` is a fourth. These are real hooks over a fixture repository, not Prior's container, so limits G3 and G4 stand for Prior's own evidence.
+
+### The readings, as fusion takes them
+
+Fusion takes each reading of Prior's answer as the contract's reading until a v3 exists (decision `261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md`, `open`, whose recommendation this candidate follows; question 1 below checks it with Prior). The frozen v2 bytes do not change. Frozen lines are at C″, equal to C′, and `entry.v2` is `catalog/workflows/entry.v2.json`, `result.v2` `catalog/schemas/entry-result.v2.json`.
+
+| Reading | Frozen line | What fusion accepts | What carries it |
+|---|---|---|---|
+| S59-1 operation id (D-F2) | `entry.v2:17`: "with capability fusion.entry.v2" | the id takes the called service's capability (`ESW:117`), as fusion's own correction `ebd16cdb` says | **Already the module** (`internal/hostsvc/hostsvc.go:100`), no run-time effect. The text stays wrong until a v3 |
+| S59-2 status letters | `result.v2:176` and `:106` define `C` and `R` | Prior admits and emits only `A`, `D`, `M`, `T`. Whether a v3 keeps the branch is not ruled (`### Stated and not asked`) | **Reading.** The module keeps parsing v2's pattern; `### D-F1 and the last status` says what it does with such a line |
+| S59-3 dot segments (D-F4) | `result.v2:176` admits `a/../b` | no empty, `.` or `..` segment, whatever v2 says | **Module:** the receipt check above, which v2's own "valid relative path" already asks for. The pattern's text waits for a v3 |
+| S60-1 admission codes | `entry.v2:23`, the common `codes`, omits the three that `entry.v2:52` `admission` names | compose answers `unknown-argument`, `route-not-qualified`, `open-gap-issue` | **Reading.** The module reports `host.<code>` for any code, and `result.v2` `violations[].code` is `minLength: 1`. That Prior's envelope check admits them is *inference*. A v3 should list them |
+| S60-2 committed paths in `delta` | `entry.v2:120`: "the run's uncommitted changes". No asset text says otherwise; the contrary sentence was request 77 question 4 | a committed path is in `delta` when the working tree changed it after the commit; otherwise it stays out | **Reading on request 77's text.** The last-status rule handles `D` after `A` |
+| S60-3 detached `HEAD` | `entry.v2:117`: "the reference the user's HEAD named"; `result.v2:95` `minLength: 1`. Silent, not contradicting. The `""` was request 77 question 5 point 2 | `reference` is `HEAD` when no branch is named (`Prior: internal/fusionhost/entry_services.go:479`) | **Reading on request 77's text.** `HEAD` passes the module's receipt check and the schema |
+| S60-4 last status (D-F3) | `entry.v2:137`: "whose status is not D" | the last status, in commit order and then in the delta, as `EW:307` selects it | **Module, this candidate**, on `A`, `D`, `M`, `T` as above. The sentence waits for a v3 |
+| S63-1 what counts as a stop | `result.v2:4`: "or by the stop the entry offers" | `stop` is settled only when the run's last question was answered `ended` | **Reading.** No run-time effect: the module takes the settled ending |
+| S63-2 violations | `result.v2:119` "empty on completed", and `allOf` at `:141` `maxItems: 0`, agree with Prior | violations are listed only on a refusal | **Stated as agreed.** Prior's quoted phrase "violations from the host's own refusals" **was not located** by `grep` in `entry.v2`, `result.v2` or this file above this section, so fusion reads no frozen text as differing |
+| S63-3 `reference` on each commit | `entry.v2:125` and `result.v2:89` both state it | each settled or enveloped commit carries `reference` | **Stated as agreed.** The module adds it (`internal/entry/entry.go:439`) |
+
+S65-1 is accepted, and the five `prior` parts that still called the shape pending now cite the answer. The frozen v2 text therefore stays wrong in S59-1, S60-1, S60-4, S63-1 and, on segments, S59-3 until a v3 exists. That cost stays visible in three open fusion issues, each with an asset half: `261027-2337-entry-v2-receipt-check-and-name-status-pattern-admit-dot-dot-path-segments.md`, `261027-2337-entry-v2-workbench-step-reads-a-control-record-the-integration-deleted.md` and `261028-0810-entry-v2-and-request-77-derive-the-operation-id-from-the-workflow-capability-where-the-module-uses-the-services.md`.
+
+### The `prior` parts and 76 question 6
+
+**What changed.** Prior's verdict: "Prior guarantees `bash`, `node`, `git`, `sed`, `head` and `od`", and "A `prior` part may rely on the six only". Every `prior` part of a supported entry now names only those for the commands it states itself, and stays inside `host.exec.v1`'s bounds (`skill-help/parts/19-prior.md` still names `curl`, for the user's own machine):
+
+| Used before | Now |
+|---|---|
+| `["pwd"]` | `["bash", "-c", "pwd"]`, a builtin |
+| `["cat", "<path>"]` | `["sed", "-n", "<from>,<to>p", "<path>"]`, in pieces under the 64 KiB output bound |
+| `date +%y%m%d-%H%M` | `["bash", "-c", "printf '%(%y%m%d-%H%M)T\\n' -1"]`, bash's builtin clock |
+| `mkdir -p`, `mv`, `rm -f`, `cp`, `chmod +x`, `shasum` | `node -e` with `mkdirSync`, `renameSync`, `rmSync`, `copyFileSync`, `chmodSync`, `crypto.createHash` |
+| `grep` over a helper's JSON | `node -e` reading stdin as UTF-8 and printing the field |
+| other `grep`, `tail -n 1` | `sed -n`, `sed -nE`, `sed -n '$p'`; a `-q` test becomes `[ -n "$(sed -n ...)" ]` |
+| `cut`, `find`, `awk`, `dirname` | `node -e`, bash `read`, bash `${var%/*}` |
+
+`reviewer/parts/17-prior.md` and `state-auditor/parts/03-prior.md` state the 32 KiB argument bound and the chunked write. Prior's answers are carried where a part still called a question open: the entry id after `--actor` (76 question 9), `/opt/fusion/profiles` (question 10), the `/tmp` rule (question 5), and the dispatch input's shape (question 13, five parts). `skill-news` keeps exit 6, question 4 being deferred. Commit `c0ae5468` states that each rewritten block ran in Prior's pinned image against the block it replaced, on scratch paths, and the review `261105-1113-reviewer-13-4-2-steps-2-to-4.md` re-ran five of the forms in that image. `c15aeabd` then added the stdin encoding to the node blocks, and no record says those edited blocks ran in that image. None of this ran on Prior's host.
+
+**The binding says less than the plan first wrote, and a run is not six-only.** The Setup binding of 25 parts reads: "Prior guarantees `bash`, `node`, `git`, `sed`, `head` and `od` in this container (request 76, question 6); the commands this binding names use those alone. A neutral block may run others, and one that ends with exit 127 has met a host gap: report the command it names, and never repair the gap." Neutral blocks and `bin/` helpers run other commands, as the inventory below shows, and they are the same bytes in the Claude Code distribution, so they are not rewritten here.
+
+**The lint and its limit.** `catalog/src/__tests__/prior-commands.test.ts` holds a watch list of 32 commands at a command position over every `*-prior.md` of a profile not held, and that the first element of an argv is one of the six or an install-tree helper. It reads the body of a `["bash", "-c", "..."]` span as commands and keys each exemption on the exact span, so the rest of an exempted file is still read. **Its limit, from its own header:** "This reads a watch list, so it proves nothing about a command outside the list, or about one built at run time, which no text scan can see. An include line is dropped and not expanded, so a rule it brings in is not read. It reads `prior` parts only". It is a guard, not a proof.
+
+**The measurement, from `261105-1034-prior-image-command-measurement.md` in this work package.** **This measures one image on one machine and gives no guarantee.** The guarantee stays Prior's to give. One image, one machine (`arm64` `linux`, Docker server 29.8.0), presence only: that a tool behaves as a helper needs was not measured. The runs used the image's default user and `PATH`, no mounts and no workspace, unlike `ProbeHelperRuntime`; `amd64` was not run, and the pin is an index digest, so another platform resolves to other bytes. The digest is `HelperImage`, `Prior: internal/supervisor/exec.go:60`:
+
+```
+const HelperImage = "node@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a"
+```
+
+The command that ran is the plan's with `rm` removed from the list:
+
+```bash
+docker run --rm --network none node@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a bash -c 'for c in python3 shasum awk find sort mktemp date ls cat tail wc grep cut tr xargs stat mv cp mkdir tee uniq basename dirname touch chmod readlink realpath sleep; do printf "%s=%s\n" "$c" "$(command -v "$c")"; done; date --version | head -n 1; ls --version | head -n 1'
+```
+
+It exited 0 and printed:
+
+```
+python3=/usr/bin/python3
+shasum=/usr/bin/shasum
+awk=/usr/bin/awk
+find=/usr/bin/find
+sort=/usr/bin/sort
+mktemp=/usr/bin/mktemp
+date=/usr/bin/date
+ls=/usr/bin/ls
+cat=/usr/bin/cat
+tail=/usr/bin/tail
+wc=/usr/bin/wc
+grep=/usr/bin/grep
+cut=/usr/bin/cut
+tr=/usr/bin/tr
+xargs=/usr/bin/xargs
+stat=/usr/bin/stat
+mv=/usr/bin/mv
+cp=/usr/bin/cp
+mkdir=/usr/bin/mkdir
+tee=/usr/bin/tee
+uniq=/usr/bin/uniq
+basename=/usr/bin/basename
+dirname=/usr/bin/dirname
+touch=/usr/bin/touch
+chmod=/usr/bin/chmod
+readlink=/usr/bin/readlink
+realpath=/usr/bin/realpath
+sleep=/usr/bin/sleep
+date (GNU coreutils) 9.1
+ls (GNU coreutils) 9.1
+```
+
+**`rm`: not measured.** The plan's exact command was refused before it ran. Claude Code's built-in safety check flagged the `rm` token inside the `bash -c` script, although there it is only an argument to `command -v` and deletes nothing. The exact message began:
+
+```
+Permission for this command was denied by a built-in Claude Code safety check, not by the user.
+```
+
+and named its ground as:
+
+```
+This command passes a shell -c script that runs rm, and Claude Code could not check the script for dangerous removals.
+```
+
+The token was neither disguised nor retried. *Inference, not measurement:* `date` and `ls` report GNU coreutils 9.1, the package that normally ships `rm`.
+
+The scan also found three commands off the plan's list, and those were probed together with the dialect of the tools that vary between systems:
+
+```bash
+docker run --rm --network none node@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a bash -c 'for c in comm uname rmdir; do printf "%s=%s\n" "$c" "$(command -v "$c")"; done; readlink -f "$(command -v awk)"; python3 --version; shasum --version; awk -W version 2>&1 | head -n 1; stat --version | head -n 1; find --version | head -n 1; grep --version | head -n 1'
+```
+
+It exited 0 and printed:
+
+```
+comm=/usr/bin/comm
+uname=/usr/bin/uname
+rmdir=/usr/bin/rmdir
+/usr/bin/mawk
+Python 3.11.2
+6.02
+mawk 1.3.4 20200120
+stat (GNU coreutils) 9.1
+find (GNU findutils) 4.9.0
+grep (GNU grep) 3.8
+```
+
+So `awk` is `mawk` here, seven helpers call `awk`, and whether their programs run under `mawk` was not tested.
+
+**The inventory, a text scan and so a floor.** It covers the 26 profiles Prior supports and `bin/`'s 31 shell helpers, was taken at `9fcfc148`, and still holds at C″: `git diff --name-only 9fcfc148 a3274f23 -- bin 'catalog/profiles/*/parts/*-neutral.md'` prints nothing. "Fence" is a neutral part's `bash`, `sh` or `shell` fence. "Prose" is an inline code span in a neutral part that opens with the command and an argument, which is weak evidence. A scan does not see a command built at run time, one run through `eval`, `node -e` or Node's `child_process`, the inside of a single-quoted `awk` or `node` program, or `hooks/dist`. A blank cell means the scan found nothing.
+
+| Command | In the image | Neutral fence | Neutral prose | `bin/` shell helpers |
+|---|---|---|---|---|
+| `awk` | `/usr/bin/awk`, `mawk` | | | 7: fusion-checkout-name, fusion-claude-md-weight, fusion-commit-lock, fusion-plugin-cwd, fusion-prose-metric, fusion-rules, fusion-session-domain |
+| `basename` | `/usr/bin/basename` | 2: skill-archive/32, skill-archive/42 | | 2: fusion-checkout-name, fusion-rules |
+| `cat` | `/usr/bin/cat` | 1: skill-archive/10 | | 12: fusion-cadence-anchor, fusion-checkout-name, fusion-claimed-package, fusion-commit-lock, fusion-forum, fusion-identity, fusion-paths, fusion-prose-metric, fusion-rules, fusion-session-mark, fusion-stores, monitor |
+| `comm` (off the plan's list) | `/usr/bin/comm` | | | 1: fusion-forum |
+| `cp` | `/usr/bin/cp` | 1: skill-check/24 | | |
+| `cut` | `/usr/bin/cut` | 8: skill-cadence/08, skill-cadence/12, skill-check/20, skill-check/24, skill-check/34, skill-check/36, skill-setup/24, skill-wp/12 | | 2: fusion-cadence-anchor, fusion-claude-md-weight |
+| `date` | `/usr/bin/date` | 6: orchestrator/16, skill-cadence/08, skill-check/36, skill-discuss/12, skill-post/06, skill-setup/18 | 5: consultant/12, orchestrator/60, skill-archive/04, skill-archive/34, skill-memo/16 | 3: fusion-checkout-name, fusion-commit-lock, fusion-session-mark |
+| `dirname` | `/usr/bin/dirname` | 1: skill-archive/42 | | 27: fusion-archive, fusion-cadence-anchor, fusion-checkout-name, fusion-checks-due, fusion-citation-check, fusion-citation-sweep, fusion-claimed-package, fusion-claude-md-weight, fusion-commit-lock, fusion-edge-answers, fusion-events, fusion-forum, fusion-identity, fusion-migrate, fusion-paths, fusion-plan-size, fusion-record, fusion-review-coverage, fusion-rules, fusion-session-domain, fusion-session-mark, fusion-source-root, fusion-staging-drift, fusion-work-order, fusion-workbench-root, fusion-write, monitor |
+| `find` | `/usr/bin/find` | 6: skill-archive/32, skill-archive/42, skill-cadence/10, skill-migrate/10, skill-migrate/12, skill-migrate/14 | | |
+| `grep` | `/usr/bin/grep` | 12: skill-archive/32, skill-cadence/08, skill-cadence/10, skill-cadence/12, skill-check/20, skill-check/24, skill-check/34, skill-check/36, skill-migrate/10, skill-migrate/12, skill-setup/18, skill-setup/24 | | 10: fusion-cadence-anchor, fusion-checkout-name, fusion-claude-md-weight, fusion-commit-lock, fusion-count-sources, fusion-forum, fusion-identity, fusion-paths, fusion-plugin-cwd, fusion-rules |
+| `ls` | `/usr/bin/ls` | 1: skill-cadence/10 | 1: skill-help/22 | 1: fusion-identity |
+| `mkdir` | `/usr/bin/mkdir` | 4: skill-archive/34, skill-migrate/14, skill-setup/16, skill-setup/22 | 2: skill-archive/34, skill-wp/10 | 2: fusion-checkout-name, fusion-commit-lock |
+| `mktemp` | `/usr/bin/mktemp` | | | 5: fusion-checkout-name, fusion-forum, fusion-paths, fusion-rules, monitor |
+| `mv` | `/usr/bin/mv` | 5: skill-archive/34, skill-check/24, skill-migrate/14, skill-setup/18, skill-setup/24 | | 3: fusion-cadence-anchor, fusion-checkout-name, fusion-forum |
+| `python3` | `/usr/bin/python3` | 1: skill-cadence/12 | | 1: monitor |
+| `rm` | **not measured** | 2: skill-check/38, skill-post/14 | 1: skill-post/16 | 4: fusion-commit-lock, fusion-rules, fusion-session-mark, monitor |
+| `rmdir` (off the plan's list) | `/usr/bin/rmdir` | 1: skill-migrate/14 | | 1: fusion-commit-lock |
+| `shasum` | `/usr/bin/shasum` | 4: skill-check/20, skill-check/24, skill-setup/24, skill-wp/12 | | |
+| `sleep` | `/usr/bin/sleep` | | | 2: fusion-commit-lock, monitor |
+| `sort` | `/usr/bin/sort` | 3: skill-cadence/08, skill-migrate/12, skill-migrate/14 | | 7: fusion-cadence-anchor, fusion-claude-md-weight, fusion-count-sources, fusion-forum, fusion-identity, fusion-paths, fusion-session-domain |
+| `stat` | `/usr/bin/stat` | | | 2: fusion-commit-lock, fusion-session-mark |
+| `tail` | `/usr/bin/tail` | 4: skill-cadence/08, skill-check/20, skill-check/28, skill-check/34 | | 4: fusion-cadence-anchor, fusion-claude-md-weight, fusion-forum, fusion-session-domain |
+| `touch` | `/usr/bin/touch` | 2: orchestrator/16, skill-setup/36 | | 1: fusion-session-mark |
+| `tr` | `/usr/bin/tr` | 2: skill-memo/08, skill-migrate/12 | | 5: fusion-commit-lock, fusion-identity, fusion-paths, fusion-rules, fusion-session-domain |
+| `uname` (off the plan's list) | `/usr/bin/uname` | | | 1: monitor |
+| `wc` | `/usr/bin/wc` | 2: skill-migrate/12, skill-post/16 | 1: skill-post/16 | 1: fusion-identity |
+
+Neutral shell fences use 19 watch-listed commands plus `rmdir`, in 28 files; the shell helpers use 20 plus `comm`, `rmdir` and `uname`. Six listed commands occur at no command position in either inventory: `xargs`, `tee`, `uniq`, `chmod`, `readlink`, `realpath`. **What every agent's Setup calls**, read from the table as a floor: `bin/fusion-workbench-root` uses `dirname`; `bin/fusion-rules` uses `awk`, `basename`, `cat`, `dirname`, `grep`, `mktemp`, `rm` and `tr`; `bin/fusion-paths` uses `cat`, `dirname`, `grep`, `mktemp`, `sort` and `tr`. So the one unmeasured command sits on the path every agent's Setup takes. Issue `261105-1023-neutral-shell-blocks-and-carried-helpers-rely-on-commands-outside-priors-guaranteed-six.md` stays open on question 2. The scan's script and every command above re-run from the analysis' `### How to re-run`.
+
+### `REQUESTS.md`'s digest moved
+
+Prior pins this file in its test data, at `tests/testdata/fusion-codec/UPSTREAM.json:291` and `tests/testdata/fusion-fj01/UPSTREAM.json:48`, at `36947f8edc6d42e9d41e6d7eb875c01921da72c98613921343fde557a201b3f9`, which is the file at `aa4277d8`; both lines read the same at `52a2703` and at `d04f457`. `git diff --name-only aa4277d8 a3274f23 -- codec` prints this file alone.
+
+At this request's parent `a3274f239632e5866e2dd9d3f151906fdce80959` the file is 6 713 lines, 1 143 513 bytes, `sha256:ae7021e6442f4898c0383be44f15f07230afbb668bec511f2c09bdd2691daff7`, and `tar -xOf fusion-13.4.2.tar codec/fixtures/prior/REQUESTS.md | shasum -a 256` prints the same, because the tarball was built at the parent. **This section moves the file again and cannot state its own digest**, since a file cannot name the hash of bytes that include the name. The request's commit hash and the `shasum -a 256` of the file at it are reported to fusion's user, who names them to Prior. The bundle's codec, `b4047458…`, is unaffected, and the bundle's copy of this file stays at `ae7021e6…`. Fusion asks for no change to either pin file.
+
+### What Prior is asked to run
+
+**Closes:** on fusion's side, plan `261105-1023-plan-fusion-13-4-2-corrected-candidate.md` once answered; the tag `v13.4.2` and the marketplace bump wait for this answer and for the rulings in `### What fusion does with the answer`. **The evidence form is the one request 77 asked for**: a Prior response document at a Prior commit that names the Prior commit it ran on, the bundle digest it ran, the platform and both source revisions it installed, and gives each of 78.1 to 78.4 and each question below one verdict: accepted, corrected (with the correction), refused, or deferred (naming the Prior item it waits for), with any defect named as such and every limit beside the verdict it limits.
+
+#### 78.1 Inspect, install under explicit trust, activate
+
+As at 77.1, three distinct recorded actions after the sidecar: the sidecar's line against `shasum -a 256` of the tarball; `prior module inspect --archive <hand-over path>/fusion-13.4.2.tar`, comparing the reported identity with `{fusion, 13.4.2, sha256:439142d7…}`; `prior module install --runtime <runtime> --archive <hand-over path>/fusion-13.4.2.tar --trust-digest sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153`; `prior module activate --runtime <runtime> --module fusion --version 13.4.2 --digest sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153`.
+
+**Asked:** Does inspection report exactly that identity and 1 616 files, and does activation verify the complete installed payload, the 35 mode-0500 files included? Does install accept the unchanged `lifecycle_hooks` declaration?
+
+#### 78.2 Load the catalog's entries, the workflows and the hook declaration
+
+As at 77.2: the 25 entries supported on `prior` resolve to their profiles, each naming `schemas/entry-request.v1.json` and `schemas/entry-result.v2.json`; `commit` and `cleanup` are refused by name; `workflows/entry.v2.json` resolves with its ten `requires`; `workflows/explorer.v1.json` resolves; no repair workflow resolves; the declaration's `hooks/hooks.json` is verified against its sha256 and handed to the lifecycle runtime.
+
+**Asked:** Does the loader accept the payload as it stands? Which profile bytes did it bind for each entry? **Do the eight files `catalog/schemas/FROZEN` names at C″ equal the installed ones**, and is none of the eleven paths `catalog/schemas/WITHDRAWN` names found among the installed files?
+
+#### 78.3 Conformance: the class cases, the three deliveries, the guard-state case, a last-status case and a multi-line block
+
+`fusion.entry.v2` through the module process with the ten services and a scripted backend:
+
+- **The class cases and delivery (i) to (iii), as at 77.3**, with the kill at each persisted boundary and the restart.
+- **`probe-issue-c-guard-state`, which must now end `completed`.** A run whose workspace holds a changed `fusion-workbench/.guard-state/staging-drift.json`. Expected: `completed`/`success`, the path in `delta`, its integration standing, and **no** `host.workbench.v1` read of it. This is D-F1's case, on which Prior's issue `261101-2130-fusion-13-4-1-module-reads-every-workbench-json-as-a-control-record.md` stands open.
+- **A last-status case.** A run in which a control record is changed in a commit and deleted in the working tree afterwards, which Prior's reading S60-2 lists as a `D` in `delta`, beside a second record that stays changed. Expected: `completed`/`success`, no read of the deleted record, and one read of the record that stays. No fusion test can show this against a host, because the fake host emits `M` only. Since this case reads a record, it may also reach the first-workbench-read cut limit G1 names as unreached; if it does, the restart there is wanted in the evidence.
+- **A multi-line block through the model's route, if this run can exercise it** (question 3). One case issues a multi-line block as a `host.exec.v1` model tool call, not in the base64 form Prior's replay uses: issue `261104-2239-…` says the replay carries the command base64-encoded, so it does not measure this route. Expected: nothing is presumed. Report the `argv` that reached the container and what the block did. If the run cannot reach this route, for example under limit G3, say so; that is a stated limit on question 3.
+
+**Asked:** For each: the entry, the envelope's status and ending, the service calls the run made and their receipts, the integration answer (or refusal and its code), what the user's branch and checkout hold afterwards, and whether a kill at a persisted boundary and a restart reproduced the envelope with no further role run. Limits G1 to G9 are Prior's to restate as they then stand.
+
+#### 78.4 The identity Prior ran
+
+**Asked:** The bundle digest Prior ran (it must equal `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153`), the tarball sha256 (`f0203558…`), the platform, the selected binary's sha256 (on macOS arm64, expected `7aad13ac…`), the fusion revision and the Prior pin it installed (expected `a3274f23…` and `08c57fb…`), and the Prior host commit it ran on.
+
+### Questions, only what remains open
+
+Numbered within 78.
+
+1. **13.4.2 with the v2 bytes unchanged.** Does Prior accept 13.4.2 with the v2 bytes unchanged and `### The readings, as fusion takes them` as the contract until a v3, or does it need the v3 before fusion's tag? Prior's answer says the v3 "can" take D-F2, D-F3, D-F4 and readings S59-2, S60-1 and S60-3 in the same rebuild; fusion did not carry it here because a bound v3 is refused at three sites on Prior's host: `entryV2Workflow` is the constant `workflows/entry.v2.json` (`Prior: internal/fusionhost/entry_catalog.go:19`), `api.EntryWorkflowCapability` is the constant `fusion.entry.v2` (`ESW:15`), and `resolveEntryV2` (`entry_catalog.go:112`) refuses a profile whose result schema is not the one `Prior: internal/fusionhost/entry_policy.go:81` names. **If a v3:** must the capability move, given those three sites, and what does Prior need in order to bind it?
+2. **The commands beyond the six.** Given the measurement and the inventory, does Prior's guarantee extend to the commands the neutral blocks and helpers use, by widening `helperProbe` (`Prior: internal/supervisor/exec.go:811`, its required keys at `:859`) or otherwise? `ProbeHelperRuntime`'s comment (`exec.go:820`) says the container provides "what fusion's hooks and bin/ helpers start: bash, git, sed, head, od and Node", and the inventory contradicts that: 27 of the 31 shell helpers call `dirname`, and every agent's Setup goes through `bin/fusion-rules`, which uses `awk`, `basename`, `cat`, `dirname`, `grep`, `mktemp`, `rm` and `tr`. The list to answer on is the table's, `comm`, `rmdir` and `uname` included, with `awk` being `mawk` and `rm` not measured by fusion. **Otherwise, which fail?** A neutral block's exit 127 is reported as a host gap and never repaired, as the binding says, so a helper that fails is what fusion needs named.
+3. **A multi-line block through the model's tool form.** Fusion's `prior` parts name `["bash", "-c", "<the block>"]` in 16 parts, and the blocks are multi-line. `toolLines` (`Prior: internal/supervisor/general_tools.go:41`, used for `argv` at `:75`) splits `argv` on line breaks and drops empty lines, so a multi-line block issued through the model tool form does not run as one argument (Prior issue `261104-2239-host-exec-model-tool-cannot-carry-a-multi-line-command.md`, open). This comes from reading the issue and the code; nothing was run. Does Prior fix this on its side in the form the issue proposes, an argv as a JSON array or a `command` field run by `bash -c`, and which form should fusion's text name? **Until then, should fusion's text carry anything different, or does this candidate wait?** If the answer changes `prior` part bytes, that is a new patch version under `### What fusion does with the answer`.
+
+### Stated and not asked
+
+- **S59-2 and the fetch item await fusion's user:** `261105-1023-does-entry-v3-keep-or-drop-the-c-and-r-name-status-branch.md` and `261105-1023-does-the-deferred-fetch-item-hold-a-later-tag.md`, both `open`.
+- **76 question 4 stays deferred** on Prior issue `261023-0835-git-fetch-origin-fails-in-the-container-because-refs-remotes-is-read-only.md`, and this candidate changes nothing about it.
+- **D-F5 is carried for a later release,** as Prior accepted it: moving `hooks/lib/record-write.ts` would move the Claude Code distribution for nothing asked now.
+- **Questions 7 to 11 of 77 ask nothing** of fusion.
+- **`commit` and `cleanup` stay held** `prior: unsupported`, though 76 question 1 is answered: lifting the hold adds entries to Prior's surface, which a correction candidate does not do unasked (`261105-1042-commit-and-cleanup-stay-held-on-prior-though-request-76-question-1-is-answered.md`).
+- **One finding stays filed on fusion's side that bears on this request:** the fake host's last status, under `### D-F1 and the last status`.
+- **The closing review has not run.** The review `261105-1113-reviewer-13-4-2-steps-2-to-4.md` covered `9fcfc148..af36d055`, and its findings were fixed in `c15aeabd` or filed. A review pass over `c15aeabd`, C″ and this section is still to run at fusion's side, and **no review has yet opened C″.** If it changes the bundle, the rule in `### What fusion does with the answer` applies: a new patch version, a new digest and a new request.
+- **Three issues of Prior's own, read at `d04f457`, touch this surface,** and fusion records nothing on Prior's behalf: `261104-2239-host-exec-model-tool-cannot-carry-a-multi-line-command.md` is question 3 above; `261104-2238-entry-host-refuses-setup-because-it-does-not-admit-an-absent-workbench.md` and `261104-2240-post-tool-use-fires-for-a-command-that-exited-non-zero.md` are stated only, and no fusion text changes for them here.
+
+### What fusion does with the answer
+
+- **Accepted:** the answer is recorded here with the Prior commit that holds it. The recorded digest must equal `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153`; an answer naming another digest ran another build and closes nothing of 78. **The tag `v13.4.2` and the marketplace bump follow only on an accepted answer and the user's rulings** on the two decisions under `### Stated and not asked`. **`v13.4.1` is never tagged.**
+- **Corrected:** a further correction that changes the bundle is a new patch version, a rebuild, a new digest and a new request; never an edit of this section. A correction to a frozen asset is a new version beside it, never an edit under the same name. A correction to text alone (a `prior` part) still moves the digest, so it takes the same route.
+- **Refused or deferred:** no tag carries C″, and the user rules.
+- **Question 1** goes to decision `261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md`; if Prior needs the v3 before the tag, that is a later candidate with Prior's host step named, and no 13.4.2 byte has to be undone. **Question 2** goes to issue `261105-1023-neutral-shell-blocks-and-carried-helpers-rely-on-commands-outside-priors-guaranteed-six.md`; if Prior refuses the wider guarantee, the blocks that fail are cut into `claude` and `prior` pairs in a later candidate, with the Claude render byte-unchanged. **Question 3:** an answer that changes `prior` part bytes takes the **Corrected** route above, a new patch version, a rebuild, a new digest and a new request.
+- A defect Prior names in the delivery is filed as an issue in fusion's workbench before the answer is recorded, and the answer is then not "accepted".
+- Until a tag, `main` takes no commit to a shipped file after C″ other than this file. A commit that must land first moves the candidate to a new patch version, under the same route.
+
+### Requests 64 and 67 to 78, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 and 67 to 75 | as `#### Requests 64 and 67 to 76, as they stand` above | the answer sections above |
+| 76 | **corrected** at Prior `52a2703`, answered together with 77. Question 6 is corrected and carried by this section's `prior` parts, with question 2 above on what lies beyond them; question 4 is deferred on Prior issue `261023-0835-…`; every other standing item is accepted and stands | `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` |
+| 77 | **corrected** at Prior `52a2703`, for bundle `sha256:c61f9033485a5389a05c87ac3eda9eec01324a1df4ef9324a3528a46d45a064f`, no tag at C′; its bundle is replaced by 78's | the same response |
+| 78 | **asked**: this section. Bundle `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153` (13.4.2, built at C″ = `a3274f23`, against Prior `08c57fb`), codec `b4047458…`; 78.1 to 78.4 and questions 1 to 3 | — |
+
+These rows supersede the rows of `#### Requests 64 and 67 to 77, as they stand` above, both of them, which stay as they were, this file being append-only. Request 78 is the one request open with Prior, and only an answer naming the 13.4.2 digest answers it.
