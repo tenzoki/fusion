@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6265728e-0c5e-4e7b-be57-39f36258b00b",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261105-1009-prior-answer-76-77-and-corrected-candidate/issues/261105-1453-the-setup-binding-says-the-commands-it-names-use-the-six-though-it-names-the-helper-form-and-its-exit-127-clause-covers-neutral-blocks-only.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "04c7cc02-3219-49da-a268-c0065aed26bd",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261105-1009-prior-answer-76-77-and-corrected-candidate/issues/261105-1453-request-78-counts-seven-red-rows-for-the-old-json-test-though-the-13-4-1-predicate-turns-six.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
