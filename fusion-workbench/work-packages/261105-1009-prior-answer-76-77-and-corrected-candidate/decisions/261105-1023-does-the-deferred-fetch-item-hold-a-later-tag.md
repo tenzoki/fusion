@@ -9,7 +9,7 @@
 
 ## Question
 
-Prior defers 76 question 4 on its issue `261023-0835-git-fetch-origin-fails-in-the-container-because-refs-remotes-is-read-only.md`. The command container runs `--network none`, so `news` cannot fetch and ends at exit 6, as `skill-news`'s `prior` part already says. Request 77 `### What fusion does with the answer` says of a deferred item: no tag carries the candidate, and the user rules. D-F1 ruled out a tag at C′ regardless, but the question comes back once Prior answers on 13.4.2. This is the user's ruling.
+Prior defers 76 question 4 on its issue `foreign:F09-Prior:261023-0835-git-fetch-origin-fails-in-the-container-because-refs-remotes-is-read-only.md`. The command container runs `--network none`, so `news` cannot fetch and ends at exit 6, as `skill-news`'s `prior` part already says. Request 77 `### What fusion does with the answer` says of a deferred item: no tag carries the candidate, and the user rules. D-F1 ruled out a tag at C′ regardless, but the question comes back once Prior answers on 13.4.2. This is the user's ruling.
 
 ## Options
 
