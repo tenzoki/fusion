@@ -1,1 +1,1 @@
-V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
+V="$(sed -nE 's/.*"version": *"([^"]+)".*/\1/p' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -n 1)"

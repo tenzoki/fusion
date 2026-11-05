@@ -26,3 +26,6 @@ Add a test that runs `priorTokenHits` over every `prior` part of every profile, 
 - `cd catalog && npm test` exits 0 on the tree as it stands.
 
 Also seen: 261025-2352 by reviewer — at `ec6c968e` the gap covers the 210 `prior` parts of the sixteen skill profiles too (all `prior: unsupported`), and `catalog/README.md` ("held to the same lints … the narrower Prior lint") and `eab95b30` ("skill parts are covered as they land") overstate it; no hit today with all sixteen set supported in a scratch copy.
+
+---
+Resolved: `catalog/src/__tests__/render.test.ts` `no prior part of any profile carries a Claude token` runs `priorTokenHits` over every `prior` part, include lines removed, whatever the support state, and an `AskUserQuestion` inserted into `skill-commit/parts/01-prior.md` in a scratch copy turned it red. The services half of the fix direction is not built, as the acceptance does not ask for it; `checkEntries` reads every supported entry already.

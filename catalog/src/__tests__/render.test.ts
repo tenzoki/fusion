@@ -327,6 +327,19 @@ describe("host tokens", () => {
     expect(priorTokenHits(`${helperCall}Run /fusion:setup first.\n`)).toEqual(["slash command"]);
   });
 
+  // Over the parts themselves, whatever the support state: the live render below
+  // reads only what is supported, so a part held unsupported had no lint at all.
+  it("no prior part of any profile carries a Claude token, include lines removed", () => {
+    const hits = partsOf("prior").flatMap((p) => {
+      const text = readFileSync(p.path, "utf8")
+        .split("\n")
+        .filter((line) => !INCLUDE_DIRECTIVE.test(line))
+        .join("\n");
+      return priorTokenHits(text).map((hit) => `${p.id}/${p.file}: ${hit}`);
+    });
+    expect(hits).toEqual([]);
+  });
+
   it("a neutral part with the same helper call still fails the neutral lint", () => {
     expect(tokenHits(helperCall)).toEqual(["$FUSION_PLUGIN_ROOT", "bin/ helper path", "bin/ helper bare word", "$OUT_*/$SCAN_*"]);
     expect(tokenHits("Read every path fusion-rules emits.\n")).toEqual(["bin/ helper bare word"]);

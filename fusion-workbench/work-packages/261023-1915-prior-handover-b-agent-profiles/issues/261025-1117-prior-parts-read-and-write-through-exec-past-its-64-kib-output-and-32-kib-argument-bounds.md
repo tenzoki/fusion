@@ -24,3 +24,6 @@ State the two bounds once in each Setup binding: read an install-tree file in pi
 - `cd catalog && npm test` exits 0; the Claude render diff is empty.
 
 Also seen: 261025-2352 by reviewer — the sixteen skill bindings (`skill-*/parts/01-prior.md`) already read in chunks under 64 KiB, while the eleven agent Setup parts still read with `["cat", "<path>"]` at `ec6c968e`, so the one binding now has two variants.
+
+---
+Resolved: every agent Setup binding reads the install tree with `["sed", "-n", "<from>,<to>p", "<path>"]`, in pieces under the 64 KiB output bound with a truncation notice meaning read the rest, and `policy-curator/parts/07-prior.md` and `47-prior.md` take the same form; `reviewer/parts/17-prior.md` and `state-auditor/parts/03-prior.md` state the 32 KiB argument bound and the chunked write; `catalog/src/__tests__/prior-commands.test.ts` refuses a `["cat"` argv.

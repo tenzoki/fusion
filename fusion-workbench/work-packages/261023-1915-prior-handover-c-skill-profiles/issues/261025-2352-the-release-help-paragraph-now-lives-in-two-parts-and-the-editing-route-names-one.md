@@ -22,3 +22,6 @@ Re-cut span 21 so that the release notes sit in a `neutral` part, with `fusion -
 
 - One edit, to one part, updates both renders' release notes, or a test fails when they differ.
 - `cd catalog && npm test` exits 0, and the Claude render diff stays empty.
+
+---
+Resolved: `catalog/src/__tests__/prior-commands.test.ts` `the release help parts` holds the ordered version tokens of `skill-help/parts/21-claude.md` and `21-prior.md` equal, so a release that edits one part turns it red. It compares the version tokens and not the wording, because the two already differ by the host's slash-command tokens.

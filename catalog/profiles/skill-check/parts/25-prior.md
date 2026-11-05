@@ -1,1 +1,1 @@
-  [ -f ./fusion.json ] || { cp "$FUSION_PLUGIN_ROOT/templates/fusion.json" ./fusion.json && echo "fusion.json template copied — declares nothing and inherits fusion's own defaults until you edit it"; }
+  [ -f ./fusion.json ] || { node -e 'require("fs").copyFileSync(process.argv[1],process.argv[2])' "$FUSION_PLUGIN_ROOT/templates/fusion.json" ./fusion.json && echo "fusion.json template copied — declares nothing and inherits fusion's own defaults until you edit it"; }
