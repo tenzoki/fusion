@@ -14,3 +14,5 @@ README-agents.md's catalog row still names repair.v1 as one of "the two workflow
 - The row names the workflow set without a count, or derives it (`ls catalog/workflows`), per `rules/critical-stance.md` §5, and names no withdrawn asset as live.
 - It says that `FROZEN` holds published assets, some of them proposals not yet accepted, and that `WITHDRAWN` records the withdrawn ones; or it points at `catalog/README.md` `## The frozen assets` and restates nothing.
 - `cd hooks && npm test` and `cd catalog && npm test` exit 0.
+---
+Resolved: `README-agents.md` `## Plugin structure`, the `catalog/` row, names the `workflows/` directory without a count and no withdrawn asset, and points at `catalog/README.md` `## The frozen assets` for `schemas/FROZEN` and `schemas/WITHDRAWN`; plan `261105-1023-plan-fusion-13-4-2-corrected-candidate.md` step 4.

@@ -348,6 +348,12 @@ asks for one. Its workbench read answers `permission-denied` for a path
 `controlrecord.Select` refuses, as Prior's read admission does, so a module
 that reads anything but a control record ends refused here as well.
 
+Under the 13.4.2 candidate the v2 assets stay byte-frozen, so the module's
+reading of them above can differ from their text. Prior's readings in request
+78 (`codec/fixtures/prior/REQUESTS.md`) state where the text and the host
+differ. A v3 is pending decision
+`261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md`.
+
 ## Testing
 
 `stage.sh test` runs, inside the clone:

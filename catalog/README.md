@@ -123,6 +123,12 @@ withdrawn name is never published again; a successor is a new version. In
 `schemas/entry-result.v1.json` (bytes at `ca9eb60d`), under decision
 `261027-1833-does-fusion-keep-the-repair-route-on-prior-beside-the-step-17-entry-model.md`.
 
+Under the 13.4.2 candidate the v2 assets, `workflows/entry.v2.json` and
+`schemas/entry-result.v2.json`, stay byte-frozen. Where their text and Prior's
+host differ, Prior's readings in request 78 (`codec/fixtures/prior/REQUESTS.md`)
+state the difference. A v3 is pending decision
+`261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md`.
+
 ## Editing a converted prompt
 
 `agents/code-implementer.md`, `agents/reviewer.md`, `agents/state-auditor.md`,
