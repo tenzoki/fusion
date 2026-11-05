@@ -2,14 +2,16 @@
 // parts carry one list of versions.
 //
 // Prior's answer to request 76 question 6: Prior guarantees `bash`, `node`,
-// `git`, `sed`, `head` and `od`, and a `prior` part may rely on those alone.
+// `git`, `sed`, `head` and `od`, and a `prior` part's own commands use those
+// alone. Request 78 question 2 widens the guarantee to the presence of its
+// table's commands, for what neutral blocks and helpers run; Prior's check for
+// that is not measured, so the rule on a part's own commands stays the six.
 //
 // This reads a watch list, so it proves nothing about a command outside the
 // list, or about one built at run time, which no text scan can see. An include
 // line is dropped and not expanded, so a rule it brings in is not read. It reads
 // `prior` parts only: what a neutral block or a bin/ helper starts is
-// 261105-1023-neutral-shell-blocks-and-carried-helpers-rely-on-commands-outside-priors-guaranteed-six.md,
-// and request 78 asks Prior about those.
+// 261105-1023-neutral-shell-blocks-and-carried-helpers-rely-on-commands-outside-priors-guaranteed-six.md.
 
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
@@ -31,7 +33,7 @@ const WATCHED = "python3 shasum awk find sort mktemp date ls cat tail wc grep cu
 
 /** The sentence every Setup binding carries. It names `date` so that a rule's form is translated. */
 const BINDING_SENTENCE =
-  "Prior guarantees `bash`, `node`, `git`, `sed`, `head` and `od` in this container (request 76, question 6); the commands this binding names use those alone. A neutral block may run others, and one that ends with exit 127 has met a host gap: report the command it names, and never repair the gap. Where a rule says `date +%y%m%d-%H%M`, use `[\"bash\", \"-c\", \"printf '%(%y%m%d-%H%M)T\\\\n' -1\"]`.";
+  "Prior guarantees the presence of the commands fusion's text uses, by the list in request 78, question 2, and not their behaviour; once its check ships, it refuses a missing one by name at run start. A `command not found` met anyway, from a block or a helper and at whatever exit, is a host gap: report the command it names, and never repair the gap. Where a rule says `date +%y%m%d-%H%M`, use `[\"bash\", \"-c\", \"printf '%(%y%m%d-%H%M)T\\\\n' -1\"]`.";
 
 /** A hit here is not a command the part runs. Each row is one exact span of one file; the rest of the file is read. */
 const EXEMPT: { file: string; span: string; word: string; why: string }[] = [
@@ -142,10 +144,35 @@ describe("a prior part's own commands", () => {
     expect(partHits(file, `${text}\n${real}`)).toContain(word);
   });
 
-  it("every Setup binding states the six and the clock call", () => {
+  it("every Setup binding states the guarantee and the clock call", () => {
     const setup = parts.filter(({ text }) => text.includes('["bash", "-c", "pwd"]'));
     expect(setup.length).toBeGreaterThan(0);
     for (const { file, text } of setup) expect(text, file).toContain(BINDING_SENTENCE);
+    expect(parts.filter(({ text }) => text.includes(BINDING_SENTENCE))).toHaveLength(25);
+  });
+
+  it("no binding says a form it names uses the six alone, or limits a host gap to exit 127", () => {
+    const stale = /use those alone|ends with exit 127|`od` in this container/;
+    expect(parts.filter(({ text }) => stale.test(text)).map(({ file }) => file)).toEqual([]);
+  });
+
+  it("the host-gap clause covers a block and a helper, at any exit", () => {
+    expect(BINDING_SENTENCE).toContain("from a block or a helper and at whatever exit");
+    expect(BINDING_SENTENCE).toContain("by the list in request 78, question 2");
+  });
+
+  it("the list the binding points at holds the 26 commands, all of them watched", () => {
+    const requests = readFileSync(join(CATALOG, "../codec/fixtures/prior/REQUESTS.md"), "utf8");
+    const from = requests.indexOf("**The inventory, a text scan and so a floor.**");
+    const table = requests.slice(from, requests.indexOf("Neutral shell fences use", from));
+    const listed = [...table.matchAll(/^\| `([a-z0-9]+)`/gm)].map((m) => m[1]);
+    expect(listed).toHaveLength(26);
+    expect(listed.filter((c) => !WATCHED.includes(c))).toEqual([]);
+  });
+
+  it("no part names the one-argument-per-line form for host.exec.v1", () => {
+    const lineForm = /argument[s]? per line|per-line argv|line form|argv[^.]*one per line/i;
+    expect(parts.filter(({ text }) => lineForm.test(text)).map(({ file }) => file)).toEqual([]);
   });
 
   // The rows that show each check turns red on an inserted violation.
@@ -273,7 +300,30 @@ describe("the intermediate-file instruction a Prior run receives", () => {
     const rule = readFileSync(join(fusionRoot, "rules/fusion-workbench-conventions.md"), "utf8");
     const body = rule.slice(rule.indexOf("## Intermediate files"), rule.indexOf("## Security"));
     expect(body).toContain("`bin/fusion-tmp path`");
-    expect(body).toMatch(/Prior: `\/tmp`, one run only\./);
+    expect(body).toMatch(/Prior: `\/tmp` via shell, one run only\./);
+  });
+
+  // The reviewer's dispatch path has no margin, so this section does not grow.
+  it("the rule section's text stays at 208 bytes", () => {
+    const rule = readFileSync(join(fusionRoot, "rules/fusion-workbench-conventions.md"), "utf8");
+    const body = rule.slice(rule.indexOf("## Intermediate files") + "## Intermediate files\n\n".length, rule.indexOf("## Security"));
+    expect(Buffer.byteLength(body)).toBeLessThanOrEqual(208);
+  });
+
+  // A file tool under /tmp is refused, and on the native route that ends the run.
+  it("no prior part sends a file tool to /tmp", () => {
+    const profiles = readdirSync(join(CATALOG, "profiles"));
+    const offenders = profiles.flatMap((id) =>
+      readdirSync(join(CATALOG, "profiles", id, "parts"))
+        .filter((f) => f.endsWith("-prior.md"))
+        .flatMap((f) =>
+          readFileSync(join(CATALOG, "profiles", id, "parts", f), "utf8")
+            .split("\n")
+            .filter((line) => /\/tmp/.test(line) && /file tool|file\.[a-z]+\b/.test(line))
+            .map(() => `${id}/${f}`),
+        ),
+    );
+    expect(offenders).toEqual([]);
   });
 
   it("no part a Prior render holds runs bin/fusion-tmp", () => {
