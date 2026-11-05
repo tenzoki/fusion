@@ -992,7 +992,8 @@ func TestTheNameStatusCheckIsTheSchemasPattern(t *testing.T) {
 // The control records are the paths controlrecord.Select names, each once in
 // the order it first appears, read when the last status, in commit order and
 // then the delta, is not D. The rows are D-F1's and the cases of Prior's
-// entryControlRecord and entryControlRecords at 52a2703.
+// entryControlRecord and entryControlRecords at 52a2703, except the rename and
+// copy rows, marked below.
 func TestControlRecordsAreTheCodecsNamesByLastStatus(t *testing.T) {
 	wb := fixture.WorkbenchPrefix
 	one := func(changes ...string) []Commit { return []Commit{{Changes: changes}} }
@@ -1022,6 +1023,8 @@ func TestControlRecordsAreTheCodecsNamesByLastStatus(t *testing.T) {
 		{name: "A then D across commits", commits: []Commit{{Changes: []string{"A\t" + wb + "a.record.json"}}, {Changes: []string{"D\t" + wb + "a.record.json"}}}},
 		{name: "D then A, read once", commits: []Commit{{Changes: []string{"D\t" + wb + "a.record.json"}}, {Changes: []string{"A\t" + wb + "a.record.json"}}}, want: []string{"a.record.json"}},
 		{name: "changed twice, read once", commits: one("M\t" + wb + "a.record.json"), delta: []string{"M\t" + wb + "a.record.json"}, want: []string{"a.record.json"}},
+		// The module's own reading of v2's name_status: Prior never emits these
+		// lines and its selection would not read them.
 		{name: "a rename reads the new path and not the old", commits: one("R100\t" + wb + "old.record.json\t" + wb + "new.record.json"), want: []string{"new.record.json"}},
 		{name: "a rename leaves a path changed earlier deleted", commits: []Commit{{Changes: []string{"M\t" + wb + "old.record.json"}}, {Changes: []string{"R100\t" + wb + "old.record.json\t" + wb + "new.record.json"}}}, want: []string{"new.record.json"}},
 		{name: "a copy reads the new path and leaves the old as it was", commits: []Commit{{Changes: []string{"M\t" + wb + "old.record.json"}}, {Changes: []string{"C75\t" + wb + "old.record.json\t" + wb + "new.record.json"}}}, want: []string{"old.record.json", "new.record.json"}},

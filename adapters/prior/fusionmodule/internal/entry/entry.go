@@ -527,11 +527,13 @@ func validPaths(line string) bool {
 // names, each once, relative to the workbench, in the order each first
 // appears. controlrecord.Select decides what is a control record. A record is
 // read when its last status, in commit order and then in the delta, is not D:
-// the host's read admission selects the same way (Prior's
-// entryControlRecords, request 77 question 12 (a)), so a record deleted after
-// it was changed is one the host refuses. A line's path is its last field, the
-// new path of a C or R line; an R line also leaves its old path deleted, and a
-// C line leaves its old path as it was.
+// on A, D, M and T lines the host's read admission selects the same way
+// (Prior's entryControlRecords, request 77 question 12 (a)), so a record
+// deleted after it was changed is one the host refuses. A line's path is its
+// last field. C and R lines are the module's own reading of v2's name_status,
+// which Prior never emits and its selection would not read: the path is the
+// new one, an R line also leaves its old path deleted, and a C line leaves its
+// old path as it was.
 func controlRecords(commits []Commit, delta []string) []string {
 	var lines []string
 	for _, c := range commits {

@@ -296,9 +296,11 @@ admission is the host's and is not repeated. Then, in order:
    and `controlFiles`, Prior's `entryControlRecord`; read relative to the
    workbench), each under slot `record:<path>`, as an observation. A record
    is read when its last status, in commit order and then in the delta, is
-   not `D`, as Prior's read admission selects, so a record changed and then
-   deleted is not read; an `R` line leaves its old path deleted. A read the
-   host refuses ends the envelope refused, and the integration stands.
+   not `D`, as Prior's read admission selects on `A`, `D`, `M` and `T`
+   lines, so a record changed and then deleted is not read. `R` and `C` lines
+   are the module's own reading of v2's `name_status`, which Prior never emits
+   and its selection would not read: the new path is the one read, and an `R`
+   line leaves its old path deleted. A read the host refuses ends the envelope refused, and the integration stands.
 
 The module checks the integrate answer before it copies anything:
 `run_id` is the run's; `base` is the workspace's `base_revision`;
