@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0be83f66-7538-45ec-b6f9-1859696ff84c",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261105-1009-prior-answer-76-77-and-corrected-candidate/issues/261105-1113-the-setup-binding-says-this-texts-commands-use-the-six-though-its-neutral-blocks-run-others.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

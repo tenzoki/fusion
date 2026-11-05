@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "3a40c7d4-16ff-4bd9-9568-4c2bafb79af4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261105-1009-prior-answer-76-77-and-corrected-candidate/issues/261105-1113-the-module-and-its-test-call-the-r-and-c-rule-prior-s-though-prior-s-selection-ignores-those-lines.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
