@@ -21,3 +21,5 @@ A Prior implementer who follows the frozen text derives a different id than the 
 - The v3 workflow's `operation_id` text names the invoked host service's capability and no workflow capability.
 - `REQUESTS.md` carries, appended after request 77 or in the request that delivers the v3, a line telling Prior the v2 gloss is wrong, before any answer to 77 is recorded as accepted.
 - `cd catalog && npm test` exits 0, and `git diff --exit-code -- catalog/workflows/entry.v2.json` exits 0.
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open and narrowed: the request half is done by `ebd16cdb` and Prior's answer to request 77 question 14 confirms it; the remaining acceptance is v3 text, pending 261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md.

@@ -21,3 +21,6 @@ Either package F keeps the span map's twelve numbers verbatim in request 76, and
 
 - Every "(request 76, …)" citation in a `prior` part resolves to the question it means in the committed request 76.
 - `skill-discuss/parts/09-prior.md` cites the run-spanning question.
+
+---
+Resolved: commit `cd4970b5` keeps the span map's numbers in `codec/fixtures/prior/REQUESTS.md` `### Questions for Prior`. Read one by one at `04672b06`, the 17 remaining "(request 76, question N)" citations in `prior` parts each name the question they mean (1 four times, 3 twice, 4 three times, 5 twice, 6, 7, 9 twice, 10, 11); the others moved to "(request 77, question 5)", whose four points cover them. `catalog/profiles/skill-discuss/parts/09-prior.md` cites 11 since `ccd676d2`.

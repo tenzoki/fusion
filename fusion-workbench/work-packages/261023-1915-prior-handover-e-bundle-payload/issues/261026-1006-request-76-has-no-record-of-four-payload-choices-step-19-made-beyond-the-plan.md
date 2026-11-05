@@ -24,3 +24,6 @@ Of the four, only the link has a written home: `adapters/prior/README.md` `## Bu
 - Request 76 names the shared `bin/` as part of the mount list Prior is asked to widen. That covers the module's own launcher and binaries inside `/opt/fusion/bin`. Prior accepts it or asks for a split.
 - Request 76's `**The bundle**` item says the install tree is read from the git index at the build commit, so the bytes equal `HEAD` on a clean build.
 - `git diff --numstat -- codec/fixtures/prior/REQUESTS.md` shows additions only, as step 25 requires.
+
+---
+Resolved: commit `cd4970b5` carries all four in `codec/fixtures/prior/REQUESTS.md` `## Full fusion surface (request 76)`, additions only (235 and 0 by numstat): the H8 row names the payload as the install tree minus git links, the one link, `install_tree_omitted`, Prior's `InspectBundle` refusal and the shared `bin/` in the mount list, and `### The bundle` says the tree is read from the git index. Prior accepts H8 and decision 2, the shared `bin/` as it is (`Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` at `52a2703`, `### H rows`).

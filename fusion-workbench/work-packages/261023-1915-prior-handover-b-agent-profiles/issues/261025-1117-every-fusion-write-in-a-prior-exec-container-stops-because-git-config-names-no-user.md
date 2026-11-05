@@ -33,3 +33,6 @@ Request 76 asks Prior to make the user's git identity resolvable inside the exec
 - If fusion adds the Setup line, `cd catalog && npm test` exits 0 and the Claude render diff is empty.
 
 Also seen: 261025-2352 by reviewer — `skill-memo/parts/01-prior.md` makes memo halt on it; and a run cannot set the identity itself, because `execPrelude` (Prior `08c57fb` `internal/supervisor/exec.go`) rewrites `$HOME/.gitconfig` with `>` before every call, so a `git config --global` from one call is gone at the next.
+
+---
+Resolved: request 76 question 16 carried the identity question and the `.checkout-id` carry, and Prior accepts both (`Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` at `52a2703`, `### Questions 1 to 19, except 17`). At `52a2703`, `identityPrelude` in `Prior: internal/supervisor/exec.go` writes `user.name` and `user.email` beside `safe.directory`, `fusionGitIdentity` in `Prior: cmd/prior/fusion_run.go` supplies them, `TestExecGitIdentityWrittenBesideSafeDirectory` holds it, and `EntryCarriedReadOnly` carries the id. Prior's limits G3 and G7 stay on this: the Docker variant did not run, so no `fusion-write` has been shown to land inside the container.

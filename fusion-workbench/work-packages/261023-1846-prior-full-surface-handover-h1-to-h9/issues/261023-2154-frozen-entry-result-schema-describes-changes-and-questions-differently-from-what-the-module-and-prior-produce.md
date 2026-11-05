@@ -30,3 +30,6 @@ Either way, request 76 must ask Prior who assembles an entry run's `questions`.
 **Acceptance.**
 - Under (a): the two descriptions match the module's behaviour; `FROZEN` carries the new hashes; `cd /Users/kai/Projects/productive/F04-FUSION/fusion/catalog && npm ci && npm test` exits 0.
 - Under (b): plan step 25's request text names both discrepancies and the question. In both cases the name-status branch of `controlRecords` is either removed or its comment says which input produces that form.
+
+---
+Resolved: route (b) of the fix direction. `schemas/entry-result.v1.json` is withdrawn (`catalog/schemas/WITHDRAWN`) and `catalog/schemas/entry-result.v2.json` states name-status as the host assembles it and questions as read from the host's receipts; request 76 question 15 (`codec/fixtures/prior/REQUESTS.md` `### Questions for Prior`) carried both discrepancies and the question, and Prior's answer accepts both as host-assembled (`Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` at `52a2703`, `### Questions 1 to 19, except 17`); the comment on `controlRecords` in `adapters/prior/fusionmodule/internal/entry/entry.go` names the integration as the input of that form.

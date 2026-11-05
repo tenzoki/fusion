@@ -29,3 +29,5 @@ Write the rule into `catalog/README.md`, beside the profile keys, and cite the o
 
 - `catalog/README.md` states how a profile's `tools_ceiling` and `writes_workbench` are chosen.
 - Each skill profile's values follow that rule, or the README names the exception.
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open: 261025-1117-how-does-a-read-only-role-write-the-workbench-on-a-prior-entry-run.md is answered and Prior accepts the grant (decision 6), but `catalog/README.md` still states no rule, and changing `tools_ceiling` changes what Prior's policy grants, which no Prior answer asks for in this candidate.

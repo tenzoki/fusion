@@ -25,3 +25,5 @@ Either `fusion-write evidence` takes the host and policy from an explicit flag o
 
 - An evidence record written from a Prior entry run carries `host: "prior"`, `execution_policy: "prior-enforced"`, and a subject tree that contains the reviewed change; or request 76's H-row table names the difference with fusion's reason.
 - `hooks` `npm test` exits 0 if `hooks/` changes.
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open as D-F5: Prior accepts H3's difference and says fusion fixes it in a later release (`Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` at `52a2703`, `### H rows`); `hooks/lib/record-write.ts` moves `hooks/dist`, so the Claude distribution, for something Prior does not ask for now.

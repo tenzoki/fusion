@@ -24,3 +24,5 @@ Give the reviewer's entry-run branch one rule for an uncommitted scope, for exam
 - A reviewer entry run dispatched over uncommitted files has a stated header form that names what it opened.
 - The orchestrator's `48e-prior.md` coverage line reads that form.
 - `cd catalog && npm test` exits 0, and the Claude render diff stays empty.
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open with its direction changed: Prior's answer to request 76 questions 1 and 19 allows a commit per task inside a run, and this issue's fix direction says that re-cuts these parts instead. Choosing that changes the orchestrator's behaviour on Prior and needs its own plan.

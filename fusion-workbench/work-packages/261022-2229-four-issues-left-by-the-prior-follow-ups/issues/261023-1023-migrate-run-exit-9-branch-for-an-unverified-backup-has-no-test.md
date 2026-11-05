@@ -24,3 +24,5 @@ Code-implementer. Add one `run` case beside the exit-3 case: seed `<session>/bac
 
 - `cd hooks && npm test` green, the new `run` exit-9 case among them.
 - Temporarily deleting the `if (e instanceof BackupUnverified) …` line in `run` turns the new case red (stated in the report, not committed).
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open: `hooks/lib/__tests__/migrate.test.ts` still drives exit 9 through `repair` alone. Unrelated to Prior's answer, and the test would spend the hook-test growth bound for no part of it.

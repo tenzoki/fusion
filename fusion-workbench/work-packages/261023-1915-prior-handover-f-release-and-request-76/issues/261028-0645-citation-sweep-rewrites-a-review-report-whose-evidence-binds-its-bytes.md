@@ -11,3 +11,5 @@ So two checks in the suite contradict each other on any review report that carri
 Fix, one of: the sweep refuses (or skips, and names) a report whose evidence record binds its bytes; or `citation-sweep.test.ts` exempts evidence-bound reports, as the lint already reads them; or the codec gains a supported re-record path for a report whose diff is citation respelling only.
 
 Acceptance: on a fixture review report with a store-prefixed citation and an evidence record, `npm test` in `hooks/` is green without any evidence record being deleted or replaced.
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open: `hooks/citation-sweep.ts` still refuses nothing on that ground, and Prior's answer does not touch it, so a `hooks/` change would move Claude distribution bytes for nothing Prior asked.

@@ -27,3 +27,5 @@ Cut the six sentences into `claude` + `prior` pairs, or reword them host-neutral
 
 - The Prior render of `orchestrator` names no per-task commit outside a `claude` part.
 - `cd catalog && npm test` exits 0, and the Claude render diff stays empty.
+
+Also seen: 261105-1042 by data-implementer — triaged in 261105-1023-plan-fusion-13-4-2-corrected-candidate.md, stays open: the same fork as 261025-2352-a-reviewer-entry-run-over-uncommitted-files-has-no-reviewed-range-to-write.md. If per-task commits come on Prior, these sentences become true.
