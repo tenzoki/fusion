@@ -11,3 +11,5 @@ Needs the user's ruling on timing before any edit. Either correct `entry.v2.json
 Fix: a control path is read when its **last** status, in commit order and then in the delta, is not `D`.
 
 Acceptance: a test row in `TestControlRecordsAreTheWorkbenchJSONPathsNotDeleted` with `M` on a control path in a commit and `D` on the same path in the delta yields no read of that path, and turns red when the rule is reverted. The definition's sentence states the last-status rule. `FUSION-MODULE` and `FUSION-CATALOG` exit 0.
+
+Also seen: 261105-1034 by code-implementer — module half fixed; the asset half waits for the v3

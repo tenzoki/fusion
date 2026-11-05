@@ -41,6 +41,7 @@ whose `adapters/prior/README.md` describes them.
 | `fusionmodule/internal/explorer/` | The explorer workflow: interprets `workflows/explorer.v1.json` on the step executor and serves `fusion.explorer.v1`. |
 | `fusionmodule/internal/hostsvc/` | The client of the host services the entry workflow calls under the request-69 common contract: `host.role.compose.v1`, `host.workspace.v1`, the `read` and `page` actions of `host.workbench.v1`, and `host.entry.integrate.v1`, fusion's proposal in request 77, with a closed decoder of its answer. One method each over the workflow's `HostCaller`, every request the SDK's `api.RepairCall` marshalled once per slot so a replay sends the same bytes. No client for the three entry services: they are the role run's tools, not the module's calls. |
 | `fusionmodule/internal/entry/` | The entry workflow: interprets `workflows/entry.v2.json` over the step executor and the client and serves `fusion.entry.v2`; five steps, the run's role taken from the invocation's entry through the catalog's entries, the run read before it is run on restart; see `### The entry workflow`. |
+| `fusionmodule/internal/controlrecord/` | One pure function, `Select`: which changed path names a workbench control record. The codec's rule and Prior's. The entry workflow selects with it and the fake host admits a read with it. A leaf, because `internal/hostsvc` and `internal/steps` have in-package tests that import `internal/fixture`. |
 | `fusionmodule/internal/fixture/` | Test support only: a payload built from `catalog/` (its schema and workflow lists read from `catalog/schemas/FROZEN` and `workflows/*.v<n>.json`, optionally with named entries made supported on prior and given a profile), a fake host with in-memory durable `host.role.*` services, and an entry fake host that serves compose, workspace, the workbench reads and `host.entry.integrate.v1` to the module over the call journal of `journal.go`, and `host.question.v1`, `host.exec.v1` and `host.dispatch.v1` to a scripted role run. Not linked into the executable. |
 | `fusionmodule/conformance/` | The conformance suite: starts the launcher from a bundle `build.sh` wrote and drives the two workflows through `moduleapi/v1` against the fake host; see `### Conformance against a built bundle`. |
 | `testdata/hook-payloads/` | The hook payloads the hook-layout conformance case feeds the carried hooks; see the same section. |
@@ -288,18 +289,25 @@ admission is the host's and is not repeated. Then, in order:
    effect the host checks every changed workbench control record with its
    qualified codec; the definition names that check as Prior's duty;
 5. `workbench`: one `host.workbench.v1` `read`, paged, per control record
-   among the paths of `commits[].changes` and `delta` whose status is not
-   `D` (a path under `fusion-workbench/` ending in `.json`, read relative to
-   the workbench), each under slot `record:<path>`, as an observation. A
-   read the host refuses ends the envelope refused, and the integration
-   stands.
+   among the paths of `commits[].changes` and `delta` (a path under
+   `fusion-workbench/` whose last segment is `package.json` or ends
+   `.record.json` or `.evidence.json`, with no segment starting with a dot
+   and a first segment that is not `archive`: the codec's `isControlFile`
+   and `controlFiles`, Prior's `entryControlRecord`; read relative to the
+   workbench), each under slot `record:<path>`, as an observation. A record
+   is read when its last status, in commit order and then in the delta, is
+   not `D`, as Prior's read admission selects, so a record changed and then
+   deleted is not read; an `R` line leaves its old path deleted. A read the
+   host refuses ends the envelope refused, and the integration stands.
 
 The module checks the integrate answer before it copies anything:
 `run_id` is the run's; `base` is the workspace's `base_revision`;
 `reference` is not empty; `commits` is empty exactly when `head` equals
 `base`, and otherwise its last commit is `head`; every commit is a commit
 hash with a subject; and every `changes` and `delta` line is in name-status
-form, the pattern of `entry-result.v2.json`'s `$defs/name_status`. A receipt
+form, the pattern of `entry-result.v2.json`'s `$defs/name_status`, with no
+path holding an empty, `.` or `..` segment, the definition's own "valid
+relative path", which that frozen pattern does not state. A receipt
 that fails a check ends the envelope refused `integration.invalid`. A host
 refusal ends it refused `integration.refused`, the host's capability, slot
 and code in the detail, with nothing integrated; `recovery-required` stays
@@ -336,7 +344,9 @@ The fake host of `internal/fixture` accepts these request forms through
 decoder refuses, and serves the integrate call from the scripted run: the
 commits each scripted command makes, with its subject and paths, and the
 run's uncommitted paths as the delta, or a conflict refusal when a test
-asks for one.
+asks for one. Its workbench read answers `permission-denied` for a path
+`controlrecord.Select` refuses, as Prior's read admission does, so a module
+that reads anything but a control record ends refused here as well.
 
 ## Testing
 
@@ -439,7 +449,8 @@ scripted role run. The cases:
   the frozen role input and the envelope must validate against the
   payload's `entry-request.v1.json` and `entry-result.v2.json`. The three
   delivery cases of `internal/entry` run again from the launcher started as
-  Prior's host starts it. A payload check confirms that the installed
+  Prior's host starts it, with a fourth: a guard-state file and a control
+  record both in `delta`, of which only the record is read. A payload check confirms that the installed
   payload's `workflows/` holds exactly `explorer.v1.json` and
   `entry.v2.json`, that its schemas are exactly `FROZEN`'s at the build
   commit, that no path `catalog/schemas/WITHDRAWN` names is in it, and that
@@ -462,16 +473,20 @@ scripted role run. The cases:
   checkout identifier. The session runs SessionStart fresh, then resumed,
   then the PreToolUse/PostToolUse pairs with the tool effects applied between
   them. The SubagentStop payloads go where the payload README places them.
-  The Bash pair runs after the first workbench record is written, followed
-  by one commit, so that the staging drift and the review-coverage gap are
-  both reached. After every command, the exit code, stdout, stderr, the set
+  The Bash pair runs after the first workbench record is written and one
+  commit, as that README's `## Order` states, so that the staging drift and
+  the review-coverage gap are both reached. After every command, the exit code, stdout, stderr, the set
   of paths the command wrote and every file under the run directory (outside
   `.git`) must be equal between the two runs. Before the comparison, four
   things are normalised: the run directory, the plugin root, the minted
   checkout identifier, and the stamps (ISO-8601 date-times and epoch
   milliseconds). The payload must not change. Eight event rows
   (`session_start` to `review_coverage`) and the four env exports must be
-  in the plugin-tree run's final files, so the equality is not vacuous. Every reply is then classified as Prior reads
+  in the plugin-tree run's final files, so the equality is not vacuous. In
+  both runs the session must leave `.guard-state/staging-drift.json`, and
+  `controlrecord.Select` must refuse every `.json` it left under the
+  workbench, which measures on fusion's side what limit G4 of Prior's answer
+  to requests 76 and 77 left as an inference. Every reply is then classified as Prior reads
   it, as `empty`, `text` or one JSON object with its field paths. It has to
   lie inside `protocol_subset`: `text` on SessionStart only,
   `additionalContext` on PostToolUse only, and `hookEventName` naming the

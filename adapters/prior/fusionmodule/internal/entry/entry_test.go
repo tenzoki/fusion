@@ -939,6 +939,12 @@ func TestEveryReceiptCheckRefusesAnIntegrationThatIsNotTheRuns(t *testing.T) {
 			r["commits"].([]any)[0].(map[string]any)["changes"] = []any{"Q\tpkg/a/a.go"}
 		}},
 		{"a delta item outside name-status form", "delta item", func(r map[string]any) { r["delta"] = []any{"M\t/etc/passwd"} }},
+		{"a change with a dot-dot segment", "path segment", func(r map[string]any) {
+			r["commits"].([]any)[0].(map[string]any)["changes"] = []any{"M\ta/../b"}
+		}},
+		{"a delta item with a leading dot-dot segment", "path segment", func(r map[string]any) { r["delta"] = []any{"M\t../a"} }},
+		{"a renamed path with a dot segment", "path segment", func(r map[string]any) { r["delta"] = []any{"R100\ta\t./b"} }},
+		{"a delta item with an empty segment", "path segment", func(r map[string]any) { r["delta"] = []any{"M\ta//b"} }},
 	}
 	for _, row := range rows {
 		t.Run(row.name, func(t *testing.T) {
@@ -954,8 +960,9 @@ func TestEveryReceiptCheckRefusesAnIntegrationThatIsNotTheRuns(t *testing.T) {
 	}
 }
 
-// The receipt check admits exactly the name-status lines the result schema
-// admits: the module's pattern is the schema's own text.
+// The module's pattern is the result schema's own text, so a receipt the
+// check admits is an envelope the schema admits. The dot segments the pattern
+// admits, such as M\ta/../b, are refused by the check's other half, validPaths.
 func TestTheNameStatusCheckIsTheSchemasPattern(t *testing.T) {
 	body, err := os.ReadFile(filepath.Join(fixture.CatalogDir(t), "schemas", "entry-result.v2.json"))
 	if err != nil {
@@ -982,23 +989,59 @@ func TestTheNameStatusCheckIsTheSchemasPattern(t *testing.T) {
 	}
 }
 
-// The control records are the workbench JSON paths of the commits' changes
-// and then the delta, each once, a D line excluded and an R line read at its
-// new path.
-func TestControlRecordsAreTheWorkbenchJSONPathsNotDeleted(t *testing.T) {
-	commits := []Commit{{Changes: []string{
-		"M\tpkg/a/a.go",
-		"A\tfusion-workbench/shared/memos/notes-kai.md",
-		"M\tfusion-workbench/" + packageRecord,
-		"D\tfusion-workbench/issues/gone.record.json",
-	}}, {Changes: []string{
-		"R100\tfusion-workbench/issues/old.record.json\tfusion-workbench/issues/new.record.json",
-		"M\tfusion-workbench/" + packageRecord,
-	}}}
-	delta := []string{"M\tfusion-workbench/a:b.json", "M\tfusion-workbench/orchestrator-events.jsonl", "A\tfusion-workbench/decisions/d.record.json"}
-	got := controlRecords(commits, delta)
-	if strings.Join(got, " ") != packageRecord+" issues/new.record.json decisions/d.record.json" {
-		t.Fatalf("records %v", got)
+// The control records are the paths controlrecord.Select names, each once in
+// the order it first appears, read when the last status, in commit order and
+// then the delta, is not D. The rows are D-F1's and the cases of Prior's
+// entryControlRecord and entryControlRecords at 52a2703.
+func TestControlRecordsAreTheCodecsNamesByLastStatus(t *testing.T) {
+	wb := fixture.WorkbenchPrefix
+	one := func(changes ...string) []Commit { return []Commit{{Changes: changes}} }
+	rows := []struct {
+		name    string
+		commits []Commit
+		delta   []string
+		want    []string
+	}{
+		{name: "the hooks' guard state, D-F1", delta: []string{"M\t" + wb + ".guard-state/staging-drift.json", "M\t" + wb + ".guard-state/citation-form.json", "M\t" + wb + ".guard-state/dispatch-map.json"}},
+		{name: "a JSON file of another name at the root", delta: []string{"M\t" + wb + "workbench.json"}},
+		{name: "a JSON file of another name in a store", delta: []string{"M\t" + wb + "shared/x.json"}},
+		{name: "a dot directory that begins with json", delta: []string{"M\t" + wb + ".json-state/x.json"}},
+		{name: "a record below a dot directory", delta: []string{"M\t" + wb + "shared/.x/y.record.json"}},
+		{name: "a package in the root's archive", delta: []string{"M\t" + wb + "archive/a/package.json"}},
+		{name: "a colon in a record's name", delta: []string{"M\t" + wb + "a:b.record.json"}},
+		{name: "neither code nor a narrative", commits: one("M\tpkg/a/a.go", "A\t"+wb+"shared/memos/notes-kai.md"), delta: []string{"M\t" + wb + "orchestrator-events.jsonl"}},
+
+		{name: "the root's package", delta: []string{"M\t" + wb + "package.json"}, want: []string{"package.json"}},
+		{name: "a work package", delta: []string{"M\t" + wb + "work-packages/a/package.json"}, want: []string{"work-packages/a/package.json"}},
+		{name: "a record", delta: []string{"A\t" + wb + "shared/issues/x.record.json"}, want: []string{"shared/issues/x.record.json"}},
+		{name: "an evidence record", delta: []string{"A\t" + wb + "shared/reviews/x.evidence.json"}, want: []string{"shared/reviews/x.evidence.json"}},
+		{name: "a second evidence record", delta: []string{"A\t" + wb + "shared/reviews/x.2.evidence.json"}, want: []string{"shared/reviews/x.2.evidence.json"}},
+		{name: "an archive directory below the root", delta: []string{"M\t" + wb + "x/archive/package.json"}, want: []string{"x/archive/package.json"}},
+
+		{name: "M in a commit, then D in the delta", commits: one("M\t" + wb + "a.record.json"), delta: []string{"D\t" + wb + "a.record.json"}},
+		{name: "A then D across commits", commits: []Commit{{Changes: []string{"A\t" + wb + "a.record.json"}}, {Changes: []string{"D\t" + wb + "a.record.json"}}}},
+		{name: "D then A, read once", commits: []Commit{{Changes: []string{"D\t" + wb + "a.record.json"}}, {Changes: []string{"A\t" + wb + "a.record.json"}}}, want: []string{"a.record.json"}},
+		{name: "changed twice, read once", commits: one("M\t" + wb + "a.record.json"), delta: []string{"M\t" + wb + "a.record.json"}, want: []string{"a.record.json"}},
+		{name: "a rename reads the new path and not the old", commits: one("R100\t" + wb + "old.record.json\t" + wb + "new.record.json"), want: []string{"new.record.json"}},
+		{name: "a rename leaves a path changed earlier deleted", commits: []Commit{{Changes: []string{"M\t" + wb + "old.record.json"}}, {Changes: []string{"R100\t" + wb + "old.record.json\t" + wb + "new.record.json"}}}, want: []string{"new.record.json"}},
+		{name: "a copy reads the new path and leaves the old as it was", commits: []Commit{{Changes: []string{"M\t" + wb + "old.record.json"}}, {Changes: []string{"C75\t" + wb + "old.record.json\t" + wb + "new.record.json"}}}, want: []string{"old.record.json", "new.record.json"}},
+		{
+			name: "the order each first appears",
+			commits: []Commit{
+				{Changes: []string{"A\t" + wb + "gone.record.json", "M\t" + wb + "b/package.json"}},
+				{Changes: []string{"A\t" + wb + "r.evidence.json", "M\t" + wb + "b/package.json"}},
+			},
+			delta: []string{"D\t" + wb + "gone.record.json", "A\t" + wb + "p.record.json"},
+			want:  []string{"b/package.json", "r.evidence.json", "p.record.json"},
+		},
+	}
+	for _, row := range rows {
+		t.Run(row.name, func(t *testing.T) {
+			got := controlRecords(row.commits, row.delta)
+			if strings.Join(got, " ") != strings.Join(row.want, " ") {
+				t.Fatalf("records %v, want %v", got, row.want)
+			}
+		})
 	}
 }
 

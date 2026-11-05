@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/controlrecord"
 	api "github.com/kai/prior/moduleapi/v1"
 )
 
@@ -33,10 +34,8 @@ const IntegrationSlot = "integration"
 // integration fast-forwards.
 const UserReference = "refs/heads/main"
 
-// WorkbenchPrefix is where the workbench sits in the fake repository: a
-// changed path below it ending in .json is a control record, which the
-// workbench step reads by its workbench-relative path.
-const WorkbenchPrefix = "fusion-workbench/"
+// WorkbenchPrefix is where the workbench sits in the fake repository.
+const WorkbenchPrefix = controlrecord.WorkbenchPrefix
 
 // ServedCapabilities are the request-69 services and the integrate service
 // the fake answers the module on, journalled by operation id.
@@ -487,7 +486,7 @@ func decodeProposedEntryCall(inv api.Invocation) (api.RepairCall, string, error)
 		}
 		fields, slot = []string{"identity", "workflow_id", "run_id", "profile", "task"}, call.RunID
 	case inv.Capability == api.WorkbenchCapability && call.Action == "read":
-		if !fs.ValidPath(call.Record) || strings.ContainsAny(call.Record, "\\:\x00\r\n") || !strings.HasSuffix(call.Record, ".json") {
+		if !fs.ValidPath(call.Record) || strings.ContainsAny(call.Record, "\\:\x00\r\n") {
 			return call, "", err
 		}
 		fields, slot = []string{"identity", "workflow_id", "action", "record"}, "record:"+call.Record
@@ -631,6 +630,12 @@ func (h *EntryHost) integrate(call api.RepairCall) (json.RawMessage, string) {
 func (h *EntryHost) workbench(call api.RepairCall) (json.RawMessage, string) {
 	switch call.Action {
 	case "read":
+		// Prior's read admission: a path that names no control record is
+		// refused whether or not the integration named it, so a module that
+		// reads one ends refused here as it does on Prior.
+		if _, ok := controlrecord.Select(WorkbenchPrefix + call.Record); !ok {
+			return nil, "permission-denied"
+		}
 		if !h.integrated[WorkbenchPrefix+call.Record] {
 			return nil, "permission-denied"
 		}

@@ -485,7 +485,8 @@ func twoCommitsDrive() entryDrive {
 // control record is read; (ii) memo, with no commit and one uncommitted
 // path, completes with empty commits and one delta item; (iii) a conflict
 // refusal of the integration ends refused integration.refused with empty
-// commits and delta and no workbench read.
+// commits and delta and no workbench read. A fourth case holds the selection
+// of control records against the fake host's read admission.
 func TestTheThreeDeliveryCasesRunAgainstTheBuiltBundle(t *testing.T) {
 	t.Run("two commits and a delta", func(t *testing.T) {
 		d := twoCommitsDrive()
@@ -524,6 +525,26 @@ func TestTheThreeDeliveryCasesRunAgainstTheBuiltBundle(t *testing.T) {
 		r.checkRun(t, d)
 		if r.effect(fixture.EntryIntegrateCapability) != 1 {
 			t.Fatalf("effects %v", r.host.Effects)
+		}
+	})
+	// D-F1: fusion's own hooks leave files like this one in an ordinary run.
+	// The fake host refuses it as Prior does, so a module that read it would
+	// end refused after the integration stood.
+	t.Run("a class-L file in the delta is not read", func(t *testing.T) {
+		drift := fixture.WorkbenchPrefix + ".guard-state/staging-drift.json"
+		record := fixture.WorkbenchPrefix + entryPackageRecord
+		d := entryDrives()[0]
+		d.script = fixture.Script{Calls: []fixture.ScriptCall{
+			{Capability: api.ExecCapability, CallID: "x-1", Argv: []string{"make", "fix"}, Writes: []string{drift, record}},
+		}}
+		r := driveEntry(t, d, nil)
+		env := r.env
+		if env.Status != "completed" || len(env.Violations) != 0 || strings.Join(env.Delta, ",") != "M\t"+drift+",M\t"+record {
+			t.Fatalf("envelope %s", r.out)
+		}
+		r.checkRun(t, d)
+		if r.host.CountSent(api.WorkbenchCapability) != 1 || r.host.Effects[api.WorkbenchCapability+"/record:"+entryPackageRecord] != 1 {
+			t.Fatalf("effects %v, sent %v", r.host.Effects, r.host.Sent)
 		}
 	})
 	t.Run("a conflict refusal", func(t *testing.T) {

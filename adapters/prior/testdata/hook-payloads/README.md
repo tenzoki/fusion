@@ -31,12 +31,21 @@ A payload alone does not reach every branch. Some branches read the disk or git 
 
 ## Order
 
-Some payloads depend on state that an earlier payload writes. Run them in filename order inside each directory. Across directories, follow the order of a session: SessionStart commands, then `guard/` and `tracker/` interleaved as pairs (PreToolUse `nn` before PostToolUse `nn`), then `subagent-stop/`. Exceptions:
+Some payloads depend on state that an earlier payload writes, so filename order does not reach every branch. This is the order `hookSession` in `fusionmodule/conformance/hooks_test.go` runs, as one session, with each file effect applied where it is named:
 
-- `subagent-stop/01-background-completed.json` needs the entry that `tracker/05-agent-background.json` parks in `.guard-state/dispatch-map.json`.
-- `subagent-stop/02-sync-completed.json` finds no entry. That is correct, because a sync dispatch's row belongs to PostToolUse. Under Claude Code it fires before `tracker/04-agent.json`.
-- `subagent-stop/03-background-no-session-id.json` also needs a parked entry, so `01` must not have consumed it. Run `tracker/05-agent-background.json` again first, or use a fresh fixture.
-- `*/02-resume.json` repeats the startup session id. It has to follow `01-startup.json` in the same fixture for the deduplication to show.
+1. Every SessionStart directory with `01-startup.json`, then every one with `02-resume.json`. The resume repeats the startup session id, so it has to follow in the same fixture for the deduplication to show.
+2. `guard/01-write.json`, the write of `docs/fixture-note.md`, `tracker/01-write.json`.
+3. `guard/02-edit.json`, the edit of that file, `tracker/02-edit.json`.
+4. `guard/04-agent.json`, `subagent-stop/02-sync-completed.json`, `tracker/04-agent.json`. Under Claude Code a sync dispatch's SubagentStop fires before its PostToolUse, and it finds no entry because the row belongs to PostToolUse.
+5. `guard/05-agent-background.json`, `tracker/05-agent-background.json`, `subagent-stop/01-background-completed.json`, which consumes the entry `tracker/05` parks in `.guard-state/dispatch-map.json`.
+6. `tracker/05-agent-background.json` again, then `subagent-stop/03-background-no-session-id.json`, which needs a parked entry that `01` has not consumed.
+7. `guard/06-agent-no-session-id.json`.
+8. The write of the citation note, `tracker/06-write-workbench-citation.json`.
+9. A commit of `docs/fixture-note.md`, then `guard/03-bash.json` and `tracker/03-bash.json`.
+10. The edit of the citation note, `tracker/07-edit-workbench-citation.json`.
+11. The write of the review, `tracker/08-write-review.json`.
+
+**Why the Bash pair runs out of filename order, in step 9.** Staging drift reports only when HEAD moved while a workbench record is still uncommitted. In filename order, the Bash pair runs before any workbench record exists and before any commit, so no `staging_drift` row is ever written. The citation note is the first workbench record, and it stays uncommitted across the commit. That commit lands after session start, and it is also the one `tracker/08` finds no review covering.
 
 ## Command to directory
 

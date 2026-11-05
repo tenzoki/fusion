@@ -20,3 +20,6 @@ The 13.4.1 module reads every workbench .json as a control record, so an ordinar
 **Executor:** code-implementer (`entry.go`, `entry_test.go`).
 
 **Acceptance.** A `.guard-state/*.json` path and any other non-record `.json` under the workbench is not read; a `package.json`, `*.record.json` and `*.evidence.json` outside dot segments and `archive/` are; a test covers each, and the module's selection and Prior's predicate are stated as the same rule.
+
+---
+Resolved: the module selects by the codec names through `controlrecord.Select`, the rule of Prior's `entryControlRecord`, and by last status; `TestControlRecordsAreTheCodecsNamesByLastStatus` and `TestSelectIsTheCodecsRule` hold it, the fake host now refuses a non-record read as Prior does, and a conformance case and the `hookSession` measurement would have caught D-F1.

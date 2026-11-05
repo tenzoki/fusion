@@ -11,3 +11,5 @@ Needs the same timing ruling as the workbench-step issue: correct the frozen v2 
 Fix: the pattern also refuses a path with an empty, `.` or `..` segment, in the schema and in the module together. `TestTheNameStatusCheckIsTheSchemasPattern` keeps the two equal.
 
 Acceptance: invalid rows `M\ta/../b`, `M\t../a` and `R100\ta\t./b` in `entry-schema-cases.v2.json` pass under ajv and under the Go validator. The same lines are false in `TestTheNameStatusCheckIsTheSchemasPattern`. `FUSION-CATALOG` and `FUSION-MODULE` exit 0.
+
+Also seen: 261105-1034 by code-implementer — module half fixed; the asset half waits for the v3

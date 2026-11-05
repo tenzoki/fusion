@@ -45,10 +45,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
 	"regexp"
 	"strings"
 
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/controlrecord"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/hostsvc"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/steps"
 	api "github.com/kai/prior/moduleapi/v1"
@@ -56,11 +56,6 @@ import (
 
 // WorkflowAsset is where the definition lives in the payload.
 const WorkflowAsset = "workflows/entry.v2.json"
-
-// WorkbenchPrefix is the workbench's place in the repository: a changed path
-// below it ending in .json is a control record, read by its path relative to
-// the workbench, as the codec names it.
-const WorkbenchPrefix = "fusion-workbench/"
 
 // ErrDefinition is returned when the definition is not one this executor can
 // interpret: a shape it does not know is refused at load, never run on a
@@ -460,8 +455,10 @@ func (w *workflow) run(ctx context.Context) (*outcome, error) {
 // nameStatus is one line of git's name-status form as entry-result.v2.json's
 // $defs/name_status states it: a status of A, D, M or T and one path, or C or
 // R with a similarity score and two paths; no path empty, absolute or
-// carrying a tab or a newline. The receipt check accepts exactly what the
-// schema accepts, so a receipt it admits is an envelope the schema admits.
+// carrying a tab or a newline. It stays the frozen schema's own text, so a
+// receipt the check admits is an envelope the schema admits. The receipt check
+// is this pattern plus validPaths, v2's own "valid relative path" from the
+// definition's receipt text, which the pattern does not state.
 var nameStatus = regexp.MustCompile(`^(?:[ADMT]\t[^\t\n/][^\t\n]*|[CR][0-9]{1,3}\t[^\t\n/][^\t\n]*\t[^\t\n/][^\t\n]*)$`)
 
 // commitHash is a commit hash as entry-result.v2.json admits it.
@@ -471,7 +468,7 @@ var commitHash = regexp.MustCompile(`^([0-9a-f]{40}|[0-9a-f]{64})$`)
 // the run: it is this run's, from the workspace's base, onto a named
 // reference; its commits are empty exactly when head is base and otherwise end
 // at head, each a commit hash with a subject; and every path line is in
-// name-status form. The first failure is returned.
+// name-status form with valid relative paths. The first failure is returned.
 func checkReceipt(r hostsvc.EntryIntegration, runID, base string) error {
 	switch {
 	case r.RunID != runID:
@@ -495,41 +492,77 @@ func checkReceipt(r hostsvc.EntryIntegration, runID, base string) error {
 			if !nameStatus.MatchString(line) {
 				return fmt.Errorf("commits[%d].changes item %q is not in name-status form", i, line)
 			}
+			if !validPaths(line) {
+				return fmt.Errorf("commits[%d].changes item %q has an empty, . or .. path segment", i, line)
+			}
 		}
 	}
 	for _, line := range r.Delta {
 		if !nameStatus.MatchString(line) {
 			return fmt.Errorf("delta item %q is not in name-status form", line)
 		}
+		if !validPaths(line) {
+			return fmt.Errorf("delta item %q has an empty, . or .. path segment", line)
+		}
 	}
 	return nil
 }
 
-// controlRecords are the workbench control records among the paths the
-// integration names, the commits' changes in order and then the delta, each
-// line whose status is not D: relative to the workbench, in the shape the
-// host's read accepts, each once. A line's path is its last field, the new
-// path of a C or R line.
+// validPaths reports whether no path of a name-status line has an empty, .
+// or .. segment. Prior's own answer validator refuses the same paths first,
+// so its host cannot trigger this; the check holds the definition's text on
+// the module's side.
+func validPaths(line string) bool {
+	for _, p := range strings.Split(line, "\t")[1:] {
+		for _, segment := range strings.Split(p, "/") {
+			if segment == "" || segment == "." || segment == ".." {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// controlRecords are the control records among the paths the integration
+// names, each once, relative to the workbench, in the order each first
+// appears. controlrecord.Select decides what is a control record. A record is
+// read when its last status, in commit order and then in the delta, is not D:
+// the host's read admission selects the same way (Prior's
+// entryControlRecords, request 77 question 12 (a)), so a record deleted after
+// it was changed is one the host refuses. A line's path is its last field, the
+// new path of a C or R line; an R line also leaves its old path deleted, and a
+// C line leaves its old path as it was.
 func controlRecords(commits []Commit, delta []string) []string {
 	var lines []string
 	for _, c := range commits {
 		lines = append(lines, c.Changes...)
 	}
 	lines = append(lines, delta...)
-	var out []string
-	seen := map[string]bool{}
+	last := map[string]string{}
+	var order []string
+	note := func(path, status string) {
+		record, ok := controlrecord.Select(path)
+		if !ok {
+			return
+		}
+		if _, seen := last[record]; !seen {
+			order = append(order, record)
+		}
+		last[record] = status
+	}
 	for _, line := range lines {
-		status, _, _ := strings.Cut(line, "\t")
-		if status == "D" {
-			continue
+		fields := strings.Split(line, "\t")
+		status := fields[0]
+		if strings.HasPrefix(status, "R") && len(fields) == 3 {
+			note(fields[1], "D")
 		}
-		p := line[strings.LastIndexByte(line, '\t')+1:]
-		record, ok := strings.CutPrefix(p, WorkbenchPrefix)
-		if !ok || !strings.HasSuffix(record, ".json") || !fs.ValidPath(record) || strings.ContainsAny(record, "\\:\x00\r\n") || seen[record] {
-			continue
+		note(fields[len(fields)-1], status)
+	}
+	var out []string
+	for _, record := range order {
+		if last[record] != "D" {
+			out = append(out, record)
 		}
-		seen[record] = true
-		out = append(out, record)
 	}
 	return out
 }

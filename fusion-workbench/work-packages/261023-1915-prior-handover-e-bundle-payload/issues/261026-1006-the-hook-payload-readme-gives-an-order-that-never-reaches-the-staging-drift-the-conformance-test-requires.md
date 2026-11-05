@@ -20,3 +20,6 @@ At `4e53b552`:
 - The payload README's `## Order` gives the order `hookSession` runs: the Bash pair after `tracker/06` and one commit, with the reason. Or `hookSession` follows the README and still reaches `staging_drift`.
 - `hooks_test.go`'s comments and the payload README describe one order.
 - `FUSION_BUNDLE_DIR=<bundle> PRIOR_REPO=… adapters/prior/stage.sh test` exits 0.
+
+---
+Resolved: `## Order` now gives the order `hookSession` runs, the Bash pair after `tracker/06` and one commit, with the reason, and the comments in `hooks_test.go` and the adapter README name that one order.

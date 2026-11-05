@@ -25,9 +25,10 @@ package conformance
 // The fixture is one git repository with a fixed identity, one commit at a
 // fixed date and fusion-workbench/.fusion-setup, built once and copied fresh
 // for each of the two runs, so both start from the same HEAD. The payloads
-// run as one session in the order the payload README gives, with the tool
-// effects Claude Code would apply between a PreToolUse and its PostToolUse
-// (the written file, the edit, one commit) applied identically in both runs.
+// run as one session in the order the payload README's `## Order` gives, the
+// Bash pair after tracker/06 and one commit, with the tool effects Claude Code
+// would apply between a PreToolUse and its PostToolUse (the written file, the
+// edit, one commit) applied identically in both runs.
 
 import (
 	"bytes"
@@ -42,11 +43,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/kai/prior/integrationbuild/fusionmodule/internal/controlrecord"
 	"github.com/kai/prior/integrationbuild/fusionmodule/internal/fixture"
 	api "github.com/kai/prior/moduleapi/v1"
 )
@@ -179,6 +182,8 @@ func TestHookLayoutBundleEqualsPluginTree(t *testing.T) {
 	sort.Strings(names)
 	t.Logf("differed before normalisation, equal after: %v", names)
 	assertSessionLeftItsTrace(t, source)
+	assertHooksWroteNoControlRecord(t, bundle)
+	assertHooksWroteNoControlRecord(t, source)
 	measureReplies(t, declared.ProtocolSubset, runs)
 }
 
@@ -221,10 +226,11 @@ func parseHookCommands(t *testing.T, body []byte) []hookCommand {
 	return commands
 }
 
-// hookSession is the order the payload README gives: SessionStart for a fresh
-// and a resumed session, then PreToolUse/PostToolUse pairs with the tool
-// effects between them, the SubagentStop payloads where the README places
-// them. It fails when a payload file exists that the session does not run.
+// hookSession is the order the payload README's `## Order` gives: SessionStart
+// for a fresh and a resumed session, then PreToolUse/PostToolUse pairs with the
+// tool effects between them, the SubagentStop payloads where the README places
+// them, and the Bash pair last among the pairs, after tracker/06 and one
+// commit. It fails when a payload file exists that the session does not run.
 func hookSession(t *testing.T, payloads string) []hookStep {
 	t.Helper()
 	sessionDirs := []string{}
@@ -637,6 +643,32 @@ func assertSessionLeftItsTrace(t *testing.T, r *hookRun) {
 	}
 	if r.checkout == "" {
 		t.Errorf("%s run: no checkout identifier was minted", r.name)
+	}
+}
+
+// assertHooksWroteNoControlRecord measures what limit G4 of Prior's answer to
+// requests 76 and 77 left as an inference: an ordinary session's hooks do leave
+// JSON under the workbench, and the module's selection reads none of it. The
+// fixture repository holds no record of its own, so every JSON file here is one
+// the session wrote. This is real hooks over a fixture repository, not Prior's
+// container, where they may write differently.
+func assertHooksWroteNoControlRecord(t *testing.T, r *hookRun) {
+	t.Helper()
+	var written []string
+	for rel := range r.results[len(r.results)-1].files {
+		changed, inRepo := strings.CutPrefix(rel, "repo/")
+		if !inRepo || !strings.HasPrefix(changed, controlrecord.WorkbenchPrefix) || !strings.HasSuffix(changed, ".json") {
+			continue
+		}
+		written = append(written, changed)
+		if record, selected := controlrecord.Select(changed); selected {
+			t.Errorf("%s run: the module would read %s, which the session's hooks wrote", r.name, record)
+		}
+	}
+	sort.Strings(written)
+	t.Logf("%s run: JSON the session wrote under the workbench: %v", r.name, written)
+	if !slices.Contains(written, controlrecord.WorkbenchPrefix+".guard-state/staging-drift.json") {
+		t.Errorf("%s run: no .guard-state/staging-drift.json among %v, so this measures nothing", r.name, written)
 	}
 }
 
