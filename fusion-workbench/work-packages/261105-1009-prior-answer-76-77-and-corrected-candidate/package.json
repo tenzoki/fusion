@@ -3,7 +3,7 @@
   "id": "e0fd3413-6a15-4769-ba75-6e7647d463d0",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Request 78 committed at dfaab63b naming bundle sha256:439142d7 built at a3274f23; D-F1 closed. No tag, no push; the bundle has run on no Prior host.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "3e2bf7a2-2c67-4243-941f-57e20844fb4c",
+          "revision": "sha256:7c75b97af5eea2dce75ff4d6cf231cec07c4f8f26083f7f2df52f993e1f65e1b"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
