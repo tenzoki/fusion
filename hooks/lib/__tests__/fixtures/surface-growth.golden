@@ -117,8 +117,8 @@
   store-name-migration.test.ts 316
   surface-growth-bound.test.ts 557
   temp-path-lint.test.ts 91
-  temp-paths.test.ts 135
+  temp-paths.test.ts 197
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 26591
+  total 26653

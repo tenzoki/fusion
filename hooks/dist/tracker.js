@@ -41,7 +41,8 @@
  *      nothing is blocked, and there is no event row and no throttle. It is
  *      not the retired classifier and not a fourth sibling of the family
  *      below: it predicts nothing about what the command will do, it reports
- *      what the text literally names, which is decidable. See
+ *      what the text literally names, which is decidable. On Prior it says
+ *      nothing: `/tmp` is that host's rule for one run's scratch. See
  *      lib/temp-paths.ts and `observeTempPathsForModel`.
  *
  * Three jobs left before them and none was replaced. A job 0 ran on EVERY
@@ -121,7 +122,7 @@ import { foldCase } from "./lib/paths.js";
 import { coverageSentence, isMeasuredReview, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
 import { headMoved, measureStagingDrift, readStagingState, stagingSentence, writeStagingState, } from "./lib/staging-drift.js";
 import { citationFormSentence, lastReportedCitationForm, measureCitationForm, readRecord, recordReportedCitationForm, workbenchRecordPath, writtenLines, } from "./lib/citation-form.js";
-import { systemTempMentions, tempSentence } from "./lib/temp-paths.js";
+import { runsOnPrior, systemTempMentions, tempSentence } from "./lib/temp-paths.js";
 /**
  * The four tools whose payload NAMES the path they write.
  *
@@ -491,6 +492,8 @@ function measureCitationFormForModel(input) {
  * such path, so the commonest path is silent.
  */
 function observeTempPathsForModel(input) {
+    if (runsOnPrior(process.env))
+        return null;
     if (input.tool_name !== "Bash")
         return null;
     const command = input.tool_input.command;

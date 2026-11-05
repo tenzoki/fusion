@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { systemTempMentions, tempRootLine, tempSentence } from "../temp-paths.js";
+import { runsOnPrior, systemTempMentions, tempRootLine, tempSentence } from "../temp-paths.js";
 import { CASE_TIMEOUT, runSessionStart, runTracker, withProject } from "./helpers/guard-harness.js";
 
 // The observation half of `temp-paths.ts`: job 0d's reading of a `Bash`
@@ -127,6 +127,68 @@ describe("the hooks carry it: tracker job 0d and the session-start envelope", ()
           process.env.HOME = saved.HOME;
           if (saved.CC === undefined) delete process.env.CLAUDE_CODE_TMPDIR;
           else process.env.CLAUDE_CODE_TMPDIR = saved.CC;
+        }
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// The environment Prior gives every hook it runs (`commandEnvironment`,
+// `Prior: internal/supervisor/exec.go`): both plugin roots at its mount, and
+// HOME at the container's /tmp.
+const ON_PRIOR = { FUSION_PLUGIN_ROOT: "/opt/fusion", CLAUDE_PLUGIN_ROOT: "/opt/fusion", HOME: "/tmp" };
+
+describe("on Prior neither temp message is given", () => {
+  it("reads Prior only from both plugin roots at its mount", () => {
+    expect(runsOnPrior(ON_PRIOR)).toBe(true);
+    expect(runsOnPrior({})).toBe(false);
+    expect(runsOnPrior({ FUSION_PLUGIN_ROOT: "/opt/fusion" })).toBe(false);
+    expect(runsOnPrior({ CLAUDE_PLUGIN_ROOT: "/opt/fusion" })).toBe(false);
+    expect(runsOnPrior({ FUSION_PLUGIN_ROOT: "/Users/me/.fusion", CLAUDE_PLUGIN_ROOT: "/Users/me/.fusion" })).toBe(false);
+    // HOME decides nothing: tests and conformance set it per run.
+    expect(runsOnPrior({ HOME: "/tmp" })).toBe(false);
+  });
+
+  it(
+    "job 0d: the tracker gives no temp instruction on Prior and its exact sentence elsewhere",
+    () => {
+      withProject((project) => {
+        const command = 'C="${TMPDIR:-/tmp}/fusion-archive-a"';
+        const onClaude = runTracker(project.root, "Bash", { command }, { HOME: mk("tp-home-"), CLAUDE_PLUGIN_ROOT: "/Users/me/.fusion", FUSION_PLUGIN_ROOT: "/Users/me/.fusion" });
+        expect(onClaude.hookSpecificOutput?.additionalContext).toBe(tempSentence(["/tmp"]));
+        expect(runTracker(project.root, "Bash", { command }, ON_PRIOR)).toEqual({});
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "temp-root line: session-start does not advise the launcher on Prior and keeps its exact line elsewhere",
+    () => {
+      withProject((project) => {
+        writeFileSync(join(project.root, "fusion-workbench", ".checkout-id"), `${ID}\n`);
+        const names = ["HOME", "CLAUDE_CODE_TMPDIR", "FUSION_PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT"] as const;
+        const saved = names.map((n) => process.env[n]);
+        const message = () => runSessionStart(project.root).hookSpecificOutput?.systemMessage ?? "";
+        try {
+          const home = mk("tp-home-");
+          process.env.HOME = home;
+          delete process.env.CLAUDE_CODE_TMPDIR;
+          delete process.env.FUSION_PLUGIN_ROOT;
+          delete process.env.CLAUDE_PLUGIN_ROOT;
+          const line = tempRootLine(process.env, home, ID)!;
+          expect(line).toContain("start sessions with `fusion`");
+          expect(message()).toContain(line);
+
+          Object.assign(process.env, ON_PRIOR);
+          expect(tempRootLine(process.env, "/tmp", ID)).toBeNull();
+          expect(message()).not.toContain("start sessions with `fusion`");
+        } finally {
+          names.forEach((n, i) => {
+            if (saved[i] === undefined) delete process.env[n];
+            else process.env[n] = saved[i];
+          });
         }
       });
     },

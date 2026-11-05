@@ -11,7 +11,9 @@
  * It also owns the one boundary for a literal system temp path
  * (`systemTempTokens`), which the shipped-text lint gates with and the
  * tracker's job 0d reads `Bash` commands with, and the session-start line
- * (`tempRootLine`). Both only report; nothing here blocks.
+ * (`tempRootLine`). Both only report; nothing here blocks. Neither speaks on
+ * Prior (`runsOnPrior`), whose rule for scratch is `/tmp` and whose runs start
+ * no launcher.
  *
  * ## The merge only adds
  *
@@ -52,6 +54,24 @@ export const SYSTEM_TEMP_PREFIXES = ["/tmp", "/private/tmp", "/var/folders", "/p
 
 /** Claude Code's absolute-path form is `//path`, so each prefix gains one slash. */
 export const DENY_ENTRIES: readonly string[] = SYSTEM_TEMP_PREFIXES.map((p) => `Edit(/${p}/**)`);
+
+/**
+ * Where Prior mounts the bundle in a run's container: `HelperRoot` in
+ * `Prior: internal/supervisor/exec.go`, line 51 at `PRIOR_PIN`.
+ */
+const PRIOR_HELPER_ROOT = "/opt/fusion";
+
+/**
+ * True when this process is a command Prior started. Prior sets both plugin
+ * roots to its mount after every other layer, so neither the run's environment
+ * nor a hook's export can move them (`commandEnvironment`,
+ * `Prior: internal/supervisor/exec.go`, lines 478 and 479 at `PRIOR_PIN`). No
+ * fusion install path is `/opt/fusion`; a Claude Code user who loads the plugin
+ * from there by hand is read as Prior, and loses only the two temp advisories.
+ */
+export function runsOnPrior(env: NodeJS.ProcessEnv): boolean {
+  return env.FUSION_PLUGIN_ROOT === PRIOR_HELPER_ROOT && env.CLAUDE_PLUGIN_ROOT === PRIOR_HELPER_ROOT;
+}
 
 /**
  * A literal system temp path in a line of text. The boundary is the one
@@ -251,13 +271,14 @@ export function tempSentence(mentions: string[]): string {
 }
 
 /**
- * The session-start line, or `null`: no checkout id or no `$HOME` (the
- * question is then undecidable), or both variables already resolve to
- * `~/.fusion-tmp/<id>`. It reads the environment the hook was started with,
+ * The session-start line, or `null`: on Prior, which starts neither `fusion`
+ * nor `claude`; no checkout id or no `$HOME` (the question is then
+ * undecidable); or both variables already resolve to `~/.fusion-tmp/<id>`. It
+ * reads the environment the hook was started with,
  * so a sandbox's replaced Bash `TMPDIR` is invisible to it.
  */
 export function tempRootLine(env: NodeJS.ProcessEnv, home: string | undefined, id: string | undefined): string | null {
-  if (!id || !home) return null;
+  if (runsOnPrior(env) || !id || !home) return null;
   const want = join(home, FUSION_TMP_BASE, id);
   const wanted = realOrSelf(want);
   const off = (["CLAUDE_CODE_TMPDIR", "TMPDIR"] as const).flatMap((name) => {

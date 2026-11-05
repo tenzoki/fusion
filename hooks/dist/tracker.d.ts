@@ -41,7 +41,8 @@
  *      nothing is blocked, and there is no event row and no throttle. It is
  *      not the retired classifier and not a fourth sibling of the family
  *      below: it predicts nothing about what the command will do, it reports
- *      what the text literally names, which is decidable. See
+ *      what the text literally names, which is decidable. On Prior it says
+ *      nothing: `/tmp` is that host's rule for one run's scratch. See
  *      lib/temp-paths.ts and `observeTempPathsForModel`.
  *
  * Three jobs left before them and none was replaced. A job 0 ran on EVERY

@@ -108,8 +108,9 @@
  * a line names whichever of `CLAUDE_CODE_TMPDIR` and `TMPDIR` is unset or does
  * not resolve to `~/.fusion-tmp/<id>`, and says to start sessions with
  * `fusion`, the launcher that exports both (`lib/temp-paths.ts`
- * `tempRootLine`). No id is no line: the question is then undecidable. It
- * reads the environment this hook was started with, so a sandbox's replaced
+ * `tempRootLine`). No id is no line: the question is then undecidable. A Prior
+ * run is no line either, since it starts neither command. It reads the
+ * environment this hook was started with, so a sandbox's replaced
  * Bash `TMPDIR` is invisible to it.
  *
  * ## The second product: this session's `session_start` row
