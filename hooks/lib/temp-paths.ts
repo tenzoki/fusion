@@ -67,7 +67,8 @@ const PRIOR_HELPER_ROOT = "/opt/fusion";
  * nor a hook's export can move them (`commandEnvironment`,
  * `Prior: internal/supervisor/exec.go`, lines 478 and 479 at `PRIOR_PIN`). No
  * fusion install path is `/opt/fusion`; a Claude Code user who loads the plugin
- * from there by hand is read as Prior, and loses only the two temp advisories.
+ * from there by hand is read as Prior, loses the two temp advisories and reads
+ * Prior's message path in `stagingSentence`.
  */
 export function runsOnPrior(env: NodeJS.ProcessEnv): boolean {
   return env.FUSION_PLUGIN_ROOT === PRIOR_HELPER_ROOT && env.CLAUDE_PLUGIN_ROOT === PRIOR_HELPER_ROOT;

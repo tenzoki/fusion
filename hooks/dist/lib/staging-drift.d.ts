@@ -402,5 +402,5 @@ export declare function renderStagingRow(r: StagingRow): string;
  * makes the staging shape a constraint rather than a nicety, so the sentence
  * carries it.
  */
-export declare function stagingSentence(report: StagingReport): string;
+export declare function stagingSentence(report: StagingReport, env?: NodeJS.ProcessEnv): string;
 export {};

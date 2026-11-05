@@ -234,6 +234,40 @@ describe("staging drift: the defect it was built for", () => {
   );
 
   it(
+    "the commit-message sentence names the host's own place for a message, and nothing else differs",
+    () => {
+      const said = (env: Record<string, string>): string =>
+        withWorkbench((project) => {
+          write(project.root, "fusion-workbench/.commit-msg-tmp", "fix: something\n");
+          runTracker(project.root, "Bash", { command: "ls" }, env);
+          commit(project.root, 1);
+          return runTracker(project.root, "Bash", { command: "git commit" }, env).hookSpecificOutput?.additionalContext ?? "";
+        });
+      const onClaude = said({ FUSION_PLUGIN_ROOT: "/Users/me/.fusion", CLAUDE_PLUGIN_ROOT: "/Users/me/.fusion" });
+      const onPrior = said({ FUSION_PLUGIN_ROOT: "/opt/fusion", CLAUDE_PLUGIN_ROOT: "/opt/fusion", HOME: "/tmp" });
+
+      const claudeClause =
+        "The orchestrator's commit step writes the message to " +
+        "~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt, in the directory " +
+        "bin/fusion-tmp path prints, which is outside every git tree;";
+      const priorClause = "On Prior a commit message goes to /tmp/fusion-commit-msg-<name>, which is outside every git tree;";
+      const rest =
+        " the workbench is the tree git status reports on. Read the file before you act on it: if it is a " +
+        "leftover commit message, delete it and write the next one to the prescribed path; if it is something " +
+        "a session authored, name it to the user and stage it instead.";
+
+      expect(onClaude).toContain(claudeClause + rest);
+      expect(onPrior).toContain(priorClause + rest);
+      expect(onPrior).not.toContain("fusion-tmp");
+      expect(onPrior).toBe(onClaude.replace(claudeClause, priorClause));
+      // The one form Prior's file tools admit (`scratchPathForm`,
+      // `Prior: internal/supervisor/files_scratch.go`, line 44).
+      expect("/tmp/fusion-commit-msg-a").toMatch(/^\/tmp\/fusion-commit-msg-[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/);
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
     "finding an unstaged record is not a non-zero exit",
     () => {
       withWorkbench((project) => {

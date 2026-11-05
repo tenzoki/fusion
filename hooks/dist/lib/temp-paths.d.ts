@@ -53,7 +53,8 @@ export declare const DENY_ENTRIES: readonly string[];
  * nor a hook's export can move them (`commandEnvironment`,
  * `Prior: internal/supervisor/exec.go`, lines 478 and 479 at `PRIOR_PIN`). No
  * fusion install path is `/opt/fusion`; a Claude Code user who loads the plugin
- * from there by hand is read as Prior, and loses only the two temp advisories.
+ * from there by hand is read as Prior, loses the two temp advisories and reads
+ * Prior's message path in `stagingSentence`.
  */
 export declare function runsOnPrior(env: NodeJS.ProcessEnv): boolean;
 /** Every literal system temp path a line names, trailing punctuation dropped. */

@@ -145,6 +145,7 @@
 import { basename, resolve, relative, sep } from "node:path";
 import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
+import { runsOnPrior } from "./temp-paths.js";
 import { CITED_CONTAINER_ROOTS, isControlFile, JSON_STATE_DIR, LEGACY_STORES, narrativeOf, RECORD_STORES, V11_RECORD_STORES, WORKBENCH_MANIFEST, } from "./stores.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored
@@ -176,6 +177,14 @@ const GIT_STATUS_TIMEOUT_MS = 20_000;
  * the prompt no longer names.
  */
 export const PRESCRIBED_MESSAGE_PATH = "~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt";
+/**
+ * The one form Prior's file tools admit outside the workspace (`scratchPathForm`,
+ * `Prior: internal/supervisor/files_scratch.go`, line 44). A run on Prior starts
+ * no launcher and its temp rule is `/tmp`
+ * (`rules/fusion-workbench-conventions.md` `## Intermediate files`), so the
+ * sentence names this there and `PRESCRIBED_MESSAGE_PATH` everywhere else.
+ */
+const PRIOR_MESSAGE_PATH = "/tmp/fusion-commit-msg-<name>";
 /**
  * The live-state surfaces, by exact workbench-relative name. Together with
  * `LIVE_PREFIXES` below, the list is exactly class L, class R2 and class R3 of
@@ -664,7 +673,7 @@ export function renderStagingRow(r) {
  * makes the staging shape a constraint rather than a nicety, so the sentence
  * carries it.
  */
-export function stagingSentence(report) {
+export function stagingSentence(report, env = process.env) {
     if (report.faults.length === 0)
         return "";
     const records = report.faults.filter((r) => r.klass === "record");
@@ -680,8 +689,10 @@ export function stagingSentence(report) {
     if (messages.length > 0) {
         parts.push(`A commit-message-shaped file that no artefact store owns is sitting in the workbench: ` +
             `${messages.map((r) => r.path).join(", ")}. ` +
-            `The orchestrator's commit step writes the message to ${PRESCRIBED_MESSAGE_PATH}, in the directory ` +
-            "bin/fusion-tmp path prints, which is outside every git tree; " +
+            (runsOnPrior(env)
+                ? `On Prior a commit message goes to ${PRIOR_MESSAGE_PATH}, which is outside every git tree; `
+                : `The orchestrator's commit step writes the message to ${PRESCRIBED_MESSAGE_PATH}, in the directory ` +
+                    "bin/fusion-tmp path prints, which is outside every git tree; ") +
             "the workbench is the tree git status reports on. Read the file before you act on it: if it is a " +
             "leftover commit message, delete it and write the next one to the prescribed path; if it is something " +
             "a session authored, name it to the user and stage it instead. This class is decided by the file's " +
