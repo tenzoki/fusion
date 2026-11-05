@@ -1,5 +1,7 @@
 **On Prior the update is the bundle the host installs.** There is no `fusion --update` inside a run; the notes below describe updating the Claude Code plugin, and each change they name holds for the bundle of the same version.
 
+**Coming from 13.4.3:** 13.4.4 gives a run its own `tmp` check, which falls due and is stamped as the others are, and tells a run to keep intermediate files in `/tmp`, for that run alone. No record is converted, and a Claude Code session behaves as in 13.4.3.
+
 **Coming from 13.4.2 or from the tag `v13.4.0`:** 13.4.3 joins two lines that each released a 13.4.0. The tag `v13.4.0` is the `~/.fusion-tmp` line; 13.4.1 and 13.4.2 follow the Prior one. No record is converted.
 
 **Coming from 13.0.0 to 13.3.9, or from the Prior line:** the temp root `~/.fusion-tmp/<checkout-id>` is set by the `fusion` launcher, which no Prior run starts. What changed and what stays unenforced: `$FUSION_SRC/docs/upgrading-to-v13.md`, the 13.4.0 section.

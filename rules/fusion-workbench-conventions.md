@@ -554,9 +554,9 @@ never as a quiet week.
 
 ## Intermediate files
 
-A file read after its writer exits goes in the directory `bin/fusion-tmp path` prints, not `/tmp`,
-`/var/folders`, `$TMPDIR`, a `<root>/tmp` link or bare `mktemp`; a helper's self-removed scratch
-is exempt.
+A file read after its writer exits goes where `bin/fusion-tmp path` prints, not `/tmp`,
+`/var/folders`, `$TMPDIR`, `<root>/tmp` or bare `mktemp`; self-removed scratch is exempt.
+Prior: `/tmp`, one run only.
 
 ## Security
 

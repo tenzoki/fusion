@@ -11,7 +11,9 @@
 // 261105-1023-neutral-shell-blocks-and-carried-helpers-rely-on-commands-outside-priors-guaranteed-six.md,
 // and request 78 asks Prior about those.
 
-import { readdirSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { catalogRoot, INCLUDE_DIRECTIVE } from "../render.js";
@@ -212,5 +214,76 @@ describe("the release help parts", () => {
   it("a release that edits one part turns this red", () => {
     const claude = versionTokens(`${part("claude")} 99.0.1`);
     expect(claude).not.toEqual(versionTokens(part("prior")));
+  });
+});
+
+// A selector the due computation names has to exist in the render a Prior Setup
+// reads, or the run is told to perform a section it does not hold and the
+// selector can never be stamped.
+describe("the check entry's Prior render", () => {
+  const fusionRoot = join(CATALOG, "..");
+  const profile = JSON.parse(readFileSync(join(CATALOG, "profiles", "skill-check", "profile.json"), "utf8")) as {
+    parts: { file: string; tag: string }[];
+  };
+  const render = profile.parts
+    .filter((p) => p.tag !== "claude")
+    .map((p) => readFileSync(join(CATALOG, "profiles", "skill-check", p.file), "utf8"))
+    .join("");
+  const selectors = [...readFileSync(join(fusionRoot, "hooks/lib/checks-due.ts"), "utf8").match(/CHECK_SELECTORS = \[([^\]]*)\]/)![1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
+  const section = (sel: string) => {
+    const start = render.indexOf(`\n## ${sel} `);
+    return start < 0 ? "" : render.slice(start + 1, render.indexOf("\n## ", start + 1));
+  };
+
+  it("holds a table row and a section for every selector the due computation names", () => {
+    expect(selectors).toContain("tmp");
+    const missing = selectors.filter((s) => !render.includes(`| \`${s}\` |`) || section(s) === "");
+    expect(missing).toEqual([]);
+  });
+
+  it("tmp is a check this host can take and stamp, so it does not stay due", () => {
+    const body = section("tmp");
+    expect(body).not.toMatch(/do not stamp it|not applicable/);
+    expect(body).toContain("stamped");
+    expect(body).not.toContain("$FUSION_PLUGIN_ROOT/bin/fusion-tmp");
+  });
+
+  it("tmp's probe answers from the directory it is given", () => {
+    const code = /```bash\n(.*)\n```/.exec(section("tmp"))?.[1];
+    expect(code).toBeDefined();
+    expect(commandHits(`${code}\n`)).toEqual([]);
+    const dir = mkdtempSync(join(tmpdir(), "fusion-tmp-probe-"));
+    try {
+      const run = (TMPDIR: string) => execFileSync("bash", ["-c", code!], { env: { ...process.env, TMPDIR }, encoding: "utf8" });
+      expect(run(dir).trim()).toBe(`tmp=writable dir=${dir}`);
+      expect(readdirSync(dir)).toEqual([]);
+      expect(run(join(dir, "absent")).trim()).toBe(`tmp=unwritable dir=${join(dir, "absent")}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+// The rule is read on both hosts, so it carries Prior's answer to request 76
+// question 5 itself, and no Prior or neutral part may give the other instruction.
+describe("the intermediate-file instruction a Prior run receives", () => {
+  const fusionRoot = join(CATALOG, "..");
+
+  it("the rule section names Prior's /tmp beside bin/fusion-tmp", () => {
+    const rule = readFileSync(join(fusionRoot, "rules/fusion-workbench-conventions.md"), "utf8");
+    const body = rule.slice(rule.indexOf("## Intermediate files"), rule.indexOf("## Security"));
+    expect(body).toContain("`bin/fusion-tmp path`");
+    expect(body).toMatch(/Prior: `\/tmp`, one run only\./);
+  });
+
+  it("no part a Prior render holds runs bin/fusion-tmp", () => {
+    const profiles = readdirSync(join(CATALOG, "profiles"));
+    const offenders = profiles.flatMap((id) =>
+      readdirSync(join(CATALOG, "profiles", id, "parts"))
+        .filter((f) => !f.endsWith("-claude.md"))
+        .filter((f) => /bin\/fusion-tmp"? (path|grant|link|check)/.test(readFileSync(join(CATALOG, "profiles", id, "parts", f), "utf8")))
+        .map((f) => `${id}/${f}`),
+    );
+    expect(offenders).toEqual([]);
   });
 });

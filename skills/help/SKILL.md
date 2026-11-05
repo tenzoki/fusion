@@ -86,6 +86,8 @@ Read `$FUSION_SRC/README.md`. Two paths:
 
 **If you installed via the marketplace:** pull the marketplace clone (caveat below), run `claude plugin update fusion@tenzoki-plugins` in a shell (add `--scope project` or `--scope local` if you installed at that scope), then restart Claude Code. That copy is separate from `~/.fusion`; `$FUSION_SRC/README.md` says how to keep only one.
 
+**Coming from 13.4.3:** 13.4.4 needs no migration, and a Claude Code session behaves as in 13.4.3. It corrects the Prior bundle: a Prior run gets its own `tmp` check and is told to keep intermediate files in the scratch directory Prior gives it.
+
 **Coming from 13.4.2 or from the tag `v13.4.0`:** 13.4.3 joins two lines that each released a 13.4.0. The tag `v13.4.0` is the `~/.fusion-tmp` line; 13.4.1 and 13.4.2 follow the Prior one. No record is converted.
 
 **Coming from 13.0.0 to 13.3.9, or from the Prior line:** after `fusion --update` and a restart, run `/fusion:check --only tmp` and `--only permissions`, and start sessions with `fusion`, so the temp root lands in `~/.fusion-tmp/<checkout-id>`. What changed and what stays unenforced: `$FUSION_SRC/docs/upgrading-to-v13.md`, the 13.4.0 section.
