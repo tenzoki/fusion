@@ -313,7 +313,7 @@
         "items": []
       },
       "requires": ["host.exec.v1"],
-      "support": { "claude-code": "supported", "prior": "supported" }
+      "support": { "claude-code": "supported", "prior": "unsupported" }
     },
     {
       "id": "help",

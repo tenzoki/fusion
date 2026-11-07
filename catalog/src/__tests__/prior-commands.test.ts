@@ -23,7 +23,7 @@ import { catalogRoot, INCLUDE_DIRECTIVE } from "../render.js";
 const CATALOG = catalogRoot();
 
 /** Held `prior: unsupported`, see prior-held-unsupported.test.ts: their parts stay unchanged. */
-const HELD = new Set(["skill-commit", "skill-cleanup"]);
+const HELD = new Set(["skill-commit", "skill-cleanup", "skill-migrate"]);
 
 /** The six, and the only bare first elements of an argv. */
 const GUARANTEED = new Set(["bash", "node", "git", "sed", "head", "od"]);
@@ -148,7 +148,7 @@ describe("a prior part's own commands", () => {
     const setup = parts.filter(({ text }) => text.includes('["bash", "-c", "pwd"]'));
     expect(setup.length).toBeGreaterThan(0);
     for (const { file, text } of setup) expect(text, file).toContain(BINDING_SENTENCE);
-    expect(parts.filter(({ text }) => text.includes(BINDING_SENTENCE))).toHaveLength(25);
+    expect(parts.filter(({ text }) => text.includes(BINDING_SENTENCE))).toHaveLength(24);
   });
 
   it("no binding says a form it names uses the six alone, or limits a host gap to exit 127", () => {

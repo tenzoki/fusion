@@ -5,6 +5,6 @@ Pass the entry's arguments unchanged, each `{name, value}` rendered into the hel
 
 - **exit 2**: no fusion workbench above here. Start the setup entry.
 - **exit 3**: the bundle's runtime tree is broken (compiled hooks or codec bundle missing, or an internal error), so nothing could be asked. Report it as a defect of the installed bundle; there is no update command and no session restart on this host. Never report this as "no work packages".
-- **exit 4**: the workbench was not read; quote the stderr line. A `legacy` workbench is migrated by the migrate entry. Never report this as "no work packages".
+- **exit 4**: the workbench was not read; quote the stderr line. A `legacy` workbench is migrated under Claude Code. Never report this as "no work packages".
 - **exit 1 with an argument given**: the user's argument is not one the helper takes. Quote its stderr usage line.
 - **exit 1 with no argument**: a usage fault in this body. Report it as a fusion defect, never as the user's fault.

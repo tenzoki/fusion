@@ -161,10 +161,12 @@ func TestCatalogResolvesSupportedRolesOnly(t *testing.T) {
 			}
 		}
 	}
-	// The commit skill is held unsupported on Prior and is the only
-	// referrer of its profile, so no referrer ships it.
-	if _, err := LoadProfile(b, "skill-commit"); err == nil {
-		t.Error("an unsupported entry's absent profile loaded")
+	// The commit and migrate skills are held unsupported on Prior and each is
+	// the only referrer of its profile, so no referrer ships either.
+	for _, held := range []string{"skill-commit", "skill-migrate"} {
+		if _, err := LoadProfile(b, held); err == nil {
+			t.Errorf("an unsupported entry's absent profile %s loaded", held)
+		}
 	}
 	w, err := LoadWorkflow(b, "workflows/explorer.v1.json")
 	if err != nil {

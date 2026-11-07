@@ -1,4 +1,4 @@
-**On Prior the update is the bundle the host installs.** There is no `fusion --update` inside a run; the notes below describe updating the Claude Code plugin, and each change they name holds for the bundle of the same version.
+**On Prior the update is the bundle the host installs.** There is no `fusion --update` inside a run; the notes below describe updating the Claude Code plugin, and each change they name holds for the bundle of the same version. The exception is the migrate entry: this host refuses it and an existing project migrates under Claude Code, so what the notes say of migration or of the migrate skill concerns that run.
 
 **Coming from 13.4.3:** 13.4.4 gives a run its own `tmp` check, which falls due and is stamped as the others are, and tells a run to keep intermediate files in `/tmp`, for that run alone. No record is converted, and a Claude Code session behaves as in 13.4.3.
 

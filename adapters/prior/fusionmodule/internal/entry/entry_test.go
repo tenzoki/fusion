@@ -719,6 +719,7 @@ func TestEntriesThatCannotRunAreRefusedBeforeAnyHostCall(t *testing.T) {
 		"kind not the entry's":    {strings.Replace(valid, entry, `"entry":{"id":"memo","kind":"agent","profile":"skill-memo"}`, 1), "entry.invalid"},
 		"profile not the entry's": {strings.Replace(valid, entry, `"entry":{"id":"memo","kind":"skill","profile":"skill-help"}`, 1), "entry.invalid"},
 		"unsupported on prior":    {strings.Replace(valid, entry, `"entry":{"id":"cleanup","kind":"skill","profile":"skill-cleanup"}`, 1), "entry.unsupported"},
+		"migrate on prior":        {strings.Replace(valid, entry, `"entry":{"id":"migrate","kind":"skill","profile":"skill-migrate"}`, 1), "entry.unsupported"},
 		"no workflow_id":          {strings.Replace(valid, `,"workflow_id":"wf-entry"`, ``, 1), "invocation.invalid"},
 		"unknown member":          {strings.Replace(valid, `"run_id"`, `"mode":"x","run_id"`, 1), "invocation.invalid"},
 		"empty audit_ref":         {strings.Replace(valid, `"run_id"`, `"audit_ref":"","run_id"`, 1), "invocation.invalid"},
@@ -730,6 +731,10 @@ func TestEntriesThatCannotRunAreRefusedBeforeAnyHostCall(t *testing.T) {
 		if env.Status != "refused" || code(env) != tc.code || env.Ending == nil || env.Ending.Class != "refusal" || env.Ending.Reason != strings.ReplaceAll(tc.code, ".", "-") {
 			t.Errorf("%s: %+v", name, env)
 		}
+	}
+	// The refusal names the entry, so a user is told which one this host holds back.
+	if env := h.invoke("op", json.RawMessage(cases["migrate on prior"].input)); len(env.Violations) != 1 || env.Violations[0].Detail != "migrate is unsupported on prior" {
+		t.Errorf("migrate is not refused by name: %+v", env)
 	}
 	for _, capability := range []string{"fusion.other.v1", "fusion.entry.v1"} {
 		out, err := h.handler(context.Background(), api.Invocation{OperationID: "op", Capability: capability, Input: h.input("")}, h.host.Caller())
