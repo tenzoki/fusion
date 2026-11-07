@@ -7108,3 +7108,353 @@ These rows supersede the rows of `#### Requests 64 and 67 to 77, as they stand` 
 **The closing review has now run.** This replaces the line `**The closing review has not run.**` under `### Stated and not asked`, its "no review has yet opened C″" included. The review `261105-1459-reviewer-13-4-2-closing.md` covered `702294c3..1504f7c2`, with the verdict revise. Its findings are the corrections above and the binding statement, plus one on fusion's own guard (`261105-1453-the-prior-commands-watch-list-still-passes-env-with-an-assignment-timeout-sh-c-bash-lc-eval-and-a-quoted-assignment.md`), which is not bundle bytes and waits for the next candidate. A fresh clone at C″ rebuilt the tarball and `handover.json` byte for byte, with digest `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153`. The bundle did not change, so the rule on a new patch version is not triggered by this review. The review did not run Prior's host and ran no `docker run`, and the bundle has still run on no Prior host.
 
 **The digest.** At `1504f7c2` this file is `sha256:bc95a43939b2ffb9033afb17da4ebc0eb8c88034b9370651809c715dc8695293`. This passage moves it again and cannot state its own digest, so this file's commit carrying this passage is the one to read. The bundle's copy of this file stays at `ae7021e6…`.
+
+## The candidate 13.4.4 (request 79)
+
+### Written against
+
+**D = `438df71579652af601e8687b785a9f21834450c6`** on `main` (2026-11-07 08:48, "fix(catalog): the migrate entry leaves the Prior host (13.4.4)"), version `13.4.4` in `.claude-plugin/plugin.json`. No tag `v13.4.4` exists. The bundle below was built at D itself, so `fusion_revision` is D, with no `+dirty`. `git rev-parse HEAD` printed `438df71579652af601e8687b785a9f21834450c6` just before this section was written, so its parent is D, or a later commit touching `fusion-workbench/` alone, which holds the same shipped tree.
+
+**Prior was read at `cb1138b`** (`cb1138b6e1fca337ad4fcb2df224731586bcbd85`, 2026-11-06 06:35, "docs(design): answer fusion request 78's questions from the preliminary run"), from committed objects only, since its working tree holds uncommitted changes. That commit carries Prior's response, `docs/design/fusion-entry-v2-request78-prior-response.md`, whose sha256 is `091f0c0f84484592bd9f521ef2386d8f73c59d0e0dbb5ca1aa727b05f6d2a0bc` (measured, and stated by Prior in its message relayed by the user).
+
+**A Prior citation below names its commit, and one that names none is at `cb1138b`. A citation of non-test code at `7d5a097` or `371dcea` holds at `cb1138b`.** Measured on 2026-11-07: `git diff --stat 371dcea cb1138b -- '*.go'` prints nothing, and `git diff --stat 7d5a097 cb1138b -- '*.go'` names `internal/fusionhost/entry_delivered_78_test.go` alone, 6 insertions and 4 deletions.
+
+**The two pins are unchanged.** `adapters/prior/PRIOR_PIN` is **`08c57fb4ec91df6b1e1e311fa2d063eb5ff08076`**; `stage.sh` clones it, so the bundle depends neither on Prior's working tree nor on its HEAD. `git diff --stat 08c57fb cb1138b -- moduleapi go.mod go.sum schemas/module-api` names the same two new files as 78 did, `moduleapi/v1/entry_service_wire.go` and its test. The codec pin is **`sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`**.
+
+Below, **measured** means a command ran and its output is what is stated, **read** means read from source and not run, and *inference* is marked as such. Everything measured on the bundle ran on 2026-11-07 at D. The hook table ran on 2026-11-05 and the `/tmp` measurements on 2026-11-06, each as stated where it stands.
+
+### What 79 does
+
+**It replaces 78's bundle with candidate 13.4.4**, digest **`sha256:64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed`**, tarball sha256 **`cf9cd451c38e1f2c73699dc51e3295205f880243d84b65255e455c0067af0793`**, `fusion_revision` `438df715`, Prior pin `08c57fb`. Nothing above this line is edited.
+
+**Bundle `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153` stays where it is, and an answer naming it closes nothing of 79.** Only an answer naming the digest above answers 79.
+
+**The delivery path** is:
+
+```
+/Users/kai/.local/share/prior/incoming/fusion/13.4.4/64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed
+```
+
+The three files reach that directory after the commit that carries this section, in that order, so a reader between the two finds the section and no directory. `build.sh deliver` rebuilds at the HEAD of the tree it runs in, so the delivery is made from a clean clone at D and not from this section's commit, whose revision and `REQUESTS.md` would give another digest. **That route is unexercised:** `build.sh deliver` has not run from a clean clone, and 78's delivery ran in the repository's own tree. That it gives this digest is *inference* from the two equal builds below. Check what arrives with the sidecar and `build.sh verify`, not by the directory's existence.
+
+### Why 78 moved, and fusion's own error
+
+**Request 78 said two things that fusion then did not hold to.** Under its `### What fusion does with the answer`: "Until a tag, `main` takes no commit to a shipped file after C″ other than this file", and "The tag `v13.4.2` and the marketplace bump follow only on an accepted answer and the user's rulings". That section's route for a commit that must land first is a new patch version.
+
+**What happened, all read from git.** The merge `464dc7a2` landed the `~/.fusion-tmp` line on `main` as version 13.4.3: 22 commits (`git rev-list --count 464dc7a2^1..464dc7a2^2`), which had released their own 13.4.0. Its message says "No marketplace bump and no tag". Then `v13.4.3` was tagged on `3045b451` (2026-11-05 17:29:06) and the marketplace entry was set from 13.4.0 to 13.4.3 at `c7920af` in `tenzoki/claude-plugins` (17:29:51). Both came ahead of any answer from Prior, and **that gate was not put to the user before they were done. That is fusion's error.** The merge took the route's new patch version and built no bundle and wrote no request, and the tag and the bump then passed the gate 78 had stated. **They stand, by the user's ruling.**
+
+**13.4.3 has no bundle and is not a candidate.** `v13.4.3` is a release of the Claude Code distribution only. No bundle of that version was built or delivered (`ls ~/.local/share/prior/incoming/fusion/` holds no `13.4.3`).
+
+**What becomes of 78.** 78's bundle row is replaced by 79's. 78.1 to 78.4 are not answered on `439142d7…` for release purposes and move to 79.1 to 79.4 below. 78's questions 1 to 3 are not asked again: `### The rulings on 78's questions` says how they stand. The final table below says so row by row.
+
+### The commits since 13.4.2
+
+`git log --first-parent a3274f23..438df715`, outside `fusion-workbench/`, holds `1504f7c2` and `dfaab63b`, which move this file alone, and these:
+
+| Commit | What it does for a Prior run |
+|---|---|
+| commit `464dc7a2` | merge, 13.4.3: brings `bin/fusion-tmp`, `hooks/lib/temp-paths.ts`, the rule section `## Intermediate files`, the Claude form of the temp text into the install tree and the help text's two other upgrade paragraphs; the neutral parts it splits render the same bytes for Prior (below) |
+| commit `3045b451` | the pin examples name `v13.4.3`; no Prior render moves |
+| commit `1f5b45a2` | version 13.4.4; the `tmp` check gets a Prior section; the rule gets a Prior clause; the help text gains its "Coming from 13.4.3" paragraph |
+| commit `dd91ef09` | tracker job 0d and the session-start line telling the user to start with `fusion` stay off a Prior run, behind `runsOnPrior` |
+| commit `b6c08006` | **the Setup binding in 25 parts**, 24 of them in this render since `438df715`, after the rulings below; the rule's clause becomes `Prior: /tmp via shell, one run only`; `skill-cadence`'s sentence on neutral blocks follows the binding |
+| commit `dd24b2d4` | the tracker's commit-message sentence names `/tmp/fusion-commit-msg-<name>` on Prior; the Claude Code text is unchanged |
+| commit `438df715` | **the `migrate` entry leaves the Prior host**, by the user's ruling: `support.prior` becomes `unsupported`, its profile leaves the render and the bundle, and the Prior parts that sent a reader to the entry say the migration runs under Claude Code. `bin/fusion-migrate` stays in the install tree. The frozen assets and the module binaries do not move |
+
+Two digests belong to earlier builds of this candidate and neither was delivered: `sha256:e190c101…` at `dd91ef09`, and `sha256:ed4770e8…` at `dd24b2d4`, which a reader meets in Prior's response at `cb1138b`, where it is named as the digest of this draft.
+
+### The bundle
+
+| File | Bytes | Identity |
+|---|---|---|
+| `fusion-13.4.4.tar` | 28 179 968 | the deterministic, uncompressed tarball; `shasum -a 256` prints `cf9cd451c38e1f2c73699dc51e3295205f880243d84b65255e455c0067af0793` |
+| `fusion-13.4.4.tar.sha256` | 84 | the sidecar, one line: `cf9cd451c38e1f2c73699dc51e3295205f880243d84b65255e455c0067af0793  fusion-13.4.4.tar`; its own sha256 `1f8d615fca03c78575feb917909de8b28440f62f6022b8f1c911c89e87fc97ab` |
+| `handover.json` | 2 403 | module id, version, both digests, both revisions, `go1.26.0`, the three targets and the build commands; sha256 `24e53dfe8bd1d54f06e02a4ae66803af0d6b114c00d738ca194a6f900d8cdfd4` |
+
+As at 76 to 78, the digest is what `--trust-digest` takes and the tarball's sha256 is what the sidecar checks.
+
+**Identity.** `module.json`: `schema_version` 1, `module_id` `fusion`, `version` `13.4.4`, `runtime_api` `"1"`, `executable` `bin/fusion-module`, **59 `data` files**. Compared as parsed JSON with 13.4.2's, `version` and `data` are the keys that differ, `data` by the two paths `profiles/skill-migrate.md` and `profiles/skill-migrate.json`, so the `lifecycle_hooks` declaration is unchanged: `hooks/hooks.json`, `sha256:d7f4d7ab1d327d68b9e1c431484577f63c99e8fabc197b81a1caaac2d4dbc4f3`. `build-identity.json`: `fusion_revision` `438df71579652af601e8687b785a9f21834450c6`, never `+dirty`; `prior_revision` `08c57fb4ec91df6b1e1e311fa2d063eb5ff08076`; `go_version` `go1.26.0`; `install_tree_omitted` the one git link, as at 78.
+
+**The payload, 1 621 tarball entries** (`tar -tf | wc -l`), 36 at mode 0500 and 1 585 at 0400:
+
+| Part | Entries | What it is |
+|---|---|---|
+| module data | 59 | `catalog.json` 1; `profiles/<id>.{md,json}` 50, for 25 profiles; `schemas/` 6; `workflows/` 2 |
+| install tree | 1 556 | every file `git ls-files -s` lists at D under the entries of `install.sh`'s copy loop, minus the one git link |
+| module executables | 4 | `bin/fusion-module`, the launcher, 1 415 bytes, and the three target binaries |
+| manifest and identity | 2 | `module.json`, `build-identity.json` |
+
+By first path segment: `.claude-plugin` 1, top level 6, `agents` 11, `bin` 36, `codec` 1214, `docs` 23, `hooks` 236, `profiles` 50, `rules` 15, `schemas` 6, `skills` 16, `stilwerk` 4, `templates` 1, `workflows` 2.
+
+**The target binaries are byte-equal to 13.4.2's.** `git diff --stat a3274f23 438df715 -- adapters` names two test files, `adapters/prior/fusionmodule/internal/entry/entry_test.go` and `internal/steps/bundle_test.go`, 11 insertions and 4 deletions, and no other source, and the sha256 of each is the one 78's table gives, measured on both extracted tarballs:
+
+| Path | Bytes | sha256 |
+|---|---|---|
+| `bin/darwin-arm64/fusion-module` | 4 347 202 | `7aad13acb465a313e7a91addb15428a67f623b71528335246d0886c154594ec1` |
+| `bin/linux-amd64/fusion-module` | 4 521 584 | `8504014ccb0a2cbaf8e37ca55d59f7b7743f8b71880f9f2d1399e1f932ecd3b1` |
+| `bin/linux-arm64/fusion-module` | 4 349 113 | `3bbbaea673dfc0ca39f7a3685c9a79f23fc2fc3f73c61bc6a36fbf507c6a5b82` |
+
+The two Linux targets are built, not qualified.
+
+**How it was built and verified, all measured.** In two fresh `git clone`s under a scratch directory, each detached at D with `catalog/`'s dependencies installed by `npm ci`: `PRIOR_REPO=<prior> adapters/prior/build.sh build <out>` exited 0 in both. `cmp` of the two tarballs, the two sidecars and the two `handover.json` files exited 0, and `diff -r` of the two outputs exited 0. `build.sh verify` exited 0 ("ok, 1621 files, executable bin/fusion-module, 59 data files"), with Prior's own `InspectBundle` and `ExtractBundleArchive` over the payload and the tarball, both reporting `{"module_id":"fusion","version":"13.4.4","bundle_digest":"sha256:64bc6df1…"}`. `shasum -a 256 -c fusion-13.4.4.tar.sha256` prints `fusion-13.4.4.tar: OK`.
+
+**Conformance against the built bundle**, `FUSION_BUNDLE_DIR=<out> PRIOR_REPO=<prior> adapters/prior/stage.sh test`, exited 0 on macOS arm64 against a fake host, with `go1.26.0`. The same `go test`, through `stage.sh run` with `-count=1 -json`, exited 0 and counted **94 tests and 249 subtests, 343 in all, passed, 0 failed, 0 skipped**, per package equal to 78's table, since the two test files `438df715` changes add assertions and no test or subtest:
+
+| Package | Tests | Subtests |
+|---|---|---|
+| `cmd/fusion-bundle` | 8 | 0 |
+| `cmd/fusion-module` | 2 | 0 |
+| `conformance/` | 16 | 7 |
+| `internal/controlrecord` | 1 | 0 |
+| `internal/entry` | 25 | 80 |
+| `internal/explorer` | 14 | 0 |
+| `internal/hostsvc` | 11 | 10 |
+| `internal/steps` | 17 | 152 |
+
+`internal/fixture` has no test files.
+
+**This is conformance, not acceptance, and it cannot see this candidate's hook changes.** The host is a fake at the pin and every model answer is scripted. The hook-layout case runs with `CLAUDE_PLUGIN_ROOT` at the unpacked payload or the plugin tree and no `FUSION_*` variable (`adapters/prior/README.md`, `### Conformance against a built bundle`), so `runsOnPrior` is false throughout it (*read*). That branch is held by `hooks/lib/__tests__/temp-paths.test.ts` and `staging-drift.test.ts`, and by the runs under `#### The hooks` below.
+
+### The codec and the frozen assets
+
+**The codec is unchanged: `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`.** `shasum -a 256` of `codec/dist/fusion-record.js` in the extracted tarball prints it, so **no re-pin request precedes this one.** `git diff --name-only a3274f23 438df715 -- codec` prints two files: this one, and `codec/src/__tests__/install.test.ts`, a test neither `UPSTREAM.json` names at `cb1138b` (`git grep` exits 1).
+
+**`FROZEN` and every frozen asset are byte-unchanged against 13.4.2.** `git diff --exit-code a3274f23 438df715 -- catalog/schemas catalog/workflows` exits 0. `workflows/` and `schemas/` in the tarball are the eight assets `FROZEN` names at D, each with the sha256 of its `FROZEN` line, and `cmp` with the extracted 13.4.2 finds them equal. None of the eleven paths `WITHDRAWN` names is in the payload. **`catalog.json` moved:** `ac5628687335575544a51e12e4abba4eb12f545b312b4988091c2d93d3e60e1b` here, `54638b43fd7ad34c6624fd19537cd519069897f5615026863fb8aba4472e8008` in 13.4.2, and `diff` of the two names one line, 316, the `migrate` entry's `support`, whose `prior` value goes from `supported` to `unsupported`. It lists 27 entries in both.
+
+### What differs from 13.4.2 for a Prior run
+
+Measured with `diff -rq` over the extracted `fusion-13.4.2.tar`, from the delivered path of request 78, and `fusion-13.4.4.tar`. Seven paths are new, two are gone, `profiles/skill-migrate.md` and `profiles/skill-migrate.json`, and 63 differ, and 25 of the 63 are `profiles/*.md`.
+
+#### The rendered profiles
+
+The 25 `profiles/*.json` that remain are byte-equal. **All 25 `profiles/*.md` that remain differ.** A replacement of the old binding by the new one, and of the provenance commit, makes 15 of them byte-equal to this bundle's; the other ten carry the additions in the table.
+
+| Profile | Bytes, 13.4.2 to 13.4.4 | Lines that differ |
+|---|---|---|
+| `analyst.md` | 24 900 to 24 955 | binding, line 11 |
+| `code-implementer.md` | 28 216 to 28 271 | binding, line 11; provenance, line 23 |
+| `consultant.md` | 17 113 to 17 168 | binding, line 22 |
+| `data-implementer.md` | 19 666 to 19 721 | binding, line 9 |
+| `document-editor.md` | 16 263 to 16 318 | binding, line 11 |
+| `explorer.md` | 19 826, equal | provenance, line 63; **no binding, before or after** |
+| `implementation-planner.md` | 25 388 to 25 443 | binding, line 9 |
+| `orchestrator.md` | 87 910 to 87 996 | binding, line 35; the migrate wording, line 54 |
+| `policy-curator.md` | 83 295 to 83 377 | binding, line 19; the migrate wording, line 193 |
+| `requirements-designer.md` | 21 009 to 21 064 | binding, line 11 |
+| `reviewer.md` | 30 661 to 30 716 | binding, line 22; provenance, line 41 |
+| `skill-archive.md` | 32 210 to 32 321 | binding, line 5; the migrate wording, line 55 |
+| `skill-cadence.md` | 28 393 to 28 465 | binding, line 5; the neutral-block sentence, line 13 |
+| `skill-check.md` | 35 328 to 36 250 | binding, line 5; one table row after line 33; ten lines after line 314 |
+| `skill-curate.md` | 19 037 to 19 092 | binding, line 5 |
+| `skill-discuss.md` | 22 742 to 22 851 | binding, line 5; the migrate wording, line 35 |
+| `skill-help.md` | 22 172 to 23 152 | binding, line 5; the migrate wording, line 97; six lines after line 98 |
+| `skill-memo.md` | 12 241 to 12 296 | binding, line 5 |
+| `skill-migrate.md` | 34 726 to none | **gone, with `skill-migrate.json`** |
+| `skill-news.md` | 13 436 to 13 491 | binding, line 5 |
+| `skill-post.md` | 12 167 to 12 222 | binding, line 5 |
+| `skill-reconcile.md` | 13 022 to 13 077 | binding, line 5 |
+| `skill-setup.md` | 21 948 to 22 086 | binding, line 5; the migrate wording, lines 42, 46, 48, 52 and 65 |
+| `skill-wp-order.md` | 10 157 to 10 209 | binding, line 5; the migrate wording, line 53 |
+| `skill-wp.md` | 11 542 to 11 651 | binding, line 5; the migrate wording, line 25 |
+| `state-auditor.md` | 37 952 to 38 007 | binding, line 11; provenance, line 49 |
+
+**The binding, in 24 profiles and 55 bytes longer in each.** The sentence that went:
+
+> Prior guarantees `bash`, `node`, `git`, `sed`, `head` and `od` in this container (request 76, question 6); the commands this binding names use those alone. A neutral block may run others, and one that ends with exit 127 has met a host gap: report the command it names, and never repair the gap.
+
+The sentence that stands, once in each of the 24, by a count over the extracted profiles:
+
+> Prior guarantees the presence of the commands fusion's text uses, by the list in request 78, question 2, and not their behaviour; once its check ships, it refuses a missing one by name at run start. A `command not found` met anyway, from a block or a helper and at whatever exit, is a host gap: report the command it names, and never repair the gap.
+
+**The provenance lines change a commit only.** Each of the four is `Included from fusion: rules/user-facing-output.md (commit <revision>, sha256:826ff1bf…)`: the commit moves from `a3274f23` to `438df715` and the file's sha256 does not.
+
+**`skill-cadence.md:13`** moves from "What a neutral block of this text runs is not guaranteed" to "How the commands of a neutral block of this text behave is not guaranteed", 17 bytes, the rest of the line the same.
+
+**The migrate wording, twelve lines in eight profiles, is `438df715`'s.** `orchestrator.md`, `policy-curator.md`, `skill-archive.md`, `skill-discuss.md`, `skill-help.md`, `skill-setup.md` (five lines), `skill-wp-order.md` and `skill-wp.md` stop sending a reader to the migrate entry and say the migration runs under Claude Code; `skill-archive.md:55`, `skill-discuss.md:35` and `skill-wp.md:25` add that this host refuses the entry, and `skill-help.md:97` that what its notes say of migration concerns that run. No command changes. In `skill-setup.md:52` the words of an `echo` change (read from the diff). The Prior parts are the only parts it touches, so the Claude Code render does not move (read: the commit's `git show --stat`).
+
+**The neutral-part splits render the same bytes for Prior, measured.** The merge split neutral parts in `skill-archive`, `skill-check` and `skill-setup` to carry the Claude text. The comparison above leaves nothing of those splits in any render.
+
+#### The `tmp` check, new in the Prior render
+
+`skill-check/parts/04b-prior.md` adds the table row for the selector `tmp`, "a run can write its scratch directory", and `parts/42b-prior.md` the section `## tmp — the run's scratch directory` at line 316. It says `bin/fusion-tmp` is not run on this host, and that a run's intermediate files go in `/tmp` (request 76, question 5). It runs one `node -e` that writes and removes a file in `os.tmpdir()` and prints `tmp=writable dir=<dir>` or `tmp=unwritable dir=<dir>`. On the first the selector is stamped; on the second it is reported and not stamped. Measured in Prior's pinned image, under `docker run --rm --network none`: `tmp=writable dir=/tmp`. That run had a writable root file system and no contained executor, so it does not show what Prior's container does.
+
+**Which directory it names, measured on 2026-11-06** in the same image, Node v24.22.1, with `--read-only`, uid 65532, Prior's `--tmpfs` and `HOME=/tmp`: `os.tmpdir()` prints `/tmp`, and still does with `HOME` set elsewhere. With `TMPDIR`, `TMP` or `TEMP` set alone it prints that value. `docker image inspect` shows the image's default environment holds none of the three, nor `CLAUDE_CODE_TMPDIR`. Prior states that a run sets neither `TMPDIR` nor `CLAUDE_CODE_TMPDIR` by itself (`commandEnvironment`, `Prior: internal/supervisor/exec.go:516-530`, read, which adds the names a call lists, hook exports and a caller's extras), and that a given run's value was not recorded. *Inference:* on Prior's host the check prints `dir=/tmp` for a run in whose environment none of the three stands, and it says nothing about `/tmp` when one does. It has not run there.
+
+#### The rule
+
+`rules/fusion-workbench-conventions.md` differs in the file's opening list, which gains "intermediate files", and in a new `## Intermediate files` at line 555:
+
+```
+Files read after writers exit go where `bin/fusion-tmp path` prints, not `/tmp`,
+`/var/folders`, `$TMPDIR`, `<root>/tmp` or bare `mktemp`; self-removed scratch exempt.
+Prior: `/tmp` via shell, one run only.
+```
+
+The last sentence is the one Prior's run is meant to follow. `grep -l 'Intermediate files' profiles/*.md` lists none, so no profile holds the rule, and a Prior model meets it where `bin/fusion-rules` emits it at Setup, read from the install tree at run time (*read*; Prior's analysis at `4bb9046` measured `fusion-rules code-implementer` emitting three paths under `/opt/fusion` on 13.4.2).
+
+#### The hooks
+
+**`runsOnPrior`** (`hooks/lib/temp-paths.ts:73`) is true when `FUSION_PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT` both equal `/opt/fusion`. *Read:* Prior sets both after every other layer of the command's environment, `HelperRoot` at `Prior: internal/supervisor/exec.go:51` and the two assignments at `:478-479` at the pin (`:528-529` at `cb1138b`). It decides three things and only those: tracker job 0d (`hooks/tracker.ts:557`), the session-start line telling the user to start with `fusion` (`tempRootLine`, `hooks/lib/temp-paths.ts:281`), and the clause of the commit-message sentence that names where a message goes (`stagingSentence`, `hooks/lib/staging-drift.ts:807`). The payload's new code besides is `bin/fusion-tmp`, `hooks/lib/temp-paths.ts` and its `dist` pair, which no `prior` part starts (`catalog/src/__tests__/prior-commands.test.ts:329`).
+
+**Measured on the build at `dd24b2d4`, and unchanged on this one because no hook file changed:** `git show --stat 438df715` names no path under `hooks/`, `bin/` or `rules/`, and `diff -rq` of the two extracted builds names none either, so no row below can move. It was measured since conformance does not exercise the branch: the extracted payloads over one fresh scratch git repository with `fusion-workbench/.fusion-setup` and `.checkout-id`, no stamps, `TMPDIR` and `CLAUDE_CODE_TMPDIR` unset. The tracker takes a `PostToolUse` `Bash` payload. Its first column here is the reply on `cat /tmp/x`. For the last column, `fusion-workbench/.commit-msg-tmp` is written, the tracker runs on `ls`, a commit moves `HEAD` and the tracker runs on `git commit`. "Image" is `docker run --rm --network none node@sha256:6449e19d…` with the payload mounted read-only at `/opt/fusion`, both roots set to it and `HOME=/tmp`. No run was on Prior's host.
+
+| Payload | Roots, where | Tracker reply on `cat /tmp/x` | Session-start `systemMessage` | Commit-message sentence, where a message goes |
+|---|---|---|---|---|
+| 13.4.4 | both at `/opt/fusion`, image | `{}` | the due line, twelve selectors; no `fusion` line | "On Prior a commit message goes to /tmp/fusion-commit-msg-<name>, which is outside every git tree;" |
+| 13.4.4 | both at the payload's own path, macOS | `additionalContext`, the sentence naming `bin/fusion-tmp path` | the due line and the `fusion` line | "The orchestrator's commit step writes the message to ~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt, in the directory bin/fusion-tmp path prints," |
+| 13.4.4 | `FUSION_PLUGIN_ROOT` alone at `/opt/fusion`, macOS | the same sentence | not run | not run |
+| 13.4.2 | both at `/opt/fusion`, image | `{}` | the due line, eleven selectors | "The orchestrator's commit step writes the message to /tmp/fusion-commit-msg-<session-id>-<task-id>.txt — /tmp is swept" |
+| 13.4.2 | both at the payload's own path, macOS | `{}` | the due line, eleven selectors | the same as the row above |
+
+Every hook exited 0, and the sentence came as the tracker's `additionalContext` on `git commit`. The rest of the sentence is under `### Stated and not asked`.
+
+#### The help text and the rest of the payload
+
+`skill-help.md` adds three paragraphs, after the line "On Prior the update is the bundle the host installs": "Coming from 13.4.3", "Coming from 13.4.2 or from the tag `v13.4.0`", and "Coming from 13.0.0 to 13.3.9, or from the Prior line". That line itself gains one sentence, the migrate entry's exception. The part is `skill-help/parts/21-prior.md`.
+
+Besides `module.json`, `build-identity.json`, `.claude-plugin/plugin.json` and `catalog.json`, which name the version, the revision and the entry's support, the other 34 differing paths and the seven new ones are install tree that the module does not read, the rule above and the hooks above among them. It carries the `~/.fusion-tmp` line in its Claude form: `agents/orchestrator.md`, `skills/{archive,check,cleanup,commit,help,setup}/SKILL.md`, `bin/fusion-claude-md-weight` (a comment), `docs/upgrading-to-v13.md`, the READMEs, `hooks/` sources and `dist`, the hook tests and goldens, `codec/src/__tests__/install.test.ts`, and this file. The seven new paths are `bin/fusion-tmp`, `hooks/dist/lib/temp-paths.{js,d.ts}`, `hooks/lib/temp-paths.ts`, and `hooks/lib/__tests__/{fusion-tmp,temp-path-lint,temp-paths}.test.ts`. That makes `bin` 36 and `hooks` 236 against 35 and 230, `profiles` 50 against 52, and 1 621 entries against 1 616. `bin/fusion-tmp` is the one new mode-0500 file. `bin/fusion-migrate` stays at mode 0500, byte-equal to 13.4.2's, and no profile in this bundle names it (`grep -l`).
+
+#### The delta, to regenerate
+
+```
+git diff --stat a3274f23 438df715 -- agents skills rules hooks bin templates stilwerk docs README.md README-agents.md README-hooks.md install.sh catalog adapters .claude-plugin
+```
+
+It ends `131 files changed, 2591 insertions(+), 354 deletions(-)`, from `git diff --numstat`:
+
+| Path | Files | Insertions, deletions |
+|---|---|---|
+| `catalog/profiles` | 85 | 256, 186 |
+| `catalog/catalog.json` | 1 | 1, 1 |
+| `catalog/src/__tests__/prior-commands.test.ts` | 1 | 130, 7 |
+| `catalog/src/__tests__/prior-held-unsupported.test.ts` | 1 | 14, 6 |
+| `adapters/prior/fusionmodule` tests | 2 | 11, 4 |
+| `hooks/` sources | 5 | 408, 12 |
+| `hooks/dist` | 10 | 519, 20 |
+| `hooks/lib/__tests__` | 10 | 778, 64 |
+| `bin/` | 2 | 329, 1 |
+| `skills/` | 6 | 51, 33 |
+| `agents/` | 1 | 6, 6 |
+| `rules/` | 1 | 7, 1 |
+| `docs/` | 1 | 40, 1 |
+| `install.sh` | 1 | 18, 4 |
+| `README.md`, `README-agents.md`, `README-hooks.md` | 3 | 22, 7 |
+| `.claude-plugin` | 1 | 1, 1 |
+
+### What stands
+
+**Every item Prior accepted stands, without re-asking**, as 78 listed them under `### What 78 does`, at Prior `52a2703`. `### The readings, as fusion takes them` and `` ### The `prior` parts and 76 question 6 `` stand too, the second apart from the binding it quotes, which the sentence above replaces, and `### Corrections to request 78, after the closing review` holds where it differs from 78. None of them is repeated here.
+
+**An answer Prior gives from a preliminary run on the 13.4.2 bundle counts as an answer about its host. Release acceptance needs a run on this digest.** Prior's commit `549f4de` records such a run at `docs/qualification/fusion-request78-2026-11-05/`, from Prior `371dcea` with a scripted backend and no model. Its `identity.json` reads `"run_of_record": false`, and its `actions.md` opens by calling it "a preliminary run, not a run of record". It replaces the run of `82f01cc`, evidence at `51463f1`, which stays in history. A reader following the citation should know that `549f4de`'s commit message repeats `371dcea`'s and is wrong, as `b27530c` states.
+
+### The rulings on 78's questions
+
+**Prior's response is the record:** `Prior: docs/design/fusion-entry-v2-request78-prior-response.md` at `cb1138b`, sha256 `091f0c0f84484592bd9f521ef2386d8f73c59d0e0dbb5ca1aa727b05f6d2a0bc`, from the preliminary run above. It records question 1 **accepted**, question 2 **corrected** and question 3 **corrected**. **These are verdicts about Prior's host, and no verdict on this digest.** The response says so, and says it is not the confirmation a run on the next digest would give. Its section on this draft's earlier bytes, `sha256:2daaf706…`, is read-only history, and the corrections it asked for are taken up here. Decision states, read: at `549f4de` the command and argv records read `implemented`, and question 1's stays `answered` (`261105-1725-does-prior-accept-13-4-2-with-the-v2-bytes-unchanged-or-need-entry-v3-before-fusions-tag.md`, `261105-1725-does-priors-command-guarantee-extend-beyond-the-six-to-what-fusions-blocks-and-helpers-use.md`, `261105-1946-which-argv-forms-does-the-exec-tool-take.md`).
+
+**78's questions are not asked again.** 79 asks for a run on this digest and does not ask Prior to re-rule them. The three verdicts hold unless that run shows otherwise.
+
+| 78's question | What Prior recorded at `cb1138b` | Carried at Prior, as read | Fusion's bytes |
+|---|---|---|---|
+| 1, the v2 bytes | **accepted:** v2 with fusion's readings is the contract until a v3. Prior states what a v3 must be: a new version beside the old one, with the capability moved to `fusion.entry.v3`, bound by turning Prior's three constants into one table. That the table is **enough** is Prior's *inference*, untried, and nothing is built | no host change | none: the frozen assets are byte-equal, as above |
+| 2, the commands beyond the six | **corrected:** Prior's guarantee widens to the **presence of the 26** of 78's table, beside the six, checked before the first hook, once per lifecycle runtime, and a missing one refused by name; behaviour stays outside the guarantee, and `awk` is `mawk` | `ff5f6e2`: `helperCommands`, `helperProbe`, `ProbeHelperRuntime` in `internal/supervisor/exec.go` | the binding in 25 parts, at `b6c08006`, 24 of them in this render |
+| 3, a multi-line block | **corrected:** `argv` is a JSON array in **both spellings**, a real array or the array written as a string; **there is no line form**, and a present `argv` that is not a non-empty JSON array of strings is answered `invalid-argv` with nothing run. Fusion's text keeps `["bash", "-c", "<the block>"]` | `ff5f6e2`: `parseExecArgv` (`internal/supervisor/general_tools.go:70`), `readExecArgv` (`:89`), `execArgvFormRefusal` (`:130`) | none. A test holds that no `prior` part names the line form (`prior-commands.test.ts`, at `b6c08006`) |
+
+**For question 2, the check landed at `ff5f6e2`, and Prior's response states it.** `internal/supervisor/exec.go:814` lists the 26 beside `sed`, `head` and `od`, and a comparison with 78's table finds 26 equal and no other. `:872` requires each, and a missing one fails with `<image> lacks <name>` (`:879`). `internal/supervisor/lifecycle_hooks.go:502` runs the probe before the first hook. Measured in a scratch clone of Prior at `7d5a097` with `PRIOR_REPAIR_DOCKER_TEST=1`: `TestExecHelperProbeRequiresEachCommandByName`, `TestExecDockerHelperProbeRefusesImageLackingOneCommand`, which removes `/usr/bin/comm` from the pinned image, and `TestExecDockerHelperProbePassesOnPinnedImage` pass.
+
+**How the binding reads against that.** Its "at run start" reads as "before the first hook, once per lifecycle runtime" (`lifecycle_hooks.go:461-473`, `:502`, read). Presence means what `command -v` prints: Prior measured that a mode-0644 file on `PATH` passes the probe and that running it gives exit 126, and that repeats in the pinned image (measured, 2026-11-06). The binding's reading by the list holds for the list only: `du`, `ln` and `readlink` are outside it, and a command beyond the list fails with exit 127 mid-run until the list is widened (`exec.go:834-836`, read).
+
+**Two limits on that, read.** `internal/fusionhost/external_entry.go:429` builds that runtime only when `e.cfg.Hooks` is set. *Inference:* every entry run of this bundle has it, since `module.json` declares the hooks, and it stays an inference: Prior adds that nothing outside tests sets `Hooks` for a production run, because `prior fusion run` refuses first (`cmd/prior/fusion_run.go:629`, ahead of `:778`). So limit G8 stands as Prior states it, and no user's run has met the check.
+
+**For question 3, Prior's evidence at `549f4de`, a run from `371dcea`,** shows both spellings reaching the container as three arguments, exit 7 and both lines' effect, and the line form answered `invalid-argv` with nothing run (`docs/qualification/fusion-request78-2026-11-05/cases/multi-line-block/run.json`, `multi-line-block-real-array/run.json`, under the Anthropic codec, scripted). Measured here at `7d5a097`, in the scratch clone above: `TestExecToolArgvFormsOnTheNativeRoute` and `TestExecToolArgvFormsOnTheManagedRoute` pass. The array's limits are under `### Stated and not asked`.
+
+**"Any other value" was too wide, and Prior's response corrects it.** `invalid-argv` holds for a present `argv` that is not a non-empty JSON array of strings; eleven forms are tested on both routes (`internal/supervisor/general_tools_test.go:189-199`). Three kinds of call stay outside it, read and not run: `argv` absent (`internal/supervisor/loop.go:162-163`); a well-formed array the bounds refuse, by an empty first element, more than 256 elements, or an element over 32 KiB or holding NUL (`exec.go:470-476`); and any other wrong argument, `timeout_ms`, `directory`, `environment` or an unknown field (`general_tools.go:148-154`, `:166-168`). On the native route each ends the run (`loop.go:162-163`, `:169-172`; Prior issue `261105-1651-…`, open). On the managed route the model reads the bare `refused` (`managed_mcp.go:176`).
+
+**Prior's sentence that no `prior` part byte has to change was about its three questions, and it stands.** `438df715` changes `prior` part bytes on another ground, the user's ruling on `migrate`, stated below.
+
+**Prior's response confirms the corrections its analysis made to fusion's statements:** on `82f01cc` a block's later lines were lost with exit 0 on Prior, which 78's corrections marked *inference*, and that is now history; the `general_tools.go` lines 78 cites have moved twice, and at `cb1138b` `toolLines` is `:44`, `parseExecArgv` `:70`, `readExecArgv` `:89`, `ExecToolDescription` `:114` and `execArgvFormRefusal` `:130`, with `exec.go`'s `HelperImage` at `:60`, `helperProbe` at `:818` and `ProbeHelperRuntime`'s comment at `:825`; of 78's corrections on a missing `dirname`, the `fusion-identity` row is not comparable, since Prior's repeat in the image gave exit 1 on a fixture with no git identity, which that helper exits 1 for alone; and the phrase 78 could not locate under S63-2 is Prior's own, in no frozen text, at line 174 of `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` (measured with `grep`).
+
+### The order the binding requires
+
+**The binding says Prior guarantees the presence of the 26 and, once its check ships, refuses a missing one by name at run start.** That is a sentence about Prior's host, in bytes fusion ships. So:
+
+- **Prior's run on this digest states the commit where the check landed.** Prior's response at `cb1138b` names `ff5f6e2`; the run names it again, and names the host commit it ran on.
+- **If Prior ships this bundle on a host without that guarantee, the sentence is false, and that is a correction**, under `### What fusion does with the answer`: a new patch version. The check at the pin `08c57fb` requires the six alone (`Prior: internal/supervisor/exec.go:780` there), so a host at the pin is such a host.
+- **The same order holds for the notation.** A real JSON array in `argv` runs on `ff5f6e2` or later: at `371dcea` the case `multi-line-block-real-array` ends `completed`/`success` (measured by Prior, evidence at `549f4de`). On `82f01cc` it ended the run `refused`/`host-permission-denied`, and that result is history (evidence at `51463f1`). Fusion's text does not say which spelling a model sends, and which one it does send is unmeasured.
+- **The current evidence for the 26 is one image.** The pinned image holds all of them: Prior's `docs/qualification/fusion-request78-2026-11-05/commands.json`, at `549f4de`, the same 26 rows as at `51463f1`, under the executor's image, mounts, environment and uid, **and that record covers `rm`**, the one 78 could not measure. Fusion now has it too: `command -v rm` prints `/usr/bin/rm` in that image, from a script file under `docker run --rm --network none`, on `arm64` `linux`. Presence on `amd64` nobody has measured, and the pin is an index digest. Prior's probe, once on its host, is what holds this on any platform.
+
+**The list against this digest.** `bin/fusion-tmp` makes 32 shell helpers where 78 counted 31, and it calls `dirname`, so 28 call it where 78 counted 27. It also calls `readlink` (`:275`), `ln` (`:304`) and `du` (`:310`), and **none of the three is in `helperCommands`.** Measured in the pinned image: `/usr/bin/du`, `/usr/bin/ln`, `/usr/bin/readlink`. No `prior` part starts this helper, and after `dd91ef09` and `dd24b2d4` none of the hook replies measured on `/opt/fusion` names it (the table above). The other helpers' only change is a comment in `bin/fusion-claude-md-weight`, and no neutral part changed what any Prior render runs. So fusion needs no widening for a Prior run. Prior states that the list is a floor measured on 13.4.2 and that any widening is its ruling on the next run. As in 78, a text scan is a floor.
+
+### What Prior is asked to run
+
+**The evidence form is the one 77 and 78 asked for**: a Prior response document at a Prior commit naming the Prior commit it ran on, the digest, the platform and both source revisions, one verdict per item below (accepted, corrected with the correction, refused, or deferred naming the Prior item it waits for), and every limit beside the verdict it limits. **79.1 to 79.4 are 78.1 to 78.4 as written there, with these values in place of 78's:**
+
+| Item | 78's value | 79's value |
+|---|---|---|
+| 79.1 archive, version, digest | `fusion-13.4.2.tar`, `13.4.2`, `sha256:439142d7…` | `fusion-13.4.4.tar`, `13.4.4`, `sha256:64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed` |
+| 79.1 files | 1 616, with 35 at mode 0500 | 1 621, with 36 at mode 0500 |
+| 79.2 `FROZEN` and `WITHDRAWN` | at C″ | at D, byte-equal: the eight and the eleven, unchanged |
+| 79.2 entries and bindings | the 25 entries; `commit` and `cleanup` refused | **24 entries bind**, each with profile bytes per the table above; `commit`, `cleanup` and `migrate` refused by name; the catalog still lists 27; no `profiles/skill-migrate.*`; `bin/fusion-migrate` still in the install tree; the hook file `hooks/hooks.json`, `sha256:d7f4d7ab…` |
+| 79.3 the cases | the class cases, the deliveries, `probe-issue-c-guard-state`, the last-status case, the multi-line block | the same, with the multi-line block in the forms of the ruling: both spellings run the whole block and the line form is answered `invalid-argv`, as Prior's driver asserts at `7d5a097`. Those assertions are unchanged at `371dcea`, and a run must come from `371dcea` or later, because `7d5a097` writes 29 rows |
+| 79.4 tarball sha256 | `f0203558…` | `cf9cd451c38e1f2c73699dc51e3295205f880243d84b65255e455c0067af0793` |
+| 79.4 selected binary on macOS arm64 | `7aad13ac…` | `7aad13ac…`, the same bytes |
+| 79.4 fusion revision and pin | `a3274f23…`, `08c57fb…` | `438df715…`, `08c57fb…` |
+| 79.4 the host | the Prior host commit it ran on | that, and **the commit where the check landed**, and the commit carrying the `argv` ruling |
+
+**The `migrate` entry is new against Prior's response, and Prior has not seen it or ruled on it.** Row 78.2 of that response, at `cb1138b`, reads 25 entries. The user ruled that projects on Prior lie in the future and start with a current workbench, so `migrate` leaves the Prior host, as `commit` and `cleanup` have. Its refusal, by layer, read: the module answers `entry.unsupported` with "migrate is unsupported on prior" (`adapters/prior/fusionmodule/internal/entry/entry_test.go`, at D); `resolveEntryV2` answers `entry "migrate" is unsupported on prior` (`Prior: internal/fusionhost/entry_catalog.go:119-120`); `AdmissionCatalog` leaves it out (`:143`), so admission answers `unknown fusion entry "migrate"` (`Prior: internal/fusionhost/admission.go:439`). **The consequence fusion reads on Prior's side is in a test:** `Prior: internal/fusionhost/entry_delivered_test.go:1039-1041` wants 25 supported entries, and needs a per-delivery count (read). The counts at `entry_catalog_test.go:95` and `:369` are over the 13.4.1 copy and do not meet this bundle (read). `internal/backend/claudecode/profile.go:130` lists `migrate` as `provisional`; fusion did not trace what that table does, and it is Prior's to read.
+
+**What Prior says confirmation needs**, Prior's *inference*, from this draft as it then stood and naming the digest `sha256:ed4770e8…`; that it carries to this digest is fusion's *inference*: a run on this digest from a named Prior commit at `371dcea` or later, with no changed or untracked Go file, its evidence naming the digest; the response naming the host commit, and `ff5f6e2` as where the check and the argv ruling landed; `commands.json` re-run on this bundle; the hook replay repeated on it; and issue `261101-2130-…` read against both prongs there.
+
+No new question is added. What follows is stated, not asked.
+
+### Stated and not asked
+
+- **Nothing here has run on a Prior host.** This digest has run on no Prior host, its hook changes on none, the `tmp` section on none, and `438df715`'s refusal on none. The measurements above are the build machine, a fake host and Prior's pinned image without Prior's executor.
+- **The review `fusion-workbench/shared/reviews/261106-0830-reviewer-pre-delivery-pass-over-13-4-4-merge-and-prior-line.md` covered `2713cbe1..dd24b2d4` and `migrate` on Prior, with the verdict revise:** two high and one medium on `migrate`, two low. It could not run Prior's integration, which it simulated, and read `Integrable`, the per-run workspace path, the tool container's lifetime and G8 without running them; its container runs were in the pinned image with Prior's flags on Docker Desktop, not on Prior's executor; and it did not run `stage.sh test`. Its not-opened list stays in the review. **`438df715` itself has had no review.** It is a catalog-state change, and its proof is the suites and the comparison above. If a review changes the bundle, the rule in `### What fusion does with the answer` applies.
+- **Corrected since the draft of this section, so not open.** The Setup binding statement in 78's corrections passage is corrected at `b6c08006`: no binding says a form it names uses the six alone, and the host-gap clause covers a block and a helper at any exit (issue `261105-1453-the-setup-binding-says-the-commands-it-names-use-the-six-though-it-names-the-helper-form-and-its-exit-127-clause-covers-neutral-blocks-only.md`). The rule's `/tmp` is corrected to `/tmp` via shell at `b6c08006`. The third Claude-only temp message, `stagingSentence`, is corrected at `dd24b2d4`.
+- **What a Prior render does in `/tmp`.** No part of a Prior render and no helper one starts runs a file from `/tmp` (read). The profiles naming `/tmp` are `skill-archive`, `skill-check` and `skill-help`. `skill-archive` holds survey lines there, "data, never a script to run"; `skill-check` writes one empty file; `skill-help` only names the place. `bin/fusion-checkout-name:372`, `bin/fusion-paths:392` and `bin/fusion-rules:520` use `mktemp` for one entry or one stderr, and `bin/fusion-forum:355` for lists of names. `bin/monitor:2066` runs `python3 "$TMPFILE"`, but no block of a Prior part starts it: `skill-check` only copies it, and `skill-help` names the copy for the user's own terminal. In the pinned image a mode-0755 file on that `noexec` mount gives exit 126, and `sh <file>` runs it (measured). *Inference:* none of these approaches 64 MiB. **The one that could was `bin/fusion-migrate`, which is why the entry left:** with `HOME=/tmp` its default session put a full copy of the workbench in the tmpfs, so a 70 MiB workbench ended exit 3, and a later run found neither backup nor rollback (measured in the pinned image, not on Prior's executor).
+- **Prior's host facts, which fusion holds, from Prior's response at `cb1138b`.** `/tmp` in the tool container is a tmpfs, `rw,noexec,nosuid,nodev,size=64m` (`internal/platform/container.go:83`, read), ending with the run's tool container and shared with a child run (`internal/supervisor/files_scratch.go:62-65`, read). `prior fusion run` still refuses every route (`cmd/prior/fusion_run.go:597`, `:629`, read). A model has no working-directory carry between `host.exec.v1` calls (Prior issue `261105-1501-a-model-on-prior-has-no-working-directory-carry-between-exec-calls.md`, open), and the parts already say "a `directory` given on every call and never assumed from an earlier one". The array's schema limits: no live model has sent one, Ollama's handling of `anyOf` is unconfirmed, and Responses rests on documentation only.
+- **Left as is.** `rules/agent-setup.md:45` tells a run on a legacy workbench to have the user run `/fusion:migrate`, a Claude Code command, in a rule read on both hosts, and `hooks/lib/record-index.ts:186` names it too. No Prior project is expected to reach it. `skill-help` on Prior still names the cleanup entry (`skill-help.md:18`, `:78`), which is older than this.
+- **The review's two low findings stay open.** The `tmp` stamp, under `.check-stamps` below, and `fusion-workbench/shared/issues/261106-0830-the-help-update-topic-carries-six-install-from-paragraphs-against-the-release-rule-of-three.md`: `skill-help.md` holds six "Coming from" paragraphs (lines 99 to 109) against the release rule of three.
+- **File tools under `/tmp` reach only `/tmp/fusion-commit-msg-<name>`, and only to create**, which is Prior's correction to its own earlier note, point 4 of its analysis: `file.create` also reaches the workspace, and no other file tool reaches `/tmp` at all (`Prior: internal/supervisor/files_scratch.go:44`, `files.go:119`, read). A `file.create` on another `/tmp` name is refused, and on the native route that ends the run (Prior issue `261105-1651-…`), so the rule says "via shell". Prior's plan keeps the file tools' reach as a decision of its own.
+- **`scratchPathForm` exists at Prior's HEAD and not at the pin.** `internal/supervisor/files_scratch.go` is absent from `08c57fb4` (`git show` fails) and came at `bc7994c`. So the Prior clause of `stagingSentence`, and fusion's new comment on it (`hooks/lib/staging-drift.ts:197-204`), which cites line 44, presume Prior's later code. **`stage.sh test` runs at the pin and does not cover it**, and the hook test holds only a copy of that pattern.
+- **The tail of the commit-message sentence is shared and is not fixed.** On Prior the sentence still says "if it is a leftover commit message, delete it and write the next one to the prescribed path; if it is something a session authored, name it to the user and stage it instead" (`hooks/lib/staging-drift.ts:811-813`), and then "If you are the orchestrator, add these paths — written out in full, absolute — to the next commit's staging list" (`:820`). Measured in the image above. That stands against `catalog/profiles/orchestrator/parts/37-prior.md` (no message file, no staging list) and `55-prior.md` ("never delete a workbench file because a name looks like a leftover"). The trigger is `HEAD` moving, so **a run reaches it only by breaking the no-commit prose**, and no recorded Prior run has shown it on a commit-message file. It is not fixed, and a later candidate may.
+- **`classify`'s row text still names the Claude path.** `bin/fusion-staging-drift` in the image above prints the row `commit-message ?? .commit-msg-tmp UNSTAGED`, with "prescribes ~/.fusion-tmp/<checkout-id>/fusion-commit-msg-<session-id>-<task-id>.txt" (`hooks/lib/staging-drift.ts:559`). `classify` takes no environment. On Prior the orchestrator runs no staging check (`55-prior.md`), so a run reads this only by running the helper unprompted.
+- **A sentence in the merge's message is wrong.** `464dc7a2` gives as a reason that "a rule inlined into Prior profiles gained a section". No rule is inlined there: the section is read from the install tree at run time, as `#### The rule` says. The one rule any profile includes, `rules/user-facing-output.md`, carries the same sha256 in both bundles. The bundle did need rebuilding, for the reasons above; that one is not among them.
+- **`hooks` conformance does not exercise `runsOnPrior`.** What holds that branch is said under `#### The hooks`: the unit tests and the table, run directly on this build's payload. The first is not a host, and the second is not Prior's executor.
+- **At the pin no production code builds the hook runtime; at `7d5a097` entry runs wire hooks. Read from code.** At `08c57fb`, `git grep 'NewLifecycleRuntime('` finds its definition and test callers only. At `7d5a097`, `Prior: internal/fusionhost/external_entry.go:432` builds it for entry runs, and `internal/qualification/fusionsurface/replay.go:910` for the replay. PostToolUse `additionalContext` goes "to the model with the tool result" and `systemMessage` to "the user's terminal as a notice" (`Prior: internal/supervisor/lifecycle_hooks.go:49-50`, `:533`, `:669`). Prior's plan names job 0d and the start line as its C and D, and its A stays: `tmp` remains in `CHECK_SELECTORS` with no host condition (`hooks/lib/checks-due.ts:32`), so a stamps file holding the eleven older selectors still leaves `tmp` due. Prior's plan expects its replay to stop on that at its s19, and that comparison is Prior's to run on this digest.
+- **`/opt/fusion` is a false positive for a hand-loaded Claude Code plugin.** No fusion install path is `/opt/fusion`. A Claude Code user who loads the plugin from there, with both roots at it, is read as Prior, loses the two advisories and reads Prior's message path (`hooks/lib/temp-paths.ts:64-72`, read). The payload has no host field to decide this on.
+- **`.check-stamps` is shared between the hosts** (`fusion-workbench/shared/issues/261106-0830-a-tmp-stamp-from-a-prior-run-suppresses-claude-code-s-tmp-check.md`, low, open). The file travels with the run's integration (request 77, question 5), and `dueSelectors` (`hooks/lib/checks-due.ts:40-44`) has no host in it. So a Prior `tmp` stamp suppresses Claude Code's `tmp` check on that checkout until the version changes or 30 days pass, and that check is the one that verifies `~/.fusion-tmp` and its grants. Measured on the payload's `bin/fusion-checks-due`: all twelve stamped at 13.4.4 prints `checks_due=none`, and with `tmp` stamped at another version prints `checks_due=tmp`. The 30 days are read, not run.
+- **`permissions` is perpetually due on a checkout only Prior runs, and that is older than the merge.** `skill-check.md:174` says not to stamp it, from `87675d99` (2026-10-25), and the same line stands in 13.4.2's render. Measured: everything else stamped at its own version prints `checks_due=permissions` on both bundles' helper. A Claude Code stamp at the same version clears it.
+- **`skill-check`'s "eleven" is stale at twelve selectors.** `skill-check.md:17`, "These eleven checks", in the same bundle whose table lists twelve and whose `CHECK_SELECTORS` holds twelve. 13.4.2's eleven was right. No behaviour hangs on the word.
+- **Session-start's other `systemMessage` lines still reach a Prior run.** `hooks/session-start.ts:367-372` emits the subdirectory warning, the due line and the `CLAUDE.md` weight line beside the temp-root line, and only the last is behind `runsOnPrior`. Measured in the image above: the due line, naming `/fusion:check`, a Claude Code form. *Inference from `lifecycle_hooks.go`:* on Prior it is a notice at the user's terminal on each hooked entry run, and with the `permissions` item above it does not go away.
+- **`docs/upgrading-to-v13.md` has no Prior reading beside its steps.** Lines 288 to 289 name `fusion --update` and `/fusion:check --only tmp` as steps, which are Claude Code's. The Prior render of `skill-help` sends a reader coming "from the Prior line" to that section, and in the same sentence says the launcher is one no Prior run starts. The sentence "On Prior the update is the bundle the host installs" stands above it. No run needs the doc.
+- **The records, in one place. The orchestrator moves them, in this section's commit, and this section moves none.** Three issues close, disposition overtaken by `438df715`: `fusion-workbench/shared/issues/261106-0830-skill-migrate-on-prior-promises-a-backup-and-a-rollback-that-end-with-the-run.md`, `261106-0830-a-failed-migrate-run-on-prior-integrates-a-half-moved-workbench-and-its-fence.md` and `261106-0830-migrate-on-prior-exits-3-with-no-stated-cause-when-the-workbench-does-not-fit-the-64-mib-tmpfs.md`. The issue `261105-1453-the-setup-binding-…` closes at `b6c08006`. In fusion's work package `261105-1009-prior-answer-76-77-and-corrected-candidate`, issue `261105-1023-neutral-shell-blocks-and-carried-helpers-rely-on-commands-outside-priors-guaranteed-six.md` and decision `261105-1023-does-the-13-4-2-candidate-carry-the-v3-of-the-entry-assets.md` were waiting on Prior's response, which records question 2 and question 1, so they move too.
+- **What stays open in that package.** The issue `261105-1453-the-prior-commands-watch-list-still-passes-env-with-an-assignment-timeout-sh-c-bash-lc-eval-and-a-quoted-assignment.md` still waits for a later candidate; it is a test, not bundle bytes. The decisions `261105-1023-does-entry-v3-keep-or-drop-the-c-and-r-name-status-branch.md` and `261105-1023-does-the-deferred-fetch-item-hold-a-later-tag.md` await fusion's user.
+
+### `REQUESTS.md`'s digest moved
+
+Prior pins this file at `tests/testdata/fusion-codec/UPSTREAM.json:291` and `tests/testdata/fusion-fj01/UPSTREAM.json:48`, at `36947f8edc6d42e9d41e6d7eb875c01921da72c98613921343fde557a201b3f9`; both lines read the same at `cb1138b`.
+
+At this request's parent `438df71579652af601e8687b785a9f21834450c6` the file is 7 110 lines, 1 198 689 bytes, `sha256:2e39d7b0fa48fe4da969a56fd5f83fdbc1b4f4cbf78033fa73aa6839d7c23801`, and `tar -xOf fusion-13.4.4.tar codec/fixtures/prior/REQUESTS.md | shasum -a 256` prints the same, because the tarball was built at the parent, **so the bundle carries this file without this section**, as 13.4.2 carried it without 78's. **This section moves the file again and cannot state its own digest.** The request's commit hash and the `shasum -a 256` of the file at it are reported to fusion's user, who names them to Prior. The bundle's codec, `b4047458…`, is unaffected, and the bundle's copy of this file stays at `2e39d7b0…`. Fusion asks for no change to either pin file.
+
+### What fusion does with the answer
+
+- **Accepted:** the answer is recorded here with the Prior commit that holds it. The recorded digest must equal `sha256:64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed`; an answer naming another digest ran another build and closes nothing of 79. **The tag `v13.4.4` and the marketplace bump follow only on an accepted answer and the user's rulings** on the decisions under `### Stated and not asked`.
+- **Corrected:** a further correction that changes the bundle is a new patch version, a rebuild, a new digest and a new request; never an edit of this section. A correction to a frozen asset is a new version beside it, never an edit under the same name. A correction to text alone (a `prior` part) still moves the digest, so it takes the same route. **A host that ships this bundle without the check is such a correction.**
+- **Refused or deferred:** no tag carries D, and the user rules.
+- **Questions 1 to 3 of 78** are recorded at Prior `cb1138b`, accepted, corrected and corrected, as what they are: an answer about Prior's host, with no verdict on this digest. 79 asks for a run on this digest and no longer asks Prior to re-rule them, and the three verdicts hold unless that run shows otherwise. If it does, the run holds, and a change to `prior` part bytes takes the **Corrected** route.
+- A defect Prior names in the delivery is filed as an issue in fusion's workbench before the answer is recorded, and the answer is then not "accepted".
+- **The same rule now applies to D: until a tag, `main` takes no commit to a shipped file after D other than this file.** A commit that must land first moves the candidate to a new patch version, under the same route, and **the question whether to tag or bump the marketplace is put to the user before either is done**, which is the step 13.4.3 missed.
+
+### Requests 64 and 67 to 79, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 and 67 to 75 | as `#### Requests 64 and 67 to 76, as they stand` above | the answer sections above |
+| 76 | as in `### Requests 64 and 67 to 78, as they stand` above: **corrected** at Prior `52a2703`, with question 4 deferred | `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` |
+| 77 | as there: **corrected** at Prior `52a2703`; its bundle was replaced by 78's | the same response |
+| 78 | **bundle replaced by 79's.** Bundle `sha256:439142d70b8d0bfabe2936a209f51703121a6113aaa4158eb42a810feff6d153` (13.4.2) stays at its delivered path and closes nothing of 79; 78.1 to 78.4 move to 79.1 to 79.4; **questions 1 to 3 are recorded at Prior `cb1138b`: accepted, corrected, corrected**, an answer about Prior's host with no verdict on this digest | `### The rulings on 78's questions`, `Prior: docs/design/fusion-entry-v2-request78-prior-response.md` at `cb1138b` and `Prior: docs/qualification/fusion-request78-2026-11-05/` at `549f4de` |
+| 13.4.3 | **no request.** Tag `v13.4.3` on `3045b451` and marketplace `c7920af`, standing by the user's ruling. No bundle and not a candidate | `### Why 78 moved, and fusion's own error` |
+| 79 | **asked**: this section. Bundle `sha256:64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed` (13.4.4, built at D = `438df715`, against Prior `08c57fb`), codec `b4047458…`; 79.1 to 79.4, on a run on this digest. It does not ask Prior to re-rule questions 1 to 3 of 78, whose verdicts hold unless that run shows otherwise | — |
+
+These rows supersede the rows of `### Requests 64 and 67 to 78, as they stand` above, which stay as they were, this file being append-only. Request 79 is the release request open with Prior, and only an answer naming the 13.4.4 digest gives a release verdict.

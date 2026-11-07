@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d7b780c7-28a1-4d0b-91b8-0d83de7c32be",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261106-0830-migrate-on-prior-exits-3-with-no-stated-cause-when-the-workbench-does-not-fit-the-64-mib-tmpfs.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

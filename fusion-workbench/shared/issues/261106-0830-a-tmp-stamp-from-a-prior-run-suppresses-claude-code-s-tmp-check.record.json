@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "ee5d4ee0-cd0d-4d9d-a179-1f541a0cc0e5",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261106-0830-a-tmp-stamp-from-a-prior-run-suppresses-claude-code-s-tmp-check.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
