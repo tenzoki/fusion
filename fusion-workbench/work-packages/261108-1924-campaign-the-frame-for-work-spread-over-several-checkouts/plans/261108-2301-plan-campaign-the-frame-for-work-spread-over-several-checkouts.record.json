@@ -1,0 +1,116 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d5ba9fa4-4588-46d3-ba4e-f638b8c8a067",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/plans/261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [
+      {
+        "id": "1",
+        "state": "open"
+      },
+      {
+        "id": "2",
+        "state": "open"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      },
+      {
+        "id": "8",
+        "state": "open"
+      },
+      {
+        "id": "9",
+        "state": "open"
+      },
+      {
+        "id": "10",
+        "state": "open"
+      },
+      {
+        "id": "11",
+        "state": "open"
+      },
+      {
+        "id": "12",
+        "state": "open"
+      },
+      {
+        "id": "13",
+        "state": "open"
+      },
+      {
+        "id": "14",
+        "state": "open"
+      },
+      {
+        "id": "15",
+        "state": "open"
+      },
+      {
+        "id": "16",
+        "state": "open"
+      },
+      {
+        "id": "17",
+        "state": "open"
+      },
+      {
+        "id": "18",
+        "state": "open"
+      },
+      {
+        "id": "19",
+        "state": "open"
+      },
+      {
+        "id": "20",
+        "state": "open"
+      },
+      {
+        "id": "21",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "0950a607-3d0c-4743-a213-7a1065a64051"
+      },
+      "revision": "sha256:ac3d90d101a7d212837257c4844c6624cf51d68f1ff5f62df51a02f63d7cf7c9"
+    }
+  }
+}

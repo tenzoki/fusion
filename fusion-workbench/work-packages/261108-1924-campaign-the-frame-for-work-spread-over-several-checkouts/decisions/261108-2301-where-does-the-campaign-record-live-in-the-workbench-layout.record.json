@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "d4c1fab9-2a62-4231-bb07-c2c7c262c3a7",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/decisions/261108-2301-where-does-the-campaign-record-live-in-the-workbench-layout.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

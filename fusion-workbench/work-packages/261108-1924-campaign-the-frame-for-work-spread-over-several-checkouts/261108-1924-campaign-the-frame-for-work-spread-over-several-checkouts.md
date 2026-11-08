@@ -28,4 +28,8 @@ The user's words, verbatim (2026-11-08):
 
 The item is reached when the campaign is the one frame on the Claude side for work spread over several checkouts: a recorded decision adopting it and superseding the three rulings named above, a specification with the fixed points of the report's Recommendation 4, the format questions put to Prior before the plan, and the overview, the planning and the steering built in that order.
 
+## Mode
+
+The user's words, verbatim (2026-11-08, after approving the specification at its second review): „1, im automodus, und anschließend im automodus implementieren“ — plan now in autonomous mode, then implement in autonomous mode. `mode` is set to `autonomous` on this sentence.
+
 **Cross-references:** `261105-1156-campaign-as-the-frame-for-work-spread-over-several-checkouts.md`, `foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md`, `foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md`

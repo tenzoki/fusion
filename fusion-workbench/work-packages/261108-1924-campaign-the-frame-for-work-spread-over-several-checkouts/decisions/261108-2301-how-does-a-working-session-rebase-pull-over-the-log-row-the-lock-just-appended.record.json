@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "168ec6b2-0343-485c-8739-6a8c86d49b79",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/decisions/261108-2301-how-does-a-working-session-rebase-pull-over-the-log-row-the-lock-just-appended.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

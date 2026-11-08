@@ -10,8 +10,15 @@
     "claimed_at": "2026-11-08T18:25:31Z"
   },
   "mode": {
-    "value": "ordinary",
-    "source": null
+    "value": "autonomous",
+    "source": {
+      "kind": "user-word",
+      "ref": {
+        "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md",
+        "sha256": "sha256:b7a53a2770e667991e915be9fed40aac9f853d728cf6423dd86ecd3b215a9e68",
+        "kind": "other"
+      }
+    }
   },
   "origin": {
     "kind": "user-request",
@@ -33,6 +40,14 @@
       },
       "role": "spec",
       "revision": "sha256:a682ae4b951a4894c61e19fc6492ab86c8974e75d0792e83c44fce0822914ea3"
+    },
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "d5ba9fa4-4588-46d3-ba4e-f638b8c8a067"
+      },
+      "role": "plan",
+      "revision": "sha256:ac3d90d101a7d212837257c4844c6624cf51d68f1ff5f62df51a02f63d7cf7c9"
     }
   ],
   "references": [],
