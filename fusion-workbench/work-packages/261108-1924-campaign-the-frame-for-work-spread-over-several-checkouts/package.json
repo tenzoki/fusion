@@ -1,0 +1,37 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "0950a607-3d0c-4743-a213-7a1065a64051",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "domain": "code",
+  "status": "claimed",
+  "claim": {
+    "checkout_id": "114caf11",
+    "person": "Kai Stalmann <ks@qantr.com>",
+    "claimed_at": "2026-11-08T18:25:31Z"
+  },
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md"
+  },
+  "depends_on": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

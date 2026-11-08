@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "07e94ad8-21bd-4463-b64a-61d1d2396a50",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/decisions/261108-1927-does-the-claude-side-adopt-the-campaign-as-its-one-frame-for-work-spread-over-several-checkouts.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": "261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md",
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
