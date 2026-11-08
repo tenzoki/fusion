@@ -149,3 +149,4 @@ coverage/
 *.tmp
 *.bak
 *.pid
+/tmp
