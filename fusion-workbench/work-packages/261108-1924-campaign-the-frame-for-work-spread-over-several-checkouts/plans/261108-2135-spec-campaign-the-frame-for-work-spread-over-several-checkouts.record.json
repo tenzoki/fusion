@@ -1,0 +1,31 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2e2a6b76-acbc-4985-9d26-713a5c24e117",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/plans/261108-2135-spec-campaign-the-frame-for-work-spread-over-several-checkouts.md"
+  },
+  "filed_by": {
+    "actor": "requirements-designer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "0950a607-3d0c-4743-a213-7a1065a64051"
+      },
+      "revision": "sha256:a682ae4b951a4894c61e19fc6492ab86c8974e75d0792e83c44fce0822914ea3"
+    }
+  }
+}
