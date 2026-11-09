@@ -1,0 +1,13 @@
+A commit hash written into a record before the rebase goes stale when the rebase rewrites the commit
+---
+The campaign's working cycle is commit, pull with rebase, read, push. A hash that a session writes into a record between its commit and the rebase names a commit the rebase may replace: an `--implementation-ref` on a decision, a `Resolved:` or `Implemented:` line that cites the commit, a closure note's commit range, a session-end row. The plan's step 17 keeps `last_push` right across a rebased cycle; nothing in the plan covers the hashes the orchestrator's own procedure writes into records.
+---
+**Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
+
+**Evidence.** Reported by the implementation-planner in the correction round after plan step 6, measured read-only in the consuming project's clone at `56c19983a`: 301 of 3 825 `commit` rows in that project's event log name no ancestor of the head, 83 of 369 since 2026-11-01; for the five newest rows of checkout `cb430046` each has exactly one commit on the head under another hash with the same subject and author time. One commit in that history exists only to correct "the rebased hash" in three decision records, and the session-end row of the session that made it still cites a hash that is no object in the clone. *Inference, not measured:* a `git pull --rebase` is the cause; no reflog was read. The orchestrator has not repeated the measurement.
+
+**Why it matters for this package.** Plan step 19 puts the cycle into the orchestrator's Step 4. From then on every working session in a campaign writes its record transitions the way the measured session did, and a decision marked `implemented` at a commit that no longer exists is a record that cannot be followed. `rules/fusion-workbench-conventions.md` `## Inline State Tracking` has the orchestrator send `--implementation-ref` once Step 4 has committed, which under the cycle is before the rebase.
+
+**Acceptance.** The plan says where in the cycle a hash may be written into a record (after the rebase and before the push, after the push, or never by hash while a campaign runs), step 19's text for the orchestrator's Step 4 and for **Closing a work package** follows it, and a test or a stated manual check covers one transition written in a rebased cycle. What a session does with a record that already carries a stale hash is stated.
+
+**Cross-references:** `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md` (steps 17, 19), `261109-1313-a-commit-row-names-a-hash-a-later-rebase-removes-so-last-push-by-ancestor-test-under-reports.md`, `261108-2301-how-does-a-working-session-rebase-pull-over-the-log-row-the-lock-just-appended.md`

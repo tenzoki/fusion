@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5d82909c-7405-469e-84a1-6ccc2b9bbc92",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/issues/261109-1341-a-commit-hash-written-into-a-record-before-the-rebase-goes-stale-when-the-rebase-rewrites-the-commit.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
