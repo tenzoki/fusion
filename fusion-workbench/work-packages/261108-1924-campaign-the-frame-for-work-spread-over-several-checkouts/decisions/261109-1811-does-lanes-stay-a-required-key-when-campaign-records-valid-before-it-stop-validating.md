@@ -36,3 +36,5 @@ Plan step 10 makes `lanes` a required root key of `fusion.campaign/v1`, `null` a
 
 - A change to a test that holds a condition Prior set is not an executor's to make on its own; the plan flags step 10 as requiring approval, and the approval was given for the step as the plan described it, without this consequence.
 - Under options 1 and 2 the statement to Prior is the user's to relay; no agent gives it.
+
+Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Ruling on campaign records valid before `lanes`` — option 1, `lanes` stays required and plan step 13 restates the old-records case for the four campaign records; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.

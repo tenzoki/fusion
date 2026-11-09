@@ -995,6 +995,30 @@
     "note": "Prior's FJ00 response 2 transported as stored: a formation candidate with risk -1, a stale package carrying a failure_reason, and a charter whose item_kinds and data_boundary each repeat an entry (order and multiplicity enter CharterHash)."
   },
   {
+    "path": "valid/campaign/with-lanes.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "A campaign as the Claude side writes one: running with reason null and empty sessions and runs, a first stored state Prior's lifecycle does not produce; register and formation null; the charter filled as request 80 states it. Two lanes: one worked by a checkout, naming two packages in the order they are worked, and one with checkout_id null and no members. state.charter_hash and state.revision are Prior's charterHash and stateRevision over the file's own export, the revision over the export whose CharterHash is that hash."
+  },
+  {
+    "path": "valid/campaign/lanes-rule-package-in-two-lanes.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "with-lanes.json with one package named in both lanes: valid at the schema level only, since uniqueItems holds within one lane's members and the schema does not express the rule across lanes. The codec's validate reports the finding schema-invalid/duplicate-lane-member."
+  },
+  {
+    "path": "valid/campaign/lanes-rule-duplicate-lane-id.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "with-lanes.json with both lanes under the id lane-1: valid at the schema level only, since the schema does not express that a lane's id is distinct within the campaign. The codec's validate reports the finding schema-invalid/duplicate-lane-id."
+  },
+  {
+    "path": "valid/campaign/lanes-rule-checkout-in-two-lanes.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "valid",
+    "note": "with-lanes.json with one checkout_id in both lanes: valid at the schema level only, since the schema does not express that a non-null checkout_id stands in one lane only. The codec's validate reports the finding schema-invalid/duplicate-lane-checkout."
+  },
+  {
     "path": "invalid/campaign/unknown-key.json",
     "schema": "urn:fusion:schema:fusion.campaign/v1",
     "expect": "invalid",
@@ -1147,6 +1171,41 @@
     "expect": "invalid",
     "error_class": "schema-invalid",
     "note": "minimal.json with provenance.claim_transfers: the history is package-only."
+  },
+  {
+    "path": "invalid/campaign/lanes-missing.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "with-lanes.json without lanes: the key is required, and null on a campaign that has no lanes."
+  },
+  {
+    "path": "invalid/campaign/lanes-empty.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "lanes [] is refused by minItems 1: a campaign without lanes has the one spelling null."
+  },
+  {
+    "path": "invalid/campaign/lanes-duplicate-member.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A lane naming one package twice in identical entries: members is uniqueItems."
+  },
+  {
+    "path": "invalid/campaign/lanes-member-not-record-ref.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A member given as a package's directory name instead of a record_ref."
+  },
+  {
+    "path": "invalid/campaign/lanes-lane-with-revision.json",
+    "schema": "urn:fusion:schema:fusion.campaign/v1",
+    "expect": "invalid",
+    "error_class": "schema-invalid",
+    "note": "A lane carrying the revision member request 80 proposed: a lane has no revision (Prior's correction (a) to question 1), and a lane admits no key beyond id, checkout_id and members."
   },
   {
     "path": "valid/evidence/accept-prior-enforced.json",

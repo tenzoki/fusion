@@ -1,0 +1,73 @@
+{
+  "schema": "fusion.campaign/v1",
+  "id": "2770309a-4fdc-4162-be79-3ae33d91c96b",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "charter": {
+    "schema_version": 1,
+    "campaign_id": "260929-0900-parser-lanes",
+    "revision": "prior-opaque:r1",
+    "authorisation_ref": "260929-0855-work-the-parser-packages-in-two-lanes.md",
+    "objective": "Work the parser packages in two lanes, one checkout per lane.",
+    "item_kinds": [
+      "work-package"
+    ],
+    "candidate_sources": [
+      "work-packages"
+    ],
+    "workflow_templates": [
+      "fusion-claude-code"
+    ],
+    "stop_conditions": [],
+    "intake_policy": "user-filed",
+    "selection_policy": "user-confirmed-lanes",
+    "package_policy": "one-claim-per-checkout",
+    "acceptance_policy": "closing-review-per-package",
+    "autonomy_policy": "per-package-mode",
+    "backend_policy": "claude-code",
+    "delivery_policy": "commit, then pull with rebase, then read the campaign, then push",
+    "data_boundary": [],
+    "capabilities": [],
+    "budget_account": "none",
+    "limits": {
+      "max_attempts": 1,
+      "max_failures": 0,
+      "max_consecutive_failures": 1,
+      "max_reviews": 1,
+      "resource_units": 1
+    }
+  },
+  "state": {
+    "campaign_id": "260929-0900-parser-lanes",
+    "revision": "prior-json-sha256:36490be449d2951d50428f959d0c35a900ed9b0d97188a38cb63809ab3819e8c",
+    "state": "running",
+    "previous_terminal": null,
+    "reason": null,
+    "charter_hash": "prior-json-sha256:ee332bc1051eb747ebab96c0fc5daa9ee5e96552ddf2fdb3d2776d621d3e18f3",
+    "counters": {
+      "attempts": 0,
+      "failures": 0,
+      "consecutive_failures": 0,
+      "reviews": 0,
+      "resource_units": 0
+    },
+    "settlement": {
+      "owned_runs": 0,
+      "open_intents": 0,
+      "unknown_effects": 0,
+      "quarantined": 0
+    },
+    "requested_outcome": null,
+    "sessions": [],
+    "runs": [],
+    "baseline_hash": null,
+    "completion_evidence": null
+  },
+  "lanes": [],
+  "register": null,
+  "formation": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

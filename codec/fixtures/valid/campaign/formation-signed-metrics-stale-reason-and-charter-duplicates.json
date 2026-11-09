@@ -80,6 +80,7 @@
     "baseline_hash": "prior-opaque:baseline-40a1713f",
     "completion_evidence": null
   },
+  "lanes": null,
   "register": {
     "id": "reg-parser",
     "revision": "prior-json-sha256:c96e1e3ef4f08eb92d663f35b7b382b0a6f30cfb043d95bf6158f7a3cc2b324a",

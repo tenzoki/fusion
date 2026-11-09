@@ -2,16 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:fusion:schema:fusion.campaign/v1",
   "title": "fusion.campaign/v1",
-  "description": "A campaign, campaigns/<id>/campaign.json, written only when a campaign is used (spec sections 3 and 4.3). It holds what the spec keeps register-wide instead of spreading it over issue markers: Prior's campaign.Charter and campaign.State, the register-level part of candidates.Register (the candidates themselves are issues with a candidate block) and the formation plan packages.Plan (modules/fusion/campaign/campaign.go, candidates/register.go, packages/packages.go at 12d8424), each typed exactly; codec/contract/prior-mapping.json names every field. register and formation are null for a campaign that never used them; policy, snapshot, formation.policy and state.completion_evidence are null when Prior did not persist them (at 12d8424 they are call inputs, not aggregate fields). Go maps are arrays of keyed entries sorted by key on export. Rules JSON Schema cannot check: entry keys inside stable, watermarks, snapshot.versions, snapshot.source_revisions, candidates, packages, admissions and active_items are distinct beyond identical entries; a register entry's candidate_id names an issue whose candidate.prior_id matches; charter_hash equals Prior's charterHash over the charter; each revision equals Prior's hash of the aggregate with Revision cleared; a package's members and an admission's attempts name candidates present in formation.candidates, and a package's dependencies name package ids present in formation.packages; the mapping of a formation package state onto a fusion package status (prior-mapping.json state_mapping, every row confirmed) is applied by no importer; a campaign state, claim or historical run reference grants no Prior authority and no live lease.",
+  "description": "A campaign, campaigns/<id>/campaign.json, written only when a campaign is used (spec sections 3 and 4.3). It holds what the spec keeps register-wide instead of spreading it over issue markers: Prior's campaign.Charter and campaign.State, the register-level part of candidates.Register (the candidates themselves are issues with a candidate block) and the formation plan packages.Plan (modules/fusion/campaign/campaign.go, candidates/register.go, packages/packages.go at 12d8424), each typed exactly; codec/contract/prior-mapping.json names every field. register and formation are null for a campaign that never used them; policy, snapshot, formation.policy and state.completion_evidence are null when Prior did not persist them (at 12d8424 they are call inputs, not aggregate fields). Go maps are arrays of keyed entries sorted by key on export. lanes is the Claude side's cut of work packages into one ordered lane per checkout: null for a campaign that has none, which is every campaign Prior writes, or a list of at least one lane; [] is not admitted beside null, so a campaign without lanes has one spelling. lanes has no Prior aggregate and no row in codec/contract/prior-mapping.json. Rules JSON Schema cannot check: entry keys inside stable, watermarks, snapshot.versions, snapshot.source_revisions, candidates, packages, admissions and active_items are distinct beyond identical entries; a register entry's candidate_id names an issue whose candidate.prior_id matches; charter_hash equals Prior's charterHash over the charter; each revision equals Prior's hash of the aggregate with Revision cleared; a package's members and an admission's attempts name candidates present in formation.candidates, and a package's dependencies name package ids present in formation.packages; the mapping of a formation package state onto a fusion package status (prior-mapping.json state_mapping, every row confirmed) is applied by no importer; a campaign state, claim or historical run reference grants no Prior authority and no live lease; the three lane rules, each reported by the codec's validate as a finding: a package is named once in a lane and in one lane only, compared by record_id (uniqueItems only catches identical entries, and a record_ref admits an optional revision and display), a lane's id is distinct within the campaign, and a non-null checkout_id stands in one lane only; a lane's checkout_id is an assignment and never a host lease.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["charter", "extensions", "formation", "id", "provenance", "register", "schema", "state", "workbench_id"],
+  "required": ["charter", "extensions", "formation", "id", "lanes", "provenance", "register", "schema", "state", "workbench_id"],
   "properties": {
     "schema": { "const": "fusion.campaign/v1" },
     "id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
     "workbench_id": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/uuid" },
     "charter": { "$ref": "#/$defs/charter" },
     "state": { "$ref": "#/$defs/state" },
+    "lanes": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/lane" } }
+      ]
+    },
     "register": {
       "oneOf": [
         { "type": "null" },
@@ -184,6 +190,27 @@
           "then": { "type": "object", "properties": { "previous_terminal": { "type": "null" } } }
         }
       ]
+    },
+    "lane": {
+      "type": "object",
+      "description": "One lane: work packages in the order they are worked, for one checkout or, with checkout_id null, for none yet. members may be empty. A lane has no revision member: Prior computes no hash of a lane, and the campaign file's own sha256 revision moves with every change of lanes.",
+      "additionalProperties": false,
+      "required": ["checkout_id", "id", "members"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "checkout_id": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/checkout_id" }
+          ]
+        },
+        "members": {
+          "type": "array",
+          "description": "The lane's work packages, in the order the lane is worked.",
+          "uniqueItems": true,
+          "items": { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/record_ref" }
+        }
+      }
     },
     "policy": {
       "type": "object",
