@@ -48,6 +48,12 @@
 //               package of this workbench, none the package itself, and no
 //               cycle through it; the conditions are evaluated at dispatch
 //               time and by `reconcile`, never here
+//   set-resources
+//               a package's `resources`, the areas of the project it works
+//               in, replaced whole (request 80): `[]` writes the key declared
+//               and empty, and no request removes it; each entry is judged by
+//               the package schema's `resource_path`, the grammar's one home,
+//               so the operation refuses exactly what that pattern refuses
 //   adopt-plan  a plan record bound into a package's `active_documents` at
 //               the narrative revision accepted, as its one plan (replacing
 //               the one before) or as one more spec, with the record's
@@ -187,6 +193,7 @@ import {
   type Response,
   type SetDependenciesRequest,
   type SetModeRequest,
+  type SetResourcesRequest,
   type ShowRequest,
   type Takeover,
   type TransitionPayload,
@@ -253,6 +260,8 @@ export async function dispatch(request: unknown, options: DispatchOptions = {}):
       return mutate(wb, req, setModePlan(req), kernel);
     case "set-dependencies":
       return mutate(wb, req, setDependenciesPlan(req), kernel);
+    case "set-resources":
+      return mutate(wb, req, setResourcesPlan(req), kernel);
     case "adopt-plan":
       return mutate(wb, req, adoptPlanPlan(req), kernel);
     case "attach-evidence":
@@ -1805,8 +1814,9 @@ const isTerminal = (kind: string, state: unknown): boolean => typeof state === "
 /**
  * The pair an operation changes, at its one entry: read, no campaign, and at
  * the caller's expected revision. `transition`, `claim` and `release` enter
- * through `transitionPlan`, and `set-mode`, `set-dependencies`, `adopt-plan`,
- * `attach-evidence` and a claim with `takeover` through `livePackage`; both
+ * through `transitionPlan`, and `set-mode`, `set-dependencies`,
+ * `set-resources`, `adopt-plan`, `attach-evidence` and a claim with
+ * `takeover` through `livePackage`; both
  * read their record here. A campaign is refused before the revision is
  * compared, in the class and reason the reader answered for its schema before
  * it read one: the codec writes no campaign at any revision.
@@ -1986,6 +1996,44 @@ function setDependenciesPlan(req: SetDependenciesRequest): PlanFunction {
       value: {
         writes: [w],
         result: { operation_id: req.operation_id, path: req.record.path, depends_on: req.depends_on, revision: w.revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: w.revision },
+      },
+    };
+  };
+}
+
+// --- set-resources ------------------------------------------------------------------
+//
+// The request's list replaces the package's `resources` whole, as
+// `set-dependencies` replaces `depends_on`: `[]` writes the key declared and
+// empty, and no request removes it (absent means undeclared, the schema's
+// one optional key). The path grammar has one home, `$defs/resource_path` of
+// `schemas/package.schema.json`, which the protocol branch's items refer to:
+// `dispatch` refuses an entry the pattern refuses before any plan runs, and
+// the kernel validates the written record against the same schema, so this
+// function spells no grammar of its own. A trailing slash is refused and
+// never stripped. Nothing here resolves an entry against the project tree:
+// an area is a declaration, and the user's confirmation is its only source.
+
+function setResourcesPlan(req: SetResourcesRequest): PlanFunction {
+  return (ctx: PlanContext): Result<Planned> => {
+    const r = livePackage(ctx, req, "set-resources", "sets a package's resources");
+    if (!r.ok) return r;
+    const pkg = r.value;
+
+    // A repeated entry: the protocol branch's uniqueItems refuses one at the request, so through `dispatch` this line is never reached; it stands for a caller of the plan alone.
+    const twice = [...new Set(req.resources.filter((p, i) => req.resources.indexOf(p) !== i))];
+    if (twice.length > 0) return refusal("schema-invalid", "duplicate-entry", `resources names ${twice.join(", ")} more than once; one entry per area`);
+
+    const next = { ...pkg.control, resources: req.resources };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-resources is not a valid package");
+    if (!v.ok) return v;
+    const w = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [w],
+        result: { operation_id: req.operation_id, path: req.record.path, resources: req.resources, revision: w.revision, previous_revision: req.expected_revision },
         revisions: { [req.record.path]: w.revision },
       },
     };

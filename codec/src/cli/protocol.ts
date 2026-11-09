@@ -3,8 +3,9 @@
 // out, both JSON, as Prior's `concept/fusion-json-workbench-spec.md` section 6
 // lays it out.
 //
-// The sixteen operations, the spec's table and `maintenance` (request 39, the
-// archive revision), are the request union below, each with its argument shape. `IMPLEMENTED_OPERATIONS` names the ones this
+// The seventeen operations, the spec's table, `maintenance` (request 39, the
+// archive revision) and `set-resources` (request 80, the campaign plan's step
+// 12), are the request union below, each with its argument shape. `IMPLEMENTED_OPERATIONS` names the ones this
 // codec answers, and `inspect` reports it; every other one is answered
 // `operation-unknown/not-implemented` with a detail naming the package that
 // lands it (`LANDS_IN`), so that a caller written against the whole table gets
@@ -34,7 +35,7 @@ import type { ValidationError } from "../validate.js";
 
 export const PROTOCOL_SCHEMA_ID = "urn:fusion:schema:fusion.protocol/v1";
 
-/** The operations of spec section 6's table, in the table's order, `maintenance` (request 39) after `reconcile`. */
+/** The operations of spec section 6's table, in the table's order, `set-resources` (request 80) after `set-dependencies` and `maintenance` (request 39) after `reconcile`. */
 export const OPERATIONS = [
   "inspect",
   "list",
@@ -47,6 +48,7 @@ export const OPERATIONS = [
   "release",
   "set-mode",
   "set-dependencies",
+  "set-resources",
   "adopt-plan",
   "attach-evidence",
   "reconcile",
@@ -57,7 +59,7 @@ export const OPERATIONS = [
 export type Operation = (typeof OPERATIONS)[number];
 
 /** The operations this codec answers with a result; the rest answer `operation-unknown/not-implemented`. */
-export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
+export const IMPLEMENTED_OPERATIONS: readonly Operation[] = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
 
 /**
  * The package that lands each operation not yet answered: the detail of its
@@ -287,6 +289,16 @@ export interface SetDependenciesRequest extends Mutation<"set-dependencies"> {
   depends_on: Array<{ target: RecordRef; condition: "terminal" | "succeeded" }>;
 }
 
+/**
+ * `set-resources` (request 80, the campaign plan's step 12): a package's
+ * `resources`, the areas of the project it works in, replaced whole. Each
+ * entry is a `fusion.package/v1` `resource_path`, the grammar's one home,
+ * which the protocol schema refers to; `[]` writes the key declared and empty.
+ */
+export interface SetResourcesRequest extends Mutation<"set-resources"> {
+  resources: string[];
+}
+
 export interface AdoptPlanRequest extends Mutation<"adopt-plan"> {
   plan: RecordRef;
   /** The hash of the plan narrative as accepted. */
@@ -355,6 +367,7 @@ export type Request =
   | ReleaseRequest
   | SetModeRequest
   | SetDependenciesRequest
+  | SetResourcesRequest
   | AdoptPlanRequest
   | AttachEvidenceRequest
   | ReconcileRequest

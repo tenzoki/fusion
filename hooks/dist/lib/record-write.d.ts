@@ -84,6 +84,18 @@
  * and naming a record that is not evidence. A re-send recomposes the entries
  * from `show`, so its line is unchanged.
  *
+ * ## Resources (request 80)
+ *
+ * `set-resources --path <path>`, repeatable, or `--clear`, replaces a
+ * package's `resources` whole: the areas of the project it works in, each a
+ * path relative to the project root. Every `--path` value is sent verbatim:
+ * the grammar has one home, `$defs/resource_path` of the codec's package
+ * schema, which the protocol branch refers to, so the codec refuses exactly
+ * what that pattern refuses (`schema-invalid`), a trailing slash included,
+ * and nothing here strips, normalises or resolves an entry. `--clear` sends
+ * `[]`, declared and empty; no call removes the key. The entries stand on the
+ * user's confirmation, which the caller holds before it sends.
+ *
  * ## Creation
  *
  * `create` files a new pair, and `evidence` a reviewer's evidence record
@@ -159,7 +171,7 @@
  */
 import { type Ask, type Refusal } from "./record-client.js";
 import { type LogEvent } from "./record-change.js";
-export declare const SUBCOMMANDS: readonly ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"];
+export declare const SUBCOMMANDS: readonly ["claim", "release", "transition", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "create", "evidence"];
 export type Sub = (typeof SUBCOMMANDS)[number];
 /** Per kind, the `transition` payload fields the codec admits; nothing else is sent. */
 export declare const PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>>;

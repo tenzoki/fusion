@@ -12,7 +12,7 @@
 # branch per operation of the spec's section 6 table; the errors are the
 # spec's typed classes. At this revision the bundle answers `inspect`, `list`,
 # `show`, `validate`, `initialize`, `create`, `transition`, `claim`, `release`,
-# `set-mode`, `set-dependencies`, `adopt-plan`, `attach-evidence`,
+# `set-mode`, `set-dependencies`, `set-resources`, `adopt-plan`, `attach-evidence`,
 # `reconcile` and `maintenance`; every mutation is a compare-and-swap on the
 # stored-bytes revision, replayable by `operation_id`. `maintenance` begin and
 # end set and remove the fence a host holds while it moves pairs into

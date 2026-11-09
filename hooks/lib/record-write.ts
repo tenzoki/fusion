@@ -84,6 +84,18 @@
  * and naming a record that is not evidence. A re-send recomposes the entries
  * from `show`, so its line is unchanged.
  *
+ * ## Resources (request 80)
+ *
+ * `set-resources --path <path>`, repeatable, or `--clear`, replaces a
+ * package's `resources` whole: the areas of the project it works in, each a
+ * path relative to the project root. Every `--path` value is sent verbatim:
+ * the grammar has one home, `$defs/resource_path` of the codec's package
+ * schema, which the protocol branch refers to, so the codec refuses exactly
+ * what that pattern refuses (`schema-invalid`), a trailing slash included,
+ * and nothing here strips, normalises or resolves an entry. `--clear` sends
+ * `[]`, declared and empty; no call removes the key. The entries stand on the
+ * user's confirmation, which the caller holds before it sends.
+ *
  * ## Creation
  *
  * `create` files a new pair, and `evidence` a reviewer's evidence record
@@ -168,7 +180,7 @@ import { composeRows, logObserved, logResend, repairRetained, type LogEvent, typ
 import { utcStamp } from "./orchestrator-events.js";
 import { CONTAINER_ROOT_NAMES } from "./stores.js";
 
-export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "create", "evidence"] as const;
+export const SUBCOMMANDS = ["claim", "release", "transition", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "create", "evidence"] as const;
 export type Sub = (typeof SUBCOMMANDS)[number];
 
 /** Per kind, the `transition` payload fields the codec admits; nothing else is sent. */
@@ -202,6 +214,7 @@ const FLAGS: Record<Sub, readonly string[]> = {
   transition: [...ON_RECORD, "--to", "--reason", ...ALL_PAYLOAD.map(flagOf), "--evidence"],
   "set-mode": [...ON_RECORD, "--value", "--source"],
   "set-dependencies": [...ON_RECORD, "--on", "--clear"],
+  "set-resources": [...ON_RECORD, "--path", "--clear"],
   "adopt-plan": [...ON_RECORD, "--plan", "--role"],
   "attach-evidence": [...ON_RECORD, "--evidence"],
   create: ["--kind", "--narrative-file", "--origin", "--domain", "--id"],
@@ -213,6 +226,7 @@ const REQUIRED: Record<Sub, readonly string[]> = {
   transition: ["--record", "--to", "--reason"],
   "set-mode": ["--record", "--value"],
   "set-dependencies": ["--record"],
+  "set-resources": ["--record"],
   "adopt-plan": ["--record", "--plan"],
   "attach-evidence": ["--record", "--evidence"],
   create: ["--kind", "--narrative-file", "--origin"],
@@ -221,8 +235,8 @@ const REQUIRED: Record<Sub, readonly string[]> = {
 /** What a re-send repeats beside `--operation-id`, as the unknown outcome printed it. */
 const resendFlags = (s: Sub, takeover: boolean): string[] =>
   s === "claim" ? ["--expected-revision", "--claimed-at", ...(takeover ? ["--previous-claim"] : [])] : s === "create" ? ["--id"] : s === "evidence" ? ["--id", "--accepted-at"] : ["--expected-revision"];
-/** A flag given more than once: `--on`, and `--evidence` on a finish; `attach-evidence` binds one record. */
-const repeated = (s: Sub, f: string): boolean => f === "--on" || (s === "transition" && f === "--evidence");
+/** A flag given more than once: `--on`, `--path`, and `--evidence` on a finish; `attach-evidence` binds one record. */
+const repeated = (s: Sub, f: string): boolean => f === "--on" || f === "--path" || (s === "transition" && f === "--evidence");
 const BARE = new Set(["--clear"]);
 
 export interface Identity {
@@ -288,6 +302,7 @@ export function parseFlags(sub: string, argv: string[]): { call: Omit<Call, "wor
   }
   if (s === "transition" && flags.has("--evidence") && !flags.has("--outcome")) return { usage: "--evidence binds evidence into a package's outcome, and is given with --outcome" };
   if (s === "set-dependencies" && flags.has("--on") === flags.has("--clear")) return { usage: "set-dependencies takes one or more --on <terminal|succeeded>:<control path>, or --clear" };
+  if (s === "set-resources" && flags.has("--path") === flags.has("--clear")) return { usage: "set-resources takes one or more --path <path relative to the project root>, or --clear" };
   if (s === "create") {
     const kind = flags.get("--kind")![0];
     if (!CREATED_KINDS.includes(kind)) return { usage: `--kind is one of ${CREATED_KINDS.join(", ")}` };
@@ -439,6 +454,9 @@ function fieldsOf(c: Call, target: Shown, workbenchId: string, claimedAt: string
       }
       return { ok: { depends_on } };
     }
+    case "set-resources":
+      // Verbatim: the codec's schema is the grammar's one home, and a value it refuses (a trailing slash among them) is refused, never repaired here.
+      return { ok: { resources: c.flags.get("--path") ?? [] } };
     case "adopt-plan": {
       const plan = see(one(c, "--plan")!);
       if ("stop" in plan) return plan;

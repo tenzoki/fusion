@@ -47,10 +47,18 @@
 // lane rule. `with-lanes.json`, the one fixture that stores Prior's values,
 // and one `lanes-rule-*` fixture each get a workbench of their own under the
 // same scratch directory, for the reason above.
+//
+// ## `set-resources` (campaign plan, step 11)
+//
+// A third round trip, in a scratch workbench of its own for the same reason:
+// `set-resources` on a kernel-written package with `show` reading the list
+// back, `[]` declared and empty, and the six spellings step 12's pattern
+// refuses each answered `schema-invalid` by the bundle, which is where the
+// grammar's one home, `$defs/resource_path` of the package schema, is read.
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -379,4 +387,73 @@ describe("a campaign read through the bundle: show, validate, list, and a transi
     expect(response.error.detail).toContain("bin/fusion-campaign");
     expect(stored().equals(before)).toBe(true);
   });
+});
+
+describe("set-resources through the bundle: the list lands and show reads it back; the pattern's six refusals", () => {
+  const STEM = "261109-1500-areas";
+  const PACKAGE = `work-packages/${STEM}/package.json`;
+  const RESOURCES = ["codebase/go/pkg/api/plan_handlers.go", "codebase/go/pkg/process"];
+  let scratch: string;
+  let workbench: string;
+
+  const ask = (request: Record<string, unknown>): Response => {
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    const r = spawnSync(process.execPath, [BUNDLE], { input: requestBytes({ workbench, ...request }), cwd: scratch, encoding: "utf-8", env });
+    expect(r.status, `${String(request.op)}: ${r.stderr}`).toBe(0);
+    expect(r.stderr, String(request.op)).toBe("");
+    return parse(r.stdout);
+  };
+  const answered = (request: Record<string, unknown>): Record<string, unknown> => {
+    const response = ask(request);
+    expect(response.ok, `${String(request.op)}: ${JSON.stringify(response)}`).toBe(true);
+    if (!response.ok) throw new Error("unreachable");
+    return response.result as Record<string, unknown>;
+  };
+  const shown = (): Record<string, unknown> => answered({ op: "show", record: { path: PACKAGE } });
+  const setResources = (resources: unknown): Response =>
+    ask({ op: "set-resources", operation_id: randomUUID(), record: { path: PACKAGE }, expected_revision: shown().revision, actor: ACTOR, resources });
+
+  beforeAll(() => {
+    scratch = mkdtempSync(join(tmpdir(), "codec-round-trip-resources-"));
+    workbench = join(scratch, "fusion-workbench");
+    cpSync(FIXTURE, workbench, { recursive: true });
+    // The package is the kernel's own: created through the bundle, so its control file was serialised by the codec and holds no `resources`.
+    answered({
+      op: "create",
+      operation_id: randomUUID(),
+      id: randomUUID(),
+      kind: "package",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "work-packages" },
+      narrative: { path: `work-packages/${STEM}/${STEM}.md`, content: `# ${STEM}\n` },
+      payload: { domain: "code" },
+    });
+  });
+
+  afterAll(() => {
+    if (scratch !== undefined) rmSync(scratch, { recursive: true, force: true });
+  });
+
+  it("the list lands on the kernel-written package, show reads it back, and [] is declared and empty", () => {
+    expect((shown().control as Record<string, unknown>).resources, "undeclared before the first set-resources").toBeUndefined();
+    const landed = setResources(RESOURCES);
+    expect(landed).toMatchObject({ ok: true, result: { path: PACKAGE, resources: RESOURCES } });
+    const after = shown();
+    expect((after.control as Record<string, unknown>).resources).toEqual(RESOURCES);
+    expect(after.revision).toBe(landed.ok ? (landed.result as Record<string, unknown>).revision : undefined);
+    expect(readFileSync(join(workbench, PACKAGE), "utf-8")).toContain('"resources": [');
+    expect(setResources([])).toMatchObject({ ok: true, result: { resources: [] } });
+    expect((shown().control as Record<string, unknown>).resources).toEqual([]);
+    expect(answered({ op: "validate" })).toMatchObject({ valid: true, findings: [] });
+  });
+
+  for (const bad of ["/abs/x", "../x", "a\\b", "./a", "a//b", "a/b/"]) {
+    it(`${JSON.stringify(bad)} is refused schema-invalid by the bundle, and the record is untouched`, () => {
+      const before = readFileSync(join(workbench, PACKAGE));
+      const response = setResources(["a/b", bad]);
+      expect(response).toMatchObject({ ok: false, error: { class: "schema-invalid" } });
+      expect(readFileSync(join(workbench, PACKAGE)).equals(before)).toBe(true);
+    });
+  }
 });

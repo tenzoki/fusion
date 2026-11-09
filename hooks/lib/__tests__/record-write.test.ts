@@ -155,6 +155,30 @@ describe("what is sent", () => {
     });
   });
 
+  it("set-resources sends every --path verbatim and --clear sends []; one or the other, and a value the schema refuses is the codec's refusal, never repaired here", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "260930-1300-p"), on = ["--record", pkg.path, "--actor", "orchestrator"];
+      for (const [extra, why] of [[[], /one or more --path/], [["--path", "a/b", "--clear"], /one or more --path/], [["--on", "terminal:x"], /takes no "--on"/]] as const) {
+        const r = run(p, "set-resources", [...on, ...extra]);
+        expect([r.o.kind, (r.o as { detail: string }).detail, mutations(r.sent)], extra.join(" ")).toEqual(["usage", expect.stringMatching(why), []]);
+      }
+      const two = run(p, "set-resources", [...on, "--path", "a/b", "--path", "c"]);
+      expect(two.o.kind, JSON.stringify(two.o)).toBe("landed");
+      expect(two.sent.at(-1)).toMatchObject({ op: "set-resources", resources: ["a/b", "c"], actor: { actor: "orchestrator" } });
+      expect(shown(p, pkg.path).control.resources).toEqual(["a/b", "c"]);
+      // The row the landed write owes: the count of entries, as set-dependencies' row counts edges.
+      expect(rows(p).filter((r) => r.op === "set-resources").map((r) => r.change)).toEqual([{ resources: 2 }]);
+      // Verbatim: the trailing slash reaches the codec, which refuses it; the stored list stands.
+      const slash = run(p, "set-resources", [...on, "--path", "a/b/"]);
+      expect(slash.o).toMatchObject({ kind: "refused", refusal: { class: "schema-invalid" } });
+      expect(slash.sent.at(-1)).toMatchObject({ resources: ["a/b/"] });
+      expect(shown(p, pkg.path).control.resources).toEqual(["a/b", "c"]);
+      // --clear: declared and empty, the key kept.
+      expect(run(p, "set-resources", [...on, "--clear"]).o.kind).toBe("landed");
+      expect(shown(p, pkg.path).control.resources).toEqual([]);
+    });
+  });
+
   it("PAYLOAD_FIELDS is the transition payload read against each kind's control fields in the codec's schemas", () => {
     const payload = schema("protocol.schema.json").oneOf.find((b: { properties: { op: { const?: string } } }) => b.properties.op.const === "transition").properties.payload.properties;
     const kinds: Record<string, object> = { package: schema("package.schema.json").properties };
@@ -322,8 +346,12 @@ describe("bin/fusion-write", () => {
       const codes = [ok, cli("claim", "--record", mine.path, "--actor", "user"), cli("release", "--record", theirs.path, "--actor", "user", "--reason", "r"), cli("claim", "--bogus"), cli("log-repair")];
       codes.push(cli("create", "--kind", "issue", "--narrative-file", put(p, `${mine.dir}/issues/261001-0902-i.md`), "--origin", mine.path, "--actor", "user"), cli("evidence", "--record", mine.path, "--report", put(p, `${mine.dir}/reviews/261001-1000-r.md`), "--verdict", "accept", "--actor", "reviewer"));
       const outcome = /`--outcome` takes[^`]*`(\{[^`]+\})` into `done`/.exec(readFileSync(resolve(REPO_ROOT, "rules", "fusion-workbench-conventions.md"), "utf-8"))?.[1] ?? "the rule spells no --outcome value";
+      // set-resources through the script: two paths land, a trailing slash is refused by the codec (exit 6, schema-invalid), and the list stands.
+      codes.push(cli("set-resources", "--record", mine.path, "--path", "a/b", "--path", "c", "--actor", "orchestrator"), cli("set-resources", "--record", mine.path, "--path", "a/b/", "--actor", "orchestrator"));
+      expect(codes.at(-1)?.stderr).toContain("schema-invalid");
+      expect(shown(p, mine.path).control.resources).toEqual(["a/b", "c"]);
       codes.push(cli("transition", "--record", mine.path, "--to", "done", "--reason", "r", "--outcome", outcome, "--actor", "orchestrator"));
-      expect([codes.map((r) => r.status), shown(p, mine.path).control.outcome]).toEqual([[0, 6, 5, 2, 0, 0, 0, 0], JSON.parse(outcome)]);
+      expect([codes.map((r) => r.status), shown(p, mine.path).control.outcome]).toEqual([[0, 6, 5, 2, 0, 0, 0, 0, 6, 0], JSON.parse(outcome)]);
     });
   }, CASE_TIMEOUT);
 });

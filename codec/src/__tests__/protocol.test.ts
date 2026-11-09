@@ -55,10 +55,11 @@ describe("the protocol schema is the seventh schema of the default set", () => {
     expect(schemas().document(PROTOCOL_SCHEMA_ID)).toBeDefined();
   });
 
-  it("names the sixteen operations, spec section 6's table and maintenance after reconcile, in both the enum and the branches", () => {
+  it("names the seventeen operations, spec section 6's table, set-resources after set-dependencies and maintenance after reconcile, in both the enum and the branches", () => {
     const s = schema();
-    expect(OPERATIONS).toHaveLength(16);
+    expect(OPERATIONS).toHaveLength(17);
     expect(OPERATIONS.indexOf("initialize")).toBe(OPERATIONS.indexOf("validate") + 1);
+    expect(OPERATIONS.indexOf("set-resources")).toBe(OPERATIONS.indexOf("set-dependencies") + 1);
     expect(OPERATIONS.indexOf("maintenance")).toBe(OPERATIONS.indexOf("reconcile") + 1);
     expect(OPERATIONS.at(-1)).toBe("migration");
     expect(s.properties.op.enum).toEqual([...OPERATIONS]);
@@ -118,7 +119,7 @@ describe("the protocol schema is the seventh schema of the default set", () => {
   });
 
   it("every mutation branch requires an operation_id; every read branch forbids one, migration survey included", () => {
-    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "maintenance", "migration"];
+    const mutations = ["initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "maintenance", "migration"];
     for (const b of schema().oneOf as unknown as Array<Branch & { properties: { phase?: { const?: string }; operation_id?: unknown } }>) {
       const op = b.properties.op.const;
       // migration survey is a read (request 45c): no operation_id, no stored answer.
@@ -136,7 +137,7 @@ describe("the protocol schema is the seventh schema of the default set", () => {
   });
 
   it("the answered operations are every operation of the table, migration last", () => {
-    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"]);
+    expect(IMPLEMENTED_OPERATIONS).toEqual(["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"]);
     expect(OPERATIONS.filter((o) => !IMPLEMENTED_OPERATIONS.includes(o))).toEqual([]);
     for (const op of IMPLEMENTED_OPERATIONS) expect(isOperation(op)).toBe(true);
     expect(isOperation("delete")).toBe(false);

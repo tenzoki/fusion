@@ -185,6 +185,7 @@ export function composeRows(o: Observation, by: Observer): RecordChangeRow[] {
     const change: Record<string, unknown> =
       req.op === "set-mode" ? { mode: field(field(result, "mode"), "value") }
       : req.op === "set-dependencies" ? { depends_on: Array.isArray(req.depends_on) ? req.depends_on.length : 0 }
+      : req.op === "set-resources" ? { resources: Array.isArray(req.resources) ? req.resources.length : 0 }
       : req.op === "attach-evidence" ? { attached_evidence: req.evidence }
       // A takeover keeps `claimed` and names both holders, Prior's `change` shape for request 62.
       : req.op === "claim" && req.takeover !== undefined ? { from: field(result, "from"), to: field(result, "to"), previous_checkout_id: field(result, "previous_checkout_id"), checkout_id: field(result, "checkout_id") }

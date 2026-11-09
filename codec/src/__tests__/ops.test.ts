@@ -33,6 +33,7 @@ import {
   type Response,
   type SetDependenciesRequest,
   type SetModeRequest,
+  type SetResourcesRequest,
   type TransitionRequest,
 } from "../cli/protocol.js";
 import { installInlined } from "../cli/schemas.js";
@@ -2611,6 +2612,103 @@ describe("set-dependencies and adopt-plan", () => {
   });
 });
 
+// --- set-resources (request 80, campaign plan steps 12 and 11) ---------------------------
+
+describe("set-resources", () => {
+  const errorOf = (r: Response): { class: string; reason: string } => {
+    expect(r.ok, JSON.stringify(r)).toBe(false);
+    if (r.ok) throw new Error("unreachable");
+    return { class: r.error.class, reason: r.error.reason };
+  };
+  const parsed = (path: string): Record<string, unknown> => {
+    const p = strictParse(bytesOf(path));
+    if (!p.ok) throw new Error(p.detail);
+    return p.value as Record<string, unknown>;
+  };
+  const answered = (id: string): boolean => existsSync(join(root, ".json-state", "ops", `${id}.json`));
+  const request = (path: string, resources: string[], over: Partial<SetResourcesRequest> = {}): SetResourcesRequest => ({
+    op: "set-resources",
+    workbench: root,
+    operation_id: randomUUID(),
+    record: { path },
+    expected_revision: revision(path),
+    actor: ACTOR,
+    resources,
+    ...over,
+  });
+  /** A new open package, created through the kernel, so the record this suite writes into was written by it; its control path. */
+  const newPackage = async (stem: string): Promise<string> => {
+    const r = await dispatch({
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id: randomUUID(),
+      kind: "package",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "work-packages" },
+      narrative: { path: `work-packages/${stem}/${stem}.md`, content: `# ${stem}\n` },
+      payload: { domain: "code" },
+    } satisfies CreateRequest);
+    expect(r.ok, JSON.stringify(r)).toBe(true);
+    return `work-packages/${stem}/package.json`;
+  };
+
+  it("a kernel-written package carries no resources; the list lands and replaces the stored one whole; [] is declared and empty; the key is never removed; replays", async () => {
+    const path = await newPackage("261109-1400-areas");
+    expect("resources" in parsed(path), "create writes the key absent: undeclared").toBe(false);
+
+    const resources = ["codebase/go/pkg/api/plan_handlers.go", "codebase/go/pkg/process", "a/.hidden", ".hidden"];
+    const req = request(path, resources);
+    const first = await dispatch(req);
+    expect(okResult(first)).toEqual({ operation_id: req.operation_id, path, resources, revision: revision(path), previous_revision: req.expected_revision });
+    expect(first.ok && first.revisions).toEqual({ [path]: revision(path) });
+    expect(parsed(path).resources).toEqual(resources);
+    // The key sits where the schema orders it, after depends_on, as in fixtures/valid/package/with-resources.json.
+    const keys = Object.keys(parsed(path));
+    expect(keys.indexOf("resources")).toBe(keys.indexOf("depends_on") + 1);
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ valid: true, findings: [] });
+
+    // Replay: the stored answer; a different request under the id is refused.
+    expect(await dispatch(req)).toEqual(first);
+    expect(errorOf(await dispatch({ ...req, resources: [] }))).toEqual({ class: "conflict", reason: "operation-id-reused" });
+
+    // Replaced whole, never merged; the empty list stays declared.
+    okResult(await dispatch(request(path, ["docs/campaign.md"])));
+    expect(parsed(path).resources).toEqual(["docs/campaign.md"]);
+    okResult(await dispatch(request(path, [])));
+    expect(parsed(path).resources).toEqual([]);
+    expect("resources" in parsed(path), "[] is declared and empty, not undeclared").toBe(true);
+    expect(okResult(await dispatch({ op: "show", workbench: root, record: { path } })).control).toMatchObject({ resources: [] });
+  });
+
+  it("the path grammar is the package schema's pattern, judged at the request: the six spellings step 12 measured are each schema-invalid, nothing written", async () => {
+    const before = bytesOf(OPEN);
+    for (const bad of ["/abs/x", "../x", "a\\b", "./a", "a//b", "a/b/"]) {
+      const req = request(OPEN, ["a/b", bad]);
+      const r = await dispatch(req);
+      expect(errorOf(r), bad).toEqual({ class: "schema-invalid", reason: "request" });
+      if (!r.ok) expect(r.error.errors?.some((e) => e.instancePath.startsWith("/resources/1")), `${bad}: the validator names the entry`).toBe(true);
+      expect(bytesOf(OPEN).equals(before), bad).toBe(true);
+      expect(answered(req.operation_id), bad).toBe(false);
+    }
+    // An identical entry twice is refused by the branch's uniqueItems before any plan runs.
+    expect(errorOf(await dispatch(request(OPEN, ["a/b", "a/b"])))).toEqual({ class: "schema-invalid", reason: "request" });
+    expect(bytesOf(OPEN).equals(before)).toBe(true);
+    // No request removes the key: `resources` is required on the branch, so a request without it is refused at the request too.
+    const { resources: _dropped, ...without } = request(OPEN, []);
+    expect(errorOf(await dispatch(without))).toEqual({ class: "schema-invalid", reason: "request" });
+  });
+
+  it("a record, a terminal package and a stale revision are refused as every package operation refuses them; a campaign's refusal is the campaign suite's", async () => {
+    expect(errorOf(await dispatch(request(ISSUE, ["a/b"])))).toEqual({ class: "schema-invalid", reason: "not-a-package" });
+    expect(errorOf(await dispatch(request(DONE, ["a/b"])))).toEqual({ class: "conflict", reason: "package-terminal" });
+    expect(errorOf(await dispatch(request(OPEN, ["a/b"], { expected_revision: revision(DONE) })))).toEqual({ class: "conflict", reason: "revision-mismatch" });
+    expect("resources" in parsed(OPEN)).toBe(false);
+    expect("resources" in parsed(DONE)).toBe(false);
+  });
+});
+
 // --- attach-evidence, and evidence on done (FJ02 step 7) ------------------------------
 
 describe("attach-evidence, evidence records in the walk, and evidence checked on done", () => {
@@ -4595,7 +4693,7 @@ describe("maintenance: the fence (request 39)", () => {
   };
   /** Every mutation kind the protocol has, from its valid request fixture, pointed at this workbench; a second begin and an end naming another fence among them. */
   const everyMutation = (): Array<Record<string, unknown>> =>
-    ["create", "create-evidence", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "maintenance-begin", "maintenance-end"].map((f) => ({ ...fixture(`protocol/${f}.json`), workbench: root }));
+    ["create", "create-evidence", "transition", "claim", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "maintenance-begin", "maintenance-end"].map((f) => ({ ...fixture(`protocol/${f}.json`), workbench: root }));
   const inspected = async (): Promise<unknown> => okResult(await dispatch({ op: "inspect", workbench: root })).maintenance;
 
   it("begin sets the fence: the answer, the fence file, and inspect.maintenance after pending; no revisions, no record written", async () => {
@@ -4999,8 +5097,8 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
     expect(await findings()).toEqual([`${CAMPAIGN} unknown-scope/foreign-workbench-id`]);
   });
 
-  // The seven operations that carry `expected_revision`, `claim` in both its forms, each from its valid request fixture.
-  for (const name of ["transition", "claim", "claim-takeover", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"]) {
+  // The eight operations that carry `expected_revision`, `claim` in both its forms, each from its valid request fixture.
+  for (const name of ["transition", "claim", "claim-takeover", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence"]) {
     it(`${name} on a campaign is refused unsupported-format/not-a-pair-kind, naming bin/fusion-campaign, at the stored revision and at any other, and writes nothing`, async () => {
       place();
       const before = bytesOf(CAMPAIGN);

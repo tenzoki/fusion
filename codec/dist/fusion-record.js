@@ -10587,13 +10587,14 @@ var OPERATIONS = [
   "release",
   "set-mode",
   "set-dependencies",
+  "set-resources",
   "adopt-plan",
   "attach-evidence",
   "reconcile",
   "maintenance",
   "migration"
 ];
-var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
+var IMPLEMENTED_OPERATIONS = ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"];
 var LANDS_IN = {};
 var fail = (cls, reason, detail, errors) => ({
   ok: false,
@@ -11574,6 +11575,8 @@ async function dispatch(request, options = {}) {
       return mutate(wb, req, setModePlan(req), kernel);
     case "set-dependencies":
       return mutate(wb, req, setDependenciesPlan(req), kernel);
+    case "set-resources":
+      return mutate(wb, req, setResourcesPlan(req), kernel);
     case "adopt-plan":
       return mutate(wb, req, adoptPlanPlan(req), kernel);
     case "attach-evidence":
@@ -12673,6 +12676,27 @@ function setDependenciesPlan(req) {
       value: {
         writes: [w],
         result: { operation_id: req.operation_id, path: req.record.path, depends_on: req.depends_on, revision: w.revision, previous_revision: req.expected_revision },
+        revisions: { [req.record.path]: w.revision }
+      }
+    };
+  };
+}
+function setResourcesPlan(req) {
+  return (ctx) => {
+    const r = livePackage(ctx, req, "set-resources", "sets a package's resources");
+    if (!r.ok) return r;
+    const pkg = r.value;
+    const twice = [...new Set(req.resources.filter((p, i) => req.resources.indexOf(p) !== i))];
+    if (twice.length > 0) return refusal2("schema-invalid", "duplicate-entry", `resources names ${twice.join(", ")} more than once; one entry per area`);
+    const next = { ...pkg.control, resources: req.resources };
+    const v = ctx.validateResult(PACKAGE_SCHEMA_ID, next, "the record after set-resources is not a valid package");
+    if (!v.ok) return v;
+    const w = recordWrite(req.record.path, next);
+    return {
+      ok: true,
+      value: {
+        writes: [w],
+        result: { operation_id: req.operation_id, path: req.record.path, resources: req.resources, revision: w.revision, previous_revision: req.expected_revision },
         revisions: { [req.record.path]: w.revision }
       }
     };
@@ -14912,7 +14936,7 @@ var package_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.package/v1",
   title: "fusion.package/v1",
-  description: "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746), mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check, with the code that enforces each where one does: which status change is legal from which status (codec/contract/transitions.json plus transitions.ts; the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries), never the package itself, and form no cycle (setDependenciesPlan in codec/src/cli/ops.ts refuses each when it sets the list; reconcile reports a cycle standing in the workbench); a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
+  description: "Control data of one work package, work-packages/<name>/package.json (spec section 4.2). Every key but resources is required; null and the empty list are deliberately distinct. Cross-field rules expressed below with if/then: claimed requires a claim, open and paused require claim null, outcome is null exactly on the non-terminal statuses, done admits the classes completed and legacy-completed, dropped admits bounded, cancelled, failed and dropped, a non-completed class carries a reason, legacy-completed requires provenance.source legacy-terminal and legacy-terminal requires a terminal status, filed_by.actor equal to the reserved legacy-unknown requires provenance.source imported or legacy-terminal (decision 261003-1746), mode autonomous requires a non-null source, origin package and campaign require a ref and legacy-unknown forbids one, at most one active_documents entry has role plan. Rules JSON Schema cannot check, with the code that enforces each where one does: which status change is legal from which status (codec/contract/transitions.json plus transitions.ts; the spec 4.2 matrix; done and dropped are terminal and never reopened, resumption files a new package citing the old); depends_on targets are distinct by record_id (uniqueItems only catches identical entries), never the package itself, and form no cycle (setDependenciesPlan in codec/src/cli/ops.ts refuses each when it sets the list; reconcile reports a cycle standing in the workbench); a depends_on condition is evaluated against the target's live JSON (codec/contract/dependencies.json); every record_ref resolves in the named workbench; each active_documents revision equals the hash of the referenced narrative at acceptance, and a changed brief makes bound evidence stale; the claim's checkout_id is a domain assignment, never a host lease; narrative.path names this package's own Markdown file inside its own directory; mode autonomous is written only on the user's word and never invented by an agent.",
   type: "object",
   additionalProperties: false,
   required: ["active_documents", "claim", "depends_on", "domain", "evidence", "extensions", "filed_by", "id", "mode", "narrative", "origin", "outcome", "provenance", "references", "schema", "status", "workbench_id"],
@@ -15033,6 +15057,12 @@ var package_schema_default = {
         }
       }
     },
+    resources: {
+      type: "array",
+      description: "The areas of the project this package works in, each a path relative to the project root (plan 261108-2301, step 12, in the form Prior's answer to request 80 corrected). The one optional key: absent means undeclared, the empty list declared and empty. An entry covers the path itself and everything under it. The user's confirmation is the only source and set-resources the only writer; no agent invents an entry. Two readings of overlap exist and both are stated here: the Claude-side cut reads two areas as overlapping when they are equal or one is a prefix of the other at a / boundary, while Prior's overlap is true only for an equal string in both lists. No row of codec/contract/prior-mapping.json maps this member onto packages.Candidate.Resources.",
+      uniqueItems: true,
+      items: { $ref: "#/$defs/resource_path" }
+    },
     active_documents: {
       type: "array",
       description: "The specs and the plan in force, each bound to the exact revision accepted. At most one plan; any number of specs.",
@@ -15148,7 +15178,15 @@ var package_schema_default = {
         properties: { provenance: { type: "object", properties: { source: { enum: ["imported", "legacy-terminal"] } }, required: ["source"] } }
       }
     }
-  ]
+  ],
+  $defs: {
+    resource_path: {
+      type: "string",
+      description: "One entry of resources, a path relative to the project root with one spelling per file or directory: no leading slash, no drive letter, no backslash, no . or .. segment, no empty segment and no trailing slash, so a directory is written as a/b and never a/b/, and a file the same way. The protocol's set-resources branch refers to this definition, so the grammar has one home.",
+      minLength: 1,
+      pattern: "^(?![A-Za-z]:)(?!\\.{1,2}(/|$))(?!.*/\\.{1,2}(/|$))[^/\\\\]+(/[^/\\\\]+)*$"
+    }
+  }
 };
 
 // schemas/protocol.schema.json
@@ -15156,13 +15194,13 @@ var protocol_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "urn:fusion:schema:fusion.protocol/v1",
   title: "fusion.protocol/v1",
-  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. The reserved actor legacy-unknown (decision 261003-1746) is refused in every actor position of every request: create's filed_by, the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence, create's payload participants and the deferral ruler of create's and transition's payload. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; chunk 1 sets the fence also when it carries no write; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
+  description: "One request to fusion-record (spec section 6): a JSON object discriminated by op, one branch per operation of the spec's table. Every branch is validated here whether or not the codec answers its operation yet: an operation the codec does not yet answer is refused operation-unknown, and inspect reports which operations answer. workbench is the absolute path of the workbench root and may be left out when the caller's environment carries FUSION_WORKBENCH. A record is named by the workbench-relative path of its control file. Every mutation carries an operation_id the caller may replay: the same request again returns the stored answer, the same id with a different request is conflict/operation-id-reused. initialize writes workbench.json, the manifest of a new workbench, into an existing empty directory: workbench is required on its branch, id is the new workbench's UUID, and the codec composes the manifest itself, so a request carrying one is refused. create writes the pair, control file and narrative, when narrative.content carries the Markdown body, and requires the narrative to exist when it does not. A transition on a plan may carry steps and criteria as updates keyed by id. create of kind evidence writes one immutable evidence record beside a report already on disk at its declared hash, the path chosen by the codec and returned in the answer. The reserved actor legacy-unknown (decision 261003-1746) is refused in every actor position of every request: create's filed_by, the actor of transition, claim, release, set-mode, set-dependencies, set-resources, adopt-plan and attach-evidence, create's payload participants and the deferral ruler of create's and transition's payload. Rules JSON Schema cannot check: expected_revision must equal the sha256 of the stored bytes at write time (conflict/revision-mismatch otherwise); to must be an edge of codec/contract/transitions.json from the record's current state; the payload must satisfy the target state's rules there. maintenance fences every other fresh mutation while the host moves pairs: action begin sets the fence and action end, under its own operation_id, removes the fence whose begin's operation_id it names in fence. migration is the maintenance run of spec section 8, one branch per phase: survey is a read and carries no operation_id; plan freezes the host's proposal, named by {path, sha256}, into archive/migrations/<migration id>/ as an index and its parts (fusion.migration-plan/v1) in one intent; apply, verify and rollback name that index by {path, sha256}, and each carries the operation id the index's schedule fixes for its phase and chunk (conflict/operation-id-unscheduled otherwise); apply lands one chunk per request, chunk 1 first setting the fence; chunk 1 sets the fence also when it carries no write; verify writes the receipt (fusion.migration-receipt/v1) and then the manifest, last; rollback undoes the highest landed chunk, and chunk 0 removes the plan files.",
   type: "object",
   required: ["op"],
   properties: {
     op: {
       type: "string",
-      enum: ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"]
+      enum: ["inspect", "list", "show", "validate", "initialize", "create", "transition", "claim", "release", "set-mode", "set-dependencies", "set-resources", "adopt-plan", "attach-evidence", "reconcile", "maintenance", "migration"]
     }
   },
   oneOf: [
@@ -15471,6 +15509,25 @@ var protocol_schema_default = {
     {
       type: "object",
       additionalProperties: false,
+      required: ["op", "operation_id", "record", "expected_revision", "actor", "resources"],
+      properties: {
+        op: { const: "set-resources" },
+        workbench: { $ref: "#/$defs/workbench" },
+        operation_id: { $ref: "#/$defs/operation_id" },
+        record: { $ref: "#/$defs/record_selector" },
+        expected_revision: { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/sha256" },
+        actor: { $ref: "#/$defs/live_actor" },
+        resources: {
+          type: "array",
+          description: "The package's resources list as fusion.package/v1 shapes it, replaced whole: the empty list writes declared and empty, and no request removes the key. Each entry is judged by the package schema's resource_path, the grammar's one home, so the operation refuses exactly what that pattern refuses.",
+          uniqueItems: true,
+          items: { $ref: "urn:fusion:schema:fusion.package/v1#/$defs/resource_path" }
+        }
+      }
+    },
+    {
+      type: "object",
+      additionalProperties: false,
       required: ["op", "operation_id", "record", "expected_revision", "actor", "plan", "revision"],
       properties: {
         op: { const: "adopt-plan" },
@@ -15600,7 +15657,7 @@ var protocol_schema_default = {
       pattern: "^/"
     },
     live_actor: {
-      description: "An actor as fusion.common/v1 shapes it, minus the reserved legacy-unknown (decision 261003-1746, option 1): create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, adopt-plan and attach-evidence refuse it, and so do the nested positions a request can fill, create's payload participants and the deferral ruler of create's and transition's payload. Every actor position of every request refuses it, so no live write produces it.",
+      description: "An actor as fusion.common/v1 shapes it, minus the reserved legacy-unknown (decision 261003-1746, option 1): create's filed_by and the actor of transition, claim, release, set-mode, set-dependencies, set-resources, adopt-plan and attach-evidence refuse it, and so do the nested positions a request can fill, create's payload participants and the deferral ruler of create's and transition's payload. Every actor position of every request refuses it, so no live write produces it.",
       allOf: [
         { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/actor" },
         { not: { $ref: "#/$defs/legacy_unknown_held" } }

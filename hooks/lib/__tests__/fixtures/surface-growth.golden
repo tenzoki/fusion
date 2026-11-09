@@ -107,7 +107,7 @@
   record-change.test.ts 138
   record-client.test.ts 202
   record-index.test.ts 59
-  record-write.test.ts 441
+  record-write.test.ts 469
   reference-resolution-lint.test.ts 1011
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 927
@@ -124,4 +124,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 27156
+  total 27184

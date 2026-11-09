@@ -99,7 +99,11 @@
 // again, each by `<nn>-inspect.migration-delta.json` following its
 // maintenance delta: the three migration schemas join `schemas`, `migration`
 // joins `operations.implemented` and `operations.deferred` becomes empty
-// (`MIGRATION_CHANGES`). Every other exchange is byte for byte.
+// (`MIGRATION_CHANGES`). The campaign plan's step 11 moves the nine a third
+// time, each by `<nn>-inspect.resources-delta.json` following its migration
+// delta: `set-resources` joins `operations.implemented` after
+// `set-dependencies` (`RESOURCES_CHANGES`). Every other exchange is byte for
+// byte.
 // ---------------------------------------------------------------------------
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -218,7 +222,7 @@ const REFUSED: ReadonlyArray<[Name, { class: string; reason: string }]> = [
 /** The exchanges whose recorded response is historical, each with the reviewed delta files that state its current answer, in the order they apply. */
 const MAINTENANCE_DELTAS: readonly Name[] = ["01-inspect", "08-inspect", "14-inspect", "16-inspect", "18-inspect", "19-inspect", "21-inspect", "22-inspect", "24-inspect"];
 const DELTAS: ReadonlyMap<Name, readonly string[]> = new Map<Name, readonly string[]>([
-  ...MAINTENANCE_DELTAS.map((n): [Name, readonly string[]] => [n, [`${n}.maintenance-delta.json`, `${n}.migration-delta.json`]]),
+  ...MAINTENANCE_DELTAS.map((n): [Name, readonly string[]] => [n, [`${n}.maintenance-delta.json`, `${n}.migration-delta.json`, `${n}.resources-delta.json`]]),
   ["26-inspect", ["26-inspect.detail-delta.json"]],
 ]);
 const deltaFiles = (): string[] => [...DELTAS.values()].flat();
@@ -231,6 +235,8 @@ const MIGRATION_CHANGES = [
   { op: "add", pointer: "/result/operations/implemented/15", value: "migration" },
   { op: "replace", pointer: "/result/operations/deferred", value: [] },
 ];
+/** The campaign plan's step 11's change to the same answers, after the migration delta: `set-resources` directly after `set-dependencies`, and nothing else. */
+const RESOURCES_CHANGES = [{ op: "add", pointer: "/result/operations/implemented/11", value: "set-resources" }];
 
 /** The successful replays, each followed by an `inspect` of its target. */
 const REPLAYS: ReadonlyArray<[Name, Name]> = [
@@ -638,6 +644,16 @@ describe(`the recorded session under fixtures/protocol-session-initialize/ (${UP
       const d = readDelta(SESSION, `${name}.migration-delta.json`) as PointerDelta;
       expect(d, name).toMatchObject({ format: DELTA_FORMAT, exchange: name, recorded: `${name}.response.json`, follows: [`${name}.maintenance-delta.json`] });
       expect(d.changes, name).toEqual(MIGRATION_CHANGES);
+    }
+  });
+
+  it("the resources deltas follow the maintenance and migration deltas of the same nine answers and add set-resources after set-dependencies, nothing else", () => {
+    for (const name of MAINTENANCE_DELTAS) {
+      const d = readDelta(SESSION, `${name}.resources-delta.json`) as PointerDelta;
+      expect(d, name).toMatchObject({ format: DELTA_FORMAT, exchange: name, recorded: `${name}.response.json`, follows: [`${name}.maintenance-delta.json`, `${name}.migration-delta.json`] });
+      expect(d.changes, name).toEqual(RESOURCES_CHANGES);
+      const recorded = JSON.parse(readFileSync(join(SESSION, `${name}.response.json`), "utf-8")) as { result: { operations: { implemented: string[] } } };
+      expect(recorded.result.operations.implemented[10], name).toBe("set-dependencies");
     }
   });
 

@@ -111,7 +111,9 @@ narrative must already exist), `transition` on every record kind, `claim`,
 default, or `role: spec`), `attach-evidence` and `reconcile`. `migration` lands
 in FJ04, all five phases (below, "`migration`"). No operation is deferred any
 more, and `LANDS_IN` is empty. `initialize` joined the table
-later, after `validate`; it is described below. Every mutation runs through
+later, after `validate`; it is described below. `set-resources` joined it
+after `set-dependencies` with request 80 (the campaign plan, steps 12 and
+11); it is described below too. Every mutation runs through
 the kernel below, and `claim` and `release` are `transition` with defaults and
 clearer refusals, never a second route to the files.
 
@@ -190,6 +192,35 @@ record and campaign schemas refuse it. The bundle Prior qualified before the
 takeover, `c76bbce9…`, refuses a transferred package in `validate` and in
 every mutation and answers `show` with the record as stored; it rewrites no
 byte (`round-trip-cli-takeover.test.ts`).
+
+**`set-resources`** (request 80, the campaign plan's steps 12 and 11)
+replaces a package's `resources` whole, as `set-dependencies` replaces
+`depends_on`: `{op: "set-resources", record, expected_revision, actor,
+resources}`, `resources` a list of paths relative to the project root, the
+areas of the project the package works in. `resources` is the package
+schema's one optional key: absent means undeclared, `[]` declared and empty,
+and no request removes it; the answer is `{operation_id, path, resources,
+revision, previous_revision}`. **The path grammar has one home**,
+`$defs/resource_path` of `schemas/package.schema.json`, which the protocol
+branch's items refer to: one spelling per file or directory, no leading
+slash, drive letter, backslash, `.` or `..` segment, empty segment or
+trailing slash (`a/b`, never `a/b/`; `.hidden` and `a/.hidden` are admitted).
+`dispatch` refuses an entry the pattern refuses at the request
+(`schema-invalid/request`, the validator naming the entry), and so an
+identical entry twice (the branch's `uniqueItems`), before any plan runs;
+the kernel then validates the written record against the same schema. The
+plan refuses a record that is not a package (`schema-invalid/not-a-package`),
+a terminal package (`conflict/package-terminal`) and a campaign
+(`unsupported-format/not-a-pair-kind`), as every package operation does. No
+entry is resolved against the project tree: an area is a declaration whose
+only source is the user's confirmation, and the two readings of overlap (the
+Claude-side cut's prefix at a `/` boundary, Prior's equal string) are stated
+in the schema's description. The operation is absent from Prior's host, and
+a codec older than this one refuses a package carrying `resources` as an
+unknown key, so a workbench both hosts read gains no declared area before
+Prior re-pins the codec. The Claude-side caller is `bin/fusion-write
+set-resources --path <path> (repeatable) | --clear`, which passes each entry
+verbatim.
 
 **Evidence creation** is `create` with `kind: evidence` (response 19), the
 sole write route for a new evidence record; `## Evidence records on disk`
@@ -357,7 +388,7 @@ revision of the stored bytes and, for a campaign alone, the member `prior`
 the lane rules (below) and to the workbench id, applies no state rule
 and asks for no narrative. Every operation that carries `expected_revision`
 (`transition`, `claim`, `release`, `set-mode`, `set-dependencies`,
-`adopt-plan`, `attach-evidence`) refuses a campaign
+`set-resources`, `adopt-plan`, `attach-evidence`) refuses a campaign
 `unsupported-format/not-a-pair-kind` before the revision is compared, the
 detail naming the Claude-side writer `bin/fusion-campaign`; `create` has no
 campaign kind. `reconcile` reports a campaign under `records` alone: none of
@@ -366,7 +397,7 @@ edge is read from it, so the completeness of `references` (below) is over the
 pair kinds, and nothing a campaign names enters an archival decision.
 `inspect`'s `kinds` stays the pair kinds, the ones an operation writes, and
 does not name `campaign`. Which paths reach `show`, a `validate` of one record
-and the seven refusals is the `record_selector` pattern of
+and the eight refusals is the `record_selector` pattern of
 `schemas/protocol.schema.json`; `list`, a `validate` of the whole workbench
 and `reconcile` reach a campaign through the walk.
 
@@ -1035,7 +1066,7 @@ discussion's `control.participants` and a decision's
 when `provenance.source` is `imported` or `legacy-terminal`. A request refuses
 it in every actor position it can fill (`schema-invalid/request`): `create`'s
 `filed_by`, the `actor` of `transition`, `claim`, `release`, `set-mode`,
-`set-dependencies`, `adopt-plan` and `attach-evidence`, the `participants` of
+`set-dependencies`, `set-resources`, `adopt-plan` and `attach-evidence`, the `participants` of
 `create`'s payload, and the deferral ruler of `create`'s and `transition`'s
 payload. Until review 261004-1807 (A1) only `filed_by` and the top-level
 `actor` were guarded, and a `create` or `transition` could write the token
@@ -1086,7 +1117,7 @@ never by its file format.
 | `dist/fusion-record.js` | The shipped bundle, committed; `scripts/build.mjs` writes it and `src/__tests__/committed-bundle.test.ts` proves it is the build of the committed source |
 | `scripts/build.mjs` | esbuild, pinned exactly, `--bundle --platform=node --format=esm --target=node20`, JSON inlined, staging path then atomic rename into `dist/`; a second run writes nothing |
 | `scripts/bench-fixture.mjs` | The scale fixture of the measurement protocol: a JSON-controlled store of packages, each with one adopted plan, built through the bundle beside it with fixed ids and cut into the subsets of 200, 500, 1 000 and 2 500 records, so that the Prior side can rebuild the stores the figures were taken on; a tool, run by nothing in the suite and timing nothing |
-| `src/cli/protocol.ts` | The request union over the sixteen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
+| `src/cli/protocol.ts` | The request union over the seventeen operations, the response envelope and the eight error classes; `src/cli/schemas.ts` inlines the contract for the bundle |
 | `src/cli/ops.ts` | `dispatch(request)`: validates against the protocol schema, then the operations it answers, reads under the kernel's read protocol and every mutation through the kernel (`src/kernel.ts`) |
 | `src/cli/main.ts` | The entry point: stdin or `--file` in, stdout out, the exit codes above |
 | `src/store.ts` | `openWorkbench` (spec 4.1: json-control, legacy, unsupported), `readPair` (control, `sha256:` revision of the stored bytes, narrative hash; for an evidence record the report's path and hashes instead), the walk over every control file (`package.json`, `*.record.json`, `*.evidence.json`), the evidence naming rule, `serialise` (deterministic, in the schemas' `properties` order), the one workbench write lock `.json-state/write.lock` with its takeover and the self-ignore, the maintenance fence `.json-state/maintenance.json` (`readFence`, `writeFence`, `removeFence`), and `replaceAtomically` (temp file, fsync, atomic rename); it writes no record itself |

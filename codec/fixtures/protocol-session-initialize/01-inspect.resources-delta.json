@@ -1,0 +1,17 @@
+{
+  "format": "fusion.session-delta/2",
+  "exchange": "01-inspect",
+  "recorded": "01-inspect.response.json",
+  "follows": [
+    "01-inspect.maintenance-delta.json",
+    "01-inspect.migration-delta.json"
+  ],
+  "why": "Campaign plan step 11 (request 80, the set-resources operation): set-resources is answered, so it joins operations.implemented directly after set-dependencies, the position step 12 gave it in the protocol schema's op enum. The recorded response is the historical expectation and is not edited; the current answer is those bytes, with the deltas before this one applied, and exactly this change.",
+  "changes": [
+    {
+      "op": "add",
+      "pointer": "/result/operations/implemented/11",
+      "value": "set-resources"
+    }
+  ]
+}

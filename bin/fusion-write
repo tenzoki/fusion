@@ -31,6 +31,25 @@
 #                     which is what a `succeeded` edge reads
 #   set-mode          --value ordinary | --value autonomous --source <JSON>
 #   set-dependencies  --on <terminal|succeeded>:<control path> (repeatable) | --clear
+#   set-resources     --path <path> (repeatable) | --clear: the package's
+#                     `resources`, the areas of the project it works in,
+#                     replaced whole; `--clear` writes `[]`, declared and
+#                     empty, and no call removes the key. Each <path> is
+#                     relative to the project root and is sent verbatim: the
+#                     grammar is `$defs/resource_path` of the codec's package
+#                     schema and nowhere else, so the codec refuses what that
+#                     pattern refuses (exit 6, `schema-invalid`), a trailing
+#                     slash included, which is never stripped: one spelling per
+#                     file or directory (`a/b`, never `a/b/`). An entry covers
+#                     the path and everything under it. The entries stand on
+#                     the user's confirmation; no agent invents one. Its
+#                     `record_change` row carries `change: {resources: <count>}`.
+#                     Two consequences of Prior's answer to request 80: the
+#                     operation is absent from Prior's host, and a codec older
+#                     than this one, Prior's host at its current pin included,
+#                     refuses a package carrying `resources` as an unknown key,
+#                     so areas are declared only once every reader of the
+#                     workbench runs this codec
 #   adopt-plan        --plan <control path> [--role plan|spec]
 #   attach-evidence   --evidence <control path of the evidence record>
 #   create            --kind package|issue|plan|discussion|decision
