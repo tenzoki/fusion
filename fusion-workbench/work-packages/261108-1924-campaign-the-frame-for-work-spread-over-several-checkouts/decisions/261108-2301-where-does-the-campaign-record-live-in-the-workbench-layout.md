@@ -35,3 +35,5 @@
 Option 1. The campaign is a root entry because it is neither an item's artefact nor session state, and R1 because one checkout writes each file and git carries it. The plan's step 2 performs the six edits in one commit and pays the conventions file's bytes with a cut in the same file, so no dispatch-path row moves.
 
 Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Rulings on the planner's decisions` — option 1, as recommended; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.
+
+Implemented: `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` (the `campaigns/` root entry and its paragraph), `rules/workbench-tracking.md` (the R1 row), `bin/fusion-paths` (`OUT_CAMPAIGN`, `SCAN_CAMPAIGNS`), `bin/fusion-stores` and `hooks/lib/stores.ts` (`CAMPAIGN_STORE`), `hooks/lib/staging-drift.ts` (`classify`) — the campaign record is a root entry of class R1 with one writer; note written by the orchestrator from the code-implementer report on plan step 2, whose dispatch kept the workbench out of its scope.

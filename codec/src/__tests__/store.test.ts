@@ -250,8 +250,61 @@ describe("readPair", () => {
     expect(readPair(wb, OPEN)).toMatchObject({ ok: false, error: { class: "schema-invalid", reason: "schema-field-missing" } });
     writeFileSync(join(root, OPEN), '{"schema": "fusion.package/v9"}\n');
     expect(readPair(wb, OPEN)).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "unknown-schema" } });
-    writeFileSync(join(root, OPEN), readFileSync(join(VALID, "campaign", "minimal.json")));
+    // A loaded schema no control file declares: the manifest's. A campaign reads as its own kind since the campaign plan's step 3.
+    writeFileSync(join(root, OPEN), readFileSync(join(VALID, "workbench", "new.json")));
     expect(readPair(wb, OPEN)).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "not-a-pair-kind" } });
+  });
+});
+
+// --- a campaign (campaign plan, step 3) ---------------------------------------------
+
+describe("a campaign: the kind, one file with no narrative and no report, found by the walk", () => {
+  const CAMPAIGN = "campaigns/camp-2026-09-parser/campaign.json";
+  const MINIMAL = readFileSync(join(VALID, "campaign", "minimal.json"));
+  const place = (path: string, bytes: Uint8Array | string = MINIMAL): void => {
+    mkdirSync(join(root, dirname(path)), { recursive: true });
+    writeFileSync(join(root, path), bytes);
+  };
+
+  it("campaigns/<campaign_id>/campaign.json reads as kind campaign: the control as stored, the revision of the stored bytes, narrative and report null", () => {
+    place(CAMPAIGN);
+    const r = readPair(open(), CAMPAIGN);
+    expect(r).toMatchObject({ ok: true, value: { path: CAMPAIGN, kind: "campaign", schemaId: "urn:fusion:schema:fusion.campaign/v1", revision: sha(MINIMAL), narrative: null, report: null } });
+    if (!r.ok) return;
+    expect(r.value.bytes.equals(MINIMAL)).toBe(true);
+    expect((r.value.control.state as { state: string }).state).toBe("draft");
+    expect((r.value.control.charter as { campaign_id: string }).campaign_id).toBe("camp-2026-09-parser");
+  });
+
+  it("the declared schema decides the kind, as for every control file: a campaign's bytes under another name read as a campaign", () => {
+    place(OPEN);
+    expect(readPair(open(), OPEN)).toMatchObject({ ok: true, value: { kind: "campaign", narrative: null, report: null } });
+  });
+
+  it("names no narrative and no report whatever its bytes carry: neither is a field of its schema", () => {
+    const fixture = strictParse(MINIMAL);
+    if (!fixture.ok) throw new Error(fixture.detail);
+    const narrative = "work-packages/260928-1200-parser-fix/260928-1200-parser-fix.md";
+    place(CAMPAIGN, JSON.stringify({ ...(fixture.value as Record<string, unknown>), narrative: { path: narrative }, report: { path: narrative, sha256: sha(MINIMAL), kind: "review" } }));
+    expect(existsSync(join(root, narrative))).toBe(true);
+    expect(readPair(open(), CAMPAIGN)).toMatchObject({ ok: true, value: { kind: "campaign", narrative: null, report: null } });
+  });
+
+  it("controlFiles finds it under the root and under campaigns/, and never under archive/", () => {
+    const wb = open();
+    const before = controlFiles(wb, root);
+    place(CAMPAIGN);
+    place("archive/260930-1200-sweep/campaigns/camp-2026-08-old/campaign.json");
+    expect(controlFiles(wb, root)).toEqual([CAMPAIGN, ...before].sort());
+    expect(controlFiles(wb, join(root, "campaigns"))).toEqual([CAMPAIGN]);
+  });
+
+  it("a second campaign is a second file, and a file beside campaign.json under another name is none", () => {
+    const wb = open();
+    place(CAMPAIGN);
+    place("campaigns/camp-2026-10-lexer/campaign.json");
+    place("campaigns/camp-2026-10-lexer/notes.json", "{}\n");
+    expect(controlFiles(wb, join(root, "campaigns"))).toEqual(["campaigns/camp-2026-09-parser/campaign.json", "campaigns/camp-2026-10-lexer/campaign.json"]);
   });
 });
 

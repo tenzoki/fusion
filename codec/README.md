@@ -343,6 +343,32 @@ state (every pair and evidence group whole, every file at its recorded hash)
 under the fence before removing it, and where neither can be established the
 fence stays and normal work stays blocked (`bin/fusion-archive`).
 
+**A campaign is read and never written** (request 80 in
+`fixtures/prior/REQUESTS.md`, "Stated and not asked"). A control file
+declaring `fusion.campaign/v1` reads as kind `campaign`. Its name is
+`campaign.json` and its place `campaigns/<campaign_id>/`, which the walk
+finds as it finds a container's `package.json`. It is one file, so `narrative`
+and `report` are `null`. A `list` row carries `kind: "campaign"` and, as
+`status`, the campaign's `state.state`: Prior's vocabulary carried by value
+(`draft`, `running`, `paused` and the rest of the schema's enum), for which
+`contract/transitions.json` has no row. `show` answers the control data and
+the revision of the stored bytes. `validate` holds a campaign to
+`schemas/campaign.schema.json` and to the workbench id, applies no state rule
+and asks for no narrative. Every operation that carries `expected_revision`
+(`transition`, `claim`, `release`, `set-mode`, `set-dependencies`,
+`adopt-plan`, `attach-evidence`) refuses a campaign
+`unsupported-format/not-a-pair-kind` before the revision is compared, the
+detail naming the Claude-side writer `bin/fusion-campaign`; `create` has no
+campaign kind. `reconcile` reports a campaign under `records` alone: none of
+its references is listed or resolved and no evidence binding or dependency
+edge is read from it, so the completeness of `references` (below) is over the
+pair kinds, and nothing a campaign names enters an archival decision.
+`inspect`'s `kinds` stays the pair kinds, the ones an operation writes, and
+does not name `campaign`. Which paths reach `show`, a `validate` of one record
+and the seven refusals is the `record_selector` pattern of
+`schemas/protocol.schema.json`; `list`, a `validate` of the whole workbench
+and `reconcile` reach a campaign through the walk.
+
 ## The kernel and the journal
 
 `src/kernel.ts` is the one writer of fusion JSON. `mutate` runs every

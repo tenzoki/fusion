@@ -21,6 +21,7 @@ import {
   OPERATIONS,
   IMPLEMENTED_OPERATIONS,
   LANDS_IN,
+  PROTOCOL_SCHEMA_ID,
   type AdoptPlanRequest,
   type AttachEvidenceRequest,
   type EvidenceRef,
@@ -41,7 +42,7 @@ import { CutReached, mutate, readContext } from "../kernel.js";
 import { controlFiles, KINDS, lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
-import { loadSchemas } from "../validate.js";
+import { loadSchemas, validate } from "../validate.js";
 import { placeEvidence, seedCorrection, seedEvidence, trySeedCorrection, type SeedOptions, type Seeded } from "./helpers/seed.js";
 
 // Pass-through spies, so `reconcile`'s work can be counted (whole-store walks,
@@ -53,6 +54,12 @@ vi.mock("../store.js", async (importOriginal) => {
 vi.mock("../strict-json.js", async (importOriginal) => {
   const strict = await importOriginal<typeof import("../strict-json.js")>();
   return { ...strict, strictParse: vi.fn(strict.strictParse) };
+});
+// Pass-through too: the campaign cases let one hand-built request past the
+// protocol schema (`past`, below) and restore the validator after it.
+vi.mock("../validate.js", async (importOriginal) => {
+  const validation = await importOriginal<typeof import("../validate.js")>();
+  return { ...validation, validate: vi.fn(validation.validate) };
 });
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
@@ -4803,6 +4810,144 @@ describe("maintenance: the fence (request 39)", () => {
     expect(await dispatch(begin()), "the replay through dispatch").toEqual(begun);
     expect(run({ op: "inspect", workbench: root })).toEqual(await dispatch({ op: "inspect", workbench: root }));
     expect(run(end())).toMatchObject({ ok: true, result: { operation_id: END_ID, action: "end" } });
+  });
+});
+
+// --- a campaign (campaign plan, step 3) ------------------------------------------------
+//
+// The codec reads a campaign and writes none. `list`, a `validate` of the
+// whole workbench and `reconcile` reach one through the walk, by `dispatch` as
+// it stands. A request that NAMES the path is hand-built: the protocol
+// schema's `record_selector` admits no `campaign.json` before the plan's
+// schema step, so `past` lets that one request past the protocol schema and
+// past nothing else. The request then takes `dispatch`'s own route, the
+// kernel included, so the refusals below are the ones a host would be
+// answered once the selector admits the path.
+
+describe("a campaign: read as kind campaign, written by no operation", () => {
+  const CAMPAIGN = "campaigns/camp-2026-09-parser/campaign.json";
+  const CAMPAIGN_ID = "0481b6e2-0fdc-4dec-886c-5d6df0af2799";
+  const minimal = (): Record<string, unknown> => fixture("campaign/minimal.json");
+  const inState = (state: string): Record<string, unknown> => ({ ...minimal(), state: { ...(minimal().state as Record<string, unknown>), state } });
+  const place = (value: Record<string, unknown> = minimal(), path: string = CAMPAIGN): void => {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    writeFileSync(join(root, path), serialise(value));
+  };
+  const past = async (request: object): Promise<Response> => {
+    const spy = vi.mocked(validate);
+    const real = spy.getMockImplementation() as typeof validate;
+    spy.mockImplementation((schemaId, value) => (schemaId === PROTOCOL_SCHEMA_ID ? { ok: true } : real(schemaId, value)));
+    try {
+      return await dispatch(request);
+    } finally {
+      spy.mockImplementation(real);
+    }
+  };
+  type Row = Record<string, unknown>;
+  const rows = async (scope?: string): Promise<Row[]> => okResult(await dispatch({ op: "list", workbench: root, ...(scope !== undefined ? { scope } : {}) })).records as Row[];
+  const report = async (): Promise<Record<string, unknown>> => okResult(await dispatch({ op: "reconcile", workbench: root }));
+
+  it("list: the row carries kind campaign, the campaign's state.state as status, the revision of the stored bytes and no narrative", async () => {
+    place();
+    expect(await rows("campaigns")).toEqual([{ path: CAMPAIGN, kind: "campaign", id: CAMPAIGN_ID, status: "draft", revision: revision(CAMPAIGN), narrative: null }]);
+    expect((await rows()).map((r) => [r.path, r.kind, r.status])).toEqual([
+      [CAMPAIGN, "campaign", "draft"],
+      [ISSUE, "issue", "open"],
+      [DONE, "package", "done"],
+      [OPEN, "package", "open"],
+    ]);
+    // The status is Prior's vocabulary, read from the file and never mapped onto a package status.
+    place(fixture("campaign/archived.json"), "campaigns/camp-2026-08-lint/campaign.json");
+    expect((await rows("campaigns")).map((r) => [r.kind, r.status])).toEqual([
+      ["campaign", "archived"],
+      ["campaign", "draft"],
+    ]);
+  });
+
+  it("list: a campaign whose state is no object lists with status null, and one that does not parse with its problem", async () => {
+    place({ ...minimal(), state: null });
+    expect(await rows("campaigns")).toMatchObject([{ path: CAMPAIGN, kind: "campaign", status: null }]);
+    writeFileSync(join(root, CAMPAIGN), "{ not json\n");
+    expect(await rows("campaigns")).toMatchObject([{ path: CAMPAIGN, problem: { class: "schema-invalid", reason: "syntax" } }]);
+  });
+
+  it("show: the control as stored and the revision of the stored bytes; narrative null and no report member", async () => {
+    place();
+    const result = okResult(await past({ op: "show", workbench: root, record: { path: CAMPAIGN } }));
+    expect(result).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: revision(CAMPAIGN), narrative: null });
+  });
+
+  it("validate: a valid campaign has no finding, in the whole workbench and alone, in a state the transition table has no row for", async () => {
+    place();
+    expect(transitions().kinds["campaign"]).toBeUndefined();
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 4, valid: true, findings: [] });
+    expect(okResult(await past({ op: "validate", workbench: root, record: { path: CAMPAIGN } }))).toMatchObject({ checked: 1, valid: true, findings: [] });
+    place(fixture("campaign/archived.json"));
+    expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 4, valid: true, findings: [] });
+  });
+
+  it("validate: the campaign schema's finding, and the workbench id's, each alone", async () => {
+    const findings = async (): Promise<string[]> => (okResult(await dispatch({ op: "validate", workbench: root })).findings as Row[]).map((f) => `${String(f.path)} ${String(f.class)}/${String(f.reason)}`);
+    place(inState("claimed")); // a package status, and no campaign state
+    expect(await findings()).toEqual([`${CAMPAIGN} schema-invalid/schema`]);
+    place({ ...minimal(), workbench_id: "00000000-0000-4000-8000-000000000000" });
+    expect(await findings()).toEqual([`${CAMPAIGN} unknown-scope/foreign-workbench-id`]);
+  });
+
+  // The seven operations that carry `expected_revision`, `claim` in both its forms, each from its valid request fixture.
+  for (const name of ["transition", "claim", "claim-takeover", "release", "set-mode", "set-dependencies", "adopt-plan", "attach-evidence"]) {
+    it(`${name} on a campaign is refused unsupported-format/not-a-pair-kind, naming bin/fusion-campaign, at the stored revision and at any other, and writes nothing`, async () => {
+      place();
+      const before = bytesOf(CAMPAIGN);
+      for (const expected_revision of [revision(CAMPAIGN), `sha256:${"a".repeat(64)}`]) {
+        const r = await past({ ...fixture(`protocol/${name}.json`), workbench: root, operation_id: randomUUID(), record: { path: CAMPAIGN }, expected_revision });
+        expect(r, name).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "not-a-pair-kind" } });
+        if (r.ok) continue;
+        expect(r.error.detail).toContain(CAMPAIGN);
+        expect(r.error.detail).toContain("bin/fusion-campaign");
+      }
+      expect(bytesOf(CAMPAIGN).equals(before)).toBe(true);
+      // A refusal is not stored: no answer stands under any operation id.
+      const ops = join(root, ".json-state", "ops");
+      expect(existsSync(ops) ? readdirSync(ops).filter((n) => !n.startsWith(".")) : []).toEqual([]);
+    });
+  }
+
+  it("the refusal is the campaign's alone: the same requests on a package are judged as before", async () => {
+    place();
+    expect(await past(transitionRequest())).toMatchObject({ ok: true, result: { path: OPEN, from: "open", to: "claimed" } });
+    expect(await past(transitionRequest({ operation_id: randomUUID(), expected_revision: `sha256:${"a".repeat(64)}` }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
+  });
+
+  it("reconcile: a valid campaign adds to the count and to no section; an invalid one is a records finding and nothing else", async () => {
+    const without = await report();
+    place(fixture("campaign/with-register-and-formation.json"));
+    expect(await report()).toEqual({ ...without, checked: (without.checked as number) + 1 });
+    place(inState("claimed"));
+    const invalid = await report();
+    expect((invalid.records as Row[]).map((f) => `${String(f.path)} ${String(f.class)}/${String(f.reason)}`)).toEqual([`${CAMPAIGN} schema-invalid/schema`]);
+    expect({ ...invalid, records: [] }).toEqual({ ...without, checked: (without.checked as number) + 1 });
+  });
+
+  it("a campaign's id is taken in this workbench: a dependency naming it resolves to no package, and a create under it is refused", async () => {
+    place();
+    const target = { workbench_id: "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964", record_id: CAMPAIGN_ID };
+    const deps = await dispatch({ op: "set-dependencies", workbench: root, operation_id: randomUUID(), record: { path: OPEN }, expected_revision: revision(OPEN), actor: ACTOR, depends_on: [{ target, condition: "terminal" }] } satisfies SetDependenciesRequest);
+    expect(deps).toMatchObject({ ok: false, error: { class: "unresolved-reference", reason: "not-a-package" } });
+    const stem = "261109-0800-second-thing";
+    const create = await dispatch({
+      op: "create",
+      workbench: root,
+      operation_id: randomUUID(),
+      id: CAMPAIGN_ID,
+      kind: "package",
+      filed_by: ACTOR,
+      origin: { kind: "user-request", ref: null },
+      scope: { container: null, store: "work-packages" },
+      narrative: { path: `work-packages/${stem}/${stem}.md`, content: `# ${stem}\n` },
+      payload: { domain: "code" },
+    } satisfies CreateRequest);
+    expect(create).toMatchObject({ ok: false, error: { class: "conflict", reason: "id-in-use" } });
   });
 });
 

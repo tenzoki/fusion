@@ -8,12 +8,16 @@
 //
 //   inspect     the workbench's manifest state, the schema ids, the features
 //   list        the control files under a store or a container, with kind,
-//               status (null for an evidence record) and revision
+//               status (null for an evidence record, `state.state` for a
+//               campaign) and revision
 //   show        one pair: control, revision, narrative hash; an evidence
-//               record with its report instead of a narrative
+//               record with its report instead of a narrative; a campaign
+//               with neither
 //   validate    strict parse, schema, and the state rules `transitions.ts`
 //               owns, for one pair or the whole workbench; for an evidence
-//               record its report and the naming rule instead of a narrative
+//               record its report and the naming rule instead of a narrative;
+//               for a campaign its schema and the workbench id, and no rule
+//               of the table, which has no row for one
 //   initialize  the manifest of a new workbench, written into an existing
 //               directory holding nothing but the codec's own state
 //               (Prior's request 27); every other target is refused by name
@@ -71,6 +75,15 @@
 //               and the manifest last; `rollback` chunk by chunk backwards,
 //               chunk 0 removing the plan files
 //
+// A campaign (`campaigns/<campaign_id>/campaign.json`, kind `campaign`) is
+// read and never written here. `list`, `show`, `validate` and `reconcile`
+// answer it as above; every operation that changes a stored record refuses
+// one `unsupported-format/not-a-pair-kind` at their common entry
+// (`mutablePair`), naming the Claude-side writer `bin/fusion-campaign`; and
+// `reconcile` reports one under `records` alone: no reference of a campaign
+// is listed or resolved, and no evidence binding or dependency edge is read
+// from it.
+//
 // An operation not yet answered would be refused
 // `operation-unknown/not-implemented` with a detail naming the package that
 // lands it (`LANDS_IN`); since FJ04's step 6 there is none.
@@ -110,6 +123,7 @@ import {
 } from "../kernel.js";
 import { allowed, dependencySatisfied, stateRules, stepAllowed, transitions, type Outcome, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
+  CAMPAIGN_KIND,
   EVIDENCE_SUFFIX,
   KINDS,
   MAINTENANCE_FILE,
@@ -692,8 +706,12 @@ function migration(wb: Workbench, req: MigrationRequest, kernel: KernelOptions):
 
 // --- list ---------------------------------------------------------------------
 
-const stateOf = (pair: Pair): unknown =>
-  pair.kind === "package" ? pair.control.status : ((pair.control.control as Record<string, unknown> | undefined)?.state ?? null);
+/** A pair's state where its kind keeps it: a package's `status`, a campaign's `state.state`, a record's `control.state`; null where it has none. */
+const stateOf = (pair: Pair): unknown => {
+  if (pair.kind === "package") return pair.control.status;
+  const holder = pair.kind === CAMPAIGN_KIND ? pair.control.state : pair.control.control;
+  return (holder as Record<string, unknown> | null | undefined)?.state ?? null;
+};
 
 function scopeDir(wb: Workbench, scope: string | undefined): { ok: true; dir: string } | { ok: false; response: Response } {
   if (scope === undefined) return { ok: true, dir: wb.root };
@@ -757,7 +775,10 @@ function schemaFinding(pair: Pair): Omit<Finding, "path"> | null {
  * state rules', the narrative's, the workbench id's. An evidence record names
  * no narrative; its findings in that place are its report's and the naming
  * rule's, and only an evidence file can carry them, so a workbench without
- * one reads exactly as before (the recorded `06-validate`, C18).
+ * one reads exactly as before (the recorded `06-validate`, C18). A campaign
+ * has neither a row in the table nor a narrative: its state is Prior's
+ * vocabulary, carried by value and judged by its schema's enum, so its
+ * findings are the reader's, the schema's and the workbench id's.
  */
 function findingsOf(wb: Workbench, path: string): Finding[] {
   const r = readPair(wb, path);
@@ -769,13 +790,16 @@ function findingsOf(wb: Workbench, path: string): Finding[] {
     findings.push({ path, ...schema });
     return findings; // the state rules read fields the schema just refused
   }
+  const campaign = pair.kind === CAMPAIGN_KIND;
   const state = stateOf(pair);
-  if (typeof state === "string") {
+  if (!campaign && typeof state === "string") {
     const rules = stateRules(pair.kind, state, rulePayload(pair));
     if (!rules.ok) findings.push({ path, class: rules.class, reason: "state-rules", detail: rules.reason });
   }
   if (pair.kind === "evidence") {
     for (const e of [reportProblem(pair), evidenceNaming(pair)]) if (e !== null) findings.push({ path, class: e.class, reason: e.reason, detail: e.detail });
+  } else if (campaign) {
+    // No narrative is owed, so none is missing.
   } else if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
   else if (pair.narrative.sha256 === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-missing", detail: `${pair.narrative.path} does not exist` });
   if (wb.id !== null && pair.control.workbench_id !== wb.id) {
@@ -1294,11 +1318,9 @@ function payloadAdmitted(req: TransitionRequest): (pair: Pair) => Result<void> {
  */
 function transitionPlan(req: TransitionRequest, precheck?: (pair: Pair) => Result<void>): PlanFunction {
   return (ctx: PlanContext): Result<Planned> => {
-    const r = ctx.readPair(req.record.path);
+    const r = mutablePair(ctx, req);
     if (!r.ok) return r;
     const pair = r.value;
-    const cas = ctx.cas(pair, req.expected_revision);
-    if (!cas.ok) return cas;
     if (pair.kind === "evidence") {
       return refusal("conflict", "evidence-immutable", `${req.record.path} is an evidence record, which has no lifecycle and is immutable once accepted (spec 4.4); a correction is a new record naming it as predecessor`);
     }
@@ -1674,6 +1696,25 @@ function takeoverPlan(req: ClaimRequest, takeover: Takeover): PlanFunction {
 const isTerminal = (kind: string, state: unknown): boolean => typeof state === "string" && (transitions().kinds[kind]?.terminal.includes(state) ?? false);
 
 /**
+ * The pair an operation changes, at its one entry: read, no campaign, and at
+ * the caller's expected revision. `transition`, `claim` and `release` enter
+ * through `transitionPlan`, and `set-mode`, `set-dependencies`, `adopt-plan`,
+ * `attach-evidence` and a claim with `takeover` through `livePackage`; both
+ * read their record here. A campaign is refused before the revision is
+ * compared, in the class and reason the reader answered for its schema before
+ * it read one: the codec writes no campaign at any revision.
+ */
+function mutablePair(ctx: PlanContext, req: { record: { path: string }; expected_revision: string }): Result<Pair> {
+  const r = ctx.readPair(req.record.path);
+  if (!r.ok) return r;
+  if (r.value.kind === CAMPAIGN_KIND) {
+    return refusal("unsupported-format", "not-a-pair-kind", `${req.record.path} is a campaign, which the codec reads (list, show, validate) and no operation of it writes; the Claude-side writer of a campaign is bin/fusion-campaign`);
+  }
+  const cas = ctx.cas(r.value, req.expected_revision);
+  return cas.ok ? r : cas;
+}
+
+/**
  * The package a package operation changes: read, at the caller's expected
  * revision, a package and not a record, and live. A terminal record is
  * history: no header change is written into it after its terminal
@@ -1681,11 +1722,9 @@ const isTerminal = (kind: string, state: unknown): boolean => typeof state === "
  * operation over it is refused, whatever it would write.
  */
 function livePackage(ctx: PlanContext, req: { record: { path: string }; expected_revision: string }, op: string, does: string): Result<Pair> {
-  const r = ctx.readPair(req.record.path);
+  const r = mutablePair(ctx, req);
   if (!r.ok) return r;
   const pair = r.value;
-  const cas = ctx.cas(pair, req.expected_revision);
-  if (!cas.ok) return cas;
   if (pair.kind !== "package") return refusal("schema-invalid", "not-a-package", `${req.record.path} is a ${pair.kind} record; ${op} ${does}`);
   const status = pair.control.status;
   if (isTerminal("package", status)) return refusal("conflict", "package-terminal", `the package is ${String(status)}, which is terminal; its record is history and ${op} writes nothing into it`);
@@ -2227,7 +2266,11 @@ export interface ReferenceSite {
  * derives it from the schemas and holds this function to it, so the host can
  * decide archival safety from `reconcile` alone (request 40; decision
  * 261001-1030, option 1). An evidence record's report and a `provenance.backup`
- * are artefact references, resolved by hash as every artefact is.
+ * are artefact references, resolved by hash as every artefact is. A campaign
+ * has no site: what it names is Prior's, carried by value, and no edge is
+ * evaluated over one. The schema-derived test covers `KINDS`, which a
+ * campaign is no member of, so what a campaign names is no part of what
+ * `reconcile` lists, and archival safety is not decided over it.
  */
 export function referenceSites(pair: Pair): ReferenceSite[] {
   const sites: ReferenceSite[] = [];
@@ -2240,6 +2283,7 @@ export function referenceSites(pair: Pair): ReferenceSite[] {
   };
   const c = pair.control;
   const backup = (): void => add("/provenance/backup", field(c.provenance, "backup"));
+  if (pair.kind === CAMPAIGN_KIND) return sites;
   if (pair.kind === "evidence") {
     add("/report", c.report);
     add("/predecessor", c.predecessor);

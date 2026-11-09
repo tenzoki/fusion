@@ -82,7 +82,14 @@ export type ErrorClass = (typeof ERROR_CLASSES)[number];
 
 // --- shared argument shapes -------------------------------------------------
 
-/** Names one record pair by the workbench-relative path of its control file. */
+/**
+ * Names one record pair by the workbench-relative path of its control file.
+ * Which paths reach an operation is the schema's `record_selector` pattern. A
+ * path that reaches one and holds a campaign (`fusion.campaign/v1`, kind
+ * `campaign`) is read by `show` and `validate` and refused by every operation
+ * that carries `expected_revision`, `unsupported-format/not-a-pair-kind`: the
+ * codec writes no campaign.
+ */
 export interface RecordSelector {
   path: string;
 }

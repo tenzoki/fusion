@@ -5,7 +5,7 @@
 //
 //   openWorkbench(root)                     what kind of workbench is this?
 //   readPair(wb, path)                      the control record, its revision, its narrative
-//                                           (an evidence record: its report)
+//                                           (an evidence record: its report; a campaign: neither)
 //   serialise(value)                        the deterministic bytes a control record is stored as
 //   acquireLock(wb) / releaseLock(lock)     the one workbench write lock every writer takes
 //
@@ -303,13 +303,24 @@ export function resolveCurrent(wb: Workbench, path: string, role: "record" | "sc
 
 // --- the pair -----------------------------------------------------------------
 
+/** The pair kinds: what `inspect` answers as `kinds`, each one written by an operation of this codec. */
 export const KINDS = ["package", "issue", "plan", "discussion", "decision", "evidence"] as const;
-export type Kind = (typeof KINDS)[number];
+/**
+ * A campaign, `campaigns/<campaign_id>/campaign.json`: read as this kind and
+ * written by no operation here, so it is a `Kind` and no member of `KINDS`.
+ * It is one file with no narrative and no report beside it; its writer is the
+ * Claude-side helper `bin/fusion-campaign`.
+ */
+export const CAMPAIGN_KIND = "campaign";
+export type Kind = (typeof KINDS)[number] | typeof CAMPAIGN_KIND;
 
 /** The record kinds a `fusion.record/v1` file declares in its `kind` field. */
 const RECORD_KINDS: readonly string[] = ["issue", "plan", "discussion", "decision"];
 
 export const EVIDENCE_SCHEMA_ID = "urn:fusion:schema:fusion.evidence/v1";
+export const CAMPAIGN_SCHEMA_ID = "urn:fusion:schema:fusion.campaign/v1";
+/** A campaign's file name in its directory `campaigns/<campaign_id>/`. */
+export const CAMPAIGN_FILE = "campaign.json";
 
 export interface Pair {
   /** Workbench-relative path of the control file, as given. */
@@ -319,7 +330,7 @@ export interface Pair {
   control: Record<string, unknown>;
   bytes: Buffer;
   revision: string;
-  /** The narrative the control record names; `sha256` null when the file is absent. Null when the record names none, as an evidence record never does. */
+  /** The narrative the control record names; `sha256` null when the file is absent. Null when the record names none, as an evidence record and a campaign never do. */
   narrative: { path: string; sha256: string | null } | null;
   /**
    * An evidence record's report: the path and hash its `report` artefact
@@ -353,17 +364,20 @@ export function readPair(wb: Workbench, path: string, set: SchemaSet = schemas()
   const schemaId = SCHEMA_ID_PREFIX + schemaField;
   if (set.document(schemaId) === undefined) return err("unsupported-format", "unknown-schema", `${path} declares ${schemaField}; loaded: ${set.ids().join(", ")}`);
   const kind = kindOf(schemaId, control);
-  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a control file is a package, an issue, plan, discussion or decision record, or an evidence record`);
+  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a control file is a package, an issue, plan, discussion or decision record, an evidence record, or a campaign`);
   const evidence = kind === "evidence";
+  // A campaign names no narrative whatever its bytes carry: its schema has no such field.
+  const narrative = evidence || kind === CAMPAIGN_KIND ? null : narrativeOf(wb, control);
   return {
     ok: true,
-    value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: evidence ? null : narrativeOf(wb, control), report: evidence ? reportOf(wb, control) : null },
+    value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative, report: evidence ? reportOf(wb, control) : null },
   };
 }
 
 function kindOf(schemaId: string, control: Record<string, unknown>): Kind | null {
   if (schemaId === PACKAGE_SCHEMA_ID) return "package";
   if (schemaId === EVIDENCE_SCHEMA_ID) return "evidence";
+  if (schemaId === CAMPAIGN_SCHEMA_ID) return CAMPAIGN_KIND;
   if (schemaId === RECORD_SCHEMA_ID && typeof control.kind === "string" && RECORD_KINDS.includes(control.kind)) return control.kind as Kind;
   return null;
 }
@@ -442,14 +456,16 @@ export function reportProblem(pair: Pair): StoreError | null {
 
 // --- the walk -------------------------------------------------------------------
 
-/** A control file by its name: a package, a record, or an evidence record. */
-export const isControlFile = (name: string): boolean => name === "package.json" || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
+/** A control file by its name: a package, a record, an evidence record, or a campaign. */
+export const isControlFile = (name: string): boolean => name === "package.json" || name === CAMPAIGN_FILE || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
 
 /**
  * Every control file under `dir`, workbench-relative with forward slashes,
  * sorted; dot entries skipped, and every directory `archived` holds for, so
  * the root's `archive/` is never walked. Every inventory and both id
- * resolvers walk through here, so they agree on what is current.
+ * resolvers walk through here, so they agree on what is current. The walk
+ * enters every directory, so `campaigns/<campaign_id>/` is walked as a
+ * container is and its `campaign.json` is found by its name.
  */
 export function controlFiles(wb: Workbench, dir: string): string[] {
   const out: string[] = [];
