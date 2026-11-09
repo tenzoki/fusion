@@ -28,6 +28,7 @@ import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { ask, type Answer, type CodecRequest } from "../../record-client.js";
 import { readRecordIndex, type IndexRead } from "../../record-index.js";
+import { CAMPAIGN_RECORD, CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "../../stores.js";
 import { REPO_ROOT } from "./guard-harness.js";
 
 /** The committed bundle of this tree. */
@@ -184,4 +185,33 @@ export function place(project: JsonProject, rel: string, content: string): void 
   const abs = resolve(project.workbench, rel);
   mkdirSync(dirname(abs), { recursive: true });
   writeFileSync(abs, content, "utf-8");
+}
+
+/**
+ * A campaign file at `campaigns/<id>/campaign.json`, and its
+ * workbench-relative path. THE ONE PLACE a hooks test takes a campaign
+ * document from: a key the schema comes to require is added to `document`
+ * below and nowhere else.
+ *
+ * Placed, because the codec reads a campaign and no operation of it writes
+ * one. The document is the codec's fixture `valid/campaign/minimal.json` with
+ * this project's workbench id, a record id counted per project, and `id` as
+ * the `campaign_id` of charter and state, the directory's own name.
+ * `overrides` is laid over it key by key, and one level deep where both sides
+ * hold an object, so `{ state: { state: "running" } }` changes that one field.
+ * `state.charter_hash` stays the fixture's: the codec's validation holds no
+ * hash, and a case that needs it true over this charter passes its own.
+ */
+export function campaignFile(project: JsonProject, id: string, overrides: Record<string, unknown> = {}): string {
+  const fixture = JSON.parse(readFileSync(resolve(REPO_ROOT, "codec", "fixtures", "valid", "campaign", "minimal.json"), "utf-8"));
+  const manifest = JSON.parse(readFileSync(resolve(project.workbench, WORKBENCH_MANIFEST), "utf-8"));
+  const document: Record<string, unknown> = { ...fixture, id: uuid(project), workbench_id: manifest.id, charter: { ...fixture.charter, campaign_id: id }, state: { ...fixture.state, campaign_id: id } };
+  const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+  for (const [key, value] of Object.entries(overrides)) {
+    const base = document[key];
+    document[key] = isObject(value) && isObject(base) ? { ...base, ...value } : value;
+  }
+  const rel = `${CAMPAIGN_STORE}/${id}/${CAMPAIGN_RECORD}`;
+  place(project, rel, JSON.stringify(document, null, 2) + "\n");
+  return rel;
 }

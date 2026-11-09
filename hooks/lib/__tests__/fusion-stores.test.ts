@@ -25,12 +25,52 @@ it("holds the JSON surface names equal to the codec's, and pairs each control fi
   const codec = readFileSync(join(pluginRoot, "codec", "src", "store.ts"), "utf-8");
   const constant = (name: string) => new RegExp(`export const ${name} = "([^"]+)";`).exec(codec)?.[1];
   expect([constant("WORKBENCH_MANIFEST"), constant("STATE_DIR"), constant("EVIDENCE_SUFFIX")]).toEqual([WORKBENCH_MANIFEST, JSON_STATE_DIR, EVIDENCE_SUFFIX]);
-  const predicate = /export const isControlFile = .*/.exec(codec)?.[0] ?? "";
-  expect([...predicate.matchAll(/"([^"]+)"/g)].map((m) => m[1])).toEqual([PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX]);
   expect(codec).toContain(`const EVIDENCE_NAME = ${readFileSync(join(pluginRoot, "hooks", "lib", "stores.ts"), "utf-8").match(/const EVIDENCE_NAME = (.*);/)?.[1]};`);
   expect(["work-packages/d/package.json", "shared/issues/a.record.json", "r/a.evidence.json", "r/a.2.evidence.json", "r/a.02.evidence.json", "package.json", "a.md"].map((p) => narrativeOf(p)))
     .toEqual(["work-packages/d/d.md", "shared/issues/a.md", "r/a.md", "r/a.md", "r/a.02.md", null, null]);
-  expect(["package.json", "a.record.json", "a.evidence.json", "a.json", "a.md"].map(isControlFile)).toEqual([true, true, true, false, false]);
+  expect(["package.json", "a.record.json", "a.evidence.json", CAMPAIGN_RECORD, "a.json", "a.md"].map(isControlFile)).toEqual([true, true, true, false, false, false]);
   // The campaign path is the schema's own statement, read as text for the same reason.
   expect(readFileSync(join(pluginRoot, "codec", "schemas", "campaign.schema.json"), "utf-8")).toContain(`${CAMPAIGN_STORE}/<id>/${CAMPAIGN_RECORD}`);
+});
+
+/**
+ * The names a one-line `isControlFile` admits, every term read: `=<name>` for
+ * an equality, `*<suffix>` for an ending, a constant resolved to its string in
+ * the same file. A term of another shape, or a constant that resolves to no
+ * string, throws: a name the reading cannot see is the fault this replaces
+ * (261109-0814-the-control-file-predicate-test-no-longer-sees-what-the-codec-admits.md).
+ */
+function admitted(source: string, line: RegExp): string[] {
+  const body = line.exec(source)?.[1];
+  if (body === undefined) throw new Error(`no predicate line matches ${line}`);
+  return body.split("||").map((term) => {
+    const m = /^\s*name(?: === (\S+)|\.endsWith\((\S+)\))\s*$/.exec(term);
+    if (m === null) throw new Error(`a term of the predicate is neither an equality nor an ending: ${term.trim()}`);
+    const operand = m[1] ?? m[2];
+    const value = /^"[^"]+"$/.test(operand) ? operand.slice(1, -1) : new RegExp(`^(?:export )?const ${operand} = "([^"]+)";`, "m").exec(source)?.[1];
+    if (value === undefined) throw new Error(`${operand} resolves to no string constant`);
+    return `${m[1] === undefined ? "*" : "="}${value}`;
+  }).sort();
+}
+
+const CODEC_PREDICATE = /^export const isControlFile = \(name: string\): boolean => (.*);$/m;
+const HOOKS_PREDICATE = /^export function isControlFile\(name: string\): boolean \{\n {2}return (.*);\n\}$/m;
+
+// The two predicates differ by one name and the difference is intended: the codec's names every file it reads, the
+// hooks' the control half of a pair, and a campaign has no narrative (`hooks/lib/stores.ts` `isControlFile`).
+it("holds the codec's control-file names equal to the hooks' plus the campaign record, constants resolved", () => {
+  const codec = readFileSync(join(pluginRoot, "codec", "src", "store.ts"), "utf-8");
+  const hooks = admitted(readFileSync(join(pluginRoot, "hooks", "lib", "stores.ts"), "utf-8"), HOOKS_PREDICATE);
+  const expected = [...hooks, `=${CAMPAIGN_RECORD}`].sort();
+  expect(hooks, "the hooks' line reads as the names the module exports").toEqual([`=${PACKAGE_CONTROL}`, `*${RECORD_CONTROL_SUFFIX}`, `*${EVIDENCE_SUFFIX}`].sort());
+  expect(admitted(codec, CODEC_PREDICATE)).toEqual(expected);
+
+  // Sensitivity: one further name on the codec's side, spelled as a literal or behind a constant, fails the comparison.
+  const further = (term: string) => admitted(codec.replace(/^(export const isControlFile = .*);$/m, `$1 || ${term};`), CODEC_PREDICATE);
+  for (const [term, name] of [['name === "lanes.json"', "=lanes.json"], ["name === STATE_DIR", `=${JSON_STATE_DIR}`], ["name.endsWith(ARCHIVE_DIR)", "*archive"]]) {
+    expect(further(term), term).not.toEqual(expected);
+    expect(further(term), term).toEqual([...expected, name].sort());
+  }
+  expect(() => further("name === NO_SUCH_CONSTANT")).toThrow(/resolves to no string constant/);
+  expect(() => further("/x/.test(name)")).toThrow(/neither an equality nor an ending/);
 });

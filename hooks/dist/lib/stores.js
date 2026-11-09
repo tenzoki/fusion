@@ -120,7 +120,18 @@ export const RECORD_CONTROL_SUFFIX = ".record.json";
 export const EVIDENCE_SUFFIX = ".evidence.json";
 /** `<basename>[.<n>].evidence.json`, `n` a correction counter from 2 with no leading zero: the codec's `EVIDENCE_NAME`. */
 const EVIDENCE_NAME = /^(.*?)(?:\.([2-9]|[1-9][0-9]+))?\.evidence\.json$/;
-/** A control file, by its file name alone. */
+/**
+ * A control file, by its file name alone: the control half of a pair.
+ *
+ * NOT the codec's predicate of the same name, and the difference is intended.
+ * `codec/src/store.ts` `isControlFile` also admits `CAMPAIGN_RECORD`, because
+ * it names every file the codec reads; a campaign is one file with no
+ * narrative beside it, so a consumer that asks this predicate for the half
+ * `narrativeOf` pairs has nothing to ask about one. `fusion-stores.test.ts`
+ * resolves both predicate lines, constants included, and holds the codec's
+ * names equal to these plus `CAMPAIGN_RECORD`: a further name on either side
+ * fails it.
+ */
 export function isControlFile(name) {
     return name === PACKAGE_CONTROL || name.endsWith(RECORD_CONTROL_SUFFIX) || name.endsWith(EVIDENCE_SUFFIX);
 }

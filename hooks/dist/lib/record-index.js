@@ -48,6 +48,23 @@
  * `codec/contract/transitions.json` lists for its kind, and for a kind the
  * contract gives none (evidence) no status at all.
  *
+ * ## A campaign is not in it
+ *
+ * A `list` row of kind `campaign` is left out: it enters no map and no
+ * `unreadable` entry, whatever its state and whatever the codec found against
+ * it. The index holds the records the contract gives a state vocabulary, and
+ * evidence, to which it gives none. A campaign's state is a third vocabulary,
+ * the enum of `codec/schemas/campaign.schema.json`: the codec judges it, the
+ * contract has no entry for it and gains none, and a campaign has no
+ * narrative for `byNarrative` to key. Held to the package vocabulary a
+ * campaign row read `status-unreadable` at every state but `paused`, the one
+ * word the two vocabularies share, and at `paused` entered the maps
+ * (`261109-0814-the-hooks-record-index-will-class-a-campaign-row-as-status-unreadable.md`).
+ * The rule reads the row's `kind`, never its path: a `campaign.json` the
+ * codec could not read comes back with a `problem` and no kind, and is
+ * `unreadable` like any other control file. A finding against a campaign the
+ * codec did read is `validate`'s to report, to whoever reads campaigns.
+ *
  * ## Liveness is the contract's, never a file name's
  *
  * `live` is a `status` outside the kind's `terminal` set in
@@ -75,6 +92,8 @@ const ACTIVE_DOCUMENT_REF = /^\/active_documents\/\d+\/ref$/;
 export function defaultContract() {
     return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "codec", "contract", "transitions.json");
 }
+/** The codec's `CAMPAIGN_KIND` (`codec/src/store.ts`), as `list` names it on a row. */
+const CAMPAIGN_KIND = "campaign";
 /** A row that does not read, by `unreadRow`, with the status held to its own kind's vocabulary. */
 function unreadable(row, found, kinds) {
     const bad = unreadRow(row, found);
@@ -87,6 +106,11 @@ function unreadable(row, found, kinds) {
  * The index of `workbench`, or why there is none. `ask` is the record client's
  * by default and a test's stand-in when injected; `contract` is the
  * transitions file, beside the compiled module by default.
+ *
+ * A `list` row of kind `campaign` is left out, in no map and in no
+ * `unreadable` entry: its state is judged by its schema's enum inside the
+ * codec and by no vocabulary this function holds (the header's
+ * `## A campaign is not in it`).
  */
 export function readRecordIndex(workbench, ask = askCodec, contract = defaultContract()) {
     // `legacy`, from the gate or from `list`'s `state` after it, is a format and not a failure.
@@ -111,6 +135,9 @@ export function readRecordIndex(workbench, ask = askCodec, contract = defaultCon
     const index = { byNarrative: new Map(), byId: new Map(), byControl: new Map(), unreadable: [], unresolvedRefs: [], bindings: new Map() };
     for (const row of records.list) {
         if (!isObject(row) || typeof row.path !== "string")
+            continue;
+        // Before any status is read: `unreadRow` would hold it to the package's five.
+        if (row.kind === CAMPAIGN_KIND)
             continue;
         const bad = unreadable(row, found, kinds);
         if (bad !== null) {

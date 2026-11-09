@@ -90,7 +90,18 @@ export declare const CAMPAIGN_RECORD = "campaign.json";
 export declare const RECORD_CONTROL_SUFFIX = ".record.json";
 /** The suffix of an evidence record, which sits beside the report it records. */
 export declare const EVIDENCE_SUFFIX = ".evidence.json";
-/** A control file, by its file name alone. */
+/**
+ * A control file, by its file name alone: the control half of a pair.
+ *
+ * NOT the codec's predicate of the same name, and the difference is intended.
+ * `codec/src/store.ts` `isControlFile` also admits `CAMPAIGN_RECORD`, because
+ * it names every file the codec reads; a campaign is one file with no
+ * narrative beside it, so a consumer that asks this predicate for the half
+ * `narrativeOf` pairs has nothing to ask about one. `fusion-stores.test.ts`
+ * resolves both predicate lines, constants included, and holds the codec's
+ * names equal to these plus `CAMPAIGN_RECORD`: a further name on either side
+ * fails it.
+ */
 export declare function isControlFile(name: string): boolean;
 /**
  * The narrative a control file pairs with, workbench-relative, or null when

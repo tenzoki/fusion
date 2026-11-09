@@ -74,7 +74,7 @@
   fusion-paths.test.ts 743
   fusion-prose-metric.test.ts 173
   fusion-session-domain.test.ts 140
-  fusion-stores.test.ts 36
+  fusion-stores.test.ts 76
   fusion-tmp.test.ts 364
   fusion-work-order.test.ts 154
   glob-nomatch-lint.test.ts 138
@@ -84,7 +84,7 @@
   helpers/citation-scan.ts 56
   helpers/growth-bound.ts 178
   helpers/guard-harness.ts 1035
-  helpers/json-workbench.ts 187
+  helpers/json-workbench.ts 217
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 614
   hook-route-exclusion.test.ts 329
@@ -104,6 +104,7 @@
   record-archive.test.ts 218
   record-change.test.ts 138
   record-client.test.ts 202
+  record-index.test.ts 59
   record-write.test.ts 441
   reference-resolution-lint.test.ts 1011
   review-coverage-mandate.test.ts 353
@@ -121,4 +122,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 26721
+  total 26850
