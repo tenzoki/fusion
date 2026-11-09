@@ -190,8 +190,8 @@ export function place(project: JsonProject, rel: string, content: string): void 
 /**
  * A campaign file at `campaigns/<id>/campaign.json`, and its
  * workbench-relative path. THE ONE PLACE a hooks test takes a campaign
- * document from: a key the schema comes to require is added to `document`
- * below and nowhere else.
+ * document from: a key the schema comes to require reaches every test through
+ * the fixture spread below, as `"lanes": null` does, and is added nowhere else.
  *
  * Placed, because the codec reads a campaign and no operation of it writes
  * one. The document is the codec's fixture `valid/campaign/minimal.json` with
@@ -200,7 +200,7 @@ export function place(project: JsonProject, rel: string, content: string): void 
  * `overrides` is laid over it key by key, and one level deep where both sides
  * hold an object, so `{ state: { state: "running" } }` changes that one field.
  * `state.charter_hash` stays the fixture's: the codec's validation holds no
- * hash, and a case that needs it true over this charter passes its own.
+ * hash, and a case that needs it true passes the one `show` answers as `prior`.
  */
 export function campaignFile(project: JsonProject, id: string, overrides: Record<string, unknown> = {}): string {
   const fixture = JSON.parse(readFileSync(resolve(REPO_ROOT, "codec", "fixtures", "valid", "campaign", "minimal.json"), "utf-8"));

@@ -12,12 +12,14 @@
 //               campaign) and revision
 //   show        one pair: control, revision, narrative hash; an evidence
 //               record with its report instead of a narrative; a campaign
-//               with neither
+//               with neither, and with `prior`: Prior's two hashes over its
+//               export, or the problem that kept them from being computed
 //   validate    strict parse, schema, and the state rules `transitions.ts`
 //               owns, for one pair or the whole workbench; for an evidence
 //               record its report and the naming rule instead of a narrative;
-//               for a campaign its schema and the workbench id, and no rule
-//               of the table, which has no row for one
+//               for a campaign its schema, the rules over `lanes` its
+//               schema cannot express and the workbench id, and no rule of
+//               the table, which has no row for one
 //   initialize  the manifest of a new workbench, written into an existing
 //               directory holding nothing but the codec's own state
 //               (Prior's request 27); every other target is refused by name
@@ -82,7 +84,9 @@
 // (`mutablePair`), naming the Claude-side writer `bin/fusion-campaign`; and
 // `reconcile` reports one under `records` alone: no reference of a campaign
 // is listed or resolved, and no evidence binding or dependency edge is read
-// from it.
+// from it. `show` computes a campaign's `prior` and compares it with nothing:
+// no operation holds a stored `state.charter_hash` or `state.revision` against
+// the computed value.
 //
 // An operation not yet answered would be refused
 // `operation-unknown/not-implemented` with a detail naming the package that
@@ -121,6 +125,10 @@ import {
   type ReadContext,
   type ReadView,
 } from "../kernel.js";
+import type { ImportedCampaignState } from "../prior/blocks.js";
+import { exportCampaignState } from "../prior/campaign.js";
+import { goShape, guarded, jsonSha, type PriorRefusal } from "../prior/common.js";
+import { computeCharterHash, computePriorRevision } from "../prior/gojson.js";
 import { allowed, dependencySatisfied, stateRules, stepAllowed, transitions, type Outcome, type TransitionPayload as RulePayload } from "../transitions.js";
 import {
   CAMPAIGN_KIND,
@@ -750,8 +758,54 @@ function show(wb: Workbench, req: ShowRequest, view: ReadView): Response {
   const { path, kind, control, revision, narrative, report } = r.value;
   const narrativeBlocked = narrative === null ? undefined : view.blockedOn(narrative.path);
   if (narrativeBlocked !== undefined) return fromStore(recoveryBlocked(narrativeBlocked));
-  // `report` for an evidence record only, so every other kind's answer keeps FJ01's shape.
-  return { ok: true, result: { path, kind, control, revision, narrative, ...(kind === "evidence" ? { report } : {}) } };
+  // `report` for an evidence record only and `prior` for a campaign only, so every other kind's answer keeps FJ01's shape.
+  return {
+    ok: true,
+    result: { path, kind, control, revision, narrative, ...(kind === "evidence" ? { report } : {}), ...(kind === CAMPAIGN_KIND ? { prior: campaignPrior(r.value) } : {}) },
+  };
+}
+
+// --- a campaign's `prior` ---------------------------------------------------------
+//
+// `state.charter_hash` and `state.revision` of a campaign are Prior's
+// `charterHash` and `stateRevision`: hashes over Go's marshalling of the
+// exported charter and state, which only `../prior/` reproduces. A writer of
+// a campaign (`bin/fusion-campaign`) has no other route to them than this
+// answer (decision
+// `261109-1238-by-which-build-route-does-the-claude-side-writer-produce-priors-charter-hash-and-state-revision.md`,
+// option 1), so the two values are computed from the stored charter and state
+// and never from the two stored hashes: the revision is taken over the export
+// whose `CharterHash` is the hash just computed, and Prior's `stateRevision`
+// clears `Revision` itself. A candidate holding a placeholder in
+// `state.charter_hash` and null in `state.revision` is therefore answered the
+// values it must store, under the label the schema's `prior_revision` admits,
+// to be copied verbatim.
+//
+// Where they cannot be computed the member says why and `show` answers as
+// before: `schema-invalid/schema` for a campaign its schema refuses, the
+// exporter never being run over fields the schema did not admit, and
+// `<class>/prior-export` with the Go path where the schema passes and the
+// export or Go's marshalling refuses the value.
+
+type Problem = Pick<StoreError, "class" | "reason" | "detail">;
+export type CampaignPrior = { charter_hash: string; revision: string } | { problem: Problem };
+
+function campaignPrior(pair: Pair): CampaignPrior {
+  const schema = schemaFinding(pair);
+  if (schema !== null) return { problem: schema };
+  const refused = (r: PriorRefusal): CampaignPrior => ({ problem: { class: r.class, reason: "prior-export", detail: `${r.path}: ${r.reason}` } });
+  // The schema passed, which is what types the three blocks the exporter reads.
+  const { charter, state, provenance } = pair.control as unknown as ImportedCampaignState;
+  const exported = exportCampaignState({ charter, state, provenance });
+  if (!exported.ok) return refused(exported);
+  const go = exported.value.state;
+  const computed = guarded(() => {
+    // What Go could not have written (a lone surrogate, an integer past 2^53) is refused here by its Go path, as an import refuses it; the two marshallings below then cannot throw.
+    goShape(go, "campaign.State", "");
+    const charterHash = computeCharterHash(go.Charter);
+    return { charter_hash: jsonSha("CharterHash", charterHash), revision: jsonSha("Revision", computePriorRevision({ ...go, CharterHash: charterHash })) };
+  });
+  return computed.ok ? computed.value : refused(computed);
 }
 
 // --- validate -----------------------------------------------------------------
@@ -778,7 +832,8 @@ function schemaFinding(pair: Pair): Omit<Finding, "path"> | null {
  * one reads exactly as before (the recorded `06-validate`, C18). A campaign
  * has neither a row in the table nor a narrative: its state is Prior's
  * vocabulary, carried by value and judged by its schema's enum, so its
- * findings are the reader's, the schema's and the workbench id's.
+ * findings are the reader's, the schema's, the lane rules' and the workbench
+ * id's.
  */
 function findingsOf(wb: Workbench, path: string): Finding[] {
   const r = readPair(wb, path);
@@ -800,12 +855,64 @@ function findingsOf(wb: Workbench, path: string): Finding[] {
     for (const e of [reportProblem(pair), evidenceNaming(pair)]) if (e !== null) findings.push({ path, class: e.class, reason: e.reason, detail: e.detail });
   } else if (campaign) {
     // No narrative is owed, so none is missing.
+    for (const f of laneFindings(pair.control.lanes)) findings.push({ path, ...f });
   } else if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
   else if (pair.narrative.sha256 === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-missing", detail: `${pair.narrative.path} does not exist` });
   if (wb.id !== null && pair.control.workbench_id !== wb.id) {
     findings.push({ path, class: "unknown-scope", reason: "foreign-workbench-id", detail: `the record carries workbench_id ${JSON.stringify(pair.control.workbench_id)}; this workbench is ${wb.id}` });
   }
   return findings;
+}
+
+// The rules over a campaign's `lanes` that `schemas/campaign.schema.json`
+// states in its description and JSON Schema cannot check (Prior's answer to
+// request 80, question 1, correction (b)). `uniqueItems` on a lane's `members`
+// compares whole entries, so two references to one package that differ in
+// `display` or `revision` pass it, and nothing in the schema reaches across
+// lanes. Each rule is one row: what a lane names under it, and where.
+
+interface Lane {
+  id: string;
+  checkout_id: string | null;
+  members: Array<{ record_id: string }>;
+}
+
+/** One value a lane names, and the place naming it, as `lanes[0].members[1]`. */
+type Named = readonly [value: string, at: string];
+
+const LANE_RULES: ReadonlyArray<{ reason: string; what: string; rule: string; named: (lane: Lane, at: string) => Named[] }> = [
+  {
+    reason: "duplicate-lane-member",
+    what: "the package",
+    rule: "a package is named once in a lane and in one lane only, compared by record_id",
+    named: (lane, at) => lane.members.map((m, j): Named => [m.record_id, `${at}.members[${j}]`]),
+  },
+  { reason: "duplicate-lane-id", what: "the id", rule: "a lane's id is distinct within the campaign", named: (lane, at) => [[lane.id, `${at}.id`]] },
+  {
+    reason: "duplicate-lane-checkout",
+    what: "the checkout",
+    rule: "a non-null checkout_id stands in one lane only",
+    named: (lane, at) => (lane.checkout_id === null ? [] : [[lane.checkout_id, `${at}.checkout_id`]]),
+  },
+];
+
+/**
+ * The lane rules a campaign's `lanes` breaks: one finding per rule, its
+ * detail naming every value that stands more than once and each place it
+ * stands. Read only where the schema passed, which is what types a lane here;
+ * `null` is a campaign without lanes and breaks none.
+ */
+function laneFindings(lanes: unknown): Array<Omit<Finding, "path">> {
+  if (!Array.isArray(lanes)) return [];
+  return LANE_RULES.flatMap(({ reason, what, rule, named }) => {
+    const places = new Map<string, string[]>();
+    (lanes as Lane[]).forEach((lane, i) => {
+      for (const [value, at] of named(lane, `lanes[${i}]`)) places.set(value, [...(places.get(value) ?? []), at]);
+    });
+    const twice = [...places].filter(([, at]) => at.length > 1);
+    if (twice.length === 0) return [];
+    return [{ class: "schema-invalid" as const, reason, detail: `${twice.map(([value, at]) => `${what} ${value} stands at ${at.join(" and ")}`).join("; ")}: ${rule}` }];
+  });
 }
 
 /** A pending intent left blocked on this pair's control file or its narrative is a finding: its state is not decided. */

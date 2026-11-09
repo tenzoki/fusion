@@ -190,6 +190,8 @@ function campaignRecord(fields: Record<string, unknown>, provenance: object): Re
     id: uuid(1),
     workbench_id: WORKBENCH_ID,
     ...hostCampaign(),
+    // Required since `lanes` landed, and no part of an import: `lanes` has no Prior aggregate and no row in the mapping table.
+    lanes: null,
     register: null,
     formation: null,
     ...fields,
@@ -762,6 +764,43 @@ describe("corrections Prior ruled", () => {
     const plan2 = fixture<PriorPlan>("plan", "failed-package-does-not-block-unrelated-package");
     plan2.Packages!["package-1"]!.FailureReason = "";
     expect(importPlan(plan2)).toMatchObject({ ok: false, class: "schema-invalid", path: "Packages[package-1].FailureReason" });
+  });
+});
+
+// --- the specimen of a Claude-written campaign --------------------------------
+//
+// `fixtures/valid/campaign/with-lanes.json` is the one valid campaign fixture
+// that stores Prior's values: `state.charter_hash` is `charterHash` over its
+// exported charter and `state.revision` is `stateRevision` over the export
+// whose `CharterHash` is that hash. The four older valid fixtures store other
+// values by design (decision
+// `261109-1238-by-which-build-route-does-the-claude-side-writer-produce-priors-charter-hash-and-state-revision.md`,
+// `## The four valid fixtures`) and are not held to this.
+
+describe("with-lanes.json stores Prior's two hashes over its own export", () => {
+  const file = readStrict(fileURLToPath(new URL("../../fixtures/valid/campaign/with-lanes.json", import.meta.url)));
+  const stored = file["state"] as { charter_hash: string; revision: string };
+  const exported = (): PriorCampaignState => {
+    const r = exportCampaignState({ charter: file["charter"], state: file["state"], provenance: file["provenance"] } as never);
+    if (!r.ok) throw new Error(`with-lanes.json: ${r.class} at ${r.path}: ${r.reason}`);
+    return r.value.state;
+  };
+
+  it("validates, and its two stored values are the tree's own functions over its export", () => {
+    expectValid("urn:fusion:schema:fusion.campaign/v1", file, "with-lanes.json");
+    const state = exported();
+    const charterHash = computeCharterHash(state.Charter);
+    expect(`prior-json-sha256:${charterHash}`).toBe(stored.charter_hash);
+    expect(`prior-json-sha256:${computePriorRevision({ ...state, CharterHash: charterHash })}`).toBe(stored.revision);
+  });
+
+  it("its export is a state Prior's own rule admits: the import recomputes both values, refuses neither, and returns the file's charter and state", () => {
+    const imported = importCampaignState(exported());
+    expect(imported).toMatchObject({ ok: true, value: { charter: file["charter"], state: file["state"] } });
+    // The rule is live: one changed charter field under the stored hash is refused.
+    const amended = exported();
+    amended.Charter.Objective = "Another objective.";
+    expect(importCampaignState(amended)).toMatchObject({ ok: false, class: "schema-invalid", path: "CharterHash" });
   });
 });
 

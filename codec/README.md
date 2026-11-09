@@ -351,9 +351,10 @@ finds as it finds a container's `package.json`. It is one file, so `narrative`
 and `report` are `null`. A `list` row carries `kind: "campaign"` and, as
 `status`, the campaign's `state.state`: Prior's vocabulary carried by value
 (`draft`, `running`, `paused` and the rest of the schema's enum), for which
-`contract/transitions.json` has no row. `show` answers the control data and
-the revision of the stored bytes. `validate` holds a campaign to
-`schemas/campaign.schema.json` and to the workbench id, applies no state rule
+`contract/transitions.json` has no row. `show` answers the control data, the
+revision of the stored bytes and, for a campaign alone, the member `prior`
+(below). `validate` holds a campaign to `schemas/campaign.schema.json`, to
+the lane rules (below) and to the workbench id, applies no state rule
 and asks for no narrative. Every operation that carries `expected_revision`
 (`transition`, `claim`, `release`, `set-mode`, `set-dependencies`,
 `adopt-plan`, `attach-evidence`) refuses a campaign
@@ -368,6 +369,57 @@ does not name `campaign`. Which paths reach `show`, a `validate` of one record
 and the seven refusals is the `record_selector` pattern of
 `schemas/protocol.schema.json`; `list`, a `validate` of the whole workbench
 and `reconcile` reach a campaign through the walk.
+
+**The lane rules.** `lanes` is `null` or at least one lane, and the rules of
+the table below are stated in the schema's description and checked by
+`validate` and `reconcile`, which JSON Schema cannot: `uniqueItems` on a lane's `members`
+compares whole entries, so two references to one package that differ in
+`display` pass it, and nothing in the schema reaches across lanes. Each is one
+finding of class `schema-invalid` on a campaign whose schema passed, its
+detail naming every value that stands more than once and each place it stands
+(`lanes[0].members[1]`):
+
+| Rule | Finding |
+|---|---|
+| A package is named once in a lane and in one lane only, compared by `record_id` | `schema-invalid/duplicate-lane-member` |
+| A lane's `id` is distinct within the campaign | `schema-invalid/duplicate-lane-id` |
+| A non-null `checkout_id` stands in one lane only | `schema-invalid/duplicate-lane-checkout` |
+
+`fixtures/valid/campaign/lanes-rule-*.json` pass the schema and break one rule
+each. A campaign its schema refuses carries the schema's finding alone. `list`
+and `show` answer a campaign that breaks a rule as they answer any other.
+
+**The member `prior` on a campaign's `show`.** `state.charter_hash` and
+`state.revision` are Prior's `charterHash` and `stateRevision`, hashes over
+Go's marshalling of the exported charter and state, which `src/prior/`
+reproduces and no caller of the bundle could otherwise reach (decision
+`261109-1238-by-which-build-route-does-the-claude-side-writer-produce-priors-charter-hash-and-state-revision.md`,
+option 1). So `show` answers a campaign with one member more, in one of the
+shapes below:
+
+- `{"charter_hash": "prior-json-sha256:<64 hex>", "revision": "prior-json-sha256:<64 hex>"}`:
+  `charterHash` over the exported charter, and `stateRevision` over the
+  exported state whose `CharterHash` is that computed hash, both under the
+  label the schema's `prior_revision` type admits, so a writer copies them
+  verbatim. Neither depends on the stored `state.charter_hash` or
+  `state.revision`: a candidate holding a placeholder in the first and `null`
+  in the second is answered the two values it must store. `lanes`, `register`
+  and `formation` are no part of the export and move neither.
+- `{"problem": {"class", "reason", "detail"}}`: `schema-invalid/schema` where
+  the campaign fails its schema, the exporter not being run over fields the
+  schema refused; `<class>/prior-export`, the detail leading with the path,
+  where the schema passes and the export refuses the value
+  (`provenance.legacy_fields.empty_collections` that is no list of strings) or
+  Go's marshalling does (an integer past 2^53, a lone surrogate).
+
+`show` is `ok: true` with the control as stored in both. No other kind's
+answer gains the member, and no schema types an answer, so none changed.
+Nothing compares a stored hash with the computed one: `validate` does not,
+and the valid campaign fixtures written before `lanes` (`archived.json`,
+`minimal.json`, `with-register-and-formation.json`,
+`formation-signed-metrics-stale-reason-and-charter-duplicates.json`) store
+other values by design. `with-lanes.json` stores Prior's, and
+`src/__tests__/prior-mapping.test.ts` holds it to them.
 
 ## The kernel and the journal
 
@@ -1044,7 +1096,7 @@ never by its file format.
 | `src/validate.ts` | Loads every schema under `schemas/` (or the inlined set) into one Ajv instance and validates a value against a schema `$id` |
 | `src/transitions.ts` | `allowed(kind, from, to, payload)` and `dependencySatisfied(condition, target)` over `contract/transitions.json` and `contract/dependencies.json`; a typed refusal, never a state change |
 | `src/references.ts` | Parses the three prose citation forms and the structured `record_ref`, `artefact_ref` and `foreign_ref` shapes into one union and renders them back; resolves nothing against a file system |
-| `src/prior/` | The Prior DTO mapping, both directions, row by row from `contract/prior-mapping.json`: `candidates.ts`, `packages.ts`, `campaign.ts`; `gojson.ts` reproduces Go's `encoding/json` bytes so that `computePriorRevision` equals Prior's stored revision |
+| `src/prior/` | The Prior DTO mapping, both directions, row by row from `contract/prior-mapping.json`: `candidates.ts`, `packages.ts`, `campaign.ts`; `gojson.ts` reproduces Go's `encoding/json` bytes so that `computePriorRevision` equals Prior's stored revision. Bundled since `src/cli/ops.ts` imports it for the member `prior` on a campaign's `show`, which runs the export direction of `campaign.ts` alone; no import runs in the bundle |
 | `src/__tests__/` | One suite per module, plus `fixtures.test.ts` over the manifest, the seven recorded-session gates (`round-trip-cli.test.ts`, `round-trip-cli-fj02.test.ts`, `round-trip-cli-fj02b.test.ts`, `round-trip-cli-initialize.test.ts`, `round-trip-cli-archive.test.ts`, `round-trip-cli-migration.test.ts`, `round-trip-cli-takeover.test.ts`) and `prior-handback.test.ts` |
 | `src/__tests__/helpers/seed.ts` | Seeds a temp workbench with a deterministic evidence record and its report (and a correction on request): the report is written as a plain file and the record is created through `create` with `kind: evidence`, the kernel choosing its path. `placeEvidence` writes a pair by hand, with no check, only for the cases whose record `create` refuses. Used by the evidence and `reconcile` cases and by the FJ02 recorder, which checks its `seed/09-attach-evidence/` against it |
 | `src/__tests__/helpers/session.ts` | The machinery the FJ02, FJ02b, `initialize` and archive recorders share: the wrapper spawned once per exchange over a temp copy of the session's `base` (the scratch workbench unless a session names its own, as the `initialize` and archive sessions do), the `<workbench>` substitution, a `seed/<nn>-<op>/` set copied just before its exchange, the file listing and the bytes a comparison reads, and the regeneration switch. It holds no assertion about a session; the FJ01 recorder keeps its own copy |

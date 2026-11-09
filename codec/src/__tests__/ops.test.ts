@@ -4806,7 +4806,7 @@ describe("maintenance: the fence (request 39)", () => {
   });
 });
 
-// --- a campaign (campaign plan, step 3) ------------------------------------------------
+// --- a campaign (campaign plan, steps 3 and 13) -----------------------------------------
 //
 // The codec reads a campaign and writes none. `list`, a `validate` of the
 // whole workbench and `reconcile` reach one through the walk; a request that
@@ -4814,6 +4814,13 @@ describe("maintenance: the fence (request 39)", () => {
 // read-only selector. Every request below goes through `dispatch` as it
 // stands, the protocol schema and the kernel included, so the refusals are
 // the ones a host is answered.
+//
+// Step 13: `validate` and `reconcile` report the rules over `lanes` the
+// schema cannot express, and `show` answers a campaign with `prior`, Prior's
+// `charterHash` and `stateRevision` over the campaign's export or the problem
+// that kept them from being computed. The expected values are literals, or
+// the ones `with-lanes.json` stores: no case below computes one with the
+// functions under test.
 
 describe("a campaign: read as kind campaign, written by no operation", () => {
   const CAMPAIGN = "campaigns/camp-2026-09-parser/campaign.json";
@@ -4827,6 +4834,16 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
   type Row = Record<string, unknown>;
   const rows = async (scope?: string): Promise<Row[]> => okResult(await dispatch({ op: "list", workbench: root, ...(scope !== undefined ? { scope } : {}) })).records as Row[];
   const report = async (): Promise<Record<string, unknown>> => okResult(await dispatch({ op: "reconcile", workbench: root }));
+  const shown = async (path: string = CAMPAIGN): Promise<Record<string, unknown>> => okResult(await dispatch({ op: "show", workbench: root, record: { path } }));
+  const findingsOf = async (path: string = CAMPAIGN): Promise<Row[]> => okResult(await dispatch({ op: "validate", workbench: root, record: { path } })).findings as Row[];
+  const withLanes = (): Record<string, unknown> => fixture("campaign/with-lanes.json");
+  /** A campaign with `fields` over one of its blocks: `over("state", { reason: "x" })`. */
+  const over = (base: Record<string, unknown>, block: string, fields: Record<string, unknown>): Record<string, unknown> => ({ ...base, [block]: { ...(base[block] as Record<string, unknown>), ...fields } });
+  /** Prior's two hashes over `minimal.json`'s export; the file stores another `charter_hash` and no revision, by design. */
+  const MINIMAL_PRIOR = {
+    charter_hash: "prior-json-sha256:79f22f89b79765b39de8fdef4bcf6cf49c871207215ec2e56f3af9edbf20e7a6",
+    revision: "prior-json-sha256:995d2d52ca46892f42bb5305b397c1226b436fc522497e9b7da6ba90749c1cf1",
+  };
 
   it("list: the row carries kind campaign, the campaign's state.state as status, the revision of the stored bytes and no narrative", async () => {
     place();
@@ -4852,10 +4869,78 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
     expect(await rows("campaigns")).toMatchObject([{ path: CAMPAIGN, problem: { class: "schema-invalid", reason: "syntax" } }]);
   });
 
-  it("show: the control as stored and the revision of the stored bytes; narrative null and no report member", async () => {
+  it("show: the control as stored and the revision of the stored bytes; narrative null, no report member, and prior; no other kind gains the member", async () => {
     place();
-    const result = okResult(await dispatch({ op: "show", workbench: root, record: { path: CAMPAIGN } }));
-    expect(result).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: revision(CAMPAIGN), narrative: null });
+    expect(await shown()).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: revision(CAMPAIGN), narrative: null, prior: MINIMAL_PRIOR });
+    // The stored hash is not the computed one and `show` says nothing about it: no operation compares the two.
+    expect((minimal().state as Row).charter_hash).not.toBe(MINIMAL_PRIOR.charter_hash);
+    for (const path of [OPEN, ISSUE]) expect(await shown(path), path).not.toHaveProperty("prior");
+  });
+
+  it("show: with-lanes.json is answered the two values it stores, and the same campaign with a writer's placeholders in their place is answered the same two", async () => {
+    const state = withLanes().state as Row;
+    const stored = { charter_hash: state.charter_hash, revision: state.revision };
+    expect(stored).toEqual({
+      charter_hash: "prior-json-sha256:ee332bc1051eb747ebab96c0fc5daa9ee5e96552ddf2fdb3d2776d621d3e18f3",
+      revision: "prior-json-sha256:36490be449d2951d50428f959d0c35a900ed9b0d97188a38cb63809ab3819e8c",
+    });
+    place(withLanes());
+    expect((await shown()).prior).toEqual(stored);
+    // What bin/fusion-campaign asks with before it knows either value: 64 zeros under the label, and no revision.
+    const candidate = over(withLanes(), "state", { charter_hash: `prior-json-sha256:${"0".repeat(64)}`, revision: null });
+    place(candidate);
+    expect(await shown()).toMatchObject({ control: candidate, prior: stored });
+    // Any other stored pair changes nothing either: neither value is read.
+    place(over(withLanes(), "state", { charter_hash: `prior-json-sha256:${"a".repeat(64)}`, revision: `prior-json-sha256:${"b".repeat(64)}` }));
+    expect((await shown()).prior).toEqual(stored);
+  });
+
+  it("show: lanes are no part of the export, and a state the export carries is: the lanes move neither value, a pause moves the revision alone", async () => {
+    place(withLanes());
+    const before = (await shown()).prior as Row;
+    place({ ...withLanes(), lanes: null });
+    expect((await shown()).prior).toEqual(before);
+    place(over(withLanes(), "state", { state: "paused", reason: "the user paused it" }));
+    const paused = (await shown()).prior as Row;
+    expect(paused.charter_hash).toBe(before.charter_hash);
+    expect(paused.revision).toMatch(/^prior-json-sha256:[0-9a-f]{64}$/);
+    expect(paused.revision).not.toBe(before.revision);
+    // The charter is embedded in the state Prior hashes, so a charter change moves both.
+    place(over(withLanes(), "charter", { objective: "Another objective." }));
+    const amended = (await shown()).prior as Row;
+    expect(amended.charter_hash).not.toBe(before.charter_hash);
+    expect(amended.revision).not.toBe(before.revision);
+  });
+
+  it("show: a campaign its schema refuses is answered ok with the control as stored and prior.problem schema-invalid/schema; the exporter is not run", async () => {
+    // A package status and no campaign state; and a charter_hash no exporter could strip, which the schema refuses first.
+    for (const refused of [inState("claimed"), over(withLanes(), "state", { charter_hash: "sha256:" + "0".repeat(64) }), { ...withLanes(), lanes: [] }]) {
+      place(refused);
+      const result = await shown();
+      expect(result).toMatchObject({ path: CAMPAIGN, kind: "campaign", control: refused, revision: revision(CAMPAIGN), narrative: null, prior: { problem: { class: "schema-invalid", reason: "schema" } } });
+      expect(Object.keys(result.prior as Row)).toEqual(["problem"]);
+      expect(Object.keys((result.prior as { problem: Row }).problem).sort()).toEqual(["class", "detail", "reason"]);
+      // The same finding `validate` reports, detail included.
+      expect((result.prior as { problem: Row }).problem).toEqual({ class: "schema-invalid", reason: "schema", detail: (await findingsOf())[0]?.detail });
+    }
+  });
+
+  it("show: a campaign its schema admits and the export refuses is answered prior.problem <class>/prior-export with the path, and validate has no finding against it", async () => {
+    const refusals: Array<[string, Record<string, unknown>, string]> = [
+      // The exporter's own refusal: legacy_fields is any object to the schema, and its empty_collections a list of Go paths to the exporter.
+      ["empty_collections no list", over(withLanes(), "provenance", { legacy_fields: { empty_collections: "Sessions" } }), "campaign.provenance.legacy_fields.empty_collections: must be an array of Go paths"],
+      ["empty_collections no list of strings", over(withLanes(), "provenance", { legacy_fields: { empty_collections: [1] } }), "campaign.provenance.legacy_fields.empty_collections: must be an array of Go paths"],
+      // Go's marshaller's: an integer the schema admits and no Go int reproduces exactly, and a string no Go string holds.
+      ["an integer past 2^53", over(withLanes(), "charter", { limits: { ...((withLanes().charter as Row).limits as Row), max_attempts: 2 ** 53 } }), "Charter.Limits.MaxAttempts: 9007199254740992 exceeds 2^53 and cannot be reproduced exactly"],
+      ["a lone surrogate", over(withLanes(), "state", { reason: "x" + String.fromCharCode(0xd800) }), "Reason: holds a lone UTF-16 surrogate, which no Go string holds"],
+    ];
+    for (const [what, campaign, detail] of refusals) {
+      place(campaign);
+      expect(await findingsOf(), `${what}: schema-valid`).toEqual([]);
+      const result = await shown();
+      expect(result, what).toMatchObject({ kind: "campaign", control: campaign, revision: revision(CAMPAIGN) });
+      expect(result.prior, what).toEqual({ problem: { class: "schema-invalid", reason: "prior-export", detail } });
+    }
   });
 
   it("validate: a valid campaign has no finding, in the whole workbench and alone, in a state the transition table has no row for", async () => {
@@ -4865,6 +4950,45 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
     expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: CAMPAIGN } }))).toMatchObject({ checked: 1, valid: true, findings: [] });
     place(fixture("campaign/archived.json"));
     expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 4, valid: true, findings: [] });
+  });
+
+  it("validate: with-lanes.json has no finding, and each lanes-rule fixture the one its manifest note names", async () => {
+    place(withLanes());
+    expect(await findingsOf()).toEqual([]);
+    const PARSER_FIX = "591d5bf4-2219-46b6-a0d3-cbdb28d6af16";
+    const rules: Array<[string, string, string]> = [
+      ["lanes-rule-package-in-two-lanes", "duplicate-lane-member", `the package ${PARSER_FIX} stands at lanes[0].members[1] and lanes[1].members[0]: a package is named once in a lane and in one lane only, compared by record_id`],
+      ["lanes-rule-duplicate-lane-id", "duplicate-lane-id", "the id lane-1 stands at lanes[0].id and lanes[1].id: a lane's id is distinct within the campaign"],
+      ["lanes-rule-checkout-in-two-lanes", "duplicate-lane-checkout", "the checkout d44c592f stands at lanes[0].checkout_id and lanes[1].checkout_id: a non-null checkout_id stands in one lane only"],
+    ];
+    for (const [name, reason, detail] of rules) {
+      place(fixture(`campaign/${name}.json`));
+      expect(await findingsOf(), name).toEqual([{ path: CAMPAIGN, class: "schema-invalid", reason, detail }]);
+      // The whole-workbench validate carries it, and so does reconcile, under records and nowhere else.
+      expect(okResult(await dispatch({ op: "validate", workbench: root })), name).toMatchObject({ checked: 4, valid: false, findings: [{ path: CAMPAIGN, reason }] });
+      expect((await report()).records, name).toEqual([{ path: CAMPAIGN, class: "schema-invalid", reason, detail }]);
+      // list reads no rule, as it reads no schema: the row is the one with-lanes.json gets.
+      expect(await rows("campaigns"), name).toEqual([{ path: CAMPAIGN, kind: "campaign", id: withLanes().id, status: "running", revision: revision(CAMPAIGN), narrative: null }]);
+    }
+  });
+
+  it("validate: a package named twice within one lane is the member rule's, by record_id; two lanes with a null checkout_id break none; every rule broken is a finding of its own", async () => {
+    const lanes = withLanes().lanes as Array<{ id: string; checkout_id: string | null; members: Row[] }>;
+    const [first, second] = [lanes[0]!, lanes[1]!];
+    const member = first.members[0]!;
+    // The same package under another display: two distinct entries to the schema's uniqueItems, one package to the rule.
+    place({ ...withLanes(), lanes: [{ ...first, members: [...first.members, { ...member, display: "another name for it" }] }, second] });
+    expect((await findingsOf()).map((f) => `${String(f.reason)}: ${String(f.detail)}`)).toEqual([
+      `duplicate-lane-member: the package ${String(member.record_id)} stands at lanes[0].members[0] and lanes[0].members[2]: a package is named once in a lane and in one lane only, compared by record_id`,
+    ]);
+    // Unassigned is no checkout: null in every lane is no repeat.
+    place({ ...withLanes(), lanes: [{ ...first, checkout_id: null }, second, { id: "lane-3", checkout_id: null, members: [] }] });
+    expect(await findingsOf()).toEqual([]);
+    place({ ...withLanes(), lanes: [first, { id: first.id, checkout_id: first.checkout_id, members: [member] }] });
+    expect((await findingsOf()).map((f) => f.reason)).toEqual(["duplicate-lane-member", "duplicate-lane-id", "duplicate-lane-checkout"]);
+    // The rules are read only where the schema passed: a campaign it refuses carries the schema's finding alone.
+    place({ ...withLanes(), lanes: [first, { ...first, revision: `prior-json-sha256:${"0".repeat(64)}` }] });
+    expect((await findingsOf()).map((f) => f.reason)).toEqual(["schema"]);
   });
 
   it("validate: the campaign schema's finding, and the workbench id's, each alone", async () => {

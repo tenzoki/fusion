@@ -40,6 +40,13 @@
 // runs it. It has its own workbench and is no part of the recorded session:
 // a campaign file in the six exchanges' workbench would move `06-validate`'s
 // count and with it the golden the Prior side replays.
+//
+// Since step 13 the bundle carries `src/prior/`, and the same round trip
+// holds what only the built file can show: `show` answers a campaign with
+// `prior`, Prior's two hashes over its export, and `validate` reports a broken
+// lane rule. `with-lanes.json`, the one fixture that stores Prior's values,
+// and one `lanes-rule-*` fixture each get a workbench of their own under the
+// same scratch directory, for the reason above.
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
@@ -299,22 +306,55 @@ describe("a campaign read through the bundle: show, validate, list, and a transi
   const stored = (): Buffer => readFileSync(join(workbench, CAMPAIGN));
   const storedRevision = (): string => "sha256:" + createHash("sha256").update(stored()).digest("hex");
   const minimal = (): Record<string, unknown> => JSON.parse(readFileSync(MINIMAL, "utf-8")) as Record<string, unknown>;
+  const campaignFixture = (name: string): string => join(VALID, "campaign", name);
+  /** A workbench under the scratch directory holding the fixture's own bytes at CAMPAIGN, as Prior or bin/fusion-campaign would have left them: the codec reads what is stored. */
+  const workbenchWith = (dir: string, campaign: string): string => {
+    const wb = join(scratch, dir, "fusion-workbench");
+    cpSync(FIXTURE, wb, { recursive: true });
+    mkdirSync(dirname(join(wb, CAMPAIGN)), { recursive: true });
+    cpSync(campaign, join(wb, CAMPAIGN));
+    return wb;
+  };
+  let withLanes: string;
+  let brokenRule: string;
 
   beforeAll(() => {
     scratch = mkdtempSync(join(tmpdir(), "codec-round-trip-campaign-"));
-    workbench = join(scratch, "fusion-workbench");
-    cpSync(FIXTURE, workbench, { recursive: true });
-    mkdirSync(dirname(join(workbench, CAMPAIGN)), { recursive: true });
-    // The fixture's own bytes, as Prior or bin/fusion-campaign would have left them: the codec reads what is stored.
-    cpSync(MINIMAL, join(workbench, CAMPAIGN));
+    workbench = workbenchWith(".", MINIMAL);
+    withLanes = workbenchWith("with-lanes", campaignFixture("with-lanes.json"));
+    brokenRule = workbenchWith("broken-rule", campaignFixture("lanes-rule-package-in-two-lanes.json"));
   });
 
   afterAll(() => {
     if (scratch !== undefined) rmSync(scratch, { recursive: true, force: true });
   });
 
-  it("show: kind campaign, the control as stored, the revision of the stored bytes, no narrative", () => {
-    expect(answered(fixtureRequest("show-campaign.json"))).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: storedRevision(), narrative: null });
+  it("show: kind campaign, the control as stored, the revision of the stored bytes, no narrative, and prior computed over the export", () => {
+    // minimal.json stores another charter_hash and no revision, by design; the answer's are Prior's over its export, as literals.
+    const prior = {
+      charter_hash: "prior-json-sha256:79f22f89b79765b39de8fdef4bcf6cf49c871207215ec2e56f3af9edbf20e7a6",
+      revision: "prior-json-sha256:995d2d52ca46892f42bb5305b397c1226b436fc522497e9b7da6ba90749c1cf1",
+    };
+    expect(answered(fixtureRequest("show-campaign.json"))).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: storedRevision(), narrative: null, prior });
+  });
+
+  it("show: with-lanes.json under campaigns/ is answered a prior whose two values are the ones the file stores", () => {
+    const control = JSON.parse(readFileSync(campaignFixture("with-lanes.json"), "utf-8")) as { state: { charter_hash: string; revision: string } };
+    const result = answered(fixtureRequest("show-campaign.json", { workbench: withLanes }));
+    expect(result.control).toEqual(control);
+    expect(result.prior).toEqual({ charter_hash: control.state.charter_hash, revision: control.state.revision });
+    expect(control.state.charter_hash).toMatch(/^prior-json-sha256:[0-9a-f]{64}$/);
+    expect(control.state.revision).toMatch(/^prior-json-sha256:[0-9a-f]{64}$/);
+  });
+
+  it("validate: with-lanes.json has no finding, and a campaign naming one package in two lanes is answered schema-invalid/duplicate-lane-member", () => {
+    expect(answered(fixtureRequest("validate-campaign.json", { workbench: withLanes }))).toMatchObject({ checked: 1, valid: true, findings: [] });
+    expect(answered({ op: "validate", workbench: withLanes })).toMatchObject({ checked: 4, valid: true, findings: [] });
+    const broken = answered(fixtureRequest("validate-campaign.json", { workbench: brokenRule }));
+    expect(broken).toMatchObject({ checked: 1, valid: false, findings: [{ path: CAMPAIGN, class: "schema-invalid", reason: "duplicate-lane-member" }] });
+    expect(broken.findings).toHaveLength(1);
+    // The rule is validate's and no reader's: show answers the same campaign, its prior that of with-lanes.json, since lanes are no part of the export.
+    expect(answered(fixtureRequest("show-campaign.json", { workbench: brokenRule })).prior).toEqual(answered(fixtureRequest("show-campaign.json", { workbench: withLanes })).prior);
   });
 
   it("validate: the campaign alone is one pair checked and valid, and the workbench holding it stays valid", () => {

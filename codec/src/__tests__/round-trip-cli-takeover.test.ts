@@ -77,9 +77,19 @@
 // The second half runs the bundle Prior qualified, `c76bbce9…`, extracted from
 // git by its blob, over a copy of the workbench this session leaves: it
 // refuses each transferred package for direct reading and mutation, and
-// rewrites no byte of the tree. And every record the manifest called valid
-// at `031645d2`, the commit the addendum was written against, validates in
-// the schema set this bundle inlines.
+// rewrites no byte of the tree. And the records the manifest called valid at
+// `031645d2`, the commit the addendum was written against, are held against
+// the schema set this bundle inlines, each fixture as it stood at that commit.
+// What is measured: the manifest lists 86 of them; the 82 whose schema is not
+// `fusion.campaign/v1` validate; the four campaign records are refused
+// `schema-invalid` with one error each, the missing root key `lanes`, which
+// none of them carries and the campaign schema now requires, and each of the
+// four validates once `"lanes": null` is added to it. "Every old record
+// validates" was the sentence before `lanes` was required and is not measured
+// here any more: the key stays required and this case was restated by decision
+// `261109-1811-does-lanes-stay-a-required-key-when-campaign-records-valid-before-it-stop-validating.md`
+// (option 1). A campaign file stored before the key was required is
+// schema-invalid until the key is added, and nothing migrates one.
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
@@ -88,7 +98,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { installInlined } from "../cli/schemas.js";
-import { revisionOf, serialise } from "../store.js";
+import { CAMPAIGN_SCHEMA_ID, revisionOf, serialise } from "../store.js";
 import { strictParse } from "../strict-json.js";
 import { CODEC_DIR, bytesAt, filesUnder, openSession, parse, requestBytes } from "./helpers/session.js";
 
@@ -601,7 +611,7 @@ const git = (args: string[]): Buffer => {
 /** Every file under `dir` with its bytes, base64: what "rewrites nothing" is compared on. */
 const treeBytes = (dir: string): Record<string, string> => Object.fromEntries(filesUnder(dir).map((p) => [p, bytesAt(dir, p).toString("base64")]));
 
-describe("the version boundary (Prior's answer to 62, part 7): the old qualified bundle refuses a transferred package and rewrites nothing; old records validate in the new bundle", () => {
+describe("the version boundary (Prior's answer to 62, part 7): the old qualified bundle refuses a transferred package and rewrites nothing; of the old valid records every one but a campaign validates in the new schema set, and a campaign is refused for the missing key lanes alone", () => {
   let oldDir: string;
   let oldBundle: string;
   beforeAll(() => {
@@ -659,16 +669,32 @@ describe("the version boundary (Prior's answer to 62, part 7): the old qualified
     expect(treeBytes(after), "the old bundle stripped, rewrote or added nothing").toEqual(before);
   });
 
-  it(`every record the manifest at ${ADDENDUM_BASE} expects valid validates in the schema set the new bundle inlines`, () => {
+  it(`of the 86 records the manifest at ${ADDENDUM_BASE} expects valid, the 82 that are no campaign validate in the schema set the new bundle inlines, and the four campaign records are refused for the missing key lanes alone and validate with "lanes": null added`, () => {
     const set = installInlined();
     const manifest = JSON.parse(git(["show", `${ADDENDUM_BASE}:codec/fixtures/manifest.json`]).toString("utf-8")) as Array<{ path: string; schema: string; expect: string }>;
     const valid = manifest.filter((e) => e.expect === "valid" && e.schema !== "bytes");
     expect(valid, "the valid entries at that commit").toHaveLength(86);
-    for (const entry of valid) {
+    /** The fixture as it stood at that commit, strictly parsed. */
+    const then = (entry: { path: string }): unknown => {
       const parsed = strictParse(git(["show", `${ADDENDUM_BASE}:codec/fixtures/${entry.path}`]));
-      expect(parsed.ok, entry.path).toBe(true);
-      if (!parsed.ok) continue;
-      expect(set.validate(entry.schema, parsed.value), entry.path).toEqual({ ok: true });
+      if (!parsed.ok) throw new Error(`${entry.path} at ${ADDENDUM_BASE}: ${parsed.reason}: ${parsed.detail}`);
+      return parsed.value;
+    };
+    // Two branches by the entry's schema, and every valid entry is in exactly one: no record is left out of both.
+    const campaigns = valid.filter((e) => e.schema === CAMPAIGN_SCHEMA_ID);
+    const others = valid.filter((e) => e.schema !== CAMPAIGN_SCHEMA_ID);
+    expect(others, "the valid entries of every schema but the campaign's").toHaveLength(82);
+    expect(campaigns, "the valid campaign entries").toHaveLength(4);
+    for (const entry of others) expect(set.validate(entry.schema, then(entry)), entry.path).toEqual({ ok: true });
+    for (const entry of campaigns) {
+      const campaign = then(entry) as Record<string, unknown>;
+      // Exactly one error, and it is the key: a second cause in any of the four fails here.
+      expect(set.validate(entry.schema, campaign), entry.path).toEqual({
+        ok: false,
+        class: "schema-invalid",
+        errors: [{ instancePath: "", keyword: "required", message: "must have required property 'lanes'" }],
+      });
+      expect(set.validate(entry.schema, { ...campaign, lanes: null }), `${entry.path} with "lanes": null`).toEqual({ ok: true });
     }
   });
 });
