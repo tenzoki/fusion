@@ -145,8 +145,9 @@ option 1): at present `skills/setup/SKILL.md`, `skills/check/SKILL.md`,
 `skills/discuss/SKILL.md`, `skills/commit/SKILL.md`,
 `skills/cleanup/SKILL.md`, `skills/archive/SKILL.md`,
 `skills/memo/SKILL.md`, `skills/post/SKILL.md`, `skills/news/SKILL.md`,
-`skills/cadence/SKILL.md`, `skills/migrate/SKILL.md` and
-`skills/help/SKILL.md`. That is every file under `agents/` and `skills/`:
+`skills/cadence/SKILL.md`, `skills/migrate/SKILL.md`,
+`skills/help/SKILL.md` and `skills/campaign/SKILL.md`. That is every file
+under `agents/` and `skills/`:
 each is render output of `profiles/<id>/` (`profile.json` and
 `parts/NN-{neutral,claude,prior}.md`), and a new skill directory without a
 profile is reported by `npm run render -- claude` as `skipped … no profile`.

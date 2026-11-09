@@ -1,0 +1,15 @@
+{
+  "id": "skill-campaign",
+  "parts": [
+    { "file": "parts/01-claude.md", "tag": "claude" },
+    { "file": "parts/02-neutral.md", "tag": "neutral" },
+    { "file": "parts/03-claude.md", "tag": "claude" },
+    { "file": "parts/04-neutral.md", "tag": "neutral" }
+  ],
+  "input_schema": "schemas/entry-request.v1.json",
+  "result_schema": "schemas/entry-result.v2.json",
+  "tools_ceiling": ["read", "list", "search", "git-inspect"],
+  "may_delegate": false,
+  "writes_workbench": { "claude-code": true, "prior": false },
+  "execution_policy": { "claude-code": "claude-guided", "prior": "prior-enforced" }
+}

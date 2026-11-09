@@ -329,6 +329,20 @@
       "support": { "claude-code": "supported", "prior": "supported" }
     },
     {
+      "id": "campaign",
+      "kind": "skill",
+      "profile": "skill-campaign",
+      "class": "asks",
+      "arguments": {
+        "items": [
+          { "name": "subcommand", "kind": "positional", "required": false, "values": ["overview", "cut", "open", "lanes", "pause", "resume", "move", "reassign", "end"], "note": "overview when absent" },
+          { "name": "--window", "kind": "option", "required": false, "note": "<hours>, overview only, default 24" }
+        ]
+      },
+      "requires": ["host.question.v1", "host.exec.v1"],
+      "support": { "claude-code": "supported", "prior": "unsupported" }
+    },
+    {
       "id": "orchestrator",
       "kind": "agent",
       "profile": "orchestrator",
