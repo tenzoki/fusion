@@ -1,0 +1,1298 @@
+{
+  "_source": {
+    "how_to_read": "Every `_source` key is provenance and no data: a consumer drops it. It names where the figures beside it were read, as a foreign record with its section or as a path at the commit. In the notes, the analysis is foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md and the lane record is foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md.",
+    "derivation": "Hand-derived on 2026-11-09 from the clone named in `source`. Every source was read through git -C <clone> show 56c19983a:<path>, none from the clone's working tree, and nothing was written there.",
+    "packages": "Three groups, told apart by `group`. `pipeline-analysis`: the packages of the dependency table in §3 of foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md, in the table's row order; its rows for the plan-edge family and the route build-out, which had no package at the analysis, are the containers 261101-1001 and 261101-1002 filed on 2026-11-01. `lane-amendment`: the package the lane record's amendment of 2026-11-01 put at lane 2's tail, which §3 does not name. `held-outside-lanes`: the packages whose package.json at the commit reads claimed and which neither foreign record names. The fifth claimed package at the commit, 260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung, is a §3 package and a member of lane 3, so it stands in the first group.",
+    "state": "`status`, `holder` (the claim's checkout while the status is claimed), `claim_kept` (the checkout a done or dropped package's claim object still names), `outcome_class` and both edge lists are read from each container's package.json at the commit. Where a foreign record's prose reads otherwise, the package.json governs and the entry's `_source.disagreement` says what the prose read.",
+    "depends_on": "Targets by container name, resolved from each entry's `target.record_id` through the `id` of every package.json under fusion-workbench/work-packages at the commit. `depends_on` holds the edges whose target is a package of this file, so the list is closed over the file; `depends_on_outside_fixture` holds the other edges the package.json carries, each with its target's status at the commit. `depends_on_condition` is the condition of every entry in both lists. An entry's `_source.edges_named_by` says where a foreign record speaks of the package's edges; the edges themselves are the package.json's.",
+    "areas": "Path prefixes relative to the project root, no trailing slash, taken from the contention map in §4 of foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md. §4 writes Go paths relative to codebase/go; they are recorded from the project root. A package named in a §4 row is given every path of that row, except where §4 annotates the package with files of its own. `areas` holds the rows whose Lane column keeps them inside the package's own lane; `shared_areas` holds the rows that column marks cross-lane, which the analysis leaves to its sync rules (§6) and not to the cut. Every recorded path exists at the commit (git cat-file -t 56c19983a:<path>). `area_rows` below is §4 row by row.",
+    "area_rows": [
+      {
+        "row": "Plan construction and lowering",
+        "lane_column": "L1 only",
+        "files_as_written": "pkg/process/{compose,adopt,place,binding_cell,meta_hub,registry}.go, pkg/plan/{sequencer_2d,cyclebreak}.go, pkg/processengine/lower.go",
+        "recorded_as": [
+          "codebase/go/pkg/process",
+          "codebase/go/pkg/plan",
+          "codebase/go/pkg/processengine/lower.go"
+        ],
+        "note": "§4 also names the server half of 260914-1223, a package outside this file. The two directories are recorded whole because §5 gives lane 1 `pkg/process/` and `pkg/plan/` whole."
+      },
+      {
+        "row": "Plan, board and run handlers",
+        "lane_column": "L1 only",
+        "files_as_written": "pkg/api/{plan_handlers,board_handlers,board_view,process_run_handlers}.go",
+        "recorded_as": [
+          "codebase/go/pkg/api/plan_handlers.go",
+          "codebase/go/pkg/api/board_handlers.go",
+          "codebase/go/pkg/api/board_view.go",
+          "codebase/go/pkg/api/process_run_handlers.go"
+        ]
+      },
+      {
+        "row": "Project header",
+        "lane_column": "cross-lane: edge E1",
+        "files_as_written": "pkg/api/project_header_handler.go, the ProjectHeader schema in api/openapi.yaml, the header UI",
+        "recorded_as": [
+          "codebase/go/pkg/api/project_header_handler.go",
+          "api/openapi.yaml"
+        ],
+        "note": "§4 names no path for the header UI; none is recorded."
+      },
+      {
+        "row": "Workstream ontology",
+        "lane_column": "L1 only",
+        "files_as_written": "ontology/uif-workstream-models.yaml, uif-workstreams.yaml, the new meta-model file",
+        "recorded_as": [
+          "ontology/uif-workstream-models.yaml",
+          "ontology/uif-workstreams.yaml"
+        ],
+        "note": "§4 names no path for the new meta-model file; none is recorded."
+      },
+      {
+        "row": "Selection strategies",
+        "lane_column": "L2 only",
+        "files_as_written": "pkg/strategy/{orderer,strategy,sanitize,mandated}.go, broadenpool/, structure_first/",
+        "recorded_as": [
+          "codebase/go/pkg/strategy"
+        ],
+        "note": "Recorded as the directory because §5 gives lane 2 `pkg/strategy/` whole."
+      },
+      {
+        "row": "Catalog vectors",
+        "lane_column": "L2 only",
+        "files_as_written": "pkg/catalog/{signatures,builder,store}.go, Makefile catalog legs",
+        "recorded_as": [
+          "codebase/go/pkg/catalog",
+          "Makefile"
+        ],
+        "note": "Recorded as the directory because §5 gives lane 2 `pkg/catalog/` whole. §4 means the catalog legs of the Makefile; a path names the whole file."
+      },
+      {
+        "row": "Model configuration",
+        "lane_column": "L2 only in the 3-lane cut; cross-lane in the 4-lane cut",
+        "files_as_written": "codebase/config/task-model-mapping.yaml",
+        "recorded_as": [
+          "codebase/config/task-model-mapping.yaml"
+        ],
+        "note": "The file holds the three-lane cut, so the row counts as lane 2's own."
+      },
+      {
+        "row": "Sidecar provenance",
+        "lane_column": "L2 only in the 3-lane cut",
+        "files_as_written": "codebase/python/fill_provenance.py FIELD_METHODS",
+        "recorded_as": [
+          "codebase/python/fill_provenance.py"
+        ]
+      },
+      {
+        "row": "AI calls",
+        "lane_column": "L3, plus L2's 1302",
+        "files_as_written": "pkg/ai/{populate,fill_rows*,orchestrator,operations,per_document}.go, pkg/preprocess/, pkg/modelconfig/, pkg/sec/",
+        "recorded_as": [
+          "codebase/go/pkg/ai",
+          "codebase/go/pkg/preprocess",
+          "codebase/go/pkg/modelconfig",
+          "codebase/go/pkg/sec"
+        ],
+        "note": "§4 names the packages as `1323`, fill trio, routes, `1450`; the fill trio is the population measure, the quality measure and the consultant instruction (§5, lane 3 row 4), routes is the route build-out filed as 261101-1002. `pkg/ai` is recorded as the directory because §5 gives lane 3 `pkg/ai/` whole. For 260929-1302, a lane 2 package, §4 names three files it deletes in; they are recorded as that package's shared areas."
+      },
+      {
+        "row": "Boot wiring",
+        "lane_column": "cross-lane: small hunks, rebase before each commit",
+        "files_as_written": "cmd/unite/main.go (3 295 lines), cmd/unite/vision_ocr.go",
+        "recorded_as": [
+          "codebase/go/cmd/unite/main.go",
+          "codebase/go/cmd/unite/vision_ocr.go"
+        ],
+        "note": "§4 annotates 261026-2024 with `:2885`, a line of main.go (§3 cites cmd/unite/main.go:2885 for it), so that package is given main.go alone."
+      },
+      {
+        "row": "Framework schema",
+        "lane_column": "L3 and L1",
+        "files_as_written": "ontology/manifests/SCHEMA.md, pkg/types/types.go, pkg/ontology/loader.go, pkg/graph/badger_graph.go",
+        "recorded_as": [
+          "ontology/manifests/SCHEMA.md",
+          "codebase/go/pkg/types/types.go",
+          "codebase/go/pkg/ontology/loader.go",
+          "codebase/go/pkg/graph/badger_graph.go"
+        ],
+        "note": "§4 names 260929-1313 here only as an inference under a condition (if the meta-model gets a Go reader in the loader); nothing is recorded for it from this row."
+      },
+      {
+        "row": "Ontology stats",
+        "lane_column": "cross-lane: regenerate after merge, never hand-merge",
+        "files_as_written": "ontology/uif-stats.yaml",
+        "recorded_as": [
+          "ontology/uif-stats.yaml"
+        ]
+      },
+      {
+        "row": "API contract",
+        "lane_column": "cross-lane: see sync point S1",
+        "files_as_written": "api/openapi.yaml plus the regenerated Zod types",
+        "recorded_as": [
+          "api/openapi.yaml"
+        ],
+        "note": "§4 names 261031-1718 here as an inference; the Project header row names the same file for it without one. §4 names no path for the regenerated Zod types; none is recorded."
+      },
+      {
+        "row": "Always-on rules",
+        "lane_column": "L2",
+        "files_as_written": "CLAUDE.md Grounding rule",
+        "recorded_as": [
+          "CLAUDE.md"
+        ]
+      }
+    ],
+    "lanes": "The three lanes of foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md, `## Lanes`, read through the note `Amended: 261101-1150` at its foot. The record numbers its lanes 1 to 3; the ids lane-1 to lane-3 are this file's spelling. Members stand in the record's queue order, whatever their status at the commit. The record's fourth heading, for another person's checkout, orders no package and is no lane here.",
+    "checkouts": "One entry per file under fusion-workbench/shared/checkouts at the commit (git ls-tree --name-only 56c19983a fusion-workbench/shared/checkouts/). Of each entry the checkout and its alias are taken. Its `**Person:**` and `**Git identity:**` lines (a name and an e-mail address) and its `**Registered:**` and `**Refreshed:**` stamps are left out. No entry at the commit carries a hostname, an account name or a folder path.",
+    "log": "One `commit` row per checkout that holds a package at the commit, in the shape the commit lock writes (ts, event, person, checkout, session_id, detail), without `person`. `detail` is the row's own `<short hash> <subject>`; the hash names a commit of the foreign repository, and a test maps it onto a commit it makes. `ts` is UTC written without a zone, as the log holds it; each row's `_source.committer_time` is the named commit's own time. Session ids are synthetic."
+  },
+  "source": {
+    "project": "ax-k2-3",
+    "clone": "/System/Volumes/Data/Projects/productive/F03_digital-leadership/ax-k2-3",
+    "head": "56c19983a",
+    "head_time": "2026-11-04T23:57:58+01:00",
+    "records": [
+      "261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+      "261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md"
+    ],
+    "_source": "git -C <clone> rev-parse --short=9 HEAD printed 56c19983a on 2026-11-09; `head_time` is git show -s --format=%cI 56c19983a. The records are storeless basenames; at the commit the first lies in the analyses store of the container 261031-1718, the second in the shared plans store."
+  },
+  "depends_on_condition": "terminal",
+  "packages": [
+    {
+      "name": "261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "d44c592f",
+      "outcome_class": "completed",
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/process",
+        "codebase/go/pkg/plan",
+        "codebase/go/pkg/processengine/lower.go",
+        "codebase/go/pkg/api/plan_handlers.go",
+        "codebase/go/pkg/api/board_handlers.go",
+        "codebase/go/pkg/api/board_view.go",
+        "codebase/go/pkg/api/process_run_handlers.go"
+      ],
+      "shared_areas": [
+        "codebase/go/pkg/api/project_header_handler.go",
+        "api/openapi.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261031-1718` (in flight, L1)"
+        },
+        "state": "fusion-workbench/work-packages/261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Plan construction and lowering",
+            "Plan, board and run handlers"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Project header",
+            "API contract"
+          ]
+        },
+        "disagreement": "§3 and §5 (read at 8b12dc840) and lane 1 row 1 of the lane record read it claimed by d44c592f; the package.json reads done, outcome completed, its claim object still naming d44c592f."
+      }
+    },
+    {
+      "name": "261101-1001-the-board-keeps-its-edges-a-hand-added-step-can-be-ordered-and-an-old-store-shows-its-frameworks",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "d44c592f",
+      "outcome_class": "completed",
+      "depends_on": [
+        "261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/process",
+        "codebase/go/pkg/plan",
+        "codebase/go/pkg/processengine/lower.go",
+        "codebase/go/pkg/api/plan_handlers.go",
+        "codebase/go/pkg/api/board_handlers.go",
+        "codebase/go/pkg/api/board_view.go",
+        "codebase/go/pkg/api/process_run_handlers.go"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `Plan-edge family (no package yet)`"
+        },
+        "state": "fusion-workbench/work-packages/261101-1001-the-board-keeps-its-edges-a-hand-added-step-can-be-ordered-and-an-old-store-shows-its-frameworks/package.json at 56c19983a",
+        "filed": "foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md `## Current State`: filed on 2026-11-01 as this container, with an edge on 261031-1718.",
+        "edges_named_by": "written when the package was filed",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Plan construction and lowering",
+            "Plan, board and run handlers"
+          ]
+        },
+        "disagreement": "§3 has no package for the plan-edge family, and lane 1 row 2 of the lane record reads it blocked on its edge; the package.json reads done, outcome completed, its claim object naming d44c592f."
+      }
+    },
+    {
+      "name": "260929-1313-feineres-workstream-metamodell-mit-mapping",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "bdbeb54b",
+      "outcome_class": "completed",
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/process",
+        "codebase/go/pkg/plan",
+        "codebase/go/pkg/processengine/lower.go",
+        "ontology/uif-workstream-models.yaml",
+        "ontology/uif-workstreams.yaml"
+      ],
+      "shared_areas": [
+        "ontology/uif-stats.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260929-1313` workstream meta-model"
+        },
+        "state": "fusion-workbench/work-packages/260929-1313-feineres-workstream-metamodell-mit-mapping/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Plan construction and lowering",
+            "Workstream ontology"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Ontology stats"
+          ]
+        },
+        "disagreement": "§3 reads it live, waiting on a ruling; the package.json reads done (the lane record's `## Current State` says so too and takes it out of lane 1)."
+      }
+    },
+    {
+      "name": "260925-1801-vokabular-mapping-fuer-die-lokalen-workstream-modelle",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "bdbeb54b",
+      "outcome_class": "completed",
+      "depends_on": [
+        "260929-1313-feineres-workstream-metamodell-mit-mapping"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/process",
+        "codebase/go/pkg/plan",
+        "codebase/go/pkg/processengine/lower.go",
+        "ontology/uif-workstream-models.yaml",
+        "ontology/uif-workstreams.yaml"
+      ],
+      "shared_areas": [
+        "ontology/uif-stats.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260925-1801` local vocabularies"
+        },
+        "state": "fusion-workbench/work-packages/260925-1801-vokabular-mapping-fuer-die-lokalen-workstream-modelle/package.json at 56c19983a",
+        "edges_named_by": "confirmed before the analysis (§2, §3)",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Plan construction and lowering",
+            "Workstream ontology"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Ontology stats"
+          ]
+        },
+        "disagreement": "§3 reads it live, waiting on 260929-1313; the package.json reads done (the lane record's `## Current State` says so too and takes it out of lane 1)."
+      }
+    },
+    {
+      "name": "261002-1204-plan-und-board-zeigen-kadenz-takt-und-overlay",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/process",
+        "codebase/go/pkg/plan",
+        "codebase/go/pkg/processengine/lower.go",
+        "codebase/go/pkg/api/plan_handlers.go",
+        "codebase/go/pkg/api/board_handlers.go",
+        "codebase/go/pkg/api/board_view.go",
+        "codebase/go/pkg/api/process_run_handlers.go"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261002-1204` cadence, takt, overlay"
+        },
+        "state": "fusion-workbench/work-packages/261002-1204-plan-und-board-zeigen-kadenz-takt-und-overlay/package.json at 56c19983a",
+        "edges_named_by": "§8 E2, a proposal in the analysis, written since",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Plan construction and lowering",
+            "Plan, board and run handlers"
+          ]
+        }
+      }
+    },
+    {
+      "name": "260814-1228-corpus-analysis-staleness-signal",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [
+        "codebase/go/pkg/api/project_header_handler.go",
+        "api/openapi.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260814-1228` corpus staleness"
+        },
+        "state": "fusion-workbench/work-packages/260814-1228-corpus-analysis-staleness-signal/package.json at 56c19983a",
+        "edges_named_by": "§8 E1, a proposal in the analysis, written since",
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Project header",
+            "API contract"
+          ]
+        },
+        "areas_note": "§4 names this package in cross-lane rows only, so `areas` is empty. §3 cites codebase/go/pkg/state/project.go as its code site and §5 gives that file to lane 3; §4 does not name it, and it is not recorded."
+      }
+    },
+    {
+      "name": "260929-1302-liquidate-s1-naive-llm",
+      "group": "pipeline-analysis",
+      "status": "dropped",
+      "holder": null,
+      "claim_kept": "f85f8da1",
+      "outcome_class": "cancelled",
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/strategy",
+        "codebase/config/task-model-mapping.yaml",
+        "CLAUDE.md"
+      ],
+      "shared_areas": [
+        "codebase/go/pkg/ai/orchestrator.go",
+        "codebase/go/pkg/ai/operations.go",
+        "codebase/go/pkg/ai/per_document.go",
+        "codebase/go/cmd/unite/main.go",
+        "codebase/go/cmd/unite/vision_ocr.go"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260929-1302` S1 liquidation"
+        },
+        "state": "fusion-workbench/work-packages/260929-1302-liquidate-s1-naive-llm/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Selection strategies",
+            "Model configuration",
+            "Always-on rules"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls",
+            "Boot wiring"
+          ]
+        },
+        "disagreement": "§5 and the lane record queue it first in lane 2; the lane record's amendment of 2026-11-01 drops it. The package.json reads dropped, outcome cancelled, its claim object still naming f85f8da1."
+      }
+    },
+    {
+      "name": "261026-2024-the-catalog-fields-and-chunk-budgets-become-build-time-configuration-and-are-measured-as-variants",
+      "group": "pipeline-analysis",
+      "status": "paused",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [
+        {
+          "target": "261102-1935-the-shipped-embedder-switches-to-snowflake-arctic-embed-m-v2-0",
+          "target_status": "paused"
+        }
+      ],
+      "areas": [
+        "codebase/go/pkg/catalog",
+        "Makefile",
+        "codebase/config/task-model-mapping.yaml"
+      ],
+      "shared_areas": [
+        "codebase/go/cmd/unite/main.go"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261026-2024` catalog fields and budgets"
+        },
+        "state": "fusion-workbench/work-packages/261026-2024-the-catalog-fields-and-chunk-budgets-become-build-time-configuration-and-are-measured-as-variants/package.json at 56c19983a",
+        "edges_named_by": "neither foreign record",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Catalog vectors",
+            "Model configuration"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Boot wiring"
+          ]
+        },
+        "disagreement": "The lane record reads it ready and, in its amendment, claimed by jade-jetty (f85f8da1); the package.json reads paused with no claim, and carries one edge that neither foreign record names.",
+        "gap": "Its one depends_on entry at the commit names 261102-1935-the-shipped-embedder-switches-to-snowflake-arctic-embed-m-v2-0, a package outside this file; it stands in `depends_on_outside_fixture`, so in a workbench built from this file the package waits on nothing."
+      }
+    },
+    {
+      "name": "260929-1420-in-cell-order-of-tied-frameworks-without-framework-id",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/strategy"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260929-1420` in-cell order"
+        },
+        "state": "fusion-workbench/work-packages/260929-1420-in-cell-order-of-tied-frameworks-without-framework-id/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Selection strategies"
+          ]
+        }
+      }
+    },
+    {
+      "name": "261009-1001-welche-relationen-ein-leser-einschliesst-wird-zur-laufzeit-konfiguriert",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "260929-1420-in-cell-order-of-tied-frameworks-without-framework-id"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/strategy"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261009-1001` relation readers configured"
+        },
+        "state": "fusion-workbench/work-packages/261009-1001-welche-relationen-ein-leser-einschliesst-wird-zur-laufzeit-konfiguriert/package.json at 56c19983a",
+        "edges_named_by": "§8 E4, a proposal in the analysis, written since",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Selection strategies"
+          ]
+        }
+      }
+    },
+    {
+      "name": "261015-1034-inputs-and-outputs-are-free-text-on-every-framework-and-the-norm-says-so",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261026-2024-the-catalog-fields-and-chunk-budgets-become-build-time-configuration-and-are-measured-as-variants"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/catalog",
+        "Makefile",
+        "codebase/python/fill_provenance.py"
+      ],
+      "shared_areas": [
+        "ontology/uif-stats.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261015-1034` inputs/outputs free text"
+        },
+        "state": "fusion-workbench/work-packages/261015-1034-inputs-and-outputs-are-free-text-on-every-framework-and-the-norm-says-so/package.json at 56c19983a",
+        "edges_named_by": "§8 E8, a proposal in the analysis, written since",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Catalog vectors",
+            "Sidecar provenance"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Ontology stats"
+          ]
+        },
+        "disagreement": "§3 speaks of its pause; the package.json reads open."
+      }
+    },
+    {
+      "name": "261015-1126-a-framework-the-mandate-names-is-found-read-for-its-polarity-and-confirmed-by-the-consultant",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/strategy",
+        "codebase/config/task-model-mapping.yaml",
+        "codebase/python/fill_provenance.py"
+      ],
+      "shared_areas": [
+        "ontology/uif-stats.yaml",
+        "api/openapi.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261015-1126` mandate-named frameworks"
+        },
+        "state": "fusion-workbench/work-packages/261015-1126-a-framework-the-mandate-names-is-found-read-for-its-polarity-and-confirmed-by-the-consultant/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Selection strategies",
+            "Model configuration",
+            "Sidecar provenance"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Ontology stats",
+            "API contract"
+          ]
+        }
+      }
+    },
+    {
+      "name": "260916-1447-be-auswahlqualitaet-den-s4-cluster-schliessen",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261026-2024-the-catalog-fields-and-chunk-budgets-become-build-time-configuration-and-are-measured-as-variants"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/strategy",
+        "codebase/config/task-model-mapping.yaml"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row for the S4 cluster"
+        },
+        "state": "fusion-workbench/work-packages/260916-1447-be-auswahlqualitaet-den-s4-cluster-schliessen/package.json at 56c19983a",
+        "edges_named_by": "§8 E6, a proposal in the analysis, written since",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Selection strategies",
+            "Model configuration"
+          ]
+        }
+      }
+    },
+    {
+      "name": "260916-1447-be-s5-framework-auswahl-implementieren",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261026-2024-the-catalog-fields-and-chunk-budgets-become-build-time-configuration-and-are-measured-as-variants",
+        "260916-1447-be-auswahlqualitaet-den-s4-cluster-schliessen"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/strategy",
+        "codebase/config/task-model-mapping.yaml"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row for S5 (paused)"
+        },
+        "state": "fusion-workbench/work-packages/260916-1447-be-s5-framework-auswahl-implementieren/package.json at 56c19983a",
+        "edges_named_by": "§8 E7, a proposal in the analysis, written since",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Selection strategies",
+            "Model configuration"
+          ]
+        },
+        "disagreement": "§3 labels it paused; the package.json reads open."
+      }
+    },
+    {
+      "name": "260925-1450-vision-recovery-sendet-beim-upload-keine-seitenbilder",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "95433365",
+      "outcome_class": "completed",
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/ai",
+        "codebase/go/pkg/preprocess",
+        "codebase/go/pkg/modelconfig",
+        "codebase/go/pkg/sec"
+      ],
+      "shared_areas": [
+        "codebase/go/cmd/unite/main.go",
+        "codebase/go/cmd/unite/vision_ocr.go"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260925-1450` vision recovery"
+        },
+        "state": "fusion-workbench/work-packages/260925-1450-vision-recovery-sendet-beim-upload-keine-seitenbilder/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Boot wiring"
+          ]
+        },
+        "disagreement": "§5 and lane 3 row 1 of the lane record read it ready and unclaimed; the package.json reads done, outcome completed, its claim object naming 95433365."
+      }
+    },
+    {
+      "name": "261014-1323-the-llm-classes-in-operation-three-user-visible-defects-the-offload-check-and-nine-follow-ups",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "95433365",
+      "outcome_class": "completed",
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/ai",
+        "codebase/go/pkg/preprocess",
+        "codebase/go/pkg/modelconfig",
+        "codebase/go/pkg/sec"
+      ],
+      "shared_areas": [
+        "codebase/go/cmd/unite/main.go",
+        "codebase/go/cmd/unite/vision_ocr.go"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261014-1323` LLM classes (paused)"
+        },
+        "state": "fusion-workbench/work-packages/261014-1323-the-llm-classes-in-operation-three-user-visible-defects-the-offload-check-and-nine-follow-ups/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Boot wiring"
+          ]
+        },
+        "disagreement": "§3 labels it paused and lane 3 row 2 of the lane record reads it ready; the package.json reads done, outcome completed, its claim object naming 95433365."
+      }
+    },
+    {
+      "name": "260916-1447-be-den-populationsmechanismus-messen",
+      "group": "pipeline-analysis",
+      "status": "done",
+      "holder": null,
+      "claim_kept": "95433365",
+      "outcome_class": "completed",
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/ai",
+        "codebase/go/pkg/preprocess",
+        "codebase/go/pkg/modelconfig",
+        "codebase/go/pkg/sec"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row for the population measure"
+        },
+        "state": "fusion-workbench/work-packages/260916-1447-be-den-populationsmechanismus-messen/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls"
+          ]
+        },
+        "disagreement": "Lane 3 row 4 of the lane record reads it ready; the package.json reads done, outcome completed, its claim object naming 95433365."
+      }
+    },
+    {
+      "name": "260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung",
+      "group": "pipeline-analysis",
+      "status": "claimed",
+      "holder": "95433365",
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "260916-1447-be-den-populationsmechanismus-messen"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/ai",
+        "codebase/go/pkg/preprocess",
+        "codebase/go/pkg/modelconfig",
+        "codebase/go/pkg/sec"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row for the quality measure"
+        },
+        "state": "fusion-workbench/work-packages/260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung/package.json at 56c19983a",
+        "edges_named_by": "confirmed before the analysis (§3)",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls"
+          ]
+        },
+        "disagreement": "Lane 3 row 5 of the lane record reads it blocked on its edge; the package.json reads claimed by 95433365, the checkout of lane 3."
+      }
+    },
+    {
+      "name": "260916-1447-be-der-berater-steuert-die-befuellung-mit-eigener-anweisung",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "260916-1447-be-den-populationsmechanismus-messen"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/ai",
+        "codebase/go/pkg/preprocess",
+        "codebase/go/pkg/modelconfig",
+        "codebase/go/pkg/sec"
+      ],
+      "shared_areas": [
+        "api/openapi.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row for the consultant instruction"
+        },
+        "state": "fusion-workbench/work-packages/260916-1447-be-der-berater-steuert-die-befuellung-mit-eigener-anweisung/package.json at 56c19983a",
+        "edges_named_by": "confirmed before the analysis (§3)",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "API contract"
+          ]
+        }
+      }
+    },
+    {
+      "name": "260923-0831-assessment-scoring-backend-scale-anchors-and-scoring-block",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "ontology/manifests/SCHEMA.md",
+        "codebase/go/pkg/types/types.go",
+        "codebase/go/pkg/ontology/loader.go",
+        "codebase/go/pkg/graph/badger_graph.go"
+      ],
+      "shared_areas": [
+        "ontology/uif-stats.yaml",
+        "api/openapi.yaml"
+      ],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260923-0831` scoring backend"
+        },
+        "state": "fusion-workbench/work-packages/260923-0831-assessment-scoring-backend-scale-anchors-and-scoring-block/package.json at 56c19983a",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Framework schema"
+          ]
+        },
+        "shared_areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "Ontology stats",
+            "API contract"
+          ]
+        }
+      }
+    },
+    {
+      "name": "261101-1002-the-security-routes-r1-to-r4-are-built-out",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type",
+        "260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [
+        "codebase/go/pkg/ai",
+        "codebase/go/pkg/preprocess",
+        "codebase/go/pkg/modelconfig",
+        "codebase/go/pkg/sec"
+      ],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `Route build-out R1-R4 (no package yet)`"
+        },
+        "state": "fusion-workbench/work-packages/261101-1002-the-security-routes-r1-to-r4-are-built-out/package.json at 56c19983a",
+        "filed": "foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md `## Current State`: filed on 2026-11-01 as this container, with an edge on 261031-1718.",
+        "edges_named_by": "the edge on 261031-1718 written when the package was filed; the edge on the quality measure named by neither foreign record",
+        "areas": {
+          "section": "§4 of the analysis",
+          "rows": [
+            "AI calls"
+          ]
+        },
+        "disagreement": "§3 has no package for the route build-out, and the lane record names one edge, on 261031-1718; the package.json carries a second, on 260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung."
+      }
+    },
+    {
+      "name": "261020-1619-the-ai-uses-are-tested-live-on-each-security-route",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261014-1323-the-llm-classes-in-operation-three-user-visible-defects-the-offload-check-and-nine-follow-ups",
+        "260925-1450-vision-recovery-sendet-beim-upload-keine-seitenbilder",
+        "261101-1002-the-security-routes-r1-to-r4-are-built-out"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `261020-1619` live route acceptance"
+        },
+        "state": "fusion-workbench/work-packages/261020-1619-the-ai-uses-are-tested-live-on-each-security-route/package.json at 56c19983a",
+        "edges_named_by": "§8 E9, a proposal in the analysis, written since, with the route build-out added once it was filed",
+        "areas_note": "§4 names no area for this package."
+      }
+    },
+    {
+      "name": "260916-1447-op-abnahmelauf-ein-vollstaendiger-protokollierter-durchlauf",
+      "group": "pipeline-analysis",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [
+        {
+          "target": "260916-1447-be-process-template-routing-fuer-neun-projekttypen",
+          "target_status": "done"
+        },
+        {
+          "target": "260916-1447-be-framework-rendering-archetypen-und-layout-sidecars",
+          "target_status": "open"
+        },
+        {
+          "target": "260916-1447-fe-die-befuellung-erreicht-die-shape-table",
+          "target_status": "paused"
+        },
+        {
+          "target": "260916-1447-be-export-pdf-qualitaet-des-server-renderers",
+          "target_status": "open"
+        },
+        {
+          "target": "260916-1447-be-installer-paketierung-dmg-und-msi",
+          "target_status": "open"
+        },
+        {
+          "target": "260915-2230-per-kunde-umhuellung-und-wasserzeichen",
+          "target_status": "paused"
+        }
+      ],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md",
+          "section": "§3 row `260916-1447-op-abnahmelauf`"
+        },
+        "state": "fusion-workbench/work-packages/260916-1447-op-abnahmelauf-ein-vollstaendiger-protokollierter-durchlauf/package.json at 56c19983a",
+        "edges_named_by": "the six confirmed edges §3 and §8 E10 speak of",
+        "areas_note": "§4 names no area for this package.",
+        "gap": "Its six depends_on entries at the commit all name packages outside this file; they stand in `depends_on_outside_fixture`. §8 E10, a further edge on 261031-1718, is unwritten at the commit, as the lane record says."
+      }
+    },
+    {
+      "name": "261101-1057-s1-runs-as-a-comparison-path-on-the-security-routes-r1-to-r4",
+      "group": "lane-amendment",
+      "status": "open",
+      "holder": null,
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [
+        "261101-1002-the-security-routes-r1-to-r4-are-built-out"
+      ],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": {
+          "record": "foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md",
+          "section": "the note `Amended: 261101-1150` at the foot of the record"
+        },
+        "state": "fusion-workbench/work-packages/261101-1057-s1-runs-as-a-comparison-path-on-the-security-routes-r1-to-r4/package.json at 56c19983a",
+        "edges_named_by": "the terminal edge on 261101-1002 the amendment names",
+        "areas_note": "Filed after the analysis, so §4 names no area for it. The amendment says its route-facing code in pkg/ai touches lane 3's area, to be named when the package is planned; no path is recorded."
+      }
+    },
+    {
+      "name": "261102-1042-vision-recovery-returns-at-upload-on-the-on-machine-route",
+      "group": "held-outside-lanes",
+      "status": "claimed",
+      "holder": "cb430046",
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": "neither foreign record: filed after both; it is in the file because its package.json at the commit reads claimed",
+        "state": "fusion-workbench/work-packages/261102-1042-vision-recovery-returns-at-upload-on-the-on-machine-route/package.json at 56c19983a",
+        "areas_note": "Filed after the analysis, so §4 names no area for it."
+      }
+    },
+    {
+      "name": "261103-1957-a-local-model-finds-the-briefs-exclusions-at-upload-and-selection-suppresses-the-excluded-frameworks",
+      "group": "held-outside-lanes",
+      "status": "claimed",
+      "holder": "0838bf45",
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": "neither foreign record: filed after both; it is in the file because its package.json at the commit reads claimed",
+        "state": "fusion-workbench/work-packages/261103-1957-a-local-model-finds-the-briefs-exclusions-at-upload-and-selection-suppresses-the-excluded-frameworks/package.json at 56c19983a",
+        "areas_note": "Filed after the analysis, so §4 names no area for it."
+      }
+    },
+    {
+      "name": "261104-0833-an-llm-rewrites-the-mandate-without-its-exclusions-and-is-compared-with-the-classifier",
+      "group": "held-outside-lanes",
+      "status": "claimed",
+      "holder": "d44c592f",
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": "neither foreign record: filed after both; it is in the file because its package.json at the commit reads claimed",
+        "state": "fusion-workbench/work-packages/261104-0833-an-llm-rewrites-the-mandate-without-its-exclusions-and-is-compared-with-the-classifier/package.json at 56c19983a",
+        "areas_note": "Filed after the analysis, so §4 names no area for it."
+      }
+    },
+    {
+      "name": "261104-1932-the-baseline-defects-beside-exclusion-detection-are-worked-off",
+      "group": "held-outside-lanes",
+      "status": "claimed",
+      "holder": "f85f8da1",
+      "claim_kept": null,
+      "outcome_class": null,
+      "depends_on": [],
+      "depends_on_outside_fixture": [],
+      "areas": [],
+      "shared_areas": [],
+      "_source": {
+        "named_by": "neither foreign record: filed after both; it is in the file because its package.json at the commit reads claimed",
+        "state": "fusion-workbench/work-packages/261104-1932-the-baseline-defects-beside-exclusion-detection-are-worked-off/package.json at 56c19983a",
+        "areas_note": "Filed after the analysis, so §4 names no area for it."
+      }
+    }
+  ],
+  "lanes": [
+    {
+      "id": "lane-1",
+      "title": "plan to run",
+      "checkout": "d44c592f",
+      "members": [
+        "261031-1718-the-plan-reaches-the-run-in-order-starts-cleanly-and-the-selection-follows-the-project-type",
+        "261101-1001-the-board-keeps-its-edges-a-hand-added-step-can-be-ordered-and-an-old-store-shows-its-frameworks",
+        "261002-1204-plan-und-board-zeigen-kadenz-takt-und-overlay"
+      ],
+      "_source": {
+        "record": "foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md",
+        "section": "`## Lanes`, the `### Lane 1` section: its heading for the checkout, its table rows 1 to 3 for the members",
+        "amended": "not touched by the amendment"
+      }
+    },
+    {
+      "id": "lane-2",
+      "title": "selection and catalog",
+      "checkout": "f85f8da1",
+      "members": [
+        "261026-2024-the-catalog-fields-and-chunk-budgets-become-build-time-configuration-and-are-measured-as-variants",
+        "260929-1420-in-cell-order-of-tied-frameworks-without-framework-id",
+        "261009-1001-welche-relationen-ein-leser-einschliesst-wird-zur-laufzeit-konfiguriert",
+        "261015-1034-inputs-and-outputs-are-free-text-on-every-framework-and-the-norm-says-so",
+        "260916-1447-be-auswahlqualitaet-den-s4-cluster-schliessen",
+        "260916-1447-be-s5-framework-auswahl-implementieren",
+        "261015-1126-a-framework-the-mandate-names-is-found-read-for-its-polarity-and-confirmed-by-the-consultant",
+        "261101-1057-s1-runs-as-a-comparison-path-on-the-security-routes-r1-to-r4"
+      ],
+      "_source": {
+        "record": "foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md",
+        "section": "`## Lanes`, the `### Lane 2` section: its heading for the checkout, its table rows 2 to 8 for the members",
+        "amended": "The note `Amended: 261101-1150` drops row 1, 260929-1302-liquidate-s1-naive-llm, and puts 261101-1057 `at the tail of Lane 2, after the S5 recalibration`. It is recorded last, after row 8; the wording also admits a place directly after the S5 row."
+      }
+    },
+    {
+      "id": "lane-3",
+      "title": "AI calls (intake, fill, routes)",
+      "checkout": "95433365",
+      "members": [
+        "260925-1450-vision-recovery-sendet-beim-upload-keine-seitenbilder",
+        "261014-1323-the-llm-classes-in-operation-three-user-visible-defects-the-offload-check-and-nine-follow-ups",
+        "260814-1228-corpus-analysis-staleness-signal",
+        "260916-1447-be-den-populationsmechanismus-messen",
+        "260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung",
+        "260916-1447-be-der-berater-steuert-die-befuellung-mit-eigener-anweisung",
+        "260923-0831-assessment-scoring-backend-scale-anchors-and-scoring-block",
+        "261101-1002-the-security-routes-r1-to-r4-are-built-out",
+        "261020-1619-the-ai-uses-are-tested-live-on-each-security-route"
+      ],
+      "_source": {
+        "record": "foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md",
+        "section": "`## Lanes`, the `### Lane 3` section: its heading for the checkout, its table rows 1 to 9 for the members",
+        "amended": "not touched by the amendment"
+      }
+    }
+  ],
+  "checkouts": {
+    "91762965": {
+      "alias": "glad-vale",
+      "_source": "fusion-workbench/shared/checkouts/91762965.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "95433365": {
+      "alias": "mild-forge",
+      "_source": "fusion-workbench/shared/checkouts/95433365.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "0838bf45": {
+      "alias": "keen-vale",
+      "_source": "fusion-workbench/shared/checkouts/0838bf45.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "394711f6": {
+      "alias": "mild-willow",
+      "_source": "fusion-workbench/shared/checkouts/394711f6.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "6060498a": {
+      "alias": "amber-kiln",
+      "_source": "fusion-workbench/shared/checkouts/6060498a.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "bdbeb54b": {
+      "alias": "ivory-ledge",
+      "_source": "fusion-workbench/shared/checkouts/bdbeb54b.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "cb430046": {
+      "alias": "sage-willow",
+      "_source": "fusion-workbench/shared/checkouts/cb430046.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "d44c592f": {
+      "alias": "hazel-harbor",
+      "_source": "fusion-workbench/shared/checkouts/d44c592f.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "ea89e647": {
+      "alias": "vivid-pier",
+      "_source": "fusion-workbench/shared/checkouts/ea89e647.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    },
+    "f85f8da1": {
+      "alias": "jade-jetty",
+      "_source": "fusion-workbench/shared/checkouts/f85f8da1.md at 56c19983a, the lines `**Checkout:**` and `**Alias:**`"
+    }
+  },
+  "log": [
+    {
+      "ts": "2026-11-04T22:57:57",
+      "event": "commit",
+      "checkout": "0838bf45",
+      "session_id": "00000000-0000-4000-8000-00000838bf45",
+      "detail": "7b7afeb34 Merge branch 'main'",
+      "_source": {
+        "row": "fusion-workbench/orchestrator-events.jsonl at 56c19983a, line 20293: the newest `commit` row by this checkout whose short hash is an ancestor of 56c19983a",
+        "committer_time": "2026-11-04T23:57:57+01:00, from git show -s --format=%cI 7b7afeb34",
+        "session_id": "synthetic: the eight characters of the checkout behind zero padding; the row at the commit carries a real one",
+        "left_out": "the row's `person` member, a name and an e-mail address",
+        "detail": "subject cut after the branch name; the rest names the remote's host and account"
+      }
+    },
+    {
+      "ts": "2026-11-03T15:14:14",
+      "event": "commit",
+      "checkout": "95433365",
+      "session_id": "00000000-0000-4000-8000-000095433365",
+      "detail": "e76b825ab docs(workbench): the populate floors are calibrated on arctic with the fill measure, as Lane 3's own package",
+      "_source": {
+        "row": "fusion-workbench/orchestrator-events.jsonl at 56c19983a, line 19890: the newest `commit` row by this checkout whose short hash is an ancestor of 56c19983a",
+        "committer_time": "2026-11-03T16:14:14+01:00, from git show -s --format=%cI e76b825ab",
+        "session_id": "synthetic: the eight characters of the checkout behind zero padding; the row at the commit carries a real one",
+        "left_out": "the row's `person` member, a name and an e-mail address",
+        "gap": "The plan step asks for `ts` at 2026-11-04 or later. The log at the commit holds no commit row by this checkout that late, and the row stands as the log holds it."
+      }
+    },
+    {
+      "ts": "2026-11-03T10:45:00",
+      "event": "commit",
+      "checkout": "cb430046",
+      "session_id": "00000000-0000-4000-8000-0000cb430046",
+      "detail": "0c1862c22 docs(workbench): the flipping darwin PDFium pin and the unfinishable dist-windows are filed",
+      "_source": {
+        "row": "fusion-workbench/orchestrator-events.jsonl at 56c19983a, line 19846: the newest `commit` row by this checkout whose short hash is an ancestor of 56c19983a",
+        "committer_time": "2026-11-03T11:45:00+01:00, from git show -s --format=%cI 0c1862c22",
+        "session_id": "synthetic: the eight characters of the checkout behind zero padding; the row at the commit carries a real one",
+        "left_out": "the row's `person` member, a name and an e-mail address",
+        "gap": "The plan step asks for `ts` at 2026-11-04 or later. The log at the commit holds no commit row by this checkout that late, and the row stands as the log holds it.",
+        "note": "Newer commit rows by this checkout, at lines 19949, 19954, 19955, 19999, 20004 (the newest at 2026-11-03T17:03:59), name hashes that resolve to no object in the clone (a6428c6d7, 83b0dcbbd, 87e9d0f19, 1aa4fd70b, a1de3bdeb), so none is an ancestor of 56c19983a and the row taken is the newest whose commit the ref holds."
+      }
+    },
+    {
+      "ts": "2026-11-04T11:10:42",
+      "event": "commit",
+      "checkout": "d44c592f",
+      "session_id": "00000000-0000-4000-8000-0000d44c592f",
+      "detail": "eaec87fb9 docs(plan): the mandate's passage read is measured against the classifier, up to Kai's route ruling",
+      "_source": {
+        "row": "fusion-workbench/orchestrator-events.jsonl at 56c19983a, line 20163: the newest `commit` row by this checkout whose short hash is an ancestor of 56c19983a",
+        "committer_time": "2026-11-04T12:10:41+01:00, from git show -s --format=%cI eaec87fb9",
+        "session_id": "synthetic: the eight characters of the checkout behind zero padding; the row at the commit carries a real one",
+        "left_out": "the row's `person` member, a name and an e-mail address"
+      }
+    },
+    {
+      "ts": "2026-11-04T20:20:44",
+      "event": "commit",
+      "checkout": "f85f8da1",
+      "session_id": "00000000-0000-4000-8000-0000f85f8da1",
+      "detail": "c3208b7ed docs(simulation): selection driven with the Horizon reward off",
+      "_source": {
+        "row": "fusion-workbench/orchestrator-events.jsonl at 56c19983a, line 20290: the newest `commit` row by this checkout whose short hash is an ancestor of 56c19983a",
+        "committer_time": "2026-11-04T21:20:43+01:00, from git show -s --format=%cI c3208b7ed",
+        "session_id": "synthetic: the eight characters of the checkout behind zero padding; the row at the commit carries a real one",
+        "left_out": "the row's `person` member, a name and an e-mail address"
+      }
+    }
+  ]
+}

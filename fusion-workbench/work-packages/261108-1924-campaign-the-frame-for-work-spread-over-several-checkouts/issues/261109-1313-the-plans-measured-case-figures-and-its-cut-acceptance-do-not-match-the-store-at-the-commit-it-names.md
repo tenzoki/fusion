@@ -1,0 +1,18 @@
+The plan's measured-case figures and its `cut` acceptance do not match the store at the commit it names
+---
+Plan step 6 describes the measured-case fixture as 23 lane-analysis packages plus five further held ones, and step 15's acceptance expects `cut --checkouts 3` over that fixture to print hand-off rows out of `261031-1718-…`. Read at `56c19983a`, the consuming project's store holds neither as stated: the 28 packages compose differently, and `261031-1718-…` is `done`, so a cut that reads live packages only never sees the source of the two hand-offs.
+---
+**Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
+
+**Evidence.** Reported by the data-implementer on plan step 6; every source was read through `git show 56c19983a:<path>` in the consuming project's clone. The orchestrator checked the fixture's counts (`28 3 10`) and its top-level keys, not the foreign store.
+
+- **The 28.** The quality measure `foreign:ax-k2-3:260916-1447-be-ein-qualitaetsmass-fuer-die-befuellung` is one of the five held packages and also one of the 23 of `foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md` §3, so "23 plus five" is 27 distinct packages. The 28th is `261101-1057-…`, which the amended lane 2 names and §3 does not. The fixture tells the three sets apart by a `group` key.
+- **States.** Twelve packages read otherwise in their `package.json` than in the two foreign records, among them `261031-1718-…` (`done`, where the records have it claimed), `260929-1302-…` (`dropped`) and `261026-2024-…` (`paused`, no claim). The fixture carries the `package.json` state and names each disagreement.
+- **Edges.** Seven written edges point outside the 28 and stand in `depends_on_outside_fixture`, so `depends_on` is closed over the file; in a workbench built from the fixture `261026-2024-…` therefore waits on nothing.
+- **Areas.** The fixture splits §4 into `areas` (rows inside a package's own lane) and `shared_areas` (the rows §4 marks cross-lane: project header, boot wiring, ontology stats, API contract and three `pkg/ai` files). The step asked for one list. In one list the cross-lane files join all three heavy code areas into one overlap group, and step 15's rule that overlapping areas always share a lane would then put everything into one lane.
+- **The cut's acceptance.** *Inference by the executor, no cut exists yet:* with `261031-1718-…` `done` the two `handoff=` rows step 15 names have no live source, and `260814-1228-…`, whose only lane-internal relation is its edge on that package, would be pulled into lane 1.
+- **The log.** Two of the five `commit` rows are dated 2026-11-03, earlier than the step's "2026-11-04 or later", because the log at the commit holds nothing newer for those checkouts that stands on the head.
+
+**Acceptance.** Steps 6, 14 and 15 and the first stop clause that names the measured case are corrected to what the fixture holds: how the 28 compose, which list the cut reads (`areas` alone, or the union, and what the acceptance is under each), and a hand-off acceptance that is reachable from the states at `56c19983a`, or a second, stated input (the states as the lane analysis saw them on 2026-10-31) if the spec's acceptance criterion is to be reproduced as written. The spec's C2 criterion on the measured case is checked against the same facts and the deviation named if one remains.
+
+**Cross-references:** `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md` (steps 6, 14, 15, `## Where this work stops`), `261108-2135-spec-campaign-the-frame-for-work-spread-over-several-checkouts.md` (C2, the measured case)
