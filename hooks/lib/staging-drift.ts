@@ -101,6 +101,8 @@
  *     carries the fault code `pair-split` (`markSplitPairs`). Both are read
  *     from paths; no control file is opened. A migration's own directory,
  *     `archive/migrations/<id>/`, is `record` as one subtree (`MIGRATIONS_PREFIX`).
+ *     A campaign's `campaigns/<campaign_id>/campaign.json` is a `record` by its
+ *     place and name: it has no narrative, so the pair rule never reaches it.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
  *     R2 and R3 (the JSON manifest and the codec's journal among them), plus
@@ -148,6 +150,8 @@ import { git, GIT_TIMED_OUT, GIT_TIMEOUT_MS } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { runsOnPrior } from "./temp-paths.js";
 import {
+  CAMPAIGN_RECORD,
+  CAMPAIGN_STORE,
   CITED_CONTAINER_ROOTS,
   isControlFile,
   JSON_STATE_DIR,
@@ -541,6 +545,15 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   // store segment (`rules/fusion-workbench-conventions.md` `## Work packages`).
   if (inContainer && segments.length === 3 && segments[2] === `${segments[1]}.md`) {
     return { klass: "record", why: "a work package's own record" };
+  }
+  // The frame over the units of work: `campaigns/<campaign_id>/campaign.json`
+  // and nothing else under that root. It belongs to no item and has no
+  // narrative, so neither the pair test above nor the store test below owns it.
+  if (segments.length === 3 && segments[0] === CAMPAIGN_STORE && name === CAMPAIGN_RECORD) {
+    return {
+      klass: "record",
+      why: "a campaign record, one writer, travels (rules/workbench-tracking.md, class R1)",
+    };
   }
   for (const store of STORES) {
     if (segments.includes(store)) {

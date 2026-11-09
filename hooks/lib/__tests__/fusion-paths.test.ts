@@ -222,6 +222,22 @@ describe("bin/fusion-paths", () => {
       });
     }, CASE_TIMEOUT);
 
+    it("gives a skill body naming the campaign keys the campaign store whole, claimed item or not", () => {
+      // A campaign belongs to no item, so the Origin Rule decides nothing: OUT_ISSUE,
+      // the control, follows the claim into the container and the two keys do not.
+      // The fixture is this scratch repo's own skill, read by the work-tree preference.
+      withScope((p, mine) => {
+        mkdirSync(join(p.root, ".claude-plugin"));
+        writeFileSync(join(p.root, ".claude-plugin", "plugin.json"), '{ "name": "fusion" }\n');
+        mkdirSync(join(p.root, "skills", "fixture"), { recursive: true });
+        writeFileSync(join(p.root, "skills", "fixture", "SKILL.md"), "Write $OUT_CAMPAIGN, list $SCAN_CAMPAIGNS, file to $OUT_ISSUE.\n");
+        const keys = () => { const r = run(p.root, "fixture"); expect(r.status, r.stderr).toBe(0); return r.stdout.trim().split("\n").slice(1); };
+        expect(keys()).toEqual(["OUT_ISSUE=shared/issues", "OUT_CAMPAIGN=campaigns", "SCAN_CAMPAIGNS=campaigns"]);
+        claimAlpha(p, mine);
+        expect(keys()).toEqual([`OUT_ISSUE=work-packages/${ALPHA}/issues`, "OUT_CAMPAIGN=campaigns", "SCAN_CAMPAIGNS=campaigns"]);
+      });
+    }, CASE_TIMEOUT);
+
     it("takes the second argument over the claim", () => {
       // How a dispatcher sends an agent into an item this checkout does not
       // hold. The claimed item exists and is deliberately not the answer.
@@ -550,8 +566,8 @@ describe("bin/fusion-paths", () => {
       const bin = stage();
       const source = readFileSync(fusionPaths, "utf-8");
       const patched = source.replace(
-        /^       SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM"$/m,
-        '       SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM OUT_NOVALUE"',
+        /^       SCAN_ANALYSES SCAN_PACKAGES SCAN_CAMPAIGNS SCAN_FORUM"$/m,
+        '       SCAN_ANALYSES SCAN_PACKAGES SCAN_CAMPAIGNS SCAN_FORUM OUT_NOVALUE"',
       );
       expect(patched, "ORDER injection did not apply — update the anchor").not.toBe(source);
       writeFileSync(join(bin, "fusion-paths"), patched);

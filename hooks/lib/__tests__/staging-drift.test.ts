@@ -526,6 +526,16 @@ describe("staging drift: the JSON surfaces, by path alone", () => {
     expect(classify("stilwerk/package.json", "").klass).toBe("unclassified");
   });
 
+  it("reads campaigns/<campaign_id>/campaign.json as a record of class R1, and nothing else by that name or under that root", () => {
+    // The store, the classifier and the tracking rule's R1 row move in one commit, so the row is read here too.
+    expect(classify("campaigns/261108-2301-a/campaign.json", "")).toEqual({ klass: "record", why: expect.stringContaining("class R1") });
+    for (const p of ["campaigns/campaign.json", "campaigns/261108-2301-a/notes.md", "campaigns/261108-2301-a/x/campaign.json", "shared/campaigns/261108-2301-a/campaign.json", `${PKG}/campaign.json`]) {
+      expect(classify(p, "").klass, p).toBe("unclassified");
+    }
+    const r1 = readFileSync(resolve(pluginRoot, "rules", "workbench-tracking.md"), "utf-8").split("\n").find((l) => l.startsWith("| **R1."));
+    expect(r1?.split("|")[2], "the class R1 row of `## The four classes`").toContain("`campaigns/`");
+  });
+
   it("names a container's package.json left unstaged as a fault", () => {
     withJson((project) => {
       write(project.root, `fusion-workbench/${PKG}/package.json`, '{"v":2}\n');

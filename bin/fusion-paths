@@ -92,6 +92,11 @@
 #     consultations, memos and messages answer to nobody's directive. And the
 #     container store IS the work packages, so OUT_PACKAGES and SCAN_PACKAGES
 #     name it whole rather than naming anything inside one container.
+#   - OUT_CAMPAIGN and SCAN_CAMPAIGNS name the campaign store whole, the same
+#     value with or without an item in scope. A campaign is a frame over work
+#     packages and belongs to no item, so neither a container nor shared/ is a
+#     candidate for it and the Origin Rule has nothing to decide. Its record is
+#     <campaign_id>/campaign.json beneath that store.
 #   - SCAN_HISTORY is LEGACY. The history store is closed to writes
 #     (rules/fusion-workbench-conventions.md "## Session history") and has no
 #     OUT_ key: the arm went once no shipped prompt named it, so a prompt that
@@ -304,20 +309,21 @@ WORKBENCH="$PROJECT_ROOT/fusion-workbench"
 CONTAINER_STORE=''
 PLAN_STORE=''
 CONSULT_STORE=''
+CAMPAIGN_STORE=''
 LEGACY_CONTAINER_STORE=''
 LEGACY_PLAN_STORE=''
 LEGACY_CONSULT_STORE=''
 if [ -x "$SCRIPT_DIR/fusion-stores" ]; then
   while IFS='=' read -r key val; do
     case "$key" in
-      CONTAINER_STORE|PLAN_STORE|CONSULT_STORE|LEGACY_CONTAINER_STORE|LEGACY_PLAN_STORE|LEGACY_CONSULT_STORE)
+      CONTAINER_STORE|PLAN_STORE|CONSULT_STORE|CAMPAIGN_STORE|LEGACY_CONTAINER_STORE|LEGACY_PLAN_STORE|LEGACY_CONSULT_STORE)
         printf -v "$key" '%s' "$val" ;;
     esac
   done <<EOF
 $("$SCRIPT_DIR/fusion-stores")
 EOF
 fi
-if [ -z "$CONTAINER_STORE" ] || [ -z "$PLAN_STORE" ] || [ -z "$CONSULT_STORE" ]; then
+if [ -z "$CONTAINER_STORE" ] || [ -z "$PLAN_STORE" ] || [ -z "$CONSULT_STORE" ] || [ -z "$CAMPAIGN_STORE" ]; then
   echo "fusion-paths: internal error — $SCRIPT_DIR/fusion-stores is missing or did not name the stores. The plugin install is incomplete; this is not a fault in your workbench." >&2
   exit 4
 fi
@@ -502,6 +508,9 @@ value_for() {
     # own container, so the pair names the store and never one directory in it.
     OUT_PACKAGES)                 printf '%s' "$CONTAINER_STORE" ;;
     SCAN_PACKAGES)                packages_value ;;
+    # The campaign store, whole and unconditional: a campaign belongs to no
+    # item, so OUT_BASE does not enter and both keys carry the one value.
+    OUT_CAMPAIGN|SCAN_CAMPAIGNS)  printf '%s' "$CAMPAIGN_STORE" ;;
     # Three kinds have a write key and no read key, and it is the same
     # criterion every time: a key set restates the prompts, so a key no prompt
     # names restates nothing. Nothing reads memos — a memo is written for the
@@ -530,9 +539,9 @@ value_for() {
 # 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
-       OUT_DISCUSSION OUT_CONSULT OUT_MEMO OUT_PACKAGES OUT_FORUM
+       OUT_DISCUSSION OUT_CONSULT OUT_MEMO OUT_PACKAGES OUT_CAMPAIGN OUT_FORUM
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-       SCAN_ANALYSES SCAN_PACKAGES SCAN_FORUM"
+       SCAN_ANALYSES SCAN_PACKAGES SCAN_CAMPAIGNS SCAN_FORUM"
 
 has_key() {
   local want="$1" k

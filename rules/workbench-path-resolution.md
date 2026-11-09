@@ -96,8 +96,8 @@ matching read key name the same *kind*; what each carries depends on whether a w
 in scope. An `OUT_*` resolves under that item's container, or under `shared/` when none is.
 A `SCAN_*` names **both** stores, container first and the shared one second, and collapses
 to the shared store alone when nothing is in scope. `<scope>` below stands for whichever
-base the resolver chose, so one row states both readings. Four rows carry a literal instead,
-and each says why it has no second candidate. Until v13.0.0, which closed the v12 window, a
+base the resolver chose, so one row states both readings. A row whose value has no `<scope>`
+carries a literal instead, and says why it has no second candidate. Until v13.0.0, which closed the v12 window, a
 `SCAN_*` also listed a renamed store's v11 name; no `OUT_*` ever named one.
 
 | Key | Read key | Value | Notes |
@@ -112,6 +112,7 @@ and each says why it has no second candidate. Until v13.0.0, which closed the v1
 | `OUT_DISCUSSION` | — | `<scope>/discussions` | Discussion-record writes. No read key, for the reason the `OUT_MEMO` row gives: no prompt reads past discussions in this version, so nothing would name a `SCAN_DISCUSSIONS`. Never defined rather than retired. |
 | `OUT_CONSULT` | — | `shared/consultations` | Literal: a consultation answers to nobody's directive, so no container holds one. `SCAN_CONSULT` was retired on 2026-09-10 with its last consumer; the store and its reports stay. |
 | `OUT_PACKAGES` | `SCAN_PACKAGES` | `work-packages` | Literal, and it is the container store itself rather than a directory inside one container. A work package's record lives in its own container (`rules/fusion-workbench-conventions.md` `## Work packages`), so the pair names the store whole and a consumer walks it at depth 2. |
+| `OUT_CAMPAIGN` | `SCAN_CAMPAIGNS` | `campaigns` | Literal, and the campaign store whole, the way the package pair names its own. A campaign is a frame over work packages and belongs to no item (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`), so neither a container nor `shared/` is a candidate and the Origin Rule has nothing to decide: both keys carry this one value whether or not an item is in scope. The record is `<campaign_id>/campaign.json` beneath it. |
 | `OUT_FORUM` | `SCAN_FORUM` | `shared/forum` | Literal: a message is addressed to another checkout, not to a unit of work. |
 | `OUT_MEMO` | — | `shared/memos` | Literal, for the same reason. A memo is written for the user, so nothing reads memos and no read key exists. |
 

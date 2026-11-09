@@ -101,6 +101,8 @@
  *     carries the fault code `pair-split` (`markSplitPairs`). Both are read
  *     from paths; no control file is opened. A migration's own directory,
  *     `archive/migrations/<id>/`, is `record` as one subtree (`MIGRATIONS_PREFIX`).
+ *     A campaign's `campaigns/<campaign_id>/campaign.json` is a `record` by its
+ *     place and name: it has no narrative, so the pair rule never reaches it.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the tracked-but-machine-written classes
  *     R2 and R3 (the JSON manifest and the codec's journal among them), plus

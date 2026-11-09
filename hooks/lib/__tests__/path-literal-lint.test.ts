@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 import {
+  CAMPAIGN_STORE,
   CONTAINER_STORE,
   LEGACY_STORES,
   RECORD_STORES,
@@ -20,8 +21,8 @@ import {
 // ---------------------------------------------------------------------------
 
 // The artifact-store folders, composed from `hooks/lib/stores.ts` rather than
-// listed here: the live stores (the layout tree's, `checkouts` included) and the
-// container store, the v11 record-store names, the legacy backlog
+// listed here: the live stores (the layout tree's, `checkouts` included), the
+// container store and the campaign store, the v11 record-store names, the legacy backlog
 // store, and the three retired pre-v4 review folders. A kind's location comes
 // from `fusion-paths` ($OUT_* / $SCAN_*), never from a literal.
 //
@@ -33,6 +34,7 @@ import {
 const TYPE_FOLDERS: readonly string[] = [
   ...RECORD_STORES,
   CONTAINER_STORE,
+  CAMPAIGN_STORE,
   ...V11_STORE_NAMES.filter((n) => n !== "circles"),
   ...LEGACY_STORES,
   ...RETIRED_REVIEW_FOLDERS,
@@ -191,6 +193,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["artifact segment nested in a circle path", "read circles/260716-x/reviews/y.md"],
     ["the backlog store", "file the idea at shared/backlog/260812-1720_o_an-idea.md"],
     ["the container store", "open work-packages/260716-x/ first"],
+    ["the campaign store", "read campaigns/261108-2301-x/campaign.json first"],
     ["the plans store", "skim plans/*.md for open steps"],
     ["the consultations store", "write the report to shared/consultations/<file>.md"],
     ["a v11 store name", "the report sits in consult/<file>.md"],
@@ -316,8 +319,9 @@ describe("path-literal lint: the store list is the layout tree's", () => {
     expect(fromTree, "RECORD_STORES and the layout tree disagree: edit both in one commit").toEqual([...RECORD_STORES]);
   });
 
-  it("CONTAINER_STORE is the tree's first root, and WINDOW_LEGACY_NAMES its window subsection", () => {
+  it("CONTAINER_STORE is the tree's first root, CAMPAIGN_STORE its campaign root, and WINDOW_LEGACY_NAMES its window subsection", () => {
     expect(tree.match(/^fusion-workbench\/\n├── ([a-z-]+)\//m)?.[1]).toBe(CONTAINER_STORE);
+    expect(tree.match(/^├── ([a-z-]+)\/[^\n]*\n│   └── <campaign_id>\/campaign\.json$/m)?.[1], "the tree's campaign root").toBe(CAMPAIGN_STORE);
     const window = tree.match(/^### Transition window[^\n]*\n([\s\S]*?)(?=^##)/m)?.[1] ?? "";
     const rows = [...window.matchAll(/^- `([a-z-]+)\/`: `([a-z-]+)\/`$/gm)].map((m) => [m[1], m[2]]);
     expect(Object.fromEntries(rows), "the window table and the tree's subsection disagree").toEqual({ ...WINDOW_LEGACY_NAMES });

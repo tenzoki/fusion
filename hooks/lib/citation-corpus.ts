@@ -114,8 +114,8 @@ export function unreadControls(unread: Array<{ path: string; problem: string | {
  * repairing its citations would rewrite history rather than correct it.
  * `stashes/` (the removed Circle stash skills) and `.migration-v2-backup/` (the
  * retired `/fusion:migrate-workbench-v2`'s rollback copy) are copy trees of the
- * same layout. The pair is authored in `rules/fusion-workbench-conventions.md`
- * ("Two legacy stores are absent from this tree on purpose"), and
+ * same layout. The pair is authored in `rules/workbench-tracking.md`
+ * `## Frozen stores the tree no longer names`, and
  * `skills/cadence/SKILL.md` `### 3. Scan git and the workbench tree — once` is
  * the precedent this list follows. `stilwerk/` is on that list as configuration
  * and holds no `.md`, so it is not carried here.

@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
-# fusion-stores — the workbench store names v12 renamed, for the bash helpers
+# fusion-stores — the workbench store names a bash helper reads rather than spells
 #
 # Usage: fusion-stores
 #
-# Takes no arguments. Prints three KEY=value lines on stdout, in this order, and
+# Takes no arguments. Prints these KEY=value lines on stdout, in this order, and
 # exits 0; any argument is exit 1 with nothing on stdout.
 #
 #   CONTAINER_STORE         the container store, work-packages/<dir>/ per package
 #   PLAN_STORE              the spec and plan store
 #   CONSULT_STORE           the consultation store
+#   CAMPAIGN_STORE          the campaign store, campaigns/<campaign_id>/campaign.json
+#                           per campaign, at the workbench root
+#
+# The first three are the stores v12 renamed, which is what this helper was
+# written for. The fourth was never renamed: it is here because the campaign
+# store is a root entry of its own, and a helper that names it literally would
+# be a second definition of the layout (decision
+# 261108-2301-where-does-the-campaign-record-live-in-the-workbench-layout.md).
 #
 # The bash copy of one table. The definition is the layout tree in
 # rules/fusion-workbench-conventions.md ("## fusion-workbench Layout"); hooks/lib/stores.ts is the
@@ -32,4 +40,5 @@ cat <<'STORES'
 CONTAINER_STORE=work-packages
 PLAN_STORE=plans
 CONSULT_STORE=consultations
+CAMPAIGN_STORE=campaigns
 STORES

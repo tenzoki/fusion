@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
-import { CONTAINER_STORE, RECORD_STORES, WINDOW_LEGACY_NAMES } from "../stores.js";
+import { CAMPAIGN_RECORD, CAMPAIGN_STORE, CONTAINER_STORE, RECORD_STORES, WINDOW_LEGACY_NAMES } from "../stores.js";
 import { EVIDENCE_SUFFIX, isControlFile, JSON_STATE_DIR, narrativeOf, PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX, WORKBENCH_MANIFEST } from "../stores.js";
 
 // `bin/fusion-stores` is the bash copy of the table in `hooks/lib/stores.ts`, legacy entries included.
@@ -11,9 +11,11 @@ it("bin/fusion-stores prints the names hooks/lib/stores.ts holds, the window's l
   const r = spawnSync(join(pluginRoot, "bin", "fusion-stores"), { encoding: "utf-8" });
   expect(r.status, r.stderr).toBe(0);
   const out = Object.fromEntries(r.stdout.trim().split("\n").map((l) => l.split("=")));
-  const kinds: Record<string, string> = { CONTAINER: CONTAINER_STORE, PLAN: "plans", CONSULT: "consultations" };
+  const kinds: Record<string, string> = { CONTAINER: CONTAINER_STORE, PLAN: "plans", CONSULT: "consultations", CAMPAIGN: CAMPAIGN_STORE };
   for (const [k, v] of Object.entries(kinds)) expect(out[`${k}_STORE`], k).toBe(v);
+  expect(Object.keys(out), "the four lines, in the header's order").toEqual(Object.keys(kinds).map((k) => `${k}_STORE`));
   expect(RECORD_STORES).toEqual(expect.arrayContaining([out.PLAN_STORE, out.CONSULT_STORE]));
+  expect(RECORD_STORES, "the campaign store is a root entry, not a store under shared/").not.toContain(out.CAMPAIGN_STORE);
   const legacy = Object.entries(kinds).filter(([k]) => out[`LEGACY_${k}_STORE`]).map(([k, v]) => [v, out[`LEGACY_${k}_STORE`]]);
   expect(Object.fromEntries(legacy)).toEqual({ ...WINDOW_LEGACY_NAMES });
 });
@@ -29,4 +31,6 @@ it("holds the JSON surface names equal to the codec's, and pairs each control fi
   expect(["work-packages/d/package.json", "shared/issues/a.record.json", "r/a.evidence.json", "r/a.2.evidence.json", "r/a.02.evidence.json", "package.json", "a.md"].map((p) => narrativeOf(p)))
     .toEqual(["work-packages/d/d.md", "shared/issues/a.md", "r/a.md", "r/a.md", "r/a.02.md", null, null]);
   expect(["package.json", "a.record.json", "a.evidence.json", "a.json", "a.md"].map(isControlFile)).toEqual([true, true, true, false, false]);
+  // The campaign path is the schema's own statement, read as text for the same reason.
+  expect(readFileSync(join(pluginRoot, "codec", "schemas", "campaign.schema.json"), "utf-8")).toContain(`${CAMPAIGN_STORE}/<id>/${CAMPAIGN_RECORD}`);
 });

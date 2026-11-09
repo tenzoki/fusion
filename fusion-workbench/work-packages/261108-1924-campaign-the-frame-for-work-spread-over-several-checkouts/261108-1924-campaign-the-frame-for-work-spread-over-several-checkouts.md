@@ -36,4 +36,8 @@ The user's words, verbatim (2026-11-08, after approving the specification at its
 
 The user's words, verbatim (2026-11-09, after the plan was bound): „ok, alles wie empfohlen, autonom weiter“ — every one of the three decision records the planner filed is answered with its recommended option 1: `261108-2301-where-does-the-campaign-record-live-in-the-workbench-layout.md` (root entry `campaigns/<id>/campaign.json`, class R1, one writer), `261108-2301-which-value-does-a-claude-side-writer-put-in-a-prior-revision-field.md` (interim rule: SHA-256 over fusion's canonical JSON, Prior asked in request 80), `261108-2301-how-does-a-working-session-rebase-pull-over-the-log-row-the-lock-just-appended.md` (commit, fetch, read at the fetched ref, append the row, settle the log, rebase, push; no stash).
 
+## Where the work lands until 13.4.4 is tagged
+
+Request 79 in `codec/fixtures/prior/REQUESTS.md` tells Prior that until a tag `main` takes no commit to a shipped file after `438df715` other than that file; no tag `v13.4.4` exists and no answer to 79 is recorded. Plan steps 2 to 8 change shipped files. Put to the user on 2026-11-09 with three options (build on a branch `campaign` and leave `main` untouched until the tag; build on `main` and give the statement up; stop until the tag or Prior's answer), the user answered „1“: the work from plan step 2 on lands on the branch `campaign`, cut from `bcb7133d`, and is brought to `main` after the tag.
+
 **Cross-references:** `261105-1156-campaign-as-the-frame-for-work-spread-over-several-checkouts.md`, `foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md`, `foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md`

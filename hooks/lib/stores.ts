@@ -12,8 +12,9 @@
  * The definition is the layout tree in `rules/fusion-workbench-conventions.md`
  * `## fusion-workbench Layout`, and `hooks/lib/__tests__/path-literal-lint.test.ts`
  * parses that tree on every run and requires `CONTAINER_STORE`,
- * `RECORD_STORES` and `WINDOW_LEGACY_NAMES` to equal it, so a store added to
- * the tree without a line here, or the reverse, fails the suite.
+ * `CAMPAIGN_STORE`, `RECORD_STORES` and `WINDOW_LEGACY_NAMES` to equal it, so
+ * a store added to the tree without a line here, or the reverse, fails the
+ * suite.
  *
  * Each consumer composes its own set from these arrays and says which it
  * takes; none carries a literal of its own.
@@ -24,6 +25,16 @@ import { join } from "node:path";
 
 /** The container store: one directory per work package, at the workbench root. */
 export const CONTAINER_STORE = "work-packages";
+
+/**
+ * The campaign store: one directory per campaign, at the workbench root beside
+ * the container store. NOT a record store and never under `shared/`: a campaign
+ * is a frame over work packages and belongs to no item, so no container and no
+ * shared store is a candidate for it (decision
+ * 261108-2301-where-does-the-campaign-record-live-in-the-workbench-layout.md,
+ * option 1).
+ */
+export const CAMPAIGN_STORE = "campaigns";
 
 /** The stores the layout tree names under `shared/`, in the tree's order. */
 export const RECORD_STORES = [
@@ -115,6 +126,13 @@ export const JSON_STATE_DIR = ".json-state";
 
 /** A package's control file, in its container. */
 export const PACKAGE_CONTROL = "package.json";
+
+/**
+ * A campaign's record, `<CAMPAIGN_STORE>/<campaign_id>/campaign.json`. It has
+ * no narrative beside it, so `isControlFile` and `narrativeOf` do not know it:
+ * a consumer asks for it by this name and its place.
+ */
+export const CAMPAIGN_RECORD = "campaign.json";
 
 /** The suffix of an issue, plan, discussion or decision record's control file. */
 export const RECORD_CONTROL_SUFFIX = ".record.json";
