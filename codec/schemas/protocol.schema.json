@@ -507,9 +507,9 @@
         "path": {
           "allOf": [
             { "$ref": "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
-            { "type": "string", "pattern": "(^|/)(package|[^/]+\\.record|[^/]+\\.evidence)\\.json$" }
+            { "type": "string", "pattern": "(^|/)(package|campaign|[^/]+\\.record|[^/]+\\.evidence)\\.json$" }
           ],
-          "description": "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json. The pattern also admits an evidence record's file, <store>/<name>.evidence.json, a correction's <basename>.<n>.evidence.json included; inspect's kinds say whether the codec reads that kind."
+          "description": "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json. The pattern also admits an evidence record's file, <store>/<name>.evidence.json, a correction's <basename>.<n>.evidence.json included; inspect's kinds say whether the codec reads that kind. It admits a campaign's file too, campaigns/<campaign_id>/campaign.json, as a read-only selector: show and validate read the campaign it names, as list does through its walk, though inspect's kinds does not name the kind campaign, and every operation that carries expected_revision refuses a campaign unsupported-format/not-a-pair-kind, since the codec writes no campaign."
         }
       }
     }

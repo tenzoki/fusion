@@ -1556,6 +1556,24 @@
     "note": "claim with takeover (request 62): previous_claim the standing claim as show returned it, source the user's word held in a decision record, expected_revision the inspected revision, claim the new holder."
   },
   {
+    "path": "valid/protocol/show-campaign.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "The record selector admits a campaign's file, campaigns/<campaign_id>/campaign.json, as a read-only selector: show reads it as kind campaign."
+  },
+  {
+    "path": "valid/protocol/validate-campaign.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "validate of one record named by a campaign's file: the campaign is held to fusion.campaign/v1 and to the workbench id."
+  },
+  {
+    "path": "valid/protocol/transition-campaign-path.json",
+    "schema": "urn:fusion:schema:fusion.protocol/v1",
+    "expect": "valid",
+    "note": "transition naming a campaign's file is valid at the schema level only: one record_selector serves every branch, so the schema does not express the refusal. The operation refuses it unsupported-format/not-a-pair-kind, as every operation carrying expected_revision does on a campaign; the codec writes no campaign."
+  },
+  {
     "path": "invalid/protocol/inspect-unknown-key.json",
     "schema": "urn:fusion:schema:fusion.protocol/v1",
     "expect": "invalid",
