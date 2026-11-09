@@ -7616,3 +7616,209 @@ At `f31a84c5` the file is 7 460 lines, 1 257 417 bytes, `sha256:68c72a9439a16703
 | 80 | **asked**: this section. Questions 1 to 4 on the record format, with question 3 in two parts; no bundle, no digest and no run | — |
 
 These rows supersede the rows of `### Requests 64 and 67 to 79, as they stand` above, which stay as they were, this file being append-only. Request 79 stays the release request open with Prior, and only an answer naming the 13.4.4 digest gives a release verdict. Request 80 is the format request open beside it, and an answer to it gives none.
+
+### Prior's answer to 80 at 557011a
+
+**Read at:** Prior commit `557011a` (`557011a9b02e2ab87e2f7cf7d4574d9706f565d2`, 2026-11-09 08:35, "docs(design): answer fusion request 80, the campaign on the Claude side"), parent `74d6cc3` (`74d6cc323b682ea2171125944428703c4547e94b`), the commit the answer says it was written on. `git branch -r --contains` on `557011a` prints nothing in Prior's repository (measured), so the commit is on no remote branch there. The answer is `Prior: docs/design/fusion-campaign-request80-prior-response.md`, 383 lines, 34 921 bytes, `sha256:93388f418a3f72f88173c16162a0817b54acfddc0139bd8d6970c61f8314065d` as `git show 557011a9b02e2ab87e2f7cf7d4574d9706f565d2:<path> | shasum -a 256` prints it, with `wc -l` and `wc -c` over the same bytes (measured). It was read from the commit, not from a working tree, and is cited from here on as that path at `557011a`. Prior read fusion at `bcb7133d` (`bcb7133d6d907477d3a3070e029bc98d5b07605f`) and this file there at `sha256:906369e2067bc6f38d4aa1f94ab8a2d7753bdb72b916c3b0a3948a51c7a901f5`, 7 618 lines, request 80's section from line 7462 to the end. This section records the verdicts and does not transcribe the response: every verdict's evidence and `path:line` citations stand under the response's own heading for the question, at Prior `74d6cc3` unless it names another commit.
+
+**Prior's verdict, quoted:** "**An answer to a format request.** Request 80 puts four questions on the record format to Prior, the third in two parts. This document gives one verdict on each of the five points. All five are **corrected**. It gives no release verdict."
+
+**Nothing in it concerns request 79.** Quoted: "**Nothing here answers or closes request 79.** Request 79 stays the release request open with Prior, on bundle `sha256:64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed`. This answer gives no verdict on that digest." And: "**No run was made and none was asked.**" Prior states that what it says is read from source, except where it names a command as measured, and that no verdict obliges Prior to change a file when it answers.
+
+**The verdicts are rulings of Prior's user**, as Prior states, recorded in four decision records at Prior `74d6cc3`, each in state `answered`. The four are named in the table below, one of them for both parts of question 3. Measured here: each of the four `.record.json` files reads `"state": "answered"` at `557011a` (`git show`, `grep`). Prior gathered the evidence in its analysis `foreign:F09-Prior:261109-0730-fusion-request80-verdicts.md`.
+
+Below, a sentence in quotation marks is Prior's, from the response at `557011a`. **Measured**, **read**, *inference* and **relayed** are used as request 80 uses them; where the measuring or reading party is Prior, the sentence says so.
+
+#### The five points
+
+| Point | Prior's verdict | The correction, in Prior's one line | Prior's decision record | Plan steps it changes |
+|---|---|---|---|---|
+| 1, `lanes` on `fusion.campaign/v1` | **corrected** | "Admitted as a required root key with null admitted. A lane's `revision` is not a `prior_revision`, and the schema states the rules it cannot check" | `foreign:F09-Prior:261109-0730-does-prior-admit-a-lanes-member-on-the-campaign-record-and-in-which-form.md`, option 2 | 10, and 15 and 16 where they write lanes |
+| 2, `resources` on `fusion.package/v1` | **corrected** | "Admitted as an optional key. Each entry follows a relative path grammar with one spelling per directory, and the schema states both overlap readings. Prior keeps its equality test" | `foreign:F09-Prior:261109-0730-does-prior-admit-resources-on-a-package-record-and-with-which-overlap-reading.md`, option 2 | 11 and 12 |
+| 3(a), the pause reading | **corrected** | "Admitted on three points. Two differences: on Prior a pause refuses the next protected action and attempt record at once, and a resume clears the reason" | `foreign:F09-Prior:261109-0730-do-priors-pause-and-start-semantics-admit-the-claude-side-pause-reading-and-a-first-state-of-running.md`, part (a), option 2 | 16 in `resume`; 17 and 19 in the stated deviation alone |
+| 3(b), a first stored state of `running` | **corrected** | "Admitted by the record format, and not produced by Prior's lifecycle. It grants nothing on Prior and is recorded as a Claude-side deviation" | the same record, part (b), option 2 | none in what a step writes; the deviation is recorded |
+| 4, the values in the `prior_revision` fields | **corrected** | "Prior's own `charterHash` and `stateRevision`, the charter's revision label kept in the hashed bytes. The interim rule is not admitted under the label `prior-json-sha256:`. One condition, stated below" | `foreign:F09-Prior:261109-0730-which-value-stands-in-a-prior-revision-field-of-a-campaign-fusion-wrote.md`, option 3 | 16; the read confirmation of 17 and 19 |
+
+The plan is `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md`, and the step numbers are its own. The last column, and each paragraph headed "What it changes in fusion's plan" below, is fusion's reading of that plan against the answer, and no part of Prior's ruling. Prior has not read the plan and says so.
+
+#### Question 1, `lanes`: **corrected**
+
+**Admitted.** Quoted: "`lanes` is a required root key with null admitted, as fusion proposes and as `register` and `formation` are". Quoted: "Fusion's reason for a typed member holds", because ignorance of an extension "may change neither state nor an execution decision" and, in Prior's words, "a lane assignment is an execution decision for the session that reads it".
+
+**Corrections (a) to (d).** Prior calls each "text for `codec/schemas/campaign.schema.json`".
+
+- **(a)** "`lanes[].revision` is not a `prior_revision`." Quoted: "It is typed neither `prior_revision` nor `optional_prior_revision`. Fusion types it as a value it computes itself, or drops the member." The label is for a hash Prior computes, and Prior computes none for a lane (Prior measured: `git grep -i -c lane 74d6cc3 -- modules/fusion` prints nothing). Prior names `sha256` as the contract's type for a hash over exact bytes and adds: "Which type fusion takes is fusion's choice."
+- **(b)** Quoted: "The description states three rules JSON Schema cannot check. A package is named once in a lane and in one lane only, compared by `record_id`. A lane's `id` is distinct within the campaign. A non-null `checkout_id` stands in one lane only." Prior's reason (read there): `members` is `uniqueItems` over `record_ref`, which admits an optional `revision` and `display`, so two references to one package that differ in `display` pass.
+- **(c)** Quoted: "The description says what `[]` means beside null, and that a lane's `checkout_id` is an assignment and never a host lease." And: "Prior rules that the meaning of `[]` is stated, and prescribes none."
+- **(d)** Quoted: "The description says that `lanes` has no Prior aggregate and no row in `prior-mapping.json`."
+
+**`codec/contract/prior-mapping.json` gains no row, and a row would fail Prior's mapping tests.** Request 80 marked the first half as inference. Prior confirms it and names two tests, read there and not run:
+
+- `TestFusionAppliedRulingAndGoldens` holds the `rows` of fusion's `prior-mapping.json` equal to the `rows` of Prior's ruling `Prior: docs/design/fusion-fj00-prior-mapping-ruling.json`. A row added on fusion's side alone fails it at the re-pin that copies the file.
+- `TestFusionMappingRulingCoversEveryGoField` requires 163 rows for 163 Go fields and refuses a row whose key is no Go field. The same row added to Prior's ruling fails it, since no Go struct has a lane.
+
+**Prior's stated limit.** Quoted: "Fusion's `exportCampaignState` builds the Go state from `charter` and `state` alone (`codec/src/prior/campaign.ts:178-250`, read). A campaign with lanes that was exported to Prior would lose them. No export is asked."
+
+**Not ruled.** Quoted: "The case of a campaign record stored before the schema lands is not ruled here."
+
+**What Prior changes.** Nothing at the verdict. At the codec re-pin that carries the schema: its copy of `campaign.schema.json`, the fixtures and its test constants.
+
+**What it changes in fusion's plan.** Step 10 no longer lands the member "in the shape question 1 proposed": `lanes[].revision` is a value of fusion's own type or is dropped, and the schema's description carries (b), (c) and (d). Steps 15 and 16 change where they write lanes: step 16's one hash function no longer produces `lanes[].revision` under the label `prior-json-sha256:`, and the lanes a proposal, `lanes --from`, `move` or `reassign` writes are bound by the three rules of (b).
+
+#### Question 2, `resources`: **corrected**
+
+**Admitted.** Quoted: "`resources` is an optional key on `fusion.package/v1`, absent meaning undeclared and `[]` meaning declared and empty, as fusion recommends."
+
+**Corrections (a) to (c).** Prior calls each "text for `codec/schemas/package.schema.json`".
+
+- **(a)** "Each entry follows a relative path grammar, and a directory has one spelling." As request 80 proposed the form, any non-empty string validates, so `/abs/x`, `../x`, `a\b`, `./a` and `a//b` are admitted, and `a/b` and `a/b/` are two entries for one directory (read by Prior from the proposed form). The contract's precedent, `workbench_path` in `codec/schemas/common.schema.json`, refuses a leading slash, a drive letter, a backslash and a `..` segment, and still admits `./a`, `a//b` and both spellings of a directory, "so the answered form needs a pattern of its own". Quoted: "Which spelling of a directory fusion takes is fusion's choice; the request's example writes a trailing slash."
+- **(b)** "The description states both overlap readings and the missing mapping." The Claude-side cut treats two areas as overlapping when they are equal or one is a prefix of the other at a `/` boundary. Prior's `overlap` is true exactly when the two lists share an equal string. Quoted: "No row of `prior-mapping.json` maps this member onto `packages.Candidate.Resources`."
+- **(c)** Quoted: "The sentence "Every key is required" is reworded in the same change". The schema's `required` list names all 17 keys of its `properties` today (read by Prior).
+
+**Prior's `overlap` stays an equality test.** Prior's table of the four area pairs, as it would read if a fusion-written package's `resources` ever reached `overlap`. Prior marks all rows as read:
+
+| Two declared areas | Claude side | Prior's `overlap` | Effect on Prior, as Prior states it |
+|---|---|---|---|
+| `a/b/` and `a/b/` | overlap | true | the candidate may join the package, within the bounds of `packages.go:126` |
+| `a/` and `a/b/` | overlap | **false** | two packages, unless the purposes are equal |
+| `a/b` and `a/b/` | overlap | **false** | the same. Correction (a) removes this row |
+| `a/b/` and `a/c/` | none | false | two packages, unless the purposes are equal |
+
+Quoted: "Prior's reading is the narrower one. Every pair it groups, the Claude side groups too, and it misses every nested pair." Two packages with nested areas could then be admitted side by side on Prior, with `Runtime.ClaimsCompatible` alone between them, a method only test fixtures implement there (Prior measured, `git grep`).
+
+**No path leads there today**, as Prior states: the mapping places `packages.Candidate.Resources` at `fusion.campaign/v1:/formation/candidates[]/resources` and no row names a path on `fusion.package/v1` for it; a second row for the same Go field fails the count in Prior's mapping test; and no non-test Go file calls `packages.Form`. Quoted: "An importer that fed a package's `resources` to `Form` would need a new Prior ruling first."
+
+**What Prior changes.** Nothing at the verdict. At the re-pin: its copy of `package.schema.json`, the fixtures and its test constants. Prior adds that the order of that re-pin matters for its host, under `#### Prior's own notes` below.
+
+**What it changes in fusion's plan.** Step 12 no longer lands `resources` as "a `uniqueItems` array of non-empty strings": each entry takes a pattern of its own with one spelling per directory, the description states both overlap readings and the missing mapping, and "Every key is required" is reworded in the same change. Step 11's `set-resources` refuses what that pattern refuses, which is more than the `..` segment, the absolute path and the duplicate the step names today.
+
+#### Question 3(a), the pause reading: **corrected**
+
+**Admitted on three points**, each read by Prior in `modules/fusion/campaign/campaign.go`:
+
+| Element of fusion's reading | Prior's code, as Prior reads it | Agrees |
+|---|---|---|
+| `paused` is written from `running`, with a non-empty reason | `Pause` refuses any other state and an empty reason | yes |
+| The working session keeps its package claimed | `Pause` sets `State` and `Reason` and nothing else; `Settlement` is written by `RecordAttempt` and `UpdateSettlement`, and neither is `Pause` | yes |
+| It starts nothing further | a protected action needs `running`, and so does the record of an attempt; the way back is `Start` | yes |
+
+**The two differences.**
+
+- "**On Prior a pause takes effect at once.**" After it, `AuthorizeProtected` returns `ErrAuthority` and `RecordAttempt` returns `ErrConflict`. Quoted: "Work in flight gets no further protected action and cannot record its outcome. The Claude side finishes the commit cycle it interrupted, push included." Prior's *inference*: the latitude suits independent clones, where a withheld push would strand a finished commit. Quoted: "It is a difference all the same, and fusion records it beside the two-writer one."
+- "**On Prior a resume clears the reason.**" `Start` sets `RequestedOutcome` and `Reason` to the empty string. Quoted: "Request 80 says `resume` writes `running` again, and does not say that `state.reason` returns to null. The correction: it does." So `resume` writes `state.reason` null.
+
+**Not ruled.** That a pause reaches a working session only at the fetch after its next commit is, in Prior's words, "fusion's own statement about its side. Prior rules nothing on it."
+
+**What it changes in fusion's plan.** Step 16: `resume` writes `state.state` `running` and `state.reason` null. Steps 17 and 19 keep what they do: a working session reads `paused` at the fetch after its own commit and finishes that commit cycle, push included. That is carried as a stated Claude-side deviation beside the two-writer one, and changes neither step otherwise.
+
+#### Question 3(b), a first stored state of `running`: **corrected**
+
+**Admitted by the record format.** Prior read this from the schema and did not run it through a validator: `running` is in the state enum, the state's only conditional rules concern `previous_terminal`, `sessions` and `runs` are plain string lists with no minimum, and `provenance.source` `created` is admitted. Quoted: "No pinned fixture holds this shape."
+
+**Not produced by Prior's lifecycle.** `Start` holds the one assignment of `"running"` in `campaign.go` (Prior measured: `grep -n '"running"'` prints nine lines, that assignment and eight comparisons). `Start` requires `authorised` or `paused`, an identified session and run, and a passed `revalidate`.
+
+**It grants nothing on Prior.** Every protected action rechecks authority through the runtime (read by Prior). Prior quotes the campaign schema, by which a campaign state "grants no Prior authority and no live lease".
+
+**It is recognisable.** Quoted: "A `running` state with empty `sessions` and `runs` is one `Start` cannot produce".
+
+**Recorded as a Claude-side deviation**, in Prior's words "beside the two-writer one".
+
+**Prior's condition, quoted:** "This holds as long as no import of a Claude-written campaign into Prior is planned. Request 80 says none is asked or planned. If one is ever asked, the two statements above become requirements on the importer: the record enters as not started, and passes `Authorise` and `Start`."
+
+**The charter values need no verdict.** Prior says so of the values request 80 lists under `### Stated and not asked`: `Validate` compares no string with a vocabulary and enforces the limits fusion names, `exhausted` is false with those limits and counters at zero, and a label raised at each amendment fits `Amend`, which refuses an unchanged one (all read by Prior).
+
+**What it changes in fusion's plan.** Nothing in what a step writes: step 16's `open` writes `running` with empty `sessions` and `runs`, as planned. The deviation is recorded beside the two-writer one, and it stands under Prior's condition that no import of a Claude-written campaign into Prior is planned.
+
+#### Question 4, the values in the `prior_revision` fields: **corrected**
+
+**Prior's rule.** Quoted: "Fusion's option (iii), with the reproduction fusion's tree already holds."
+
+- `state.charter_hash` is Prior's `charterHash`: hex SHA-256 over `json.Marshal` of the charter in Go form, under the label `prior-json-sha256:`.
+- `state.revision` is Prior's `stateRevision`: the same over the Go-form state with `Revision` set to the empty string and the charter embedded.
+- "**The charter's revision label stays in the hashed bytes,** without its `prior-opaque:` prefix." `Revision` is a field of `Charter`, and `charterHash` marshals the whole struct. Prior measured that its four campaign goldens hold `charter-1` or `charter-2` in Go form where their `fusion.json` holds `prior-opaque:charter-1` or `prior-opaque:charter-2`.
+- "**The interim rule is not admitted under the label `prior-json-sha256:`.**"
+
+**For a campaign with no Prior original**, as Prior reads fusion's exporter and its own code: a null string is the empty string in Go form; an empty list is `null` in Go form unless `provenance.legacy_fields.empty_collections` names its path, and Prior's own `Create` leaves `Sessions` and `Runs` nil, so the default agrees with Prior; the struct definitions and their field order are pinned in both trees in `fixtures/prior/source-structs.txt`.
+
+**`lanes[].revision`** falls under correction (a) of question 1. Quoted: "Prior has no hash of a lane, so no Prior value exists for it under any option."
+
+**Why the interim rule is not admitted under the label.** No Prior code verifies a `prior-json-sha256:` value today (Prior measured, `git grep -l` over its `.go` files prints nothing), so the interim rule breaks no Prior test. Quoted: "It makes four texts false": the label's description in `codec/schemas/common.schema.json`, the campaign schema's rule that `charter_hash` equals Prior's `charterHash` over the charter, Prior's mapping ruling, and Prior's spec. Prior adds that such a value cannot be told from a true one by its form, and that fusion's exporter would write it into `State.Revision` and `State.CharterHash`, where Prior's `FileRepository.Load` refuses a state whose `Revision` is not `stateRevision` (read by Prior).
+
+**The condition, as Prior rules it, quoted in full:** "This holds if fusion confirms that its Claude-side helper can reach `codec/src/prior`. If it cannot, the interim rule stands as fusion's stated deviation until it can. The values are then unverifiable by Prior and bar any import."
+
+**Request 80's sentence was wrong for fusion's source tree.** Question 4 says: "Fusion's tree does not hold those structs, and its `state` member carries no embedded charter, so a Claude-side writer cannot produce the bytes Prior hashes." Prior finds that this does not hold for the source tree at `bcb7133d`, and fusion's own measurement agrees. Measured here at `2f4228d1`: `codec/src/prior/gojson.ts` is headed "Go's `encoding/json` output, reproduced byte for byte for Prior's aggregates" (line 2) and exports `computePriorRevision` (line 452) and `computeCharterHash` (line 459), whose comment reads "Revision label included" (`grep -n`). Prior also reads `codec/src/prior/campaign.ts`, which refuses an import whose hashes differ from the recomputed ones and builds the Go form with the charter embedded. Prior reproduced the stored `CharterHash` and `Revision` of its four campaign goldens outside Go, 4 of 4 (Prior measured, a Python script). Of the cost request 80 names for option (iii), "a second implementation of a Prior encoding", Prior says: "The implementation exists in fusion's tree."
+
+**The sentence holds for the built bundle only.** Measured here at `2f4228d1`, on `codec/dist/fusion-record.js` at `sha256:bc0de7645fa66b324e66bb32ad5452c7ff23ff3511dd525745ad385c3bfb362b`: `grep -c computePriorRevision` prints 0 and `grep -c computeCharterHash` prints 0. The two strings Prior counted on the bundle it pins, `differs from charterHash` and `not a candidates.Register`, print 0 each on this bundle too, and both stand in the source (`codec/src/prior/campaign.ts:131`, `codec/src/prior/gojson.ts:443`). The bundle is not minified and keeps its source names (`grep -n isControlFile` finds the definition at line 8497 and one call), so a 0 is an absence and not a renaming.
+
+**Fusion has not yet confirmed the condition.** At `2f4228d1` the helper does not exist: `ls` finds neither `bin/fusion-campaign` nor `hooks/lib/campaign.ts` (measured). The plan builds it under `hooks/`, where no file imports from `codec/src` (measured: `grep -rn 'codec/src' hooks/*.ts hooks/lib/*.ts` finds the path in comments of three files and in no import line) and where the codec is reached through `hooks/lib/record-client.ts`, which runs the bundle. As planned, the helper would therefore reach the codec through the bundle alone, and the bundle carries neither function. Whether the helper reaches `codec/src/prior` is a build question fusion's plan answers before step 16. The decision `261108-2301-which-value-does-a-claude-side-writer-put-in-a-prior-revision-field.md`, answered with option 1, the interim rule, on the premise of the sentence above, goes back to fusion's user. Until that is ruled, this section claims neither branch of Prior's condition.
+
+**What it changes in fusion's plan.** Step 16: its one function for these values takes Prior's rule for `state.charter_hash` and `state.revision`, or, on the second branch of Prior's condition, keeps the interim rule as a stated deviation whose values Prior cannot verify and which bar any import. Which of the two is settled before step 16 is dispatched. The read confirmation of steps 17 and 19 is touched by one statement of Prior's, quoted: "`state.revision` covers the charter and the state, and nothing else. A change of `lanes` leaves it unchanged. *Inference:* fusion's read confirmation names `state.revision` alone, so it cannot show whether a session has read the current lanes. That holds under the interim rule as well, and is fusion's to weigh."
+
+**What Prior changes.** Nothing.
+
+#### The defects Prior names, and fusion's issues
+
+Request 80 says, under `### What fusion does with the answer`: "A defect Prior names in a proposed form is filed as an issue in fusion's workbench before the answer is recorded, and the answer is then not "accepted"." Prior names two, and the verdicts on questions 1 and 2 are "corrected", which agrees with that sentence. Fusion filed both before this section was written, and a third issue for its own false statement. All three stand in fusion's tree at `2f4228d1`, the commit this section is appended on, each in state `open` (measured: `git log -1` on each file, and each `.record.json`).
+
+| Defect | Prior's record, state `open` at `557011a` (measured here) | Fusion's issue | Answered by |
+|---|---|---|---|
+| The proposed `lanes[].revision` is typed `optional_prior_revision`, a label for a hash Prior computes, and Prior computes none for a lane. The form also states no rule for a package named twice, for duplicate lane ids or for one checkout in two lanes, says nothing on `[]` beside null, and does not say that a lane's `checkout_id` is no lease | `foreign:F09-Prior:261109-0730-request-80s-lanes-form-types-a-lane-revision-as-a-prior-hash-and-states-no-uniqueness-rule.md` | `261109-1100-request-80s-lanes-form-types-a-lane-revision-as-a-prior-hash-and-states-no-uniqueness-rule.md` | corrections (a) to (c) under question 1, as Prior states |
+| The proposed `resources` entries are any non-empty strings. One directory then has several spellings, a path can leave the project root, and the two overlap readings diverge further than they need to | `foreign:F09-Prior:261109-0730-request-80s-resources-form-admits-any-non-empty-string-so-one-area-has-several-spellings.md` | `261109-1100-request-80s-resources-form-admits-any-non-empty-string-so-one-area-has-several-spellings.md` | correction (a) under question 2, as Prior states |
+| Request 80's sentence that a Claude-side writer cannot produce the bytes Prior hashes, false for fusion's source tree. Prior does not list it under its defects in the proposed forms; it states it in its answer to question 4, under "**The finding that decides it.**" | none | `261109-1100-request-80-says-fusion-cannot-reproduce-priors-hashes-and-its-own-source-tree-does.md` | open: the decision on the revision fields goes back to fusion's user |
+
+#### Prior's own notes
+
+Prior states these as its own, on what request 80 states without asking. Quoted: "Nothing is asked, and no request number is reserved here."
+
+- **The control-file names Prior's host knows.** Prior pins the protocol's `record_selector` pattern with three file names, and its host selects control records in `entryControlRecord` (`Prior: internal/fusionhost/entry_workspace.go`), by `package.json`, `*.record.json` and `*.evidence.json`. Quoted: "If the codec's `isControlFile` gains `campaign.json`, `entryControlRecord` needs the fourth name at that re-pin." Prior's *inference*: without it, a hosted run that changes a campaign file would integrate it with no codec check. A second site, `codecShaped` (`Prior: internal/qualification/fusionsurface/classify.go`), names the same three, and in Prior's words "needs the same review at that re-pin". Prior's further *inference*: three protocol fixtures with manifest rows move the counts at `Prior: tests/fusion_codec_test.go:137` and `:177`.
+- **What Prior read beyond the handoff.** Prior quotes a note fusion **relayed** through its user on 2026-11-09 about the widened pattern, as intent fusion had not committed. It also read fusion's local branch `campaign` at `063d33e2`, which it says is no part of the handoff: there `isControlFile` names `campaign.json`, the module's `Select` still names three, the committed pattern is still the three-name one and the bundle still has the digest Prior pins (Prior measured). Prior notes that this state may have moved, and it has: see `#### Where fusion stands when this is recorded`.
+- **`set-resources` is absent from Prior's host.** The host exposes codec operations by name and refuses any other with "operation not exposed by ordinary Fusion workbench service", and its record events return an error for an operation they have no case for (read by Prior; its `git grep -n 'set-resources'` prints nothing, measured there). Quoted: "A hosted run can call the operation once it has a name at the first place and a case at the second. The refusal until then is named and not silent."
+- **A package record carrying `resources` is schema-invalid at Prior's current codec pin.** The package schema refuses unknown keys, and Prior's host validates through the codec at `sha256:b4047458…`. Prior's *inference*: a workbench in which a newer Claude side has declared areas meets a refusing host until Prior is re-pinned. Quoted: "So the host needs re-pinning before it meets such a record."
+- **Prior's pinned codec digest stays where it is until fusion asks for a re-pin**, and request 80 asks for none.
+- **Prior's pins of this file stay where they are.** See `` #### `REQUESTS.md` against Prior's pins, after this append `` below.
+
+**Prior's limits**, in brief: read and not run, except one `go test` command over its three module packages (exit 0, measured there) and the read-only `git`, `grep`, `shasum` and Python commands it names as measured; nothing ran on a host, no bundle was built, installed or run, and no codec that reads a campaign ran; the verdicts say nothing about fusion 13.4.4 as a release. Quoted: "Prior wrote nothing in the fusion repository for this response."
+
+#### What Prior does not determine, and fusion owes or decides
+
+Prior lists these under `## Not determined` as statements, "and no numbered question". Each is carried here as open. None is answered by this section.
+
+Fusion's to say or to decide:
+
+- Whether fusion's Claude-side helper can reach `codec/src/prior`. Prior: "The answer to question 4 is conditional on it, and only fusion can say."
+- What `lanes[].revision` is for. Request 80 does not say. Correction (a) under question 1 depends on it only in the choice between a fusion-computed value and no member.
+- What `lanes: []` is to mean beside `lanes: null`.
+- Whether a campaign record is stored anywhere on fusion's side when the schema lands.
+- Whether the module's `Select` gains `campaign.json` together with the codec, and whether `lanes` or `resources` comes with an entry in the workbench manifest's `required_features`. Prior: "Request 80 and the relayed note say neither."
+- Whether a campaign with `state.state` `running` and empty `sessions` and `runs` passes the schema in a validator run. Prior read it from the schema and did not run it.
+- Whether fusion wants the four valid campaign fixtures restamped. Prior measured that their `charter_hash` values are not `charterHash` of their charters: a Python script that reproduces the hash for 4 of the 4 imported `fusion.json` goldens reproduces it for 0 of the 4 files under `fixtures/valid/campaign/`, under each of the eight combinations of nil and empty for the three charter lists that may be empty. Two of the four say `provenance.source` `imported`. Quoted: "No test checks the rule. If fusion's validator ever does, those fixtures change and Prior's pin moves with them." Fusion has not repeated the measurement.
+
+Left to fusion by correction (a) under question 2, and not in Prior's list:
+
+- Which one spelling of a directory a `resources` entry takes.
+
+Prior's own, and not fusion's:
+
+- What a production `ClaimsCompatible` would catch. Only test fixtures implement it.
+
+#### Where fusion stands when this is recorded
+
+Fusion's work stands on branch `campaign` at `2f4228d1` (`2f4228d1e55edc0e715336ef0c684db127e99dab`). `git log --format=%h bcb7133d..HEAD` lists `4a81e482`, `063d33e2`, `01892937` and `2f4228d1`, the commits since the one Prior read. The branch is local: `git branch -r --contains HEAD` prints nothing (measured). The built bundle moved at `2f4228d1`: `shasum -a 256 codec/dist/fusion-record.js` prints `bc0de7645fa66b324e66bb32ad5452c7ff23ff3511dd525745ad385c3bfb362b`, 701 296 bytes, where Prior pins `sha256:b404745831dd921bfbae78f52df49604d22f4f78b7c07bce067cc9078e262e2d`, 700 116 bytes, which is the bundle at `bcb7133d` (measured, `git show`). Since `01892937`, `codec/schemas/protocol.schema.json` is `sha256:949dc74183bed054b296852c63cd1c0b1e533b7438e38d2a90b92fdbaa6924ff`, its `record_selector` pattern naming `campaign` at line 510, and `codec/fixtures/manifest.json` is `sha256:7f18ab1210532d02781f2988450478544e2c80772d378373fdea23e02769ae4b` (both measured, `shasum -a 256`, and `git log -1` on each file names `01892937`). So what Prior read at `063d33e2`, the three-name pattern and the pinned digest, no longer holds on this branch. `codec/schemas/campaign.schema.json` and `codec/schemas/package.schema.json` are unchanged since `aa4277d8` (measured, `git log -1`): nothing a verdict above corrects has been built. **No re-pin is asked here and no request number is reserved.** Whether one is asked is fusion's user's to say.
+
+#### `REQUESTS.md` against Prior's pins, after this append
+
+Prior states that its two pins of this file stay at `36947f8edc6d42e9d41e6d7eb875c01921da72c98613921343fde557a201b3f9`, the file as fusion's `aa4277d8` holds it, and quoted: "No pin moves for this answer." Its copy ends with request 74, so requests 75 to 80 are in no file Prior pins (Prior measured). At `2f4228d1` this file is 7 618 lines, 1 282 257 bytes, `sha256:906369e2067bc6f38d4aa1f94ab8a2d7753bdb72b916c3b0a3948a51c7a901f5` (measured on `git show HEAD:codec/fixtures/prior/REQUESTS.md`), the digest Prior's answer names, the file not having changed since `bcb7133d`. **This section moves the file again and cannot state its own digest.** The commit that carries this section and the `shasum -a 256` of the file at it are reported to fusion's user, who names them to Prior. Fusion asks for no change to either pin file.
+
+#### Requests 64 and 67 to 80, as they stand
+
+| Request | State | Where |
+|---|---|---|
+| 64 and 67 to 75 | as `#### Requests 64 and 67 to 76, as they stand` above | the answer sections above |
+| 76 | as in `### Requests 64 and 67 to 78, as they stand` above: **corrected** at Prior `52a2703`, with question 4 deferred | `Prior: docs/design/fusion-entry-v2-request76-77-prior-response.md` |
+| 77 | as there: **corrected** at Prior `52a2703`; its bundle was replaced by 78's | the same response |
+| 78 | as in `### Requests 64 and 67 to 79, as they stand` above: **bundle replaced by 79's**; questions 1 to 3 recorded at Prior `cb1138b` as accepted, corrected, corrected, an answer about Prior's host with no verdict on 79's digest | `### The rulings on 78's questions`, `Prior: docs/design/fusion-entry-v2-request78-prior-response.md` at `cb1138b` |
+| 13.4.3 | as there: **no request.** Tag `v13.4.3` and the marketplace entry stand by the user's ruling; no bundle and not a candidate | `### Why 78 moved, and fusion's own error` |
+| 79 | **asked**, unchanged by 80 and by Prior's answer to 80, which gives no verdict on its digest: bundle `sha256:64bc6df15435a973590a560bbcd1572034434f62178b79283c671f6f0d9f97ed` (13.4.4, built at D = `438df715`), 79.1 to 79.4 on a run on that digest. This file records no answer to it: of the headings `grep -n "^### Prior's answer"` lists, the last two are the answer to 76 and 77 and the answer to 80 (measured). No tag `v13.4.4` exists | `## The candidate 13.4.4 (request 79)` |
+| 80 | **corrected** at Prior `557011a`: points 1, 2, 3(a), 3(b) and 4 each corrected, on the record format, with no release verdict. **One condition is open, on question 4:** Prior's rule holds if fusion confirms that its Claude-side helper can reach `codec/src/prior`, and fusion has not confirmed it; the decision on the revision fields goes back to fusion's user | `### Prior's answer to 80 at 557011a`, `Prior: docs/design/fusion-campaign-request80-prior-response.md` at `557011a` |
+
+These rows supersede the rows of `### Requests 64 and 67 to 80, as they stand` above, which stay as they were, this file being append-only. Request 79 stays the release request open with Prior, and only an answer naming the 13.4.4 digest gives a release verdict. Request 80 is answered as corrected and gave none, and its one open condition is fusion's to settle. No request is asked by this section and no request number is reserved by it.
