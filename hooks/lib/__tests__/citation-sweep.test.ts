@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
 import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
-import { createPackage, jsonWorkbenchAt, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { campaignFile, createPackage, jsonWorkbenchAt, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // The shared build, as `fusion-citation-check.test.ts` runs it: the entry reaches the codec bundle relative to itself.
 const ENTRY = join(HOOKS_DIR, "dist", "citation-sweep.js");
@@ -626,6 +626,42 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
       const lines = legacy.stdout.trim().split("\n");
       expect([lines[0], lines.filter((l) => l.startsWith("bound=")), lines.at(-1)]).toEqual(["format=legacy", [], expect.stringMatching(/^files=1 rewrites=1 /)]);
     }, { legacy: true });
+  }, CASE_TIMEOUT);
+
+  // A campaign is one file with no narrative, so `isControlFile` does not name it, and its one writer keeps a hash over the
+  // charter (issue `261109-1359-the-citation-sweep-would-admit-a-campaign-file-named-to-it-and-could-stale-its-charter-hash.md`).
+  // Both cases run a writing mode over a charter citing a record this workbench holds under its store, a rewrite the sweep
+  // makes in any file it admits: the bytes hold because the file is refused, not because nothing in it was rewritable.
+  function withCampaign(declare: boolean, fn: (c: { root: string; wb: string; rel: string; file: string; before: string }) => void): void {
+    const { root, wb } = scratchRepo();
+    try {
+      const rel = campaignFile({ root, workbench: wb, next: 1 }, "260101-0001-alpha", { charter: { authorisation_ref: "shared/decisions/260404-0404_a_delta.md" } });
+      if (declare) writeFileSync(join(root, "fusion.json"), JSON.stringify({ citations: { extraPaths: [`fusion-workbench/${rel}`] } }));
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "a campaign");
+      fn({ root, wb, rel, file: join(wb, rel), before: readFileSync(join(wb, rel), "utf-8") });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
+
+  it("refuses a <path> naming a campaign record, exit 1 with nothing on stdout, naming bin/fusion-campaign, the file's bytes as they were", () => {
+    withCampaign(false, ({ root, wb, file, before }) => {
+      const named = sweep(root, wb, "--write", "--yes", file);
+      expect([named.status, named.stdout, named.stderr]).toMatchObject([1, "", expect.stringMatching(/campaign\.json is a campaign record, written by bin\/fusion-campaign alone; the sweep never rewrites one/)]);
+      expect(readFileSync(file, "utf-8")).toBe(before);
+    });
+  }, CASE_TIMEOUT);
+
+  it("leaves a declared campaign record out of the corpus with a line on stderr naming bin/fusion-campaign, and completes, the file's bytes as they were", () => {
+    withCampaign(true, ({ root, wb, rel, file, before }) => {
+      const declared = sweep(root, wb, "--write", "--yes");
+      expect(declared.status, declared.stderr).toBe(0);
+      expect(declared.stderr).toContain(`declared fusion-workbench/${rel} is a campaign record, written by bin/fusion-campaign alone, and the sweep never rewrites one; left out of the corpus`);
+      // the one rewrite is the workbench's own dirty record: the campaign is counted in neither figure
+      expect(last(declared)).toBe("files=1 rewrites=1 residual=0 record=1 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=write");
+      expect(readFileSync(file, "utf-8")).toBe(before);
+    });
   }, CASE_TIMEOUT);
 });
 

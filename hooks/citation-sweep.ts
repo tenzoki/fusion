@@ -73,6 +73,12 @@
  * Any other answer stops the run before a line of stdout (exit 3 or 6 below).
  * None of them is an empty workbench.
  *
+ * A campaign record (`campaigns/<campaign_id>/campaign.json`) is kept out of
+ * the corpus the same two ways, a usage error as a `<path>` and a line on
+ * stderr when declared, and under its own name: `bin/fusion-campaign` alone
+ * writes one, not the codec, and keeps a hash over its charter (issue
+ * `261109-1359-the-citation-sweep-would-admit-a-campaign-file-named-to-it-and-could-stale-its-charter-hash.md`).
+ *
  * ## The declared corpus
  *
  * Since 2026-08-31 the run also reads every file the project DECLARED as
@@ -416,7 +422,7 @@
  *
  *   0  ran; in a writing mode, wrote.
  *   1  usage error, a `<path>` naming a codec file of a JSON-controlled
- *      workbench among them.
+ *      workbench or a campaign record among them.
  *   2  no workbench (no `fusion-workbench/.fusion-setup` above cwd and no
  *      `--root`, or `--root` names no workbench).
  *   3  the plugin itself could not run: the compiled hooks are missing
@@ -455,7 +461,7 @@ import {
 } from "./lib/citation-scan.js";
 import { loadConfig } from "./lib/config.js";
 import { bundleMissing, notReadLine, readRecordIndex, type NotRead, type RecordIndex } from "./lib/record-index.js";
-import { CITED_CONTAINER_ROOTS, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
+import { CAMPAIGN_RECORD, CAMPAIGN_STORE, CITED_CONTAINER_ROOTS, isControlFile, JSON_STATE_DIR, narrativeOf, WORKBENCH_MANIFEST } from "./lib/stores.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 
@@ -847,6 +853,18 @@ function isCodecFile(root: string, abs: string): boolean {
 }
 
 /**
+ * Whether `abs` is a campaign record of the workbench `root`: a file named
+ * `CAMPAIGN_RECORD` inside `CAMPAIGN_STORE`. Not the codec's file, which is why
+ * `isCodecFile` does not name it: `bin/fusion-campaign` alone writes one and
+ * keeps a hash over its charter, so a citation rewritten inside it would leave
+ * that hash naming bytes the file no longer holds. Asked whatever the format.
+ */
+function isCampaignRecord(root: string, abs: string): boolean {
+  const rel = relative(real(root), real(abs));
+  return rel.split(sep)[0] === CAMPAIGN_STORE && basename(rel) === CAMPAIGN_RECORD;
+}
+
+/**
  * Every workbench-relative file a record binds by hash, each with its bindings
  * as `<role>:<control>`, from the index alone and with no request of its own. A
  * package's binding is `reconcile`'s `/active_documents/<i>/ref` entry, which
@@ -912,6 +930,7 @@ function main(argv: string[]): number {
     if (!existsSync(abs)) usage(`${p} does not exist`);
     if (statSync(abs).isDirectory()) for (const f of markdownFilesUnder(abs)) admit(f.abs);
     else if (json && isCodecFile(root, abs)) usage(`${p} is a file only the codec writes (Prior's spec, section 1.5); the sweep never rewrites one`);
+    else if (isCampaignRecord(root, abs)) usage(`${p} is a campaign record, written by bin/fusion-campaign alone; the sweep never rewrites one`);
     else admit(abs);
   }
   // the declared paths join the corpus here, before guard (a) reads it
@@ -922,6 +941,7 @@ function main(argv: string[]): number {
   }
   for (const f of declared.files) {
     if (json && isCodecFile(root, f.abs)) process.stderr.write(`${NAME}: declared ${relOf(projectRoot, f.abs)} is a file only the codec writes; left out of the corpus\n`);
+    else if (isCampaignRecord(root, f.abs)) process.stderr.write(`${NAME}: declared ${relOf(projectRoot, f.abs)} is a campaign record, written by bin/fusion-campaign alone, and the sweep never rewrites one; left out of the corpus\n`);
     else admit(f.abs);
   }
 

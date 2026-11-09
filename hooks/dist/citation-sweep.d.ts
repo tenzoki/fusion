@@ -73,6 +73,12 @@
  * Any other answer stops the run before a line of stdout (exit 3 or 6 below).
  * None of them is an empty workbench.
  *
+ * A campaign record (`campaigns/<campaign_id>/campaign.json`) is kept out of
+ * the corpus the same two ways, a usage error as a `<path>` and a line on
+ * stderr when declared, and under its own name: `bin/fusion-campaign` alone
+ * writes one, not the codec, and keeps a hash over its charter (issue
+ * `261109-1359-the-citation-sweep-would-admit-a-campaign-file-named-to-it-and-could-stale-its-charter-hash.md`).
+ *
  * ## The declared corpus
  *
  * Since 2026-08-31 the run also reads every file the project DECLARED as
@@ -416,7 +422,7 @@
  *
  *   0  ran; in a writing mode, wrote.
  *   1  usage error, a `<path>` naming a codec file of a JSON-controlled
- *      workbench among them.
+ *      workbench or a campaign record among them.
  *   2  no workbench (no `fusion-workbench/.fusion-setup` above cwd and no
  *      `--root`, or `--root` names no workbench).
  *   3  the plugin itself could not run: the compiled hooks are missing
