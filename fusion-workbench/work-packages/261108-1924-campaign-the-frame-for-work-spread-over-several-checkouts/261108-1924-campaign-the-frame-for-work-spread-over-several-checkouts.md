@@ -32,4 +32,8 @@ The item is reached when the campaign is the one frame on the Claude side for wo
 
 The user's words, verbatim (2026-11-08, after approving the specification at its second review): „1, im automodus, und anschließend im automodus implementieren“ — plan now in autonomous mode, then implement in autonomous mode. `mode` is set to `autonomous` on this sentence.
 
+## Rulings on the planner's decisions
+
+The user's words, verbatim (2026-11-09, after the plan was bound): „ok, alles wie empfohlen, autonom weiter“ — every one of the three decision records the planner filed is answered with its recommended option 1: `261108-2301-where-does-the-campaign-record-live-in-the-workbench-layout.md` (root entry `campaigns/<id>/campaign.json`, class R1, one writer), `261108-2301-which-value-does-a-claude-side-writer-put-in-a-prior-revision-field.md` (interim rule: SHA-256 over fusion's canonical JSON, Prior asked in request 80), `261108-2301-how-does-a-working-session-rebase-pull-over-the-log-row-the-lock-just-appended.md` (commit, fetch, read at the fetched ref, append the row, settle the log, rebase, push; no stash).
+
 **Cross-references:** `261105-1156-campaign-as-the-frame-for-work-spread-over-several-checkouts.md`, `foreign:ax-k2-3:261101-1006-three-checkouts-work-the-pipeline-lanes-in-parallel.md`, `foreign:ax-k2-3:261031-1733-pipeline-work-dissected-into-parallel-checkout-lanes.md`

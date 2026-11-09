@@ -32,3 +32,5 @@
 ## Recommendation
 
 Option 1, as the interim rule, with Prior asked which of the three it wants. `charter.revision` (an opaque label) is `prior-opaque:r<n>`, `n` incremented at every amendment; `baseline_hash`, `register`, `formation` and `completion_evidence` stay null, the last until `end`. The plan's step 16 implements the rule in one function, so Prior's answer changes one place.
+
+Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Rulings on the planner's decisions` — option 1, as recommended; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.
