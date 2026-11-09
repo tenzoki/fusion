@@ -1,0 +1,34 @@
+{
+  "schema": "fusion.package/v1",
+  "id": "1bf46fc2-6fd5-4187-8256-0e3d7d8f98fa",
+  "workbench_id": "5d6d15ba-5b44-45b2-8aa2-39dd3bf82964",
+  "domain": "code",
+  "status": "open",
+  "claim": null,
+  "mode": {
+    "value": "ordinary",
+    "source": null
+  },
+  "origin": {
+    "kind": "user-request",
+    "ref": null
+  },
+  "filed_by": {
+    "actor": "user",
+    "person": null
+  },
+  "narrative": {
+    "path": "work-packages/261101-1002-no-area-yet/261101-1002-no-area-yet.md"
+  },
+  "depends_on": [],
+  "resources": [],
+  "active_documents": [],
+  "references": [],
+  "evidence": [],
+  "outcome": null,
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {}
+}

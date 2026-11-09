@@ -1,0 +1,17 @@
+{
+  "op": "set-resources",
+  "workbench": "/tmp/fusion-scratch-workbench",
+  "operation_id": "3c7e9a52-4f1b-4d8e-9a6c-2b5d7e8f9a0b",
+  "record": {
+    "path": "work-packages/260928-1200-parser-fix/package.json"
+  },
+  "expected_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actor": {
+    "actor": "user",
+    "person": "kai"
+  },
+  "resources": [
+    "codebase/go/pkg/api/plan_handlers.go",
+    "codebase/go/pkg/process/"
+  ]
+}
