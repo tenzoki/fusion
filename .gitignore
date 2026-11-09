@@ -58,6 +58,7 @@ bin/*
 !bin/fusion-archive
 !bin/fusion-migrate
 !bin/fusion-tmp
+!bin/fusion-campaign
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

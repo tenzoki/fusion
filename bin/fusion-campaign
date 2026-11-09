@@ -1,0 +1,228 @@
+#!/usr/bin/env bash
+# fusion-campaign — the frame above the checkouts of one project: who holds
+# which work package at the commit the remote stands at, read out of a fetched
+# ref and never out of the working tree.
+#
+# THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION of every sub-command, of the
+# KEY=value output, of the state vocabulary and of the exit table. The row in
+# README-hooks.md and every call site summarise it and do not restate it.
+#
+# ## Usage
+#
+#   fusion-campaign overview [--window <hours>] [--ref <upstream>]
+#
+# One sub-command at this version, and of it the reduced tier: the overview
+# that needs no campaign record. The lane view, the rule checks and the
+# steering sub-commands arrive with later versions; a sub-command this script
+# does not know is a usage error, never a silent no-op.
+#
+#   --window <hours>  The overview window, a whole number of hours above zero,
+#                     24 when absent. Nothing stores it: it is a parameter of
+#                     the run and is printed back as `window_hours=`. No line
+#                     of the reduced tier depends on it yet.
+#   --ref <upstream>  The ref to read in place of the branch's upstream, e.g.
+#                     `origin/main`. With it no branch is needed, so a detached
+#                     HEAD and a branch that tracks nothing are both readable.
+#                     Its remote is the longest configured remote name that
+#                     prefixes it; a ref no remote prefixes is a local ref.
+#
+# ## `overview` — what it does, in order
+#
+# Resolve the workbench by walking up from pwd; require a git work tree;
+# resolve the branch and its upstream (or take `--ref`); fetch that remote;
+# name the commit the ref stands at; extract the tracked workbench at that
+# commit into a scratch directory; read the extract through the codec; print.
+#
+# The fetch is `git fetch <remote>` with `GIT_TERMINAL_PROMPT=0` and a batch
+# mode ssh, so a credential prompt is an immediate, reportable failure and a
+# slow transfer stays visible and interruptible. The reasons for that shape,
+# for the absence of a timeout and for fetching the whole remote are argued in
+# `bin/fusion-forum` `## Why there is no timeout`, whose state vocabulary and
+# exit codes this script takes over unchanged.
+#
+# What is extracted is the workbench manifest and setup marker, the container
+# store, the campaign store and the event log, each as the commit holds it
+# (`git archive` into a file, then `tar`); an entry in no tree at the commit is
+# left out. The store names are never spelled here: the program reads them
+# from `hooks/lib/stores.ts`, the TypeScript copy of the table `bin/fusion-stores`
+# prints, which `hooks/lib/__tests__/fusion-stores.test.ts` holds equal to it.
+#
+# ## Output of `overview`, one KEY=value per line, in this order
+#
+#   state=ok            The only state that reaches exit 0. Every other value
+#                       names why there is nothing to read against; see
+#                       `## The state vocabulary`.
+#   ref=<upstream>      The ref read: the upstream's short name, or the value
+#                       of `--ref` as given.
+#   head=<sha>          The commit that ref names AFTER the fetch. Everything
+#                       below describes the tree of this commit.
+#   head_time=<time>    That commit's committer time.
+#   age_minutes=<n>     Whole minutes from `head_time` to now, never below 0.
+#                       It is the age of the newest push to the ref, and so the
+#                       least age of everything else on this page.
+#   window_hours=<n>    The overview window of this run.
+#   campaigns=<n>       The campaign files at the commit, as the codec's `list`
+#                       names them. The reduced tier evaluates none: above 0, a
+#                       `note=campaigns-not-evaluated` line says so.
+#   held=<checkout>\t<alias|->\t<package>\t<last_push|none>\t<waits>
+#                       One line per package whose control file reads `claimed`
+#                       at the commit, TAB-separated, ascending by checkout,
+#                       then by package. Zero lines is an answer: nobody holds
+#                       anything at that commit.
+#                         checkout   the eight hex characters the claim names
+#                         alias      the registry's name for that checkout as it
+#                                    stood at the commit
+#                                    (`bin/fusion-checkout-name resolve <hex> --at
+#                                    <head>`), `-` where the registry has no
+#                                    entry or no alias for it
+#                         package    the package's container name
+#                         last_push  see `## last_push`; `none` where the
+#                                    checkout's rows name no commit on the ref
+#                         waits      `none`, or a comma-separated list, edges
+#                                    first: `edge:<container>` per dependency
+#                                    that blocks the package (an edge on a live
+#                                    package, or an unmet condition on one that
+#                                    is not live), then `decision:<basename>`
+#                                    per open decision record inside the
+#                                    package's container, named by its
+#                                    narrative's basename
+#   note=<token>[\t<field>...]
+#                       Zero or more. A degradation that changed the answer,
+#                       stated rather than hidden; see `## The notes`.
+#
+# Every time on this page is RFC 3339 in UTC at second resolution,
+# `2026-11-09T13:04:44Z`.
+#
+# ## last_push
+#
+# The newest committer time among the commits on the ref that the checkout's
+# `commit` rows in the event log name. Which commit a row names is decided
+# over one listing of the head's ancestors, in this order: the one commit
+# whose hash the row's short hash abbreviates; else the one commit that
+# carries the row's subject and an author time within 60 seconds of the row's
+# `ts`, which is what a rebase made of the row's commit, since a rebase keeps
+# subject and author time and replaces the hash; else none, two candidates
+# included. A row is never matched by guess.
+#
+# THE FIGURE IS A LOWER BOUND ON THE PUSH. A row that names no commit and is
+# newer than the row the figure came from is counted in a
+# `note=commit-rows-unmatched` line, so an under-report is never silent. And a
+# row reaches the ref only with the commit that carries the log, so the figure
+# can trail the checkout's newest push by that one commit. The measurement
+# behind the rule, and the three alternatives it ruled out, are in
+# `hooks/lib/campaign.ts`.
+#
+# ## The notes
+#
+#   commit-rows-unmatched\t<checkout>\t<count>\t<time>
+#       `<count>` rows by that checkout name no commit on the ref and are newer
+#       than the row its `last_push` came from; `<time>` is the newest such
+#       row's `ts`. With `last_push` `none`, every row of the checkout that
+#       names nothing is counted.
+#   no-commit-rows\t<checkout>
+#       The event log at the commit carries no `commit` row by that checkout,
+#       so its `last_push` is `none` and no time was guessed.
+#   event-log-untracked
+#       The event log is in no tree at the commit; every `last_push` is `none`.
+#   log-lines-unreadable\t<count>
+#       That many lines of the event log are no JSON object, or are `commit`
+#       rows without a `detail` or a readable `ts`. They were left out.
+#   registry-unreadable\t<checkout>\t<exit code>
+#       `bin/fusion-checkout-name` could not look the checkout up at the commit
+#       (its exit code: 6 where the registry could not be read there, -1 where
+#       the helper could not be started), so the alias column carries `-` for
+#       a lookup that did not happen.
+#   package-unreadable\t<package>\t<class>/<reason>
+#       The codec reports that package's control file unreadable at the commit.
+#       It is outside the read; a claim it carries prints no `held=` line.
+#   campaigns-not-evaluated\t<count>
+#       Campaign files stand at the commit and this version reads none.
+#   local-ref
+#       The ref belongs to no remote, so no fetch was owed and the answer is as
+#       local as the ref is.
+#
+# ## Exit codes
+#
+#   0  the printed answer is the answer, `state=ok`; no `held=` line included.
+#   1  the helper itself could not run: the compiled hooks or the codec bundle
+#      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
+#      `tar` failed where no state names the failure, or an internal error.
+#      The reason is on stderr and nothing is on stdout.
+#   2  usage error: no sub-command or an unknown one, an unknown or repeated
+#      flag, a flag without its value, `--window` that is no whole number above
+#      zero, `--ref` that is empty or begins with a dash.
+#   3  no fusion workbench above pwd.
+#   4  the workbench at the commit was not read: the codec's gate refused it by
+#      name (`legacy`, a workbench without its manifest at that commit, or
+#      `unsupported`), or the codec refused a read or gave no answer. The cause
+#      is on stderr and NOTHING is on stdout: a named failure and never an
+#      empty overview.
+#   5  nothing to read against: `state=` is `no-work-tree`, `no-branch`,
+#      `no-upstream`, `upstream-unresolved` or `workbench-untracked`.
+#   6  the fetch did not complete, `state=fetch-failed`. git's own stderr is
+#      passed through unmodified.
+#   7  the workbench is not inside this repository,
+#      `state=workbench-outside-repo`.
+#
+# 2, 3, 5, 6 and 7 are `bin/fusion-forum`'s numbers with its meanings; 1 and 4
+# are this script's own, that script having no codec to fail and no compiled
+# half to miss.
+#
+# ## The state vocabulary
+#
+# The values and the order in which they are tested are those of
+# `bin/fusion-forum` `## The state vocabulary`, which argues each.
+#
+#   ok                      Exit 0. The lines above are the answer.
+#   no-work-tree            Exit 5. A workbench and no repository, so no remote
+#                           and no ref.
+#   no-branch               Exit 5. Detached HEAD and no `--ref`: a detached
+#                           HEAD has no upstream, and none is guessed.
+#   no-upstream             Exit 5. The branch tracks nothing and no `--ref`
+#                           was given; `origin` is never assumed.
+#   upstream-unresolved     Exit 5. The upstream, or the ref `--ref` names,
+#                           resolves to no commit even after the fetch.
+#   workbench-untracked     Exit 5. The workbench is in no tree at the commit:
+#                           the project does not track it there, so nothing
+#                           another checkout wrote can arrive by fetch, and an
+#                           overview with no `held=` line would be a false
+#                           answer.
+#   fetch-failed            Exit 6.
+#   workbench-outside-repo  Exit 7. The workbench marker sits in an ancestor of
+#                           the repository, so the workbench has no path in a
+#                           commit.
+#
+# On a state other than `ok` the `state=` line is followed by `branch=<name>`
+# and `ref=<upstream>` as far as each was resolved before the read stopped,
+# and by nothing else. With `--ref` no `branch=` line is printed.
+#
+# ## What it touches
+#
+# The fetch updates the repository's remote-tracking refs, as any fetch does.
+# Nothing in the working tree is read except to find the workbench and the
+# repository's root, and nothing in it is written: `git status --porcelain` is
+# the same before and after. The one thing written is a scratch directory
+# under what `bin/fusion-tmp path` prints, removed on every way out, an
+# interrupt included. One side effect is that helper's and not this one's: on
+# the first run in a checkout that has no identifier yet, the identity helper
+# it calls mints one, as it does for every program that asks.
+#
+# It sends the codec no mutation. No cache, no index, no record: the overview
+# is recomputed per run and discarded.
+#
+# The work is hooks/dist/campaign.js, resolved relative to this script rather
+# than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run
+# their own build, their own codec bundle and their own sibling helpers. node
+# is already a hard requirement: the plugin's hooks are node programs.
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/campaign.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-campaign: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 1
+fi
+
+exec node "$entry" "$@"
