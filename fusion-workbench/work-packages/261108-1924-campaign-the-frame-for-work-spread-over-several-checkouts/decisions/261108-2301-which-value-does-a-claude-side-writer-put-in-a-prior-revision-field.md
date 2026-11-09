@@ -34,3 +34,5 @@
 Option 1, as the interim rule, with Prior asked which of the three it wants. `charter.revision` (an opaque label) is `prior-opaque:r<n>`, `n` incremented at every amendment; `baseline_hash`, `register`, `formation` and `completion_evidence` stay null, the last until `end`. The plan's step 16 implements the rule in one function, so Prior's answer changes one place.
 
 Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Rulings on the planner's decisions` — option 1, as recommended; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.
+
+Superseded by: `261109-1238-by-which-build-route-does-the-claude-side-writer-produce-priors-charter-hash-and-state-revision.md` — Prior does not admit the interim rule under the label `prior-json-sha256:`, and the premise that fusion cannot reproduce Prior's hashes was false for the source tree; no campaign was written under the interim rule.

@@ -58,3 +58,5 @@ We recommend leaving `archived.json`, `minimal.json`, `with-register-and-formati
 Option 1, in its `show` form. It is the one route on which Prior's condition is met by the artefact both hosts already run and the committed-bundle gate already covers, at the smallest measured cost and with no schema file changed. Option 2 answers the condition for the Claude side alone and adds a second artefact with its own gate. Option 3 is a different work package. Option 4 would tell Prior that fusion cannot do what its tree measurably can.
 
 The recommendation is contingent on one point nobody has determined: that Prior's host accepts an added member on the `show` answer for a campaign. The plan names it in what a re-pin request would carry.
+
+Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Rulings after Prior's answer to request 80` — option 1, the codec computes the two values read-only on `show` of a campaign; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.
