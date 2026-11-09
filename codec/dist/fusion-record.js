@@ -8415,8 +8415,11 @@ function resolveCurrent(wb, path, role) {
   return err("unknown-scope", "archived-path", `${where}; ${ARCHIVE_DIR}/ is historical storage and no current scope`);
 }
 var KINDS = ["package", "issue", "plan", "discussion", "decision", "evidence"];
+var CAMPAIGN_KIND = "campaign";
 var RECORD_KINDS = ["issue", "plan", "discussion", "decision"];
 var EVIDENCE_SCHEMA_ID = "urn:fusion:schema:fusion.evidence/v1";
+var CAMPAIGN_SCHEMA_ID = "urn:fusion:schema:fusion.campaign/v1";
+var CAMPAIGN_FILE = "campaign.json";
 function readPair(wb, path, set = schemas()) {
   const abs = resolveCurrent(wb, path, "record");
   if (!abs.ok) return abs;
@@ -8435,16 +8438,18 @@ function readPair(wb, path, set = schemas()) {
   const schemaId = SCHEMA_ID_PREFIX + schemaField2;
   if (set.document(schemaId) === void 0) return err("unsupported-format", "unknown-schema", `${path} declares ${schemaField2}; loaded: ${set.ids().join(", ")}`);
   const kind = kindOf(schemaId, control);
-  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField2}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a control file is a package, an issue, plan, discussion or decision record, or an evidence record`);
+  if (kind === null) return err("unsupported-format", "not-a-pair-kind", `${path} declares ${schemaField2}${schemaId === RECORD_SCHEMA_ID ? ` with kind ${JSON.stringify(control.kind)}` : ""}; a control file is a package, an issue, plan, discussion or decision record, an evidence record, or a campaign`);
   const evidence = kind === "evidence";
+  const narrative = evidence || kind === CAMPAIGN_KIND ? null : narrativeOf(wb, control);
   return {
     ok: true,
-    value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative: evidence ? null : narrativeOf(wb, control), report: evidence ? reportOf(wb, control) : null }
+    value: { path, kind, schemaId, control, bytes, revision: revisionOf(bytes), narrative, report: evidence ? reportOf(wb, control) : null }
   };
 }
 function kindOf(schemaId, control) {
   if (schemaId === PACKAGE_SCHEMA_ID) return "package";
   if (schemaId === EVIDENCE_SCHEMA_ID) return "evidence";
+  if (schemaId === CAMPAIGN_SCHEMA_ID) return CAMPAIGN_KIND;
   if (schemaId === RECORD_SCHEMA_ID && typeof control.kind === "string" && RECORD_KINDS.includes(control.kind)) return control.kind;
   return null;
 }
@@ -8489,7 +8494,7 @@ function reportProblem(pair) {
   if (report.stored !== report.sha256) return { class: "missing-evidence", reason: "report-changed", detail: `the report ${report.path} is ${report.stored}; the evidence record names ${String(report.sha256)}` };
   return null;
 }
-var isControlFile = (name) => name === "package.json" || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
+var isControlFile = (name) => name === "package.json" || name === CAMPAIGN_FILE || name.endsWith(".record.json") || name.endsWith(EVIDENCE_SUFFIX);
 function controlFiles(wb, dir) {
   const out = [];
   const walk = (d) => {
@@ -11364,7 +11369,11 @@ function migration(wb, req, kernel) {
       return mutate(wb, req, migrationRollback(req), kernel, EVERY_STATE);
   }
 }
-var stateOf = (pair) => pair.kind === "package" ? pair.control.status : pair.control.control?.state ?? null;
+var stateOf = (pair) => {
+  if (pair.kind === "package") return pair.control.status;
+  const holder = pair.kind === CAMPAIGN_KIND ? pair.control.state : pair.control.control;
+  return holder?.state ?? null;
+};
 function scopeDir(wb, scope) {
   if (scope === void 0) return { ok: true, dir: wb.root };
   const abs = resolveCurrent(wb, scope, "scope");
@@ -11415,13 +11424,15 @@ function findingsOf(wb, path) {
     findings.push({ path, ...schema });
     return findings;
   }
+  const campaign = pair.kind === CAMPAIGN_KIND;
   const state = stateOf(pair);
-  if (typeof state === "string") {
+  if (!campaign && typeof state === "string") {
     const rules = stateRules(pair.kind, state, rulePayload(pair));
     if (!rules.ok) findings.push({ path, class: rules.class, reason: "state-rules", detail: rules.reason });
   }
   if (pair.kind === "evidence") {
     for (const e of [reportProblem(pair), evidenceNaming(pair)]) if (e !== null) findings.push({ path, class: e.class, reason: e.reason, detail: e.detail });
+  } else if (campaign) {
   } else if (pair.narrative === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-unnamed", detail: "the record names no narrative" });
   else if (pair.narrative.sha256 === null) findings.push({ path, class: "unresolved-reference", reason: "narrative-missing", detail: `${pair.narrative.path} does not exist` });
   if (wb.id !== null && pair.control.workbench_id !== wb.id) {
@@ -11755,11 +11766,9 @@ function payloadAdmitted(req) {
 }
 function transitionPlan(req, precheck) {
   return (ctx) => {
-    const r = ctx.readPair(req.record.path);
+    const r = mutablePair(ctx, req);
     if (!r.ok) return r;
     const pair = r.value;
-    const cas = ctx.cas(pair, req.expected_revision);
-    if (!cas.ok) return cas;
     if (pair.kind === "evidence") {
       return refusal2("conflict", "evidence-immutable", `${req.record.path} is an evidence record, which has no lifecycle and is immutable once accepted (spec 4.4); a correction is a new record naming it as predecessor`);
     }
@@ -12003,12 +12012,19 @@ function takeoverPlan(req, takeover) {
   };
 }
 var isTerminal = (kind, state) => typeof state === "string" && (transitions().kinds[kind]?.terminal.includes(state) ?? false);
-function livePackage(ctx, req, op, does) {
+function mutablePair(ctx, req) {
   const r = ctx.readPair(req.record.path);
   if (!r.ok) return r;
+  if (r.value.kind === CAMPAIGN_KIND) {
+    return refusal2("unsupported-format", "not-a-pair-kind", `${req.record.path} is a campaign, which the codec reads (list, show, validate) and no operation of it writes; the Claude-side writer of a campaign is bin/fusion-campaign`);
+  }
+  const cas = ctx.cas(r.value, req.expected_revision);
+  return cas.ok ? r : cas;
+}
+function livePackage(ctx, req, op, does) {
+  const r = mutablePair(ctx, req);
+  if (!r.ok) return r;
   const pair = r.value;
-  const cas = ctx.cas(pair, req.expected_revision);
-  if (!cas.ok) return cas;
   if (pair.kind !== "package") return refusal2("schema-invalid", "not-a-package", `${req.record.path} is a ${pair.kind} record; ${op} ${does}`);
   const status = pair.control.status;
   if (isTerminal("package", status)) return refusal2("conflict", "package-terminal", `the package is ${String(status)}, which is terminal; its record is history and ${op} writes nothing into it`);
@@ -12302,6 +12318,7 @@ function referenceSites(pair) {
   };
   const c = pair.control;
   const backup = () => add("/provenance/backup", field(c.provenance, "backup"));
+  if (pair.kind === CAMPAIGN_KIND) return sites;
   if (pair.kind === "evidence") {
     add("/report", c.report);
     add("/predecessor", c.predecessor);
@@ -15075,9 +15092,9 @@ var protocol_schema_default = {
         path: {
           allOf: [
             { $ref: "urn:fusion:schema:fusion.common/v1#/$defs/workbench_path" },
-            { type: "string", pattern: "(^|/)(package|[^/]+\\.record|[^/]+\\.evidence)\\.json$" }
+            { type: "string", pattern: "(^|/)(package|campaign|[^/]+\\.record|[^/]+\\.evidence)\\.json$" }
           ],
-          description: "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json. The pattern also admits an evidence record's file, <store>/<name>.evidence.json, a correction's <basename>.<n>.evidence.json included; inspect's kinds say whether the codec reads that kind."
+          description: "The control file of the pair, workbench-relative: work-packages/<d>/package.json or <store>/<name>.record.json. The pattern also admits an evidence record's file, <store>/<name>.evidence.json, a correction's <basename>.<n>.evidence.json included; inspect's kinds say whether the codec reads that kind. It admits a campaign's file too, campaigns/<campaign_id>/campaign.json, as a read-only selector: show and validate read the campaign it names, as list does through its walk, though inspect's kinds does not name the kind campaign, and every operation that carries expected_revision refuses a campaign unsupported-format/not-a-pair-kind, since the codec writes no campaign."
         }
       }
     }

@@ -21,7 +21,6 @@ import {
   OPERATIONS,
   IMPLEMENTED_OPERATIONS,
   LANDS_IN,
-  PROTOCOL_SCHEMA_ID,
   type AdoptPlanRequest,
   type AttachEvidenceRequest,
   type EvidenceRef,
@@ -42,7 +41,7 @@ import { CutReached, mutate, readContext } from "../kernel.js";
 import { controlFiles, KINDS, lockPathFor, openWorkbench, revisionOf, serialise, type Pair, type Result } from "../store.js";
 import { MAX_RECORD_BYTES, strictParse } from "../strict-json.js";
 import { transitions } from "../transitions.js";
-import { loadSchemas, validate } from "../validate.js";
+import { loadSchemas } from "../validate.js";
 import { placeEvidence, seedCorrection, seedEvidence, trySeedCorrection, type SeedOptions, type Seeded } from "./helpers/seed.js";
 
 // Pass-through spies, so `reconcile`'s work can be counted (whole-store walks,
@@ -54,12 +53,6 @@ vi.mock("../store.js", async (importOriginal) => {
 vi.mock("../strict-json.js", async (importOriginal) => {
   const strict = await importOriginal<typeof import("../strict-json.js")>();
   return { ...strict, strictParse: vi.fn(strict.strictParse) };
-});
-// Pass-through too: the campaign cases let one hand-built request past the
-// protocol schema (`past`, below) and restore the validator after it.
-vi.mock("../validate.js", async (importOriginal) => {
-  const validation = await importOriginal<typeof import("../validate.js")>();
-  return { ...validation, validate: vi.fn(validation.validate) };
 });
 
 const FIXTURE = fileURLToPath(new URL("../../fixtures/workbench/", import.meta.url));
@@ -4816,13 +4809,11 @@ describe("maintenance: the fence (request 39)", () => {
 // --- a campaign (campaign plan, step 3) ------------------------------------------------
 //
 // The codec reads a campaign and writes none. `list`, a `validate` of the
-// whole workbench and `reconcile` reach one through the walk, by `dispatch` as
-// it stands. A request that NAMES the path is hand-built: the protocol
-// schema's `record_selector` admits no `campaign.json` before the plan's
-// schema step, so `past` lets that one request past the protocol schema and
-// past nothing else. The request then takes `dispatch`'s own route, the
-// kernel included, so the refusals below are the ones a host would be
-// answered once the selector admits the path.
+// whole workbench and `reconcile` reach one through the walk; a request that
+// NAMES the path is admitted by the protocol schema's `record_selector` as a
+// read-only selector. Every request below goes through `dispatch` as it
+// stands, the protocol schema and the kernel included, so the refusals are
+// the ones a host is answered.
 
 describe("a campaign: read as kind campaign, written by no operation", () => {
   const CAMPAIGN = "campaigns/camp-2026-09-parser/campaign.json";
@@ -4832,16 +4823,6 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
   const place = (value: Record<string, unknown> = minimal(), path: string = CAMPAIGN): void => {
     mkdirSync(join(root, path, ".."), { recursive: true });
     writeFileSync(join(root, path), serialise(value));
-  };
-  const past = async (request: object): Promise<Response> => {
-    const spy = vi.mocked(validate);
-    const real = spy.getMockImplementation() as typeof validate;
-    spy.mockImplementation((schemaId, value) => (schemaId === PROTOCOL_SCHEMA_ID ? { ok: true } : real(schemaId, value)));
-    try {
-      return await dispatch(request);
-    } finally {
-      spy.mockImplementation(real);
-    }
   };
   type Row = Record<string, unknown>;
   const rows = async (scope?: string): Promise<Row[]> => okResult(await dispatch({ op: "list", workbench: root, ...(scope !== undefined ? { scope } : {}) })).records as Row[];
@@ -4873,7 +4854,7 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
 
   it("show: the control as stored and the revision of the stored bytes; narrative null and no report member", async () => {
     place();
-    const result = okResult(await past({ op: "show", workbench: root, record: { path: CAMPAIGN } }));
+    const result = okResult(await dispatch({ op: "show", workbench: root, record: { path: CAMPAIGN } }));
     expect(result).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: revision(CAMPAIGN), narrative: null });
   });
 
@@ -4881,7 +4862,7 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
     place();
     expect(transitions().kinds["campaign"]).toBeUndefined();
     expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 4, valid: true, findings: [] });
-    expect(okResult(await past({ op: "validate", workbench: root, record: { path: CAMPAIGN } }))).toMatchObject({ checked: 1, valid: true, findings: [] });
+    expect(okResult(await dispatch({ op: "validate", workbench: root, record: { path: CAMPAIGN } }))).toMatchObject({ checked: 1, valid: true, findings: [] });
     place(fixture("campaign/archived.json"));
     expect(okResult(await dispatch({ op: "validate", workbench: root }))).toMatchObject({ checked: 4, valid: true, findings: [] });
   });
@@ -4900,7 +4881,7 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
       place();
       const before = bytesOf(CAMPAIGN);
       for (const expected_revision of [revision(CAMPAIGN), `sha256:${"a".repeat(64)}`]) {
-        const r = await past({ ...fixture(`protocol/${name}.json`), workbench: root, operation_id: randomUUID(), record: { path: CAMPAIGN }, expected_revision });
+        const r = await dispatch({ ...fixture(`protocol/${name}.json`), workbench: root, operation_id: randomUUID(), record: { path: CAMPAIGN }, expected_revision });
         expect(r, name).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "not-a-pair-kind" } });
         if (r.ok) continue;
         expect(r.error.detail).toContain(CAMPAIGN);
@@ -4915,8 +4896,8 @@ describe("a campaign: read as kind campaign, written by no operation", () => {
 
   it("the refusal is the campaign's alone: the same requests on a package are judged as before", async () => {
     place();
-    expect(await past(transitionRequest())).toMatchObject({ ok: true, result: { path: OPEN, from: "open", to: "claimed" } });
-    expect(await past(transitionRequest({ operation_id: randomUUID(), expected_revision: `sha256:${"a".repeat(64)}` }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
+    expect(await dispatch(transitionRequest())).toMatchObject({ ok: true, result: { path: OPEN, from: "open", to: "claimed" } });
+    expect(await dispatch(transitionRequest({ operation_id: randomUUID(), expected_revision: `sha256:${"a".repeat(64)}` }))).toMatchObject({ ok: false, error: { class: "conflict", reason: "revision-mismatch" } });
   });
 
   it("reconcile: a valid campaign adds to the count and to no section; an invalid one is a records finding and nothing else", async () => {

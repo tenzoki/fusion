@@ -30,9 +30,20 @@
 // is recorded as the literal `<workbench>` in every request and response and
 // put back at replay. The rule and the replay procedure are in the fixtures'
 // own `README.md`, which is for the Prior side.
+//
+// ## The campaign read (campaign plan, step 5)
+//
+// A second, separate round trip at the end of this file: the minimal campaign
+// fixture placed at `campaigns/<campaign_id>/campaign.json` in a scratch
+// workbench of its own, then `show`, `validate`, `list` and a refused
+// `transition`, each by `node` on the committed bundle, which is how Prior
+// runs it. It has its own workbench and is no part of the recorded session:
+// a campaign file in the six exchanges' workbench would move `06-validate`'s
+// count and with it the golden the Prior side replays.
 // ---------------------------------------------------------------------------
 
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -42,7 +53,9 @@ import type { Response } from "../cli/protocol.js";
 
 const CODEC_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const WRAPPER = resolve(CODEC_DIR, "../bin/fusion-record");
+const BUNDLE = join(CODEC_DIR, "dist", "fusion-record.js");
 const FIXTURE = join(CODEC_DIR, "fixtures", "workbench");
+const VALID = join(CODEC_DIR, "fixtures", "valid");
 const SESSION = join(CODEC_DIR, "fixtures", "protocol-session");
 const UPDATE = process.env.UPDATE_PROTOCOL_SESSION === "1";
 
@@ -251,5 +264,79 @@ describe("the wrapper's own two answers", () => {
     expect(r.status).toBe(3);
     expect(r.stdout).toBe("");
     expect(r.stderr).toMatch(/^fusion-record: .*codec\/dist\/fusion-record\.js is missing/);
+  });
+});
+
+describe("a campaign read through the bundle: show, validate, list, and a transition refused", () => {
+  const CAMPAIGN = "campaigns/camp-2026-09-parser/campaign.json";
+  const MINIMAL = join(VALID, "campaign", "minimal.json");
+  let scratch: string;
+  let workbench: string;
+
+  /** A valid protocol fixture as a request against the scratch workbench. */
+  const fixtureRequest = (name: string, over: Record<string, unknown> = {}): Record<string, unknown> => ({
+    ...(JSON.parse(readFileSync(join(VALID, "protocol", name), "utf-8")) as Record<string, unknown>),
+    workbench,
+    ...over,
+  });
+
+  /** One request to `node dist/fusion-record.js`; the answer is one line on stdout, exit 0, whatever its `ok`. */
+  const ask = (request: Record<string, unknown>): Response => {
+    const { FUSION_WORKBENCH: _drop, ...env } = process.env;
+    const r = spawnSync(process.execPath, [BUNDLE], { input: requestBytes(request), cwd: scratch, encoding: "utf-8", env });
+    expect(r.status, `${String(request.op)}: ${r.stderr}`).toBe(0);
+    expect(r.stderr, String(request.op)).toBe("");
+    expect(r.stdout.endsWith("\n"), String(request.op)).toBe(true);
+    expect(r.stdout.trim().split("\n"), String(request.op)).toHaveLength(1);
+    return parse(r.stdout);
+  };
+  const answered = (request: Record<string, unknown>): Record<string, unknown> => {
+    const response = ask(request);
+    expect(response.ok, `${String(request.op)}: ${JSON.stringify(response)}`).toBe(true);
+    if (!response.ok) throw new Error("unreachable");
+    return response.result as Record<string, unknown>;
+  };
+  const stored = (): Buffer => readFileSync(join(workbench, CAMPAIGN));
+  const storedRevision = (): string => "sha256:" + createHash("sha256").update(stored()).digest("hex");
+  const minimal = (): Record<string, unknown> => JSON.parse(readFileSync(MINIMAL, "utf-8")) as Record<string, unknown>;
+
+  beforeAll(() => {
+    scratch = mkdtempSync(join(tmpdir(), "codec-round-trip-campaign-"));
+    workbench = join(scratch, "fusion-workbench");
+    cpSync(FIXTURE, workbench, { recursive: true });
+    mkdirSync(dirname(join(workbench, CAMPAIGN)), { recursive: true });
+    // The fixture's own bytes, as Prior or bin/fusion-campaign would have left them: the codec reads what is stored.
+    cpSync(MINIMAL, join(workbench, CAMPAIGN));
+  });
+
+  afterAll(() => {
+    if (scratch !== undefined) rmSync(scratch, { recursive: true, force: true });
+  });
+
+  it("show: kind campaign, the control as stored, the revision of the stored bytes, no narrative", () => {
+    expect(answered(fixtureRequest("show-campaign.json"))).toEqual({ path: CAMPAIGN, kind: "campaign", control: minimal(), revision: storedRevision(), narrative: null });
+  });
+
+  it("validate: the campaign alone is one pair checked and valid, and the workbench holding it stays valid", () => {
+    expect(answered(fixtureRequest("validate-campaign.json"))).toMatchObject({ checked: 1, valid: true, findings: [] });
+    expect(answered({ op: "validate", workbench })).toMatchObject({ checked: 4, valid: true, findings: [] });
+  });
+
+  it("list: one row under campaigns/, kind campaign, the campaign's own state as status", () => {
+    expect(answered({ op: "list", workbench, scope: "campaigns" }).records).toEqual([{ path: CAMPAIGN, kind: "campaign", id: minimal().id, status: "draft", revision: storedRevision(), narrative: null }]);
+    const all = answered({ op: "list", workbench }).records as Array<Record<string, unknown>>;
+    expect(all.filter((row) => row.kind === "campaign").map((row) => row.path)).toEqual([CAMPAIGN]);
+    expect(all).toHaveLength(4);
+  });
+
+  it("transition: refused unsupported-format/not-a-pair-kind at the stored revision, naming bin/fusion-campaign, and the file is untouched", () => {
+    const before = stored();
+    // At the stored revision, so the compare-and-swap would pass: the campaign refusal is all that stands before a write.
+    const response = ask(fixtureRequest("transition-campaign-path.json", { expected_revision: storedRevision() }));
+    expect(response).toMatchObject({ ok: false, error: { class: "unsupported-format", reason: "not-a-pair-kind" } });
+    if (response.ok) throw new Error("unreachable");
+    expect(response.error.detail).toContain(CAMPAIGN);
+    expect(response.error.detail).toContain("bin/fusion-campaign");
+    expect(stored().equals(before)).toBe(true);
   });
 });

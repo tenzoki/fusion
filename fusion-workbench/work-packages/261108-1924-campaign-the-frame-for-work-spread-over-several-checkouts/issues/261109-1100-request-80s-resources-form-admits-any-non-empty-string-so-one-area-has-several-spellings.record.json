@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "14cbf494-35d7-4f10-bbe4-a0abb22add8d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/issues/261109-1100-request-80s-resources-form-admits-any-non-empty-string-so-one-area-has-several-spellings.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "2f1ce8ae-31ac-489f-a559-55c0cb3a6e9f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/issues/261109-1100-request-80s-lanes-form-types-a-lane-revision-as-a-prior-hash-and-states-no-uniqueness-rule.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
