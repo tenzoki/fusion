@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "8e61d765-0559-41d4-9878-3303056f45d3",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261110-1335-the-five-issues-of-the-campaign-closing-review/issues/261110-2045-the-citation-sweep-rewrites-a-review-an-evidence-record-binds-by-hash-and-the-reviewer-wrote-store-prefixed-citations-into-one.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

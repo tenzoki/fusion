@@ -59,8 +59,8 @@
       {
         "ref": {
           "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
-          "record_id": "957606fa-9468-4d16-adb8-ebef9d0e5b2d",
-          "revision": "sha256:e61795cd9c91fe0e9d665799359e2c9b026822cb1e94641be4764a948e5cf497"
+          "record_id": "e55ce4ff-f055-4132-93ce-03007ff3314e",
+          "revision": "sha256:24c86574a4e23623f4810370204c99f50543a83c3bd84a227ec387e170ddb7da"
         },
         "policy": "claude-guided"
       }
