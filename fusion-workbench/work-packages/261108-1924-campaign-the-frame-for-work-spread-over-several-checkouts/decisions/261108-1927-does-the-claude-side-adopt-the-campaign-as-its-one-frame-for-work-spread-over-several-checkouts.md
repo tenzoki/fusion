@@ -87,3 +87,5 @@ What the specification settles next, not answered here, are the report's eight o
 
 ---
 Answered: 261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md `## Directive` — option 1, the campaign is the one Claude-side frame for work spread over several checkouts, and the three rulings in `## Rulings this adoption supersedes` are superseded as recorded there; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+Implemented: 15530b7c — the campaign is the Claude-side frame on branch campaign, 2ce4c4da..15530b7c, version 13.5.0: codec (campaign kind, lanes, lane rules, resources, set-resources), bin/fusion-campaign (overview, cut, steering, sync), /fusion:campaign, docs/campaign.md; the three superseded rulings stand superseded as recorded, with README-agents.md:393 and CLAUDE.md:54 still carrying the third, filed as 261110-1323-readme-agents-and-claude-md-still-say-sessions-exchange-work-through-the-user-which-the-adoption-decision-superseded.md.

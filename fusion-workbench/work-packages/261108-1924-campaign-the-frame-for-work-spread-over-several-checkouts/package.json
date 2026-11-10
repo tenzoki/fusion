@@ -3,7 +3,7 @@
   "id": "0950a607-3d0c-4743-a213-7a1065a64051",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -52,7 +52,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "The campaign is the one Claude-side frame for work spread over several checkouts: the adoption decision recorded and three rulings superseded, the specification bound, requests 80 and 81 put to Prior, and the overview, the planning (cut) and the steering built in that order on branch campaign, 2ce4c4da..15530b7c, all 21 plan steps done, both suites green at 15530b7c. The closing review 261110-1327 returned revise with five issues (two medium, three low) filed for follow-on work.",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "957606fa-9468-4d16-adb8-ebef9d0e5b2d",
+          "revision": "sha256:e61795cd9c91fe0e9d665799359e2c9b026822cb1e94641be4764a948e5cf497"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}

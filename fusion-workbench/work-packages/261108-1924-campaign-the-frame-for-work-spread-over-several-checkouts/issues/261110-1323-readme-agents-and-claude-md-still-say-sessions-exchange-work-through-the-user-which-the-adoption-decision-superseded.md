@@ -1,0 +1,13 @@
+`README-agents.md` and `CLAUDE.md` still say concurrent sessions exchange work through the user, a ruling the adoption decision superseded
+---
+Decision `261108-1927-does-the-claude-side-adopt-the-campaign-as-its-one-frame-for-work-spread-over-several-checkouts.md` `## Rulings this adoption supersedes` §3 records the sentence "concurrent agent sessions exchange work through the user (copy-paste between chat windows) again" of `README-agents.md` `## Migration note` as superseded: campaign state and the user's rulings now travel as records carried by git, read by `bin/fusion-campaign sync` at every commit cycle. Only the bullet's historical statements stand. Neither surface was edited in `2ce4c4da..15530b7c`: `README-agents.md:393` still states the sentence in the present tense, and `CLAUDE.md:54` repeats it as a fact every session loads ("concurrent sessions exchange work through the user. Detail: `README-agents.md` `## Migration note`").
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Severity:** Medium
+**Executor:** code-implementer for `README-agents.md`; the `CLAUDE.md` line is the user's `/fusion:curate` run (`rules/fusion-workbench-conventions.md` `## A project's CLAUDE.md`), not a code edit.
+
+**Evidence.** `README-agents.md:393` (the bullet "Bus protocol removed (v3.15.0)"); `CLAUDE.md:54`; the decision's §3 "What replaces 'through the user'" and "What stands of the note"; the spec `261108-2135-spec-campaign-the-frame-for-work-spread-over-several-checkouts.md` line 234 (the table row "Superseded for campaign state and rulings, which travel as records; no bus returns and the message store is unchanged"). `docs/campaign.md` `## What travels` is the page that now states what replaced the sentence. The plan's step 20 edits `README-agents.md` for the skills table only.
+
+**Acceptance.** `README-agents.md` `## Migration note` keeps the bullet's historical statements (the bus was removed in v3.15.0, its decision records left the workbench, the reviewer files issues) and states that since 13.5.0 campaign state and rulings travel as records read by `bin/fusion-campaign sync`, pointing at `docs/campaign.md`; `CLAUDE.md:54` keeps its one pointer line with a lead that is true (the bus is gone; what travels between sessions is `docs/campaign.md`'s). `grep -n "exchange work through the user" README-agents.md CLAUDE.md` then prints nothing in the present tense.
+
+**Cross-references:** `261108-1927-does-the-claude-side-adopt-the-campaign-as-its-one-frame-for-work-spread-over-several-checkouts.md`, `261108-2135-spec-campaign-the-frame-for-work-spread-over-several-checkouts.md`, `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md`

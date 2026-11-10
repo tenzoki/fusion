@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "957606fa-9468-4d16-adb8-ebef9d0e5b2d",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "a380a8298d1f7fc33b21bb6fc53da2e3bacd0976",
+    "git_range": null
+  },
+  "brief_revision": "sha256:79b972b5cfe725db1b27cea8a16c65ce8da3dfb6befbf552cb722a86875613fa",
+  "plan_revision": "sha256:21895efec5cf0ab90efdd3b318e92f887df210f39019cf0008320648535a259a",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.5.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/reviews/261110-1327-reviewer-closing-pass-over-the-campaign-package.md",
+    "sha256": "sha256:fc2feb2977547256c5d50034c7154971d7ad0c11802254f72e4652234b652115",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-11-10T12:27:47Z",
+  "extensions": {}
+}

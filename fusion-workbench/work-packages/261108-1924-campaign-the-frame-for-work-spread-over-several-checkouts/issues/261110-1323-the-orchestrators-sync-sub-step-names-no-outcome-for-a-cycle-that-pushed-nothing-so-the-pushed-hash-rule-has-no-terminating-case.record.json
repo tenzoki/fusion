@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "1b4c6486-31bf-4cd7-bb6c-0f488eb0273c",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/issues/261110-1323-the-orchestrators-sync-sub-step-names-no-outcome-for-a-cycle-that-pushed-nothing-so-the-pushed-hash-rule-has-no-terminating-case.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

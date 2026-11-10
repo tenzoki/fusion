@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "5f84bec4-eeef-47fb-98e6-777d918f4d9f",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts/issues/261110-1323-readme-agents-and-claude-md-still-say-sessions-exchange-work-through-the-user-which-the-adoption-decision-superseded.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

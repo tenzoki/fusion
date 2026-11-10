@@ -1,0 +1,13 @@
+The orchestrator's `sync` sub-step names no outcome for a cycle that pushed nothing, so the `pushed=` hash rule has no terminating case
+---
+`agents/orchestrator.md` `### Step 4 — commit` item 5a tells the orchestrator to read `bin/fusion-campaign sync`'s lines and names four outcomes: `paused=`, `state=conflict`, `state=rejected`, and "no helper or no upstream" (git's hash stands). The helper has six further outcomes on which nothing is pushed and no `pushed=` line will ever come from that cycle: `state=fetch-failed` (exit 6, offline or a credential prompt), `state=no-work-tree`, `no-branch`, `upstream-unresolved` and `workbench-untracked` (exit 5), `state=workbench-outside-repo` (exit 7), exit 4 (the workbench at the fetched head was not read) and exit 1 (the helper itself failed; nothing on stdout). Under the rule in the same item, "with no line yet, the write waits for the cycle that prints it", a closure note or an `--implementation-ref` then waits for a line that a session with a failing fetch never gets, and the prompt says neither to wait nor to fall back to git's hash. The case split of `rules/critical-stance.md` §4 is not complete.
+---
+**Filed by:** reviewer, Kai Stalmann <ks@qantr.com>
+**Severity:** Medium
+**Executor:** code-implementer (the part is `catalog/profiles/orchestrator/parts/37-claude.md`, rendered into `agents/orchestrator.md`)
+
+**Evidence.** `agents/orchestrator.md:297` (item 5a); `bin/fusion-campaign` `## Exit codes` rows 1, 4, 5, 6, 7 and `## The state vocabulary`; `hooks/campaign.ts:296-323` (`syncCycle`: on `no-ref` the `state=` line and the code, on `failed` stderr alone and exit 1 or 4). `## Closing a work package` step 4 cites "the session's commit range in `pushed=` hashes (Step 4, 5a)", so the gap reaches the closure note too.
+
+**Acceptance.** Item 5a states, for every `state=` the helper prints and for an empty stdout with exit 1 or 4, what the orchestrator does and which hash a record takes: the same rule as "no helper or no upstream" (nothing rebased, git's hash stands) or an explicit wait, named per case; `agents/orchestrator.md` is regenerated from the part, and `cd hooks && npm test` stays green (the agents surface is inside its bound at 325 835 bytes, `README-hooks.md` `### Growth bounds on the shipped text`).
+
+**Cross-references:** `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md` (step 19), `261109-1341-a-commit-hash-written-into-a-record-before-the-rebase-goes-stale-when-the-rebase-rewrites-the-commit.md`

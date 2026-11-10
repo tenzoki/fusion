@@ -17,9 +17,9 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": "261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md",
-    "implementation_ref": null,
+    "implementation_ref": "15530b7c",
     "superseded_by": null,
     "deferral": null
   }
