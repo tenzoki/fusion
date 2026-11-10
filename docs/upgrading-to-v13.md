@@ -315,6 +315,44 @@ What stays unenforced:
 The rule agents follow is `rules/fusion-workbench-conventions.md` `## Intermediate files`; the
 location, grants and outputs are documented in the header of `bin/fusion-tmp`.
 
+## 13.5.0: the campaign store
+
+13.5.0 adds the campaign: one record over work spread across several checkouts, steered from
+one session with `/fusion:campaign` and read by every other checkout's orchestrator in its commit
+step through `bin/fusion-campaign sync`. `docs/campaign.md` is the page on it. No record is
+converted and no migration runs; what the release changes in a workbench arrives with the first
+use, and the order below is what keeps every checkout able to read it.
+
+1. Run `fusion --update` on every checkout of the project and restart each session, once, before
+   any package declares areas and before a campaign is opened. A session reads its command roster
+   from the installed copy at start, so an install that predates 13.5.0 has neither the command
+   nor the helper; and a package carrying `resources` and a campaign record are each refused by
+   that install's codec, by name and not silently, so a workbench in which one checkout has
+   declared areas is unreadable to a checkout that has not updated (`docs/campaign.md`).
+2. Declare areas with `bin/fusion-write set-resources`, each entry on the user's confirmation, then
+   open the campaign. The workbench gains `campaigns/` on the first `open`, which writes
+   `campaigns/<campaign_id>/campaign.json` and creates the directory for it; nothing creates the
+   store before that write, and a workbench with no campaign carries no such directory.
+3. In a workbench a Prior host also reads, declare areas and open a campaign only after Prior has
+   re-pinned its codec to the bundle this release ships (`codec/dist/fusion-record.js`,
+   `sha256:36570a7c…`). That re-pin is request 81 in `codec/fixtures/prior/REQUESTS.md`: it is
+   asked and unanswered, and this note says nothing about the answer. Until it is answered, such
+   a workbench takes neither.
+
+**One change reaches a project with no campaign.** The orchestrator's commit step now ends with
+`bin/fusion-campaign sync` (`agents/orchestrator.md` `### Step 4 — commit`, sub-step 5a): where the
+helper is installed and the branch has an upstream, every commit cycle fetches, rebases and pushes,
+and a hash written into a record is the one the push landed, not the one `git commit` printed. With
+no helper or no upstream nothing rebases, and git's hash stands as before.
+
+What stays unenforced:
+
+- **The order is procedure.** Nothing in 13.5.0 checks that every checkout has updated before the
+  first `set-resources` or `open`; a checkout that has not meets the refusal at its next read, and
+  the way out is `fusion --update` there.
+- **The Prior condition is procedure too.** Nothing on the Claude side reads Prior's pin, and the
+  pin's state is read in `codec/fixtures/prior/REQUESTS.md` alone.
+
 ## Where to read more
 
 - `rules/fusion-workbench-conventions.md` `## Work packages`: every control field and the one
