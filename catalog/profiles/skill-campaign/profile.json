@@ -4,7 +4,10 @@
     { "file": "parts/01-claude.md", "tag": "claude" },
     { "file": "parts/02-neutral.md", "tag": "neutral" },
     { "file": "parts/03-claude.md", "tag": "claude" },
-    { "file": "parts/04-neutral.md", "tag": "neutral" }
+    { "file": "parts/04-neutral.md", "tag": "neutral" },
+    { "file": "parts/05-claude.md", "tag": "claude" },
+    { "file": "parts/06-claude.md", "tag": "claude" },
+    { "file": "parts/07-claude.md", "tag": "claude" }
   ],
   "input_schema": "schemas/entry-request.v1.json",
   "result_schema": "schemas/entry-result.v2.json",

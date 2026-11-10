@@ -1,8 +1,8 @@
-The user invoked `/fusion:campaign`. This workflow shows which checkout of this project holds which work package at the commit the remote stands at, when that checkout last pushed and what the package waits for. It reads a fetched ref: nothing in the working tree is touched and nothing is merged.
+The user invoked `/fusion:campaign`. This workflow is the steering session's view above the checkouts of this project and its hand on the campaign record: it shows which checkout holds which work package at the commit the remote stands at, when that checkout last pushed, what the package waits for and how each lane of a campaign stands; it proposes the cut of the live packages into lanes; and it opens, pauses, resumes or ends a campaign, moves a package or reassigns a lane. The overview reads a fetched ref: nothing in the working tree is touched and nothing is merged. The cut and the steering acts read and write this checkout's own working tree, where the steering session plans on its pulled tree.
 
-**The mechanism is not in this body.** The fetch, the read at the commit, the `last_push` rule, the notes, the state vocabulary and the exit codes are documented in `bin/fusion-campaign`'s own header, the authoritative text for all of it. What this body carries is the flow and the sentences the user reads.
+**The mechanism is not in this body.** The fetch, the read at the commit, the `last_push` rule, the lane view and its seven conditions, the cut's rules, every steering act with its refusals, the notes, the state vocabulary and the exit codes are documented in `bin/fusion-campaign`'s own header, the authoritative text for all of it. What this body carries is the flow and the sentences the user reads.
 
-**`overview` is the sub-command, also when none is named.** `cut`, `open`, `lanes`, `pause`, `resume`, `move`, `reassign` and `end` arrive with a later version: asked for one of them, say in one sentence that this version shows the overview only, and stop, running nothing. Any other word is no sub-command: say so and stop.
+**`overview` is the sub-command when none is named** (Steps 2 and 3). The others are `cut --checkouts <N>` (Step 4), `lanes` (Step 5) and the six steering acts `open`, `pause`, `resume`, `move`, `reassign` and `end` (Steps 6 and 7). Any other word is no sub-command: say so and stop. **No sub-command here takes `--ref`**: the overview reads the branch's upstream, the cut and the acts read this checkout's tree, and `sync` is the orchestrator's commit-cycle read and is not run from here.
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
@@ -15,7 +15,7 @@ Every user-facing sentence below is rendered in the project's chat language (`ru
 
 If the first exits non-zero, halt with *No fusion workbench found above `$(pwd)`. Run `/fusion:setup` once at the project root first.* Do not create one from here.
 
-Hold the resolver's `KEY=value` output: `$SCAN_CAMPAIGNS` and `$OUT_CAMPAIGN` are the only correct spelling of the campaign store in this body. The overview passes neither on, because the helper reads the store at the commit itself. On a non-zero exit read the code before acting; the table is in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes.
+Hold the resolver's `KEY=value` output: `$SCAN_CAMPAIGNS` and `$OUT_CAMPAIGN` are the only correct spelling of the campaign store in this body. No sub-command passes either on, because the helper finds the store itself, at the commit or in the working tree. On a non-zero exit read the code before acting; the table is in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes.
 
 ## Step 1: the helper has to be there
 
@@ -27,7 +27,7 @@ On `missing`, say this and stop:
 
 > *`/fusion:campaign` needs `bin/fusion-campaign`, and the installed copy of fusion does not carry it yet. Run `fusion --update`, then restart the session.*
 
-**Never improvise the mechanism on that branch.** No hand-rolled fetch, no `git log`, no reading a store out of the working tree.
+**Never improvise the mechanism on that branch.** No hand-rolled fetch, no `git log`, no reading or editing a record in the working tree.
 
 ## Step 2: run the overview
 
