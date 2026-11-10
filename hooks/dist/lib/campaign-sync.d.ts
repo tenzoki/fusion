@@ -80,49 +80,21 @@
  * rebased branch, the remote's branch, and a scratch directory removed on
  * every way out. No hook imports this module.
  */
-import { type FetchedRef, type NoRef } from "./campaign.js";
+import { LIVE_STATES, readCampaignsAt, type CampaignAtRef, type CampaignsRead, type FetchedRef, type NoRef, type UnreadableCampaign } from "./campaign.js";
 import { type Unread } from "./codec-read.js";
-import { type Ask, type Refusal } from "./record-client.js";
+import { type Ask } from "./record-client.js";
+export { LIVE_STATES, readCampaignsAt, type CampaignAtRef, type CampaignsRead, type UnreadableCampaign };
 /** What `sync` extracts at the fetched head: the manifest, the marker and the campaign store. */
 export declare const SYNC_ENTRIES: readonly string[];
 /** The lock tag of the settling commit. */
 export declare const SETTLE_TAG = "campaign";
-/** The states in which a campaign steers a checkout. */
-export declare const LIVE_STATES: ReadonlySet<string>;
 /** The settling commit's subject: the checkout and no hash, since the rebase may replace any. */
 export declare const settleMessage: (checkout: string | null) => string;
-/** One readable campaign at the fetched head. */
-export interface CampaignAtRef {
-    /** The directory's name, `campaigns/<id>/campaign.json`. */
-    id: string;
-    /** `state.state`. */
-    state: string;
-    /** The file's `sha256:` revision, as `list` returns it. */
-    revision: string;
-    /** `state.reason`, or null. */
-    reason: string | null;
-    /** The checkouts the lanes name, or null for a campaign without lanes. */
-    laneCheckouts: Array<string | null> | null;
-}
-/** A campaign the codec reports a finding against: outside the read, never `mine`, no row. */
-export interface UnreadableCampaign {
-    id: string;
-    problem: Refusal;
-}
-export type CampaignsRead = {
-    kind: "campaigns";
-    campaigns: CampaignAtRef[];
-    unreadable: UnreadableCampaign[];
-} | ({
-    kind: "failed";
-} & Unread);
 /** Who runs the cycle, each half null where nothing resolved it. */
 export interface Identity {
     person: string | null;
     checkout: string | null;
 }
-/** The campaigns of the workbench extracted at `workbench`, through the codec: the header's step 2. */
-export declare function readCampaignsAt(workbench: string, ask?: Ask): CampaignsRead;
 /** The header's `## Which campaign is mine`: the one campaign, or none with the note that says why two were not picked between. */
 export declare function mineOf(campaigns: CampaignAtRef[], checkout: string | null): {
     mine: CampaignAtRef | null;

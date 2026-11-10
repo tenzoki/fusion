@@ -6,11 +6,16 @@
  * header is the authoritative documentation of the output, and this header is
  * that of the mechanism.
  *
- * This is the reduced tier, the one that needs no campaign record (spec C1 of
- * `261108-2135-spec-campaign-the-frame-for-work-spread-over-several-checkouts.md`,
- * plan step 7b). The lane view and the rule checks join it with the full
- * tier; until then a campaign file at the ref is counted and not evaluated,
- * and the output says so.
+ * Two tiers in one read (spec C1 of
+ * `261108-2135-spec-campaign-the-frame-for-work-spread-over-several-checkouts.md`).
+ * The reduced tier needs no campaign record: the held packages, their last
+ * push and what each waits for (plan step 7b). The full tier reads the
+ * campaign files at the ref through the codec and adds, per live campaign
+ * with lanes, the lane view and the seven conditions of plan step 14; a
+ * campaign the codec reports a finding against is printed unreadable and
+ * evaluated no further, and a terminal campaign steers nobody, so its lanes
+ * are not evaluated either (`LIVE_STATES`, the rule `lib/campaign-sync.ts`
+ * `mineOf` applies).
  *
  * ## The sequence
  *
@@ -30,14 +35,79 @@
  *   `readOverview`  `readWorkGraph` over the extract, so the gate, the row
  *                   criterion and the placement of every dependency edge are
  *                   `lib/work-graph.ts`'s and none is restated here; one
- *                   `list` for the open decisions and the campaign files; one
- *                   `show` per claimed package for the checkout its claim
- *                   names; the extracted event log for the last push.
+ *                   `list` for the open decisions and the package rows;
+ *                   `readCampaignsAt` for the campaign files (`list` for the
+ *                   set, `reconcile` for the findings, the three lane rules
+ *                   among them, `show` per readable campaign); one `show` per
+ *                   claimed package and per lane member, for the checkout a
+ *                   claim names and the areas a package declares; the
+ *                   extracted event log for the last push and for the read
+ *                   confirmations; `git log` over the ref for the join and for
+ *                   the cross-lane check.
  *
  * Nothing here reads a workbench file from the working tree. The working tree
  * is consulted for two things: where the workbench is, and where its
  * repository's root is, which together give the path the workbench has in a
  * commit.
+ *
+ * ## The lane view and the seven conditions
+ *
+ * A lane's members are record references; each is resolved to its container
+ * through the package rows of `list`, and one that resolves to nothing is a
+ * `lane-member-unknown` note. The lane row names the checkout's alias, the
+ * packages that checkout holds (anywhere in the workbench, not only in the
+ * lane) and `next`, the first member in lane order that is live and unheld,
+ * with what it waits for in the vocabulary of `held=`. A paused member is
+ * live and unheld, so it can be `next`: the rule is stated as the plan states
+ * it, and `paused` is what the package's own status says.
+ *
+ * Each condition is one row printed only when it holds:
+ *
+ *   silent            the lane's checkout holds nothing and has no push within
+ *                     the window: decided at render time, since the window and
+ *                     the clock are the run's and not the read's (`isSilent`);
+ *   out-of-lane       a held package stands in a lane and its holder is not
+ *                     that lane's checkout; the holder's own lane in the same
+ *                     campaign, or `-` where it has none;
+ *   in-no-lane        a held package stands in no lane of any live campaign.
+ *                     Evaluated, with `out-of-lane`, only while some live
+ *                     campaign has lanes: a campaign whose `lanes` is null has
+ *                     nothing to be in or out of, and the cut is still owed;
+ *   waits-decision    the lane's `next` carries an open decision record;
+ *   handoff-possible  an edge whose source is terminal (`done` or `dropped`,
+ *                     read off the package row), whose target is live and
+ *                     unheld, and whose ends sit in different lanes of one
+ *                     campaign. Per edge: a target with two such sources
+ *                     prints two rows;
+ *   cross-lane        `## The cross-lane check` below;
+ *   unconfirmed       no `campaign_read` row by the lane's checkout names the
+ *                     campaign file's `sha256:` revision at the ref; the
+ *                     newest confirmation of any revision is printed beside
+ *                     it, so a stale confirmation is told from none.
+ *
+ * ## The cross-lane check
+ *
+ * Over `git log --name-only` from the commit that first added the campaign
+ * file (exclusive) to the ref's head: each commit is attributed to a checkout
+ * by `commitNamedBy` run the other way round, over every `commit` row of the
+ * extracted log that carries a checkout, so a commit a rebase renamed is still
+ * its checkout's; two rows of different checkouts naming one commit attribute
+ * it to nobody. Each lane's area is the union of its members' `resources`,
+ * every member counted, terminal ones included. A path is inside an area when
+ * it equals a declared path or lies under it at a `/` boundary, the one
+ * spelling `codec/schemas/package.schema.json` admits. A path of a commit by
+ * a lane's checkout that lies inside another lane's area and outside the
+ * committer lane's own is a row, one per declaring lane. An unattributed
+ * commit is a `commit-unattributed` note when one of its paths lies in some
+ * lane's area; a commit that touches no declared area could print no row
+ * whatever its attribution, so it is not a degradation and gets no note. A
+ * commit by a checkout that stands in no lane has no committer lane and
+ * prints nothing: the row compares two lanes, and the plan defines no row for
+ * it. A file several lanes share by design is declared on none of them
+ * (ruling B of 2026-11-09 in
+ * `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md`),
+ * so a commit into it prints no row: the limit is the ruling's, and the
+ * documentation page of plan step 20 states it.
  *
  * ## Which commit a commit row names
  *
@@ -99,7 +169,7 @@
  * happen inside the extract, which is removed. No hook imports this module.
  */
 import { type Unread } from "./codec-read.js";
-import { type Ask } from "./record-client.js";
+import { type Ask, type Refusal } from "./record-client.js";
 /** The `git log` format the join reads: hash, author time, committer time, subject, tab-separated. */
 export declare const COMMIT_LISTING_FORMAT = "%H%x09%at%x09%ct%x09%s";
 /** How far a row's `ts` may stand from the author time of the commit a rebase made of the row's commit. */
@@ -136,16 +206,27 @@ export declare function commitListing(text: string): CommitListing;
  * answer the other way round.
  */
 export declare function commitNamedBy(row: Pick<CommitRow, "ts" | "detail">, listing: CommitListing): ListedCommit | null;
+/** A `campaign_read` row of the event log, as far as the read confirmation reads it (`bin/fusion-campaign sync` writes it). */
+export interface ReadRow {
+    ts: string;
+    checkout: string | null;
+    /** The campaign's directory name. */
+    campaign: string;
+    /** The `sha256:` revision of the file the session read. */
+    revision: string;
+}
 /**
- * The `commit` rows of the event log's text. `parseLog` of
- * `lib/events-query.ts` is not used because it drops `detail`, the one field
- * the join cannot do without. `unreadable` counts the lines that are no JSON
- * object and the `commit` rows without a `detail` or a readable `ts`: a lost
- * row is a possible under-report, so it is counted and never skipped in
- * silence.
+ * The `commit` and `campaign_read` rows of the event log's text. `parseLog`
+ * of `lib/events-query.ts` is not used because it drops `detail`, the one
+ * field the join cannot do without. `unreadable` counts the lines that are no
+ * JSON object, the `commit` rows without a `detail` or a readable `ts`, and
+ * the `campaign_read` rows without a `campaign`, a `revision` or a readable
+ * `ts`: a lost row is a possible under-report, so it is counted and never
+ * skipped in silence.
  */
-export declare function commitRows(text: string): {
-    rows: CommitRow[];
+export declare function readLog(text: string): {
+    commits: CommitRow[];
+    reads: ReadRow[];
     unreadable: number;
 };
 /** A checkout's last push, read off its rows. Times are milliseconds. */
@@ -227,6 +308,50 @@ export declare function extractAt(at: {
     head: string;
     rel: string;
 }, entries: readonly string[], into: string): string;
+/** The states in which a campaign steers a checkout: its lanes are evaluated here and `sync` reads it as `mine`. */
+export declare const LIVE_STATES: ReadonlySet<string>;
+/** One lane of a campaign, as far as the overview and `sync` read it. */
+export interface CampaignLane {
+    id: string;
+    /** The eight hex characters the lane is assigned to, or null. */
+    checkout: string | null;
+    /** The members' record ids, in lane order. */
+    members: string[];
+}
+/** One readable campaign at the fetched head. */
+export interface CampaignAtRef {
+    /** The directory's name, `campaigns/<id>/campaign.json`. */
+    id: string;
+    /** `state.state`. */
+    state: string;
+    /** The file's `sha256:` revision, as `list` returns it. */
+    revision: string;
+    /** `state.reason`, or null. */
+    reason: string | null;
+    /** The lanes, or null for a campaign without any. */
+    lanes: CampaignLane[] | null;
+}
+/** A campaign the codec reports a finding against: outside the read, never `mine`, no row, no lane evaluated. */
+export interface UnreadableCampaign {
+    id: string;
+    problem: Refusal;
+}
+export type CampaignsRead = {
+    kind: "campaigns";
+    campaigns: CampaignAtRef[];
+    unreadable: UnreadableCampaign[];
+} | ({
+    kind: "failed";
+} & Unread);
+/**
+ * The campaigns of the workbench at `workbench` (an extract, or a working
+ * tree), through the codec: `list` for the set, `reconcile` for the findings
+ * (the three lane rules among them, which `list` alone does not carry:
+ * `codec/README.md`, "The lane rules"), `show` per readable campaign. No
+ * second parser reads a campaign. Shared by the overview and by
+ * `lib/campaign-sync.ts`.
+ */
+export declare function readCampaignsAt(workbench: string, ask?: Ask): CampaignsRead;
 /** What the overview extracts: the manifest and the marker, the two root stores, the event log. */
 export declare const OVERVIEW_ENTRIES: readonly string[];
 /** One claimed package at the ref. */
@@ -242,14 +367,72 @@ export interface Held {
     /** `edge:<container>` and `decision:<basename>` entries; empty when it waits for nothing. */
     waits: string[];
 }
+/** One lane of a live campaign at the ref. */
+export interface LaneRow {
+    campaign: string;
+    lane: string;
+    checkout: string | null;
+    alias: string | null;
+    /** The containers the lane's checkout holds, anywhere in the workbench, ascending. */
+    held: string[];
+    /** The first member in lane order that is live and unheld, or null. */
+    next: string | null;
+    /** What `next` waits for, in the vocabulary of `Held.waits`. */
+    nextWaits: string[];
+    /** The checkout's last push, milliseconds, or null; what `isSilent` reads. */
+    lastPush: number | null;
+}
+/** The six condition rows the read decides; `silent` is decided at render time. */
+export interface Conditions {
+    outOfLane: Array<{
+        checkout: string;
+        package: string;
+        packageLane: string;
+        holderLane: string | null;
+    }>;
+    inNoLane: Array<{
+        checkout: string;
+        package: string;
+    }>;
+    waitsDecision: Array<{
+        campaign: string;
+        lane: string;
+        next: string;
+        decision: string;
+    }>;
+    handoff: Array<{
+        from: string;
+        to: string;
+        fromLane: string;
+        toLane: string;
+    }>;
+    crossLane: Array<{
+        hash: string;
+        path: string;
+        committerLane: string;
+        declaringLane: string;
+    }>;
+    unconfirmed: Array<{
+        campaign: string;
+        lane: string;
+        checkout: string;
+        revision: string;
+        last: number | null;
+    }>;
+}
 export interface Overview {
     ref: string;
     head: string;
     /** The head's committer time, milliseconds. */
     headTime: number;
-    /** The campaign files at the ref, as `list` names them, readable or not. */
-    campaigns: number;
+    /** The readable campaigns at the ref, ascending by id. */
+    campaigns: CampaignAtRef[];
+    /** The campaign files the codec reports a finding against, ascending by id. */
+    unreadable: UnreadableCampaign[];
     held: Held[];
+    /** One row per lane of each live campaign, in campaign order then lane order. */
+    lanes: LaneRow[];
+    conditions: Conditions;
     /** One entry per degradation: a token, then its fields. */
     notes: string[][];
 }
@@ -261,14 +444,26 @@ export type OverviewRead = {
 } & Unread);
 /** A row of `list` that is a campaign file, readable or not; by path, because a file the codec could not read comes back with no kind. */
 export declare const isCampaignRow: (row: Record<string, unknown>) => boolean;
+/** A path is inside a declared area when it is the area or lies under it at a `/` boundary. */
+export declare const insideArea: (path: string, areas: Iterable<string>) => boolean;
+/** One commit of `git log --name-only`: its hashes and the paths it touched. */
+interface TouchedCommit {
+    hash: string;
+    short: string;
+    paths: string[];
+}
+/** The commits of `git log --format=NAME_ONLY_FORMAT --name-only <range>`, newest first, each with its paths. */
+export declare function touchedCommits(text: string): TouchedCommit[];
 /**
- * The reduced overview of the workbench extracted at `at.head`. `workbench`
- * is that extract, `cwd` the working tree the registry helper runs in.
+ * The overview of the workbench extracted at `at.head`, both tiers.
+ * `workbench` is that extract, `cwd` the working tree the registry helper
+ * runs in.
  */
 export declare function readOverview(at: {
     ref: string;
     head: string;
     gitRoot: string;
+    rel: string;
     local: boolean;
 }, workbench: string, cwd: string, options?: {
     ask?: Ask;
@@ -276,5 +471,8 @@ export declare function readOverview(at: {
 }): OverviewRead;
 /** Milliseconds as RFC 3339 in UTC at second resolution, the one time format the output carries. */
 export declare function rfc3339(ms: number): string;
+/** The `silent` condition: the lane has a checkout, it holds nothing, and its last push is none or older than the window. */
+export declare const isSilent: (lane: LaneRow, windowHours: number, now: number) => boolean;
 /** The `KEY=value` text `bin/fusion-campaign overview` prints on `state=ok`; that script's header defines every line. */
 export declare function renderOverview(o: Overview, windowHours: number, now: number): string;
+export {};

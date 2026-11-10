@@ -35,3 +35,5 @@ The spec fixes the working session's cycle as commit, then pull with rebase, the
 Option 1. The spec's order becomes, in the helper: commit (the orchestrator's Step 4 as it stands), then `fetch`, read at the fetched ref, append the row, settle the log, rebase, push. The read happens once per cycle and reads the state the remote holds, which is the state another checkout can have changed; a tracked path dirty for any other reason defers the rebase and the push is still attempted as a fast-forward.
 
 Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Rulings on the planner's decisions` — option 1, as recommended; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.
+
+Implemented: 77c35be0 (plan step 19, the orchestrator's sub-step 5a) and 7cd51fea (plan step 17, `bin/fusion-campaign sync`: commit, fetch, read at the fetched ref, append the row, settle the log, rebase, push; no stash).

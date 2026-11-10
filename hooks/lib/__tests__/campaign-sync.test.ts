@@ -157,8 +157,10 @@ describe("bin/fusion-campaign sync, the commit-cycle read", () => {
     // overview from the second clone: the pushing checkout's last_push is the committer time of its rebased commit, found by subject and author time.
     const o = run(b, {}, "overview");
     expect(o.status, o.stderr).toBe(0);
-    expect(o.lines("held")).toEqual([[A, "-", pkg.dir.slice("work-packages/".length), rfc3339(git(b, "show", "-s", "--format=%ct", pushed[0][0])), "none"].join("\t")]);
-    expect(o.lines("note")).toEqual(["campaigns-not-evaluated\t1"]);
+    const container = pkg.dir.slice("work-packages/".length);
+    expect(o.lines("held")).toEqual([[A, "-", container, rfc3339(git(b, "show", "-s", "--format=%ct", pushed[0][0])), "none"].join("\t")]);
+    // The full tier reads the campaign: its lane holds the package, and the pushed `campaign_read` row confirms the revision, so nothing is unconfirmed.
+    expect([o.value("campaigns"), o.lines("campaign"), o.lines("lane"), o.lines("unconfirmed"), o.lines("in-no-lane"), o.lines("note")]).toEqual(["1", [`${ID}\trunning\t-\t1`], [`${ID}\tlane-1\t${A}\t-\t${container}\tnone\tnone`], [], [], []]);
 
     // A decision moved to implemented through bin/fusion-write with a pushed= hash carries a ref that clone resolves.
     const control = decision.replace(/\.md$/, ".record.json");
@@ -248,7 +250,8 @@ describe("bin/fusion-campaign sync, the commit-cycle read", () => {
 });
 
 describe("mineOf and campaignReadRow", () => {
-  const c = (id: string, state: string, laneCheckouts: Array<string | null> | null): CampaignAtRef => ({ id, state, revision: `sha256:${"ab".repeat(32)}`, reason: null, laneCheckouts });
+  // Lanes with no members: `mineOf` reads a lane's checkout and nothing else of it.
+  const c = (id: string, state: string, laneCheckouts: Array<string | null> | null): CampaignAtRef => ({ id, state, revision: `sha256:${"ab".repeat(32)}`, reason: null, lanes: laneCheckouts === null ? null : laneCheckouts.map((checkout, i) => ({ id: `lane-${i + 1}`, checkout, members: [] })) });
 
   it("names the one live campaign whose lanes name the checkout, else the one without lanes, and never picks between two", () => {
     expect(mineOf([c("x", "running", [A]), c("y", "running", null)], A).mine?.id).toBe("x");

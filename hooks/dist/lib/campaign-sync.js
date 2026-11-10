@@ -81,13 +81,16 @@
  * every way out. No hook imports this module.
  */
 import { appendFileSync, existsSync, writeFileSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
-import { defaultBin, extractAt, fetchRef, HelperFailure, isCampaignRow, mustGit, run, withScratch } from "./campaign.js";
-import { blockedRead, findingsByPath, isObject, listedRecords, listOf, problemOf, refusedByGate, resultOf } from "./codec-read.js";
+import { join } from "node:path";
+import { defaultBin, extractAt, fetchRef, HelperFailure, LIVE_STATES, mustGit, readCampaignsAt, run, withScratch } from "./campaign.js";
 import { ask as askCodec } from "./record-client.js";
 import { EVENT_LOG } from "./record-change.js";
 import { SETUP_MARKER } from "./record-write.js";
 import { CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
+// The read at the fetched head, `readCampaignsAt`, and what it answers live in
+// `lib/campaign.ts` since the overview's full tier reads the same campaigns;
+// the names stay reachable from here for the callers that learned them here.
+export { LIVE_STATES, readCampaignsAt };
 /* ------------------------------------------------------------------ *
  * The vocabulary
  * ------------------------------------------------------------------ */
@@ -95,76 +98,22 @@ import { CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
 export const SYNC_ENTRIES = [WORKBENCH_MANIFEST, SETUP_MARKER, CAMPAIGN_STORE];
 /** The lock tag of the settling commit. */
 export const SETTLE_TAG = "campaign";
-/** The states in which a campaign steers a checkout. */
-export const LIVE_STATES = new Set(["running", "paused"]);
 /** The settling commit's subject: the checkout and no hash, since the rebase may replace any. */
 export const settleMessage = (checkout) => `chore(events): the commit and campaign-read rows of checkout ${checkout ?? "unknown"}`;
 /** Code-unit comparison, so every order here is the same in every locale. */
 const ascending = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 /* ------------------------------------------------------------------ *
- * The read at the fetched head
+ * Which campaign is mine
  * ------------------------------------------------------------------ */
-/** The campaigns of the workbench extracted at `workbench`, through the codec: the header's step 2. */
-export function readCampaignsAt(workbench, ask = askCodec) {
-    const failed = (unread) => ({ kind: "failed", ...unread });
-    const gated = refusedByGate(workbench, ask);
-    if (gated !== null)
-        return failed(gated);
-    const listed = listedRecords(workbench, ask);
-    if ("unread" in listed)
-        return failed(listed.unread);
-    const reconciled = resultOf(workbench, { op: "reconcile" }, ask);
-    if ("unread" in reconciled)
-        return failed(reconciled.unread);
-    const findings = listOf("reconcile", reconciled.result, "records");
-    if ("unread" in findings)
-        return failed(findings.unread);
-    const found = findingsByPath("reconcile", findings.list);
-    const campaigns = [];
-    const unreadable = [];
-    for (const row of listed.list) {
-        if (!isObject(row) || !isCampaignRow(row))
-            continue;
-        const path = row.path;
-        const id = basename(dirname(path));
-        const bad = "problem" in row ? { op: "list", problem: problemOf(row.problem) } : (found.get(path) ?? null);
-        if (bad !== null) {
-            const blocked = blockedRead(bad.op, bad.problem);
-            if (blocked !== null)
-                return failed(blocked);
-            unreadable.push({ id, problem: bad.problem });
-            continue;
-        }
-        const shown = resultOf(workbench, { op: "show", record: { path } }, ask);
-        if ("unread" in shown)
-            return failed(shown.unread);
-        const control = shown.result.control;
-        const state = isObject(control) && isObject(control.state) ? control.state : null;
-        if (state === null || typeof state.state !== "string" || typeof row.revision !== "string") {
-            return failed({ cause: "unanswered", op: "show", how: "unparseable", detail: `${path} answered no state.state or list named no revision for it` });
-        }
-        const lanes = isObject(control) && Array.isArray(control.lanes) ? control.lanes : null;
-        campaigns.push({
-            id,
-            state: state.state,
-            revision: row.revision,
-            reason: typeof state.reason === "string" ? state.reason : null,
-            laneCheckouts: lanes === null ? null : lanes.map((lane) => (isObject(lane) && typeof lane.checkout_id === "string" ? lane.checkout_id : null)),
-        });
-    }
-    campaigns.sort((a, b) => ascending(a.id, b.id));
-    unreadable.sort((a, b) => ascending(a.id, b.id));
-    return { kind: "campaigns", campaigns, unreadable };
-}
 /** The header's `## Which campaign is mine`: the one campaign, or none with the note that says why two were not picked between. */
 export function mineOf(campaigns, checkout) {
     const live = campaigns.filter((c) => LIVE_STATES.has(c.state));
-    const named = checkout === null ? [] : live.filter((c) => c.laneCheckouts !== null && c.laneCheckouts.includes(checkout));
+    const named = checkout === null ? [] : live.filter((c) => c.lanes !== null && c.lanes.some((lane) => lane.checkout === checkout));
     if (named.length === 1)
         return { mine: named[0], note: null };
     if (named.length > 1)
         return { mine: null, note: ["several-campaigns-name-checkout", checkout, named.map((c) => c.id).join(",")] };
-    const unlaned = live.filter((c) => c.laneCheckouts === null);
+    const unlaned = live.filter((c) => c.lanes === null);
     if (unlaned.length === 1)
         return { mine: unlaned[0], note: null };
     if (unlaned.length > 1)

@@ -141,6 +141,11 @@ export function setDependencies(project: JsonProject, pkg: Package, on: Array<{ 
   });
 }
 
+/** `set-resources`: the declared areas, the whole list replaced; `[]` is declared and empty. */
+export function setResources(project: JsonProject, pkg: Package, resources: string[]): Landed {
+  return mutate(project, pkg, "set-resources", { resources });
+}
+
 /** The record index of `workbench`, read through this tree's bundle and contract. */
 export function indexOf(workbench: string): IndexRead {
   return readRecordIndex(workbench, (w, r) => ask(w, r, { bundle: BUNDLE }), resolve(REPO_ROOT, "codec", "contract", "transitions.json"));

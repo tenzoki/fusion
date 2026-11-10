@@ -22,17 +22,19 @@
 #                       [--objective-met] [--intake-closed] [--all-attempts-terminal] [--final-audit-passed]
 #                       [--watermark <text>] [--audit-ref <text>] [--campaign <id>]
 #
-# `overview` is the read side, in its reduced tier: the overview that needs no
-# campaign record. `sync` is the commit-cycle read of a working session
-# (`## sync` below), and the seven others are the steering writes
-# (`## The steering writes` below). The lane view and the rule checks of the
-# overview and `cut` arrive with later versions; a sub-command this script
-# does not know is a usage error, never a silent no-op.
+# `overview` is the read side, both tiers in one run: the reduced tier that
+# needs no campaign record (the held packages), and the full tier that reads
+# the campaign files at the ref (the lane view and the seven conditions,
+# `## The lane view and the conditions` below). `sync` is the commit-cycle
+# read of a working session (`## sync` below), and the seven others are the
+# steering writes (`## The steering writes` below). `cut` arrives with a later
+# version; a sub-command this script does not know is a usage error, never a
+# silent no-op.
 #
 #   --window <hours>  The overview window, a whole number of hours above zero,
 #                     24 when absent. Nothing stores it: it is a parameter of
-#                     the run and is printed back as `window_hours=`. No line
-#                     of the reduced tier depends on it yet.
+#                     the run and is printed back as `window_hours=`. The
+#                     `silent=` rows are decided against it.
 #   --ref <upstream>  The ref to read in place of the branch's upstream, e.g.
 #                     `origin/main`. With it no branch is needed, so a detached
 #                     HEAD and a branch that tracks nothing are both readable.
@@ -75,8 +77,16 @@
 #                       least age of everything else on this page.
 #   window_hours=<n>    The overview window of this run.
 #   campaigns=<n>       The campaign files at the commit, as the codec's `list`
-#                       names them. The reduced tier evaluates none: above 0, a
-#                       `note=campaigns-not-evaluated` line says so.
+#                       names them, readable or not.
+#   campaign=<id>\t<state>\t<reason|->\t<lanes|->
+#                       One per readable campaign, ascending by id: the
+#                       directory's name, `state.state`, `state.reason` or
+#                       `-`, the number of lanes or `-` where `lanes` is null.
+#   campaign-unreadable=<id>\t<class>/<reason>
+#                       One per campaign the codec reports a finding against
+#                       (the schema, or one of the three lane rules),
+#                       ascending by id. It is evaluated no further: no lane,
+#                       no condition.
 #   held=<checkout>\t<alias|->\t<package>\t<last_push|none>\t<waits>
 #                       One line per package whose control file reads `claimed`
 #                       at the commit, TAB-separated, ascending by checkout,
@@ -99,12 +109,84 @@
 #                                    per open decision record inside the
 #                                    package's container, named by its
 #                                    narrative's basename
+#   lane=<campaign>\t<lane id>\t<checkout|->\t<alias|->\t<held|none>\t<next|none>\t<next waits>
+#                       One per lane of each LIVE readable campaign (`running`
+#                       or `paused`; a terminal campaign steers nobody and its
+#                       lanes are not evaluated), in campaign order then lane
+#                       order. `held` is every package the lane's checkout
+#                       holds, anywhere in the workbench, comma-separated and
+#                       ascending; `next` the first member in lane order that
+#                       is live and unheld (`open` or `paused`), and `next
+#                       waits` what it waits for, in the vocabulary of `waits`
+#                       above.
+#   silent=<campaign>\t<lane>\t<checkout>\t<last_push|none>
+#   out-of-lane=<checkout>\t<package>\t<package's lane>\t<holder's lane|->
+#   in-no-lane=<checkout>\t<package>
+#   waits-decision=<campaign>\t<lane>\t<next>\t<decision basename>
+#   handoff-possible=<from>\t<to>\t<from lane>\t<to lane>
+#   cross-lane=<hash>\t<path>\t<committer lane>\t<declaring lane>
+#   unconfirmed=<campaign>\t<lane>\t<checkout>\t<revision>\t<last confirmation|none>
+#                       The seven conditions, each printed only when it holds,
+#                       in this order; `## The lane view and the conditions`
+#                       states each rule.
 #   note=<token>[\t<field>...]
 #                       Zero or more. A degradation that changed the answer,
 #                       stated rather than hidden; see `## The notes`.
 #
 # Every time on this page is RFC 3339 in UTC at second resolution,
 # `2026-11-09T13:04:44Z`.
+#
+# ## The lane view and the conditions
+#
+# A lane's members are record references, each resolved to its container
+# through the package rows of `list`; one that resolves to nothing is a
+# `lane-member-unknown` note. The conditions:
+#
+#   silent            the lane has a checkout, that checkout holds no package,
+#                     and its `last_push` is `none` or older than `--window`
+#                     hours before the run.
+#   out-of-lane       a held package stands in a lane and its holder is not
+#                     that lane's checkout. The fourth field is the holder's
+#                     own lane in the same campaign, `-` where it has none.
+#   in-no-lane        a held package stands in no lane of any live campaign.
+#                     With `out-of-lane` it is evaluated only while some live
+#                     campaign has lanes: a campaign whose `lanes` is null has
+#                     nothing to be in or out of, and the cut is still owed.
+#                     Ascending by checkout, then by package.
+#   waits-decision    the lane's `next` carries an open decision record
+#                     inside its container; one row per decision.
+#   handoff-possible  a dependency edge whose source is terminal (`done` or
+#                     `dropped`), whose target is live and unheld, and whose
+#                     ends sit in different lanes of one campaign. One row per
+#                     edge: a target with two such sources prints two rows,
+#                     and a target that also waits on a held package is still
+#                     printed, since the row names the edge and not the
+#                     target's readiness. Ascending by source, then target.
+#   cross-lane        over `git log --name-only` from the commit that first
+#                     added the campaign file (exclusive) to `head`, newest
+#                     first. Each commit is attributed to a checkout by the
+#                     join of `## last_push` run the other way round, over
+#                     every `commit` row of the extracted log, so a commit a
+#                     rebase renamed is still its checkout's; two rows of
+#                     different checkouts naming one commit attribute it to
+#                     nobody. A lane's area is the union of its members'
+#                     `resources`, every member counted; a path is inside an
+#                     area when it equals a declared path or lies under it at
+#                     a `/` boundary. A path of a commit by a lane's checkout
+#                     that lies inside another lane's area and outside the
+#                     committer lane's own is a row, one per declaring lane;
+#                     `<hash>` is the abbreviated hash as `git log` prints it.
+#                     A commit by a checkout in no lane prints nothing (the
+#                     row compares two lanes), and a file several lanes share
+#                     by design is declared on none of them, so a commit into
+#                     it prints nothing either: the limit of ruling B of
+#                     2026-11-09 in the campaign package, which plan step 20's
+#                     page states.
+#   unconfirmed       no `campaign_read` row by the lane's checkout names the
+#                     `sha256:` revision the campaign file has at `head`, as
+#                     `list` returns it. The last field is the newest such
+#                     row of any revision, so a stale confirmation is told
+#                     from none.
 #
 # ## last_push
 #
@@ -139,7 +221,9 @@
 #       The event log is in no tree at the commit; every `last_push` is `none`.
 #   log-lines-unreadable\t<count>
 #       That many lines of the event log are no JSON object, or are `commit`
-#       rows without a `detail` or a readable `ts`. They were left out.
+#       rows without a `detail` or a readable `ts`, or `campaign_read` rows
+#       without a `campaign`, a `revision` or a readable `ts`. They were left
+#       out.
 #   registry-unreadable\t<checkout>\t<exit code>
 #       `bin/fusion-checkout-name` could not look the checkout up at the commit
 #       (its exit code: 6 where the registry could not be read there, -1 where
@@ -148,8 +232,19 @@
 #   package-unreadable\t<package>\t<class>/<reason>
 #       The codec reports that package's control file unreadable at the commit.
 #       It is outside the read; a claim it carries prints no `held=` line.
-#   campaigns-not-evaluated\t<count>
-#       Campaign files stand at the commit and this version reads none.
+#   lane-member-unknown\t<campaign>\t<lane>\t<record id>
+#       A lane names a record id no package row of `list` carries, so the
+#       member is left out of the lane: it holds nothing, is nobody's `next`,
+#       and declares no area.
+#   commit-unattributed\t<campaign>\t<hash>
+#       A commit in the cross-lane range touches a path inside some lane's
+#       area and no `commit` row names it (none by hash, none by subject and
+#       author time, or two checkouts' rows name it), so no `cross-lane=` row
+#       could be decided for it. A commit touching no declared area gets no
+#       note: it could print no row whatever its attribution.
+#   campaign-first-commit-unknown\t<campaign>
+#       No commit on the ref adds the campaign file, so the cross-lane range
+#       has no start and the check was not made for that campaign.
 #   local-ref
 #       The ref belongs to no remote, so no fetch was owed and the answer is as
 #       local as the ref is.
@@ -443,7 +538,9 @@
 # `overview`: the fetch updates the repository's remote-tracking refs, as any
 # fetch does. Nothing in the working tree is read except to find the workbench
 # and the repository's root, and nothing in it is written: `git status
-# --porcelain` is the same before and after. The one thing written is a
+# --porcelain` is the same before and after. The full tier reads the campaign
+# files out of the same extract, through the codec's `list`, `reconcile` and
+# `show`, and runs `git log` over the ref for the cross-lane check. The one thing written is a
 # scratch directory under what `bin/fusion-tmp path` prints, removed on every
 # way out, an interrupt included. One side effect is that helper's and not
 # this one's: on the first run in a checkout that has no identifier yet, the
