@@ -11,6 +11,7 @@
 # ## Usage
 #
 #   fusion-campaign overview [--window <hours>] [--ref <upstream>]
+#   fusion-campaign cut --checkouts <N> [--tolerance <k>]
 #   fusion-campaign sync
 #   fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...
 #   fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]
@@ -25,11 +26,11 @@
 # `overview` is the read side, both tiers in one run: the reduced tier that
 # needs no campaign record (the held packages), and the full tier that reads
 # the campaign files at the ref (the lane view and the seven conditions,
-# `## The lane view and the conditions` below). `sync` is the commit-cycle
-# read of a working session (`## sync` below), and the seven others are the
-# steering writes (`## The steering writes` below). `cut` arrives with a later
-# version; a sub-command this script does not know is a usage error, never a
-# silent no-op.
+# `## The lane view and the conditions` below). `cut` proposes the lanes
+# (`## cut` below). `sync` is the commit-cycle read of a working session
+# (`## sync` below), and the seven others are the steering writes (`## The
+# steering writes` below). A sub-command this script does not know is a
+# usage error, never a silent no-op.
 #
 #   --window <hours>  The overview window, a whole number of hours above zero,
 #                     24 when absent. Nothing stores it: it is a parameter of
@@ -249,6 +250,98 @@
 #       The ref belongs to no remote, so no fetch was owed and the answer is as
 #       local as the ref is.
 #
+# ## cut — the lane proposal
+#
+# `cut --checkouts <N> [--tolerance <k>]` distributes the LIVE work packages
+# of the workbench above pwd over N lanes, one per checkout, so that two
+# packages whose declared areas overlap never stand in different lanes, and
+# writes the proposal `lanes --from` takes. It reads the WORKING TREE (the
+# steering checkout plans on its own pulled tree), never a ref, and fetches
+# nothing: `hooks/lib/work-graph.ts` for the live packages, their order,
+# depth and resolved edges (a `done` or `dropped` package is no node, so an
+# edge on one is no hand-off), and each live package's `resources` through
+# the codec's `show`. Without `--checkouts` it is a usage error, exit 2, and
+# nothing is on stdout. The mechanism is `hooks/lib/campaign-cut.ts`, whose
+# header states each rule; in short:
+#
+#   --checkouts <N>   The number of lanes, a whole number above zero. Required.
+#   --tolerance <k>   The imbalance tolerance, a whole number from zero, 1 when
+#                     absent: a lane stays within tolerance while its member
+#                     count is at most `ceil(members / N) + k`.
+#
+# Packages whose declared areas overlap (equal, or one a prefix of the other
+# at a `/` boundary) form one group, never split. Groups are placed in order
+# of dependency depth descending, then member count descending, then name;
+# each on the lane with the fewest members among those that hold an edge
+# neighbour of the group and stay within tolerance, else on the lane with the
+# fewest members overall. A group that fits in no lane within tolerance still
+# goes to the smallest lane and is printed as an `imbalance=` row: the user
+# accepts it, takes a shared file out of `resources`, or changes N. A file
+# several lanes touch by design is declared on no package (ruling B of
+# 2026-11-09 in the campaign package); declared all the same, it joins every
+# group that names it into one, which the `imbalance=` row shows. No size
+# figure enters: a count is a number of members, never an estimate of effort.
+# Deterministic: two runs over one store print the same bytes.
+#
+# ## Output of `cut`, one KEY=value per line, in this order
+#
+#   checkouts=<N>
+#   tolerance=<k>
+#   members=<n>         The live packages, the nodes of the cut.
+#   bound=<n>           `ceil(members / N)`.
+#   lane=<n>\t<package>
+#                       One per live package, lane 1 first, each lane's
+#                       members in the global order `bin/fusion-work-order`
+#                       prints, prerequisites first. Lane `<n>` is `lane-<n>`
+#                       in the proposal file.
+#   handoff=<from>\t<to>\t<from lane>\t<to lane>
+#                       One per dependency edge whose ends stand in different
+#                       lanes, from the prerequisite to the dependent, the
+#                       direction the work passes. Ascending by `from`, then
+#                       `to`.
+#   no-areas=<package>  One per live package with no declared area, ascending.
+#   no-areas-count=<n>
+#   imbalance=<lane>\t<size>\t<members>
+#                       One per group that fit in no lane within tolerance:
+#                       the lane it went to, that lane's member count after
+#                       the placement, the group's members comma-separated.
+#   delta-plus=checkouts\t<N+1>
+#   delta-plus=move\t<package>\t<lane at N>\t<lane at N+1>
+#   delta-plus=handoff-appears\t<from>\t<to>
+#   delta-plus=handoff-disappears\t<from>\t<to>
+#                       The same cut at N+1 against the cut at N: the first
+#                       row always, then one row per package whose lane
+#                       number differs and per hand-off that is there at N+1
+#                       and not at N, or at N and not at N+1. Lane numbers are
+#                       what the rules assign, so a renumbering counts as
+#                       moves.
+#   delta-minus=...     The same rows against N-1. None at N=1: there is no
+#                       cut over zero lanes.
+#   proposal=<path>     The proposal file, `campaign-cut-<N>-<k>.json` under
+#                       what `bin/fusion-tmp path` prints, so a second run
+#                       with the same parameters replaces it and the file
+#                       survives the run for `lanes --from`.
+#
+# ## The proposal file
+#
+# One JSON object. `lanes --from` reads its `lanes` key alone
+# (`hooks/lib/campaign-write.ts` `readProposal`) and ignores every other key,
+# which restates the rows above for a reader of the file:
+#
+#   {
+#     "checkouts": <N>,
+#     "tolerance": <k>,
+#     "bound": <n>,
+#     "lanes": [{"id": "lane-1", "members": ["<container name>", ...]}, ...],
+#     "handoffs": [{"from", "to", "from_lane": "lane-<n>", "to_lane": "lane-<n>"}, ...],
+#     "no_areas": ["<container name>", ...],
+#     "imbalance": [{"lane": "lane-<n>", "size": <n>, "members": [...]}, ...]
+#   }
+#
+# By construction every live package stands in exactly one lane and every
+# lane id is distinct, two of the codec's three lane rules; the third, one
+# checkout per lane, is `lanes --assign`'s.
+#
 # ## The steering writes
 #
 # The campaign record is `campaigns/<id>/campaign.json` in the workbench above
@@ -453,8 +546,8 @@
 # ## Exit codes
 #
 #   0  the printed answer is the answer: `state=ok` on `overview`, no `held=`
-#      line included; `path=` and `revision=` on a write; `state=ok` on
-#      `sync`, pushed or nothing to push.
+#      line included; the page of `cut` with its `proposal=` line; `path=` and
+#      `revision=` on a write; `state=ok` on `sync`, pushed or nothing to push.
 #   1  the helper itself could not run: the compiled hooks or the codec bundle
 #      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
 #      `tar` failed where no state names the failure, the claim test could not
@@ -463,7 +556,9 @@
 #      on stdout.
 #   2  usage error: no sub-command or an unknown one, an unknown or repeated
 #      flag, a flag without its value, `--window` that is no whole number above
-#      zero, `--ref` that is empty or begins with a dash, a write without a
+#      zero, `--ref` that is empty or begins with a dash, `cut` without
+#      `--checkouts` or with one that is no whole number above zero, a
+#      `--tolerance` that is no whole number from zero, a write without a
 #      required flag, an `--id` that is not `YYMMDD-HHMM-<slug>`, a checkout
 #      that is not eight lowercase hex characters, an `--outcome` outside the
 #      four, an evidence flag on an outcome other than `completed`.
@@ -471,9 +566,9 @@
 #   4  the workbench was not read: the codec's gate refused it by name
 #      (`legacy`, a workbench without its manifest, or `unsupported`), or the
 #      codec refused a read or gave no answer. For `overview` that is the
-#      workbench at the commit; for a write, the one in the working tree. The
-#      cause is on stderr and NOTHING is on stdout: a named failure and never
-#      an empty overview or a half-made write.
+#      workbench at the commit; for `cut` and for a write, the one in the
+#      working tree. The cause is on stderr and NOTHING is on stdout: a named
+#      failure and never an empty overview, an empty cut or a half-made write.
 #   5  nothing to read against: `state=` is `no-work-tree`, `no-branch`,
 #      `no-upstream`, `upstream-unresolved` or `workbench-untracked`
 #      (`overview`, `sync`).
@@ -545,6 +640,10 @@
 # way out, an interrupt included. One side effect is that helper's and not
 # this one's: on the first run in a checkout that has no identifier yet, the
 # identity helper it calls mints one, as it does for every program that asks.
+#
+# `cut` reads the working tree's workbench through the codec and writes one
+# file, the proposal under what `bin/fusion-tmp path` prints, outside every
+# git tree; it fetches nothing, commits nothing and touches no workbench file.
 #
 # A steering write touches one file of the working tree, the campaign record
 # it names, written whole by rename; on exit 8 and 9 it touches none. It

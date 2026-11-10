@@ -1,16 +1,17 @@
 /**
  * The campaign entry, behind `bin/fusion-campaign`: `overview [--window
- * <hours>] [--ref <upstream>]`, the reduced tier of the overview above the
- * checkouts, the seven steering writes `open`, `lanes`, `pause`, `resume`,
- * `move`, `reassign` and `end`, and `sync`, the commit-cycle read.
+ * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
+ * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
+ * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
+ * `reassign` and `end`, and `sync`, the commit-cycle read.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
- * overview's computation, `lib/campaign-write.ts` the writes' and
- * `lib/campaign-sync.ts` the cycle's, each header the account of its
- * mechanism. This file parses the arguments, finds the workbench above the
- * working directory, and maps what the computation answers onto stdout,
- * stderr and an exit code.
+ * overview's computation, `lib/campaign-cut.ts` the cut's,
+ * `lib/campaign-write.ts` the writes' and `lib/campaign-sync.ts` the cycle's,
+ * each header the account of its mechanism. This file parses the arguments,
+ * finds the workbench above the working directory, and maps what the
+ * computation answers onto stdout, stderr and an exit code.
  *
  * ## Stdout is whole or empty
  *

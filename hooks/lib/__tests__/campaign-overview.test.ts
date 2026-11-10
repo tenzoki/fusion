@@ -5,9 +5,10 @@ import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, real
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { commitListing, commitNamedBy } from "../campaign.js";
+import { buildFixture, fixture } from "./helpers/campaign-fixture.js";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
-import { campaignFile, claim, createPackage, jsonWorkbenchAt, must, placeRecord, setDependencies, setResources, transition, type JsonProject, type Package } from "./helpers/json-workbench.js";
+import { campaignFile, claim, createPackage, jsonWorkbenchAt, must, placeRecord, setDependencies, type JsonProject, type Package } from "./helpers/json-workbench.js";
 
 // Drives the real `bin/fusion-campaign overview` the way `fusion-forum.test.ts` drives its script: a bare origin, a
 // checkout that pushes into it and a checkout that reads, every path physical and no network. The pushing checkout's
@@ -200,14 +201,7 @@ describe("bin/fusion-campaign overview, reduced tier", () => {
   }, CASE_TIMEOUT * 4);
 });
 
-/** The measured case of plan step 6, as far as the two tiers read it; every `_source` key is provenance and is not typed. */
-interface Fixture {
-  packages: Array<{ name: string; group: string; status: string; holder: string | null; claim_kept: string | null; outcome_class: string | null; depends_on: string[]; areas: string[] }>;
-  lanes: Array<{ id: string; checkout: string; members: string[] }>;
-  checkouts: Record<string, { alias: string }>;
-  log: Array<{ ts: string; checkout: string; detail: string }>;
-}
-const fixture = JSON.parse(readFileSync(join(pluginRoot, "hooks", "lib", "__tests__", "fixtures", "campaign", "ax-k2-3-261105.json"), "utf-8")) as Fixture;
+// The measured case of plan step 6 is built by `helpers/campaign-fixture.ts`, shared with `campaign-cut.test.ts`.
 const utc = (seconds: string | number): string => `${new Date(Number(seconds) * 1000).toISOString().slice(0, 19)}Z`;
 const subjectOf = (detail: string): string => detail.slice(detail.indexOf(" ") + 1);
 const sha256 = (path: string): string => `sha256:${createHash("sha256").update(readFileSync(path)).digest("hex")}`;
@@ -261,31 +255,6 @@ describe("the measured case, reduced tier: the five holders of the consuming pro
   }, CASE_TIMEOUT * 8);
 });
 
-/**
- * The fixture's 28 packages, written through the kernel: every entry created,
- * the `depends_on` edges and the `areas` set while every package is open (the
- * codec sets both on a live package only), then each entry brought to its
- * status by its `holder` or `claim_kept` checkout. `shared_areas` are written
- * nowhere (ruling B of 2026-11-09), and an empty `areas` leaves `resources`
- * undeclared.
- */
-function buildMeasured(p: JsonProject): { of: (name: string) => Package; workbenchId: string } {
-  const packages = new Map(fixture.packages.map((e) => [e.name, createPackage(p, e.name)]));
-  const of = (name: string): Package => packages.get(name) as Package;
-  for (const e of fixture.packages) if (e.depends_on.length > 0) setDependencies(p, of(e.name), e.depends_on.map((t) => ({ target: of(t), condition: "terminal" as const })));
-  for (const e of fixture.packages) if (e.areas.length > 0) setResources(p, of(e.name), e.areas);
-  for (const e of fixture.packages) {
-    const pkg = of(e.name);
-    if (e.status === "paused") transition(p, pkg, "paused");
-    if (e.status === "claimed") claim(p, pkg, e.holder as string);
-    if (e.status === "done" || e.status === "dropped") {
-      if (e.claim_kept !== null) claim(p, pkg, e.claim_kept);
-      transition(p, pkg, e.status, { outcome: { class: e.outcome_class, reason: `as the package.json read at 56c19983a`, evidence: [] } });
-    }
-  }
-  return { of, workbenchId: must(p, { op: "inspect" }).result.id as string };
-}
-
 describe("the measured case, full tier: the three lanes of the consuming project at 56c19983a", () => {
   const CAMPAIGN = "261105-0900-pipeline";
   const LANE2 = "f85f8da1";
@@ -293,7 +262,8 @@ describe("the measured case, full tier: the three lanes of the consuming project
 
   it("prints the four held packages in no lane, the two hand-offs out of lane 1, one cross-lane commit by lane 2 under pkg/ai and none under api/openapi.yaml, and every lane unconfirmed", () => {
     const { origin, project: p } = pushing("full");
-    const { of, workbenchId } = buildMeasured(p);
+    // The fixture's 28 packages, every entry at its status, `areas` as `resources` and `shared_areas` nowhere.
+    const { of, workbenchId } = buildFixture(p);
     for (const [checkout, entry] of Object.entries(fixture.checkouts)) register(p, checkout, entry.alias);
     campaignFile(p, CAMPAIGN, { state: { state: "running" }, lanes: fixture.lanes.map((l) => ({ id: l.id, checkout_id: l.checkout, members: l.members.map((n) => member(workbenchId, of(n))) })) });
     commit(p.root, "seed", "2026-11-01T09:00:00Z");

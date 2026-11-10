@@ -44,6 +44,10 @@
  *                   extracted event log for the last push and for the read
  *                   confirmations; `git log` over the ref for the join and for
  *                   the cross-lane check.
+ *   `readCutInput`  the input of `lib/campaign-cut.ts` over a WORKING TREE,
+ *                   never an extract: `readWorkGraph` for the live nodes, their
+ *                   order, depth and `dependsOn`, one `list` for the record ids
+ *                   those name, `packageFacts` per node for its declared areas.
  *
  * Nothing here reads a workbench file from the working tree. The working tree
  * is consulted for two things: where the workbench is, and where its
@@ -170,6 +174,7 @@
  */
 import { type Unread } from "./codec-read.js";
 import { type Ask, type Refusal } from "./record-client.js";
+import type { CutInput } from "./campaign-cut.js";
 /** The `git log` format the join reads: hash, author time, committer time, subject, tab-separated. */
 export declare const COMMIT_LISTING_FORMAT = "%H%x09%at%x09%ct%x09%s";
 /** How far a row's `ts` may stand from the author time of the commit a rebase made of the row's commit. */
@@ -262,10 +267,14 @@ export declare function run(program: string, args: string[], cwd: string, env?: 
 /** `git` whose failure has no state of its own. Exported for `lib/campaign-sync.ts`, whose plumbing between the fetch and the push is of that kind. */
 export declare function mustGit(cwd: string, ...args: string[]): string;
 /**
+ * What `bin/fusion-tmp path` prints: the directory fusion's intermediate
+ * files go to. One that could not be obtained is a `HelperFailure`, with the
+ * helper's own reason: nothing is written anywhere else.
+ */
+export declare function tmpPath(cwd: string, bin?: string): string;
+/**
  * Run `fn` with a fresh directory under what `bin/fusion-tmp path` prints,
- * and remove the directory on every way out. A scratch directory that could
- * not be obtained is a `HelperFailure`, with the helper's own reason: nothing
- * is extracted anywhere else.
+ * and remove the directory on every way out.
  */
 export declare function withScratch<T>(cwd: string, fn: (dir: string) => T, bin?: string): T;
 /** Why there is nothing to read against. The vocabulary, and each value's exit code, is `bin/fusion-forum`'s. */
@@ -446,6 +455,29 @@ export type OverviewRead = {
 export declare const isCampaignRow: (row: Record<string, unknown>) => boolean;
 /** A path is inside a declared area when it is the area or lies under it at a `/` boundary. */
 export declare const insideArea: (path: string, areas: Iterable<string>) => boolean;
+/** What one `show` of a package's control file answers the overview and the cut: the checkout its claim names, and its declared areas. */
+export interface PackageFacts {
+    checkout: string | null;
+    resources: string[];
+}
+/** `show` of the package at `dir`, read for `PackageFacts`; the codec's `list` row carries neither. */
+export declare function packageFacts(workbench: string, dir: string, ask: Ask): PackageFacts | {
+    unread: Unread;
+};
+export type CutInputRead = {
+    kind: "input";
+    input: CutInput;
+} | ({
+    kind: "failed";
+} & Unread);
+/**
+ * The input of `lib/campaign-cut.ts` over the workbench at `workbench`, a
+ * working tree: `readWorkGraph` for the live nodes in their order, their
+ * depth and the resolved edges (a terminal package is no node, so an edge on
+ * one is no hand-off), then `packageFacts` per node for its declared areas.
+ * The cut reads nothing else.
+ */
+export declare function readCutInput(workbench: string, ask?: Ask): CutInputRead;
 /** One commit of `git log --name-only`: its hashes and the paths it touched. */
 interface TouchedCommit {
     hash: string;

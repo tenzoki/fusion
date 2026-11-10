@@ -44,6 +44,10 @@
  *                   extracted event log for the last push and for the read
  *                   confirmations; `git log` over the ref for the join and for
  *                   the cross-lane check.
+ *   `readCutInput`  the input of `lib/campaign-cut.ts` over a WORKING TREE,
+ *                   never an extract: `readWorkGraph` for the live nodes, their
+ *                   order, depth and `dependsOn`, one `list` for the record ids
+ *                   those name, `packageFacts` per node for its declared areas.
  *
  * Nothing here reads a workbench file from the working tree. The working tree
  * is consulted for two things: where the workbench is, and where its
@@ -180,6 +184,7 @@ import { EVENT_LOG } from "./record-change.js";
 import { SETUP_MARKER } from "./record-write.js";
 import { CAMPAIGN_RECORD, CAMPAIGN_STORE, CONTAINER_STORE, PACKAGE_CONTROL, WORKBENCH_MANIFEST, narrativeOf } from "./stores.js";
 import { readWorkGraph } from "./work-graph.js";
+import type { CutInput } from "./campaign-cut.js";
 
 /* ------------------------------------------------------------------ *
  * The join: which commit of a listing a `commit` row names
@@ -402,19 +407,26 @@ export function mustGit(cwd: string, ...args: string[]): string {
 }
 
 /**
- * Run `fn` with a fresh directory under what `bin/fusion-tmp path` prints,
- * and remove the directory on every way out. A scratch directory that could
- * not be obtained is a `HelperFailure`, with the helper's own reason: nothing
- * is extracted anywhere else.
+ * What `bin/fusion-tmp path` prints: the directory fusion's intermediate
+ * files go to. One that could not be obtained is a `HelperFailure`, with the
+ * helper's own reason: nothing is written anywhere else.
  */
-export function withScratch<T>(cwd: string, fn: (dir: string) => T, bin: string = defaultBin()): T {
+export function tmpPath(cwd: string, bin: string = defaultBin()): string {
   const helper = join(bin, "fusion-tmp");
   const answered = run(helper, ["path"], cwd);
   const base = answered.stdout.trim();
   if (answered.status !== 0 || base === "") throw new HelperFailure(`${helper} path gave no directory (${answered.status}): ${answered.stderr.trim()}`);
   // What the helper says beside its answer (a minted identifier, a long path) is the user's to read.
   if (answered.stderr !== "") process.stderr.write(answered.stderr);
-  const dir = mkdtempSync(join(base, "campaign-"));
+  return base;
+}
+
+/**
+ * Run `fn` with a fresh directory under what `bin/fusion-tmp path` prints,
+ * and remove the directory on every way out.
+ */
+export function withScratch<T>(cwd: string, fn: (dir: string) => T, bin: string = defaultBin()): T {
+  const dir = mkdtempSync(join(tmpPath(cwd, bin), "campaign-"));
   try {
     return fn(dir);
   } finally {
@@ -711,6 +723,61 @@ export const insideArea = (path: string, areas: Iterable<string>): boolean => {
   return false;
 };
 
+/** What one `show` of a package's control file answers the overview and the cut: the checkout its claim names, and its declared areas. */
+export interface PackageFacts {
+  checkout: string | null;
+  resources: string[];
+}
+
+/** `show` of the package at `dir`, read for `PackageFacts`; the codec's `list` row carries neither. */
+export function packageFacts(workbench: string, dir: string, ask: Ask): PackageFacts | { unread: Unread } {
+  const answer = resultOf(workbench, { op: "show", record: { path: `${CONTAINER_STORE}/${dir}/${PACKAGE_CONTROL}` } }, ask);
+  if ("unread" in answer) return answer;
+  const control = isObject(answer.result.control) ? answer.result.control : {};
+  const claim = isObject(control.claim) ? control.claim : {};
+  return {
+    checkout: typeof claim.checkout_id === "string" && claim.checkout_id !== "" ? claim.checkout_id : null,
+    resources: Array.isArray(control.resources) ? control.resources.filter((r): r is string => typeof r === "string") : [],
+  };
+}
+
+export type CutInputRead = { kind: "input"; input: CutInput } | ({ kind: "failed" } & Unread);
+
+/**
+ * The input of `lib/campaign-cut.ts` over the workbench at `workbench`, a
+ * working tree: `readWorkGraph` for the live nodes in their order, their
+ * depth and the resolved edges (a terminal package is no node, so an edge on
+ * one is no hand-off), then `packageFacts` per node for its declared areas.
+ * The cut reads nothing else.
+ */
+export function readCutInput(workbench: string, ask: Ask = askCodec): CutInputRead {
+  const graph = readWorkGraph(workbench, ask);
+  if (graph.kind === "failed") return graph;
+  const listed = listedRecords(workbench, ask);
+  if ("unread" in listed) return { kind: "failed", ...listed.unread };
+  const containerOf = new Map<string, string>();
+  for (const row of listed.list) {
+    if (isObject(row) && isPackageRow(row) && typeof row.id === "string" && typeof row.path === "string") containerOf.set(row.id, basename(dirname(row.path)));
+  }
+  const nodes: CutInput["nodes"] = [];
+  for (const row of graph.report.rows) {
+    const facts = packageFacts(workbench, row.dir, ask);
+    if ("unread" in facts) return { kind: "failed", ...facts.unread };
+    nodes.push({ dir: row.dir, areas: facts.resources, depth: row.depth });
+  }
+  // `dependsOn` names record ids, satisfied and unresolved entries included; an entry whose target is a live node
+  // is a resolved edge and nothing else (`lib/work-graph.ts` `## The table one edge entry falls in`).
+  const live = new Set(nodes.map((n) => n.dir));
+  const edges: CutInput["edges"] = [];
+  for (const row of graph.report.rows) {
+    for (const id of row.dependsOn) {
+      const to = containerOf.get(id);
+      if (to !== undefined && live.has(to)) edges.push({ from: row.dir, to });
+    }
+  }
+  return { kind: "input", input: { nodes, edges } };
+}
+
 /** The `git log` format of the cross-lane listing: a NUL marks the commit line, so a path can never be read as one. */
 const NAME_ONLY_FORMAT = "%x00%H%x09%h";
 
@@ -791,20 +858,12 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
   };
 
   // --- `show` per package, once: the claim's checkout and the declared areas ----
-  const shown = new Map<string, { checkout: string | null; resources: string[] }>();
-  const showPackage = (dir: string): { checkout: string | null; resources: string[] } | { unread: Unread } => {
+  const shown = new Map<string, PackageFacts>();
+  const showPackage = (dir: string): PackageFacts | { unread: Unread } => {
     const cached = shown.get(dir);
     if (cached !== undefined) return cached;
-    const path = `${CONTAINER_STORE}/${dir}/${PACKAGE_CONTROL}`;
-    const answer = resultOf(workbench, { op: "show", record: { path } }, ask);
-    if ("unread" in answer) return answer;
-    const control = isObject(answer.result.control) ? answer.result.control : {};
-    const claim = isObject(control.claim) ? control.claim : {};
-    const facts = {
-      checkout: typeof claim.checkout_id === "string" && claim.checkout_id !== "" ? claim.checkout_id : null,
-      resources: Array.isArray(control.resources) ? control.resources.filter((r): r is string => typeof r === "string") : [],
-    };
-    shown.set(dir, facts);
+    const facts = packageFacts(workbench, dir, ask);
+    if (!("unread" in facts)) shown.set(dir, facts);
     return facts;
   };
 

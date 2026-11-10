@@ -48,7 +48,8 @@
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
   archive-filter-key.test.ts 41
-  campaign-overview.test.ts 410
+  campaign-cut.test.ts 214
+  campaign-overview.test.ts 380
   campaign-sync.test.ts 269
   campaign-write.test.ts 199
   citation-form.test.ts 360
@@ -85,6 +86,7 @@
   guard-bash-integration.test.ts 334
   guard-project-config-integration.test.ts 232
   guard-state-shape.test.ts 341
+  helpers/campaign-fixture.ts 80
   helpers/citation-scan.ts 56
   helpers/growth-bound.ts 178
   helpers/guard-harness.ts 1035
@@ -126,4 +128,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 27809
+  total 28073

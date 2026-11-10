@@ -1,16 +1,17 @@
 /**
  * The campaign entry, behind `bin/fusion-campaign`: `overview [--window
- * <hours>] [--ref <upstream>]`, the reduced tier of the overview above the
- * checkouts, the seven steering writes `open`, `lanes`, `pause`, `resume`,
- * `move`, `reassign` and `end`, and `sync`, the commit-cycle read.
+ * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
+ * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
+ * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
+ * `reassign` and `end`, and `sync`, the commit-cycle read.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
- * overview's computation, `lib/campaign-write.ts` the writes' and
- * `lib/campaign-sync.ts` the cycle's, each header the account of its
- * mechanism. This file parses the arguments, finds the workbench above the
- * working directory, and maps what the computation answers onto stdout,
- * stderr and an exit code.
+ * overview's computation, `lib/campaign-cut.ts` the cut's,
+ * `lib/campaign-write.ts` the writes' and `lib/campaign-sync.ts` the cycle's,
+ * each header the account of its mechanism. This file parses the arguments,
+ * finds the workbench above the working directory, and maps what the
+ * computation answers onto stdout, stderr and an exit code.
  *
  * ## Stdout is whole or empty
  *
@@ -29,9 +30,11 @@
  * handler, node's default for SIGINT ends the process at once and the extract
  * would stay behind.
  */
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 const USAGE = [
     "usage: fusion-campaign overview [--window <hours>] [--ref <upstream>]",
+    "       fusion-campaign cut --checkouts <N> [--tolerance <k>]",
     "       fusion-campaign sync",
     "       fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...",
     "       fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]",
@@ -74,6 +77,17 @@ function parseOverview(argv) {
             return null;
     }
     return args;
+}
+/** The imbalance tolerance where the caller names none: one member above `ceil(members / N)`. */
+const DEFAULT_TOLERANCE = 1;
+/** `--checkouts <N>`, required, a whole number above zero; `--tolerance <k>`, a whole number from zero; each at most once. */
+function parseCut(argv) {
+    const p = parseFlags(argv, ["--checkouts", "--tolerance"], [], [], 0);
+    const checkouts = p?.values.get("--checkouts")?.[0];
+    const tolerance = p?.values.get("--tolerance")?.[0] ?? String(DEFAULT_TOLERANCE);
+    if (p === null || checkouts === undefined || !/^[1-9][0-9]{0,5}$/.test(checkouts) || !/^(0|[1-9][0-9]{0,5})$/.test(tolerance))
+        return null;
+    return { checkouts: Number(checkouts), tolerance: Number(tolerance) };
 }
 const WRITES = new Set(["open", "lanes", "pause", "resume", "move", "reassign", "end"]);
 const EVIDENCE_FLAGS = ["--objective-met", "--intake-closed", "--all-attempts-terminal", "--final-audit-passed"];
@@ -211,6 +225,27 @@ function overview(args, lib) {
     process.stdout.write(lib.renderOverview(read.overview, args.windowHours, Date.now()));
     return 0;
 }
+/** The cut: `readCutInput` over the working tree's workbench, `lib/campaign-cut.ts` at N, N+1 and N−1, the proposal file under what `bin/fusion-tmp path` prints, then the page. */
+function cut(args, lib) {
+    const cwd = process.cwd();
+    const root = lib.findWorkbenchRoot(cwd);
+    if (root === null) {
+        say(`no fusion workbench found above ${cwd}.`);
+        return 3;
+    }
+    const workbench = join(root, "fusion-workbench");
+    const read = lib.readCutInput(workbench);
+    if (read.kind === "failed") {
+        say(`${read.cause === "legacy" ? lib.legacyLine(workbench) : lib.notReadLine(read, workbench)} No cut was made.`);
+        return read.cause !== "legacy" && lib.bundleMissing(read) ? 1 : 4;
+    }
+    const report = lib.cutter.cutReport(read.input, args.checkouts, args.tolerance);
+    // Named by its parameters and not by the clock, so two runs over one store print the same bytes and the second replaces the first's file.
+    const proposal = join(lib.tmpPath(cwd), `campaign-cut-${args.checkouts}-${args.tolerance}.json`);
+    writeFileSync(proposal, JSON.stringify(lib.cutter.proposalOf(report.cut), null, 2) + "\n", "utf-8");
+    process.stdout.write(lib.cutter.renderCut(report, read.input.nodes.length, proposal));
+    return 0;
+}
 /** A steering write: the claim test, the sequence of `lib/campaign-write.ts`, then `path=` and `revision=` or the state that refused it. */
 function steer(act, lib) {
     const cwd = process.cwd();
@@ -285,6 +320,10 @@ function main(argv, lib) {
         const args = parseOverview(rest);
         return args === null ? usage() : overview(args, lib);
     }
+    if (command === "cut") {
+        const args = parseCut(rest);
+        return args === null ? usage() : cut(args, lib);
+    }
     // `sync` takes no flag: it reads the branch's upstream, the orchestrator's cycle and nobody's named ref.
     if (command === "sync")
         return rest.length === 0 ? syncCycle(lib) : usage();
@@ -299,11 +338,11 @@ function main(argv, lib) {
 // of the reader. The modules are imported inside the `try` for the first of
 // those.
 try {
-    const [lib, writes, cycle, { findWorkbenchRoot }, { legacyLine, notReadLine, bundleMissing }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/campaign.js"), import("./lib/campaign-write.js"), import("./lib/campaign-sync.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
+    const [lib, cutter, writes, cycle, { findWorkbenchRoot }, { legacyLine, notReadLine, bundleMissing }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/campaign.js"), import("./lib/campaign-cut.js"), import("./lib/campaign-write.js"), import("./lib/campaign-sync.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
     exitZeroOnStdoutEpipe(); // the reader may close stdout first
     for (const [signal, code] of [["SIGINT", 130], ["SIGTERM", 143], ["SIGHUP", 129]])
         process.on(signal, () => process.exit(code));
-    process.exitCode = main(process.argv.slice(2), { ...lib, writes, cycle, findWorkbenchRoot, legacyLine, notReadLine, bundleMissing });
+    process.exitCode = main(process.argv.slice(2), { ...lib, cutter, writes, cycle, findWorkbenchRoot, legacyLine, notReadLine, bundleMissing });
 }
 catch (e) {
     const known = e instanceof Error && e.name === "HelperFailure";
