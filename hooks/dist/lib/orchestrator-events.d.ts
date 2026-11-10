@@ -15,7 +15,7 @@
  * (`260825-1430-reconciliation.md`). The repair is not a louder
  * mandate; it is moving the mechanical rows to a writer that cannot forget.
  *
- * Four row kinds are machine-written now, and only four:
+ * Five row kinds are machine-written now, and only five:
  *
  *   - `task_start` — emitted by `guard.ts` (PreToolUse) when the tool is the
  *     sub-agent dispatch tool.
@@ -24,6 +24,10 @@
  *     deterministic point every locked commit passes through. That emitter is
  *     bash and shares this module's schema by convention, not by import;
  *     `rules/commit-lock.md` carries its contract.
+ *   - `campaign_read` — emitted by `bin/fusion-campaign sync`, once per campaign
+ *     read at the fetch after each commit. That emitter is bash too and shares
+ *     this module's schema by convention, as the `commit` row's does;
+ *     `hooks/lib/campaign-sync.ts` carries its contract.
  *   - `session_start` — emitted by `session-start.ts` (SessionStart), once per
  *     session. See `## The session_start row` at the foot of this module for
  *     what it carries, why the model's own row is not replaced by it, and what
