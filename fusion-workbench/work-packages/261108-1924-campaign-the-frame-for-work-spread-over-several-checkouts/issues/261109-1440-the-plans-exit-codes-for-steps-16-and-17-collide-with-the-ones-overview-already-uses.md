@@ -9,3 +9,6 @@ The plan's exit codes for steps 16 and 17 collide with the ones `overview` alrea
 **Acceptance.** Before step 16 is dispatched, the plan carries one exit table for the helper across all its sub-commands, with no code meaning two things, and the header of `bin/fusion-campaign` and the callers named in steps 19 and 20 (the orchestrator's Step 4, the skill body) follow it.
 
 **Cross-references:** `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md` (steps 7, 16, 17, 19, 20)
+
+---
+Resolved: the plan carries one exit table across every sub-command under `## API Changes` (codes 0 to 7 as the header had them, 8 and 9 the steering writes, 10 `state=conflict` and 11 `state=rejected` for `sync`), and the header of `bin/fusion-campaign` `## Exit codes` follows it: step 16b wrote rows 8 and 9, step 17 rows 10 and 11 beside `## sync`, with the states `sync` shares with `overview` keeping 5, 6 and 7 (`hooks/campaign.ts` `SYNC_EXIT`, `hooks/lib/campaign-sync.ts`). The callers of steps 19 and 20 read `state=` and are written against that table.

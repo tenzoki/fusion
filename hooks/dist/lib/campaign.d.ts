@@ -178,6 +178,8 @@ export interface Ran {
  * whose claim test runs a sibling helper the same way.
  */
 export declare function run(program: string, args: string[], cwd: string, env?: NodeJS.ProcessEnv): Ran;
+/** `git` whose failure has no state of its own. Exported for `lib/campaign-sync.ts`, whose plumbing between the fetch and the push is of that kind. */
+export declare function mustGit(cwd: string, ...args: string[]): string;
 /**
  * Run `fn` with a fresh directory under what `bin/fusion-tmp path` prints,
  * and remove the directory on every way out. A scratch directory that could
@@ -257,6 +259,8 @@ export type OverviewRead = {
 } | ({
     kind: "failed";
 } & Unread);
+/** A row of `list` that is a campaign file, readable or not; by path, because a file the codec could not read comes back with no kind. */
+export declare const isCampaignRow: (row: Record<string, unknown>) => boolean;
 /**
  * The reduced overview of the workbench extracted at `at.head`. `workbench`
  * is that extract, `cwd` the working tree the registry helper runs in.

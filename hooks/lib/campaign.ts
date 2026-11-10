@@ -299,8 +299,8 @@ export function run(program: string, args: string[], cwd: string, env: NodeJS.Pr
 
 const git = (cwd: string, ...args: string[]): Ran => run("git", args, cwd);
 
-/** `git` whose failure has no state of its own. */
-function mustGit(cwd: string, ...args: string[]): string {
+/** `git` whose failure has no state of its own. Exported for `lib/campaign-sync.ts`, whose plumbing between the fetch and the push is of that kind. */
+export function mustGit(cwd: string, ...args: string[]): string {
   const r = git(cwd, ...args);
   if (r.status !== 0) throw new HelperFailure(`git ${args.join(" ")} failed (${r.status}): ${r.stderr.trim()}`);
   return r.stdout;
@@ -462,7 +462,7 @@ export interface Overview {
 export type OverviewRead = { kind: "overview"; overview: Overview } | ({ kind: "failed" } & Unread);
 
 /** A row of `list` that is a campaign file, readable or not; by path, because a file the codec could not read comes back with no kind. */
-const isCampaignRow = (row: Record<string, unknown>): boolean =>
+export const isCampaignRow = (row: Record<string, unknown>): boolean =>
   typeof row.path === "string" && row.path.startsWith(`${CAMPAIGN_STORE}/`) && basename(row.path) === CAMPAIGN_RECORD;
 
 /** The registry's alias for `checkout` at `head`: the alias or null, and the helper's exit code where it could not look. */

@@ -254,8 +254,8 @@ export function run(program, args, cwd, env = process.env) {
     return { status: r.status ?? -1, stdout: r.stdout ?? "", stderr: r.error === undefined ? (r.stderr ?? "") : String(r.error) };
 }
 const git = (cwd, ...args) => run("git", args, cwd);
-/** `git` whose failure has no state of its own. */
-function mustGit(cwd, ...args) {
+/** `git` whose failure has no state of its own. Exported for `lib/campaign-sync.ts`, whose plumbing between the fetch and the push is of that kind. */
+export function mustGit(cwd, ...args) {
     const r = git(cwd, ...args);
     if (r.status !== 0)
         throw new HelperFailure(`git ${args.join(" ")} failed (${r.status}): ${r.stderr.trim()}`);
@@ -367,7 +367,7 @@ export function extractAt(at, entries, into) {
 /** What the overview extracts: the manifest and the marker, the two root stores, the event log. */
 export const OVERVIEW_ENTRIES = [WORKBENCH_MANIFEST, SETUP_MARKER, CONTAINER_STORE, CAMPAIGN_STORE, EVENT_LOG];
 /** A row of `list` that is a campaign file, readable or not; by path, because a file the codec could not read comes back with no kind. */
-const isCampaignRow = (row) => typeof row.path === "string" && row.path.startsWith(`${CAMPAIGN_STORE}/`) && basename(row.path) === CAMPAIGN_RECORD;
+export const isCampaignRow = (row) => typeof row.path === "string" && row.path.startsWith(`${CAMPAIGN_STORE}/`) && basename(row.path) === CAMPAIGN_RECORD;
 /** The registry's alias for `checkout` at `head`: the alias or null, and the helper's exit code where it could not look. */
 function aliasAt(checkout, head, cwd, bin) {
     if (!/^[0-9a-f]{8}$/.test(checkout))

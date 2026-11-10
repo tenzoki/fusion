@@ -1246,6 +1246,18 @@ describe("bin/monitor — the event window", () => {
     const own = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, k) => `o${from + k}`);
     expect(await servedEvents(wb)).toEqual([...own(5, 49), ...own(51, 104), "o50"]);
   });
+
+  it("serves a campaign_read row (plan step 17) and renders it through the default branch, the panel not failing", async () => {
+    const row = { ts: "2026-08-25T09:03:00", event: "campaign_read", checkout: "5e8248d7", session_id: "s1", campaign: "261101-0900-pipeline", state: "running", revision: `sha256:0123456789ab${"0".repeat(52)}`, detail: "261101-0900-pipeline running 0123456789ab" };
+    const wb = seedWorkbench([]);
+    writeFileSync(join(wb, "orchestrator-events.jsonl"), [...EVENT_ROWS, row].map((r) => JSON.stringify(r)).join("\n") + "\n");
+    writeFileSync(join(wb, ".checkout-id"), "5e8248d7\n");
+    expect(await servedEvents(wb)).toEqual(["ours-implicit", "ours-named", row.detail]);
+    const page = await indexPage(wb);
+    const body = page.slice(page.indexOf("function formatDetail("), page.indexOf("// Parse an event timestamp as UTC"));
+    const fmt = new Function("escapeHtml", "formatLocalTime", `${body}\nreturn formatEvent;`)((t: string) => t, (t: string) => t) as (e: Record<string, unknown>) => string;
+    expect(fmt(row)).toContain(`>orchestrator: ${row.detail}<`);
+  });
 });
 
 // --- record_change rows (FJ03b step 6), fixture rows only: read outside the

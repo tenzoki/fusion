@@ -11,6 +11,7 @@
 # ## Usage
 #
 #   fusion-campaign overview [--window <hours>] [--ref <upstream>]
+#   fusion-campaign sync
 #   fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...
 #   fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]
 #   fusion-campaign pause --reason <text> [--campaign <id>]
@@ -22,10 +23,11 @@
 #                       [--watermark <text>] [--audit-ref <text>] [--campaign <id>]
 #
 # `overview` is the read side, in its reduced tier: the overview that needs no
-# campaign record. The seven others are the steering writes
+# campaign record. `sync` is the commit-cycle read of a working session
+# (`## sync` below), and the seven others are the steering writes
 # (`## The steering writes` below). The lane view and the rule checks of the
-# overview, `cut` and `sync` arrive with later versions; a sub-command this
-# script does not know is a usage error, never a silent no-op.
+# overview and `cut` arrive with later versions; a sub-command this script
+# does not know is a usage error, never a silent no-op.
 #
 #   --window <hours>  The overview window, a whole number of hours above zero,
 #                     24 when absent. Nothing stores it: it is a parameter of
@@ -255,10 +257,109 @@
 # `state=refused` and `refused=<class>/<reason>`; each puts the detail on
 # stderr. Every other code prints nothing on stdout.
 #
+# ## sync — the commit-cycle read, in order
+#
+# The orchestrator runs it after its commit under the lock, every cycle
+# (`agents/orchestrator.md` `### Step 4 — commit`, from plan step 19 on). It
+# takes no flag: it reads the branch's upstream and nobody's named ref. The
+# mechanism is `hooks/lib/campaign-sync.ts`, whose header argues each step.
+#
+#   1  resolve the branch and its upstream, fetch, name the fetched head, as
+#      `overview` does and under its states;
+#   2  extract the manifest, the marker and the campaign store at the fetched
+#      head and read them through the codec: `list` for the set, `reconcile`
+#      for the findings (the three lane rules among them, which `list` alone
+#      does not carry), `show` per readable campaign. A campaign the codec
+#      reports a finding against is unreadable: outside the read, never
+#      `mine`, no row;
+#   3  `mine`: of the live campaigns (`running` or `paused`; a terminal one
+#      steers nobody) the one whose lanes name this checkout's identifier,
+#      else the one whose `lanes` is null; two under either rule are none,
+#      with a `note=`. The identifier is `FUSION_CHECKOUT` where the session
+#      exported it, else `bin/fusion-identity`'s `CHECKOUT=`;
+#   4  append one `campaign_read` row per readable campaign to the working
+#      tree's event log, while `FUSION_SESSION_ID` is set (the `commit` row's
+#      own rule): `{"ts","event":"campaign_read","person","checkout",
+#      "session_id","campaign","state","revision","detail"}`, the revision the
+#      file's `sha256:`, the detail `<id> <state> <first 12 hex of it>`, an
+#      unresolved identity half an absent key;
+#   5  settle the log: where `git diff --name-only` and `--cached` name the
+#      event log alone, commit it under
+#      `fusion-commit-lock with campaign -- bash -c 'git add <log> && git commit -F <message>'`,
+#      the message file under what `bin/fusion-tmp path` prints, the message
+#      `chore(events): the commit and campaign-read rows of checkout <hex>`
+#      (no hash: the rebase may replace any). Where other tracked paths are
+#      dirty, nothing is committed, every dirty path is deferred, the rebase is
+#      skipped and the push is still attempted, as a fast-forward;
+#   6  `git rebase <upstream>`; on a stop, `git rebase --abort`, the
+#      conflicting paths named, `state=conflict`, exit 10. The user resolves
+#      it, nothing is forced;
+#   7  `git push` of HEAD to the upstream branch; a push that did not land,
+#      the remote's refusal and a transport failure alike, is `state=rejected`
+#      with git's stderr passed through, exit 11; after a push that landed, the
+#      commits it landed are listed, oldest first, read after the rebase.
+#
+# WHY THE READ COMES BEFORE THE PULL, AND WHAT THE COMMIT ROW IS WORTH AFTER
+# THE REBASE. The tree is dirty by the event log after every locked commit, by
+# the lock's design, and git refuses a rebase on a dirty tree; the read
+# therefore happens at the fetched ref, needs no pull, and the settling commit
+# of step 5 is what makes the rebase possible without a stash (decision
+# `261108-2301-how-does-a-working-session-rebase-pull-over-the-log-row-the-lock-just-appended.md`,
+# option 1). Where the upstream had moved, the rebase replaces the hash the
+# lock's `commit` row carries, and step 5 has already committed that row: the
+# remote then holds the row's `checkout`, `ts` and subject beside a hash no
+# other clone resolves, and those three are what `## last_push` reads. `sync`
+# writes no row after the push, which would reach the remote one cycle late,
+# and none before step 5 beyond the `campaign_read` rows, which would cost a
+# second settling commit per cycle and go stale again on a rejected push. A
+# commit hash is final once the upstream holds it: a hash written into a
+# record is the one a `pushed=` line names, never the one `git commit` printed.
+#
+# ## Output of `sync`, one KEY=value per line, in this order
+#
+#   state=ok|conflict|rejected
+#                       `ok` covers pushed and nothing to push and alone
+#                       reaches exit 0; `conflict` is exit 10, `rejected` 11.
+#                       A state of `## The state vocabulary` stands here
+#                       instead, under its own code, when there was nothing
+#                       to read against, and then nothing below is printed.
+#   ref=<upstream>      The ref read, the upstream's short name.
+#   head=<sha>          The fetched head, before the rebase; the campaigns
+#                       below are the tree of this commit.
+#   campaign=<id>\t<state>\t<revision>\t<reason|->
+#                       One per readable campaign, ascending by id: the
+#                       directory's name, `state.state`, the file's `sha256:`
+#                       as `list` returns it, `state.reason` or `-`.
+#   campaign-unreadable=<id>\t<class>/<reason>
+#                       One per campaign the codec reports a finding against,
+#                       ascending by id.
+#   mine=<id>|none      Step 3.
+#   settled=yes         The settling commit landed; absent where nothing was
+#                       owed or the dirty paths were deferred.
+#   deferred=<path>     One per dirty tracked path, toplevel-relative, the log
+#                       included, when the log was not the only one.
+#   conflict=<path>     One per conflicting path of the aborted rebase.
+#   pushed=<full hash>\t<subject>
+#                       One per commit the push landed, oldest first
+#                       (`git log --reverse <fetched head>..HEAD`, read after
+#                       the rebase). THE ONE SOURCE OF A COMMIT HASH A RECORD
+#                       TAKES. None on `conflict` and on `rejected`.
+#   paused=<id>\t<reason>
+#                       When `mine` is `paused`: the orchestrator dispatches
+#                       nothing more, reports the reason and keeps the claim;
+#                       the cycle's push has happened by then.
+#   note=<token>[\t<field>...]
+#                       Zero or more: `local-ref` as on `overview`;
+#                       `checkout-unreadable` where no identifier resolved;
+#                       `several-campaigns-name-checkout\t<hex>\t<ids>` and
+#                       `several-campaigns-without-lanes\t<ids>`, the two
+#                       cases step 3 refuses to pick between.
+#
 # ## Exit codes
 #
 #   0  the printed answer is the answer: `state=ok` on `overview`, no `held=`
-#      line included; `path=` and `revision=` on a write.
+#      line included; `path=` and `revision=` on a write; `state=ok` on
+#      `sync`, pushed or nothing to push.
 #   1  the helper itself could not run: the compiled hooks or the codec bundle
 #      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
 #      `tar` failed where no state names the failure, the claim test could not
@@ -280,11 +381,11 @@
 #      an empty overview or a half-made write.
 #   5  nothing to read against: `state=` is `no-work-tree`, `no-branch`,
 #      `no-upstream`, `upstream-unresolved` or `workbench-untracked`
-#      (`overview`).
+#      (`overview`, `sync`).
 #   6  the fetch did not complete, `state=fetch-failed`. git's own stderr is
-#      passed through unmodified (`overview`).
+#      passed through unmodified (`overview`, `sync`).
 #   7  the workbench is not inside this repository,
-#      `state=workbench-outside-repo` (`overview`).
+#      `state=workbench-outside-repo` (`overview`, `sync`).
 #   8  `state=holds-package`: a steering act from a checkout that holds a
 #      claimed package, or whose two claims `bin/fusion-claimed-package`
 #      refused to choose between. Nothing was written (`open`, `lanes`,
@@ -292,10 +393,16 @@
 #   9  `state=refused`: the write did not validate or the act does not apply,
 #      `refused=<class>/<reason>` says which, and nothing was written (the
 #      same seven).
+#  10  `state=conflict`: the rebase stopped and was aborted; the conflicting
+#      paths are the `conflict=` lines, the rows were read and settled, and
+#      nothing was pushed (`sync`).
+#  11  `state=rejected`: the push did not land; git's stderr is passed
+#      through. The rebase, where one ran, stands (`sync`).
 #
 # 2, 3, 5, 6 and 7 are `bin/fusion-forum`'s numbers with its meanings; 1 and 4
 # are this script's own, that script having no codec to fail and no compiled
-# half to miss; 8 and 9 are the writes' (the plan's `## API Changes`, after
+# half to miss; 8 and 9 are the writes' and 10 and 11 `sync`'s (the plan's
+# `## API Changes`, one table across every sub-command, after
 # `261109-1440-the-plans-exit-codes-for-steps-16-and-17-collide-with-the-ones-overview-already-uses.md`).
 # A caller reads `state=` and defines no code.
 #
@@ -322,10 +429,14 @@
 #   workbench-outside-repo  Exit 7. The workbench marker sits in an ancestor of
 #                           the repository, so the workbench has no path in a
 #                           commit.
+#   conflict                Exit 10, `sync` alone: the rebase stopped and was
+#                           aborted.
+#   rejected                Exit 11, `sync` alone: the push did not land.
 #
-# On a state other than `ok` the `state=` line is followed by `branch=<name>`
+# On a state of exit 5, 6 or 7 the `state=` line is followed by `branch=<name>`
 # and `ref=<upstream>` as far as each was resolved before the read stopped,
-# and by nothing else. With `--ref` no `branch=` line is printed.
+# and by nothing else. With `--ref` no `branch=` line is printed. On
+# `conflict` and `rejected` the whole page of `## Output of \`sync\`` stands.
 #
 # ## What it touches
 #
@@ -341,6 +452,13 @@
 # A steering write touches one file of the working tree, the campaign record
 # it names, written whole by rename; on exit 8 and 9 it touches none. It
 # fetches nothing and commits nothing.
+#
+# `sync` is the one sub-command that moves the repository: it appends to the
+# working tree's event log, commits that log alone under the lock, rebases
+# the branch onto its upstream and pushes it. It runs no `stash`,
+# `--autostash`, `checkout .`, `reset --hard` or `clean`, and an aborted
+# rebase leaves the branch where the settling commit left it. Its scratch
+# directory is removed on every way out, as `overview`'s is.
 #
 # No sub-command sends the codec a mutation: the codec has none for a
 # campaign, and the writes reach it through `show` and `validate` alone. No

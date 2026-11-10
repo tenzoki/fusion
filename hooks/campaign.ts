@@ -1,24 +1,26 @@
 /**
  * The campaign entry, behind `bin/fusion-campaign`: `overview [--window
  * <hours>] [--ref <upstream>]`, the reduced tier of the overview above the
- * checkouts, and the seven steering writes `open`, `lanes`, `pause`, `resume`,
- * `move`, `reassign` and `end`.
+ * checkouts, the seven steering writes `open`, `lanes`, `pause`, `resume`,
+ * `move`, `reassign` and `end`, and `sync`, the commit-cycle read.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
- * overview's computation and `lib/campaign-write.ts` the writes', each header
- * the account of its mechanism. This file parses the arguments, finds the
- * workbench above the working directory, and maps what the computation
- * answers onto stdout, stderr and an exit code.
+ * overview's computation, `lib/campaign-write.ts` the writes' and
+ * `lib/campaign-sync.ts` the cycle's, each header the account of its
+ * mechanism. This file parses the arguments, finds the workbench above the
+ * working directory, and maps what the computation answers onto stdout,
+ * stderr and an exit code.
  *
  * ## Stdout is whole or empty
  *
  * The text is rendered once the read has finished and written in one piece.
- * On every exit code but 0, 5, 6, 7, 8 and 9 stdout is empty and the reason
- * is on stderr; on 5, 6 and 7 it carries the `state=` line and what was
- * resolved before the read stopped, as `bin/fusion-forum` prints it; on 8 and
- * 9 the `state=` line and the line that says why (`held=`, `refused=`), the
- * detail on stderr.
+ * On every exit code but 0, 5, 6, 7, 8, 9, 10 and 11 stdout is empty and the
+ * reason is on stderr; on 5, 6 and 7 it carries the `state=` line and what
+ * was resolved before the read stopped, as `bin/fusion-forum` prints it; on 8
+ * and 9 the `state=` line and the line that says why (`held=`, `refused=`),
+ * the detail on stderr; on 10 and 11 the whole of `sync`'s page, `state=`
+ * naming the stopped rebase or the push that did not land.
  *
  * ## The scratch directory survives no way out
  *
@@ -32,10 +34,12 @@ import { join } from "node:path";
 
 type Lib = typeof import("./lib/campaign.js");
 type Writes = typeof import("./lib/campaign-write.js");
-type Readers = Lib & { findWorkbenchRoot: typeof import("./lib/workbench-root.js").findWorkbenchRoot; legacyLine: typeof import("./lib/record-index.js").legacyLine; notReadLine: typeof import("./lib/record-index.js").notReadLine; bundleMissing: typeof import("./lib/record-index.js").bundleMissing; writes: Writes };
+type Cycle = typeof import("./lib/campaign-sync.js");
+type Readers = Lib & { findWorkbenchRoot: typeof import("./lib/workbench-root.js").findWorkbenchRoot; legacyLine: typeof import("./lib/record-index.js").legacyLine; notReadLine: typeof import("./lib/record-index.js").notReadLine; bundleMissing: typeof import("./lib/record-index.js").bundleMissing; writes: Writes; cycle: Cycle };
 
 const USAGE = [
   "usage: fusion-campaign overview [--window <hours>] [--ref <upstream>]",
+  "       fusion-campaign sync",
   "       fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...",
   "       fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]",
   "       fusion-campaign pause --reason <text> [--campaign <id>]",
@@ -59,6 +63,9 @@ const STATE_EXIT = {
   "fetch-failed": 6,
   "workbench-outside-repo": 7,
 } as const;
+
+/** `sync`'s own two states, rows 10 and 11 of the table; `ok` is 0. */
+const SYNC_EXIT = { ok: 0, conflict: 10, rejected: 11 } as const;
 
 interface OverviewArgs {
   windowHours: number;
@@ -242,6 +249,36 @@ function steer(act: Act, lib: Readers): number {
   }
 }
 
+/** The commit-cycle read: the sequence of `lib/campaign-sync.ts`, then its page under `state=ok`, `conflict` or `rejected`. */
+function syncCycle(lib: Readers): number {
+  const cwd = process.cwd();
+  const root = lib.findWorkbenchRoot(cwd);
+  if (root === null) {
+    say(`no fusion workbench found above ${cwd}.`);
+    return 3;
+  }
+  const result = lib.cycle.sync(cwd, join(root, "fusion-workbench"));
+  switch (result.kind) {
+    case "no-ref": {
+      const lines = [`state=${result.at.state}`];
+      if (result.at.branch !== undefined) lines.push(`branch=${result.at.branch}`);
+      if (result.at.ref !== undefined) lines.push(`ref=${result.at.ref}`);
+      process.stdout.write(lines.join("\n") + "\n");
+      return STATE_EXIT[result.at.state];
+    }
+    case "failed": {
+      const where = `${result.head}:${result.rel}`;
+      say(`${result.cause === "legacy" ? lib.legacyLine(where) : lib.notReadLine(result, where)} No campaign was read, no row written, nothing rebased or pushed.`);
+      return result.cause !== "legacy" && lib.bundleMissing(result) ? 1 : 4;
+    }
+    case "synced":
+      process.stdout.write(lib.cycle.renderSync(result));
+      if (result.state === "conflict") say(`git rebase ${result.ref} stopped on ${result.conflicts.join(", ")} and was aborted; the user resolves it, nothing is forced.`);
+      if (result.state === "rejected") process.stderr.write(result.rejection ?? "");
+      return SYNC_EXIT[result.state];
+  }
+}
+
 function main(argv: string[], lib: Readers): number {
   const [command, ...rest] = argv;
   if (command === "-h" || command === "--help" || command === "help") {
@@ -256,6 +293,8 @@ function main(argv: string[], lib: Readers): number {
     const args = parseOverview(rest);
     return args === null ? usage() : overview(args, lib);
   }
+  // `sync` takes no flag: it reads the branch's upstream, the orchestrator's cycle and nobody's named ref.
+  if (command === "sync") return rest.length === 0 ? syncCycle(lib) : usage();
   if (command !== undefined && WRITES.has(command)) {
     const act = parseWrite(command, rest, lib.writes);
     return act === null ? usage() : steer(act, lib);
@@ -268,10 +307,10 @@ function main(argv: string[], lib: Readers): number {
 // of the reader. The modules are imported inside the `try` for the first of
 // those.
 try {
-  const [lib, writes, { findWorkbenchRoot }, { legacyLine, notReadLine, bundleMissing }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/campaign.js"), import("./lib/campaign-write.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
+  const [lib, writes, cycle, { findWorkbenchRoot }, { legacyLine, notReadLine, bundleMissing }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/campaign.js"), import("./lib/campaign-write.js"), import("./lib/campaign-sync.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
   exitZeroOnStdoutEpipe(); // the reader may close stdout first
   for (const [signal, code] of [["SIGINT", 130], ["SIGTERM", 143], ["SIGHUP", 129]] as const) process.on(signal, () => process.exit(code));
-  process.exitCode = main(process.argv.slice(2), { ...lib, writes, findWorkbenchRoot, legacyLine, notReadLine, bundleMissing });
+  process.exitCode = main(process.argv.slice(2), { ...lib, writes, cycle, findWorkbenchRoot, legacyLine, notReadLine, bundleMissing });
 } catch (e) {
   const known = e instanceof Error && e.name === "HelperFailure";
   process.stderr.write(`fusion-campaign: ${known ? (e as Error).message : `an internal error stopped the campaign entry, a fusion bug or an incomplete install and not the workbench's.\n${e instanceof Error ? e.stack : String(e)}`}\nNothing was read or written.\n`);

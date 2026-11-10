@@ -63,3 +63,4 @@ Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts
 
 ---
 Implemented: `hooks/lib/campaign-write.ts` `## One sequence serves every write` (`priorRevisions`, the one function that knows where the two values come from), `hooks/campaign.ts` (the seven write sub-commands), `bin/fusion-campaign` `## The steering writes` and `## Exit codes` (rows 8 and 9), `README-hooks.md` `## Files` (the `lib/campaign-write.ts` row), `hooks/lib/__tests__/campaign-write.test.ts` — option 1 in its `show` form: every steering write asks the codec's `show` for `prior` over the candidate in a scratch workbench, stores the two values verbatim, validates the filled candidate there and renames the file into place; nothing on the Claude side computes a hash of its own.
+Implemented at: 418bc2cc (plan step 16b), on the codec side 15be5d20 (plan step 13).
