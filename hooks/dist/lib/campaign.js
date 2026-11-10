@@ -246,9 +246,10 @@ export function defaultBin() {
  * One program, to completion. Not `lib/git.ts`: that one carries a hook's
  * ten-second budget and collapses every failure to null, while a fetch has no
  * budget (`bin/fusion-forum` `## Why there is no timeout`) and the states
- * below are told apart by exit status.
+ * below are told apart by exit status. Exported for `lib/campaign-write.ts`,
+ * whose claim test runs a sibling helper the same way.
  */
-function run(program, args, cwd, env = process.env) {
+export function run(program, args, cwd, env = process.env) {
     const r = spawnSync(program, args, { cwd, env, encoding: "utf-8", maxBuffer: 512 * 1024 * 1024 });
     return { status: r.status ?? -1, stdout: r.stdout ?? "", stderr: r.error === undefined ? (r.stderr ?? "") : String(r.error) };
 }

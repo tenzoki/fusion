@@ -49,6 +49,7 @@
   agent-dispatch-observation.test.ts 338
   archive-filter-key.test.ts 41
   campaign-overview.test.ts 270
+  campaign-write.test.ts 199
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
   citation-sweep.test.ts 780
@@ -124,4 +125,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 27184
+  total 27383

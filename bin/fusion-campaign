@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # fusion-campaign — the frame above the checkouts of one project: who holds
 # which work package at the commit the remote stands at, read out of a fetched
-# ref and never out of the working tree.
+# ref and never out of the working tree; and the steering writes of the
+# campaign record, `campaigns/<id>/campaign.json`, whose one writer this is.
 #
 # THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION of every sub-command, of the
 # KEY=value output, of the state vocabulary and of the exit table. The row in
@@ -10,11 +11,21 @@
 # ## Usage
 #
 #   fusion-campaign overview [--window <hours>] [--ref <upstream>]
+#   fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...
+#   fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]
+#   fusion-campaign pause --reason <text> [--campaign <id>]
+#   fusion-campaign resume [--campaign <id>]
+#   fusion-campaign move <package> --to <lane> [--campaign <id>]
+#   fusion-campaign reassign <lane> --checkout <hex> [--campaign <id>]
+#   fusion-campaign end --outcome completed|bounded|failed|cancelled [--reason <text>]
+#                       [--objective-met] [--intake-closed] [--all-attempts-terminal] [--final-audit-passed]
+#                       [--watermark <text>] [--audit-ref <text>] [--campaign <id>]
 #
-# One sub-command at this version, and of it the reduced tier: the overview
-# that needs no campaign record. The lane view, the rule checks and the
-# steering sub-commands arrive with later versions; a sub-command this script
-# does not know is a usage error, never a silent no-op.
+# `overview` is the read side, in its reduced tier: the overview that needs no
+# campaign record. The seven others are the steering writes
+# (`## The steering writes` below). The lane view and the rule checks of the
+# overview, `cut` and `sync` arrive with later versions; a sub-command this
+# script does not know is a usage error, never a silent no-op.
 #
 #   --window <hours>  The overview window, a whole number of hours above zero,
 #                     24 when absent. Nothing stores it: it is a parameter of
@@ -141,32 +152,152 @@
 #       The ref belongs to no remote, so no fetch was owed and the answer is as
 #       local as the ref is.
 #
+# ## The steering writes
+#
+# The campaign record is `campaigns/<id>/campaign.json` in the workbench above
+# pwd, read and written in the WORKING TREE (the steering checkout plans on
+# its own pulled tree), never at a ref. The codec reads a campaign and writes
+# none, so these sub-commands are its writer (`hooks/lib/campaign-write.ts`,
+# whose header is the account of the mechanism). They commit nothing: the
+# steering session commits the file through the ordinary commit step, and the
+# act reaches a working session at that session's next commit cycle.
+#
+# Every write runs the same sequence. The codec's gate first (exit 4 where the
+# workbench is refused by name). Then THE CLAIM TEST: `bin/fusion-claimed-package`
+# from pwd; a `PACKAGE=` line, or that helper's refusal over two claimed
+# packages, is exit 8 and nothing is written, because a steering act runs only
+# from a checkout holding no claimed package. Then the candidate, the stored
+# record with the act applied (or, for `open`, the new document), with
+# `state.charter_hash` and `state.revision` set to placeholders; the candidate
+# is placed in a scratch workbench under what `bin/fusion-tmp path` prints and
+# the codec's `show` is asked, whose member `prior` for a campaign holds
+# Prior's `charterHash` and `stateRevision`, computed by the bundle
+# (`codec/README.md`, "The member `prior` on a campaign's `show`"); the two
+# values replace the placeholders; the filled candidate is placed again and
+# the codec's `validate` must answer no finding, the three lane rules
+# included; the file is written beside its target and renamed into place. A
+# refusal at `show` or at `validate`, and an act that does not apply, is exit 9
+# with nothing written. The scratch directory is removed on every way out.
+#
+# The two stored values therefore equal `prior` after every write. `lanes`,
+# `register` and `formation` are no part of the export, so a write that
+# changes the lanes alone stores the two values it had, while the file's own
+# `sha256:` revision moves; `pause`, `resume` and `end` move `state.revision`.
+#
+# `--campaign <id>` names the campaign on every write but `open`. Without it
+# the write names the one live campaign of the workbench (a `state.state`
+# outside `completed`, `bounded`, `failed`, `cancelled`, `archived`,
+# `discarded`); none or several is refused, the several named.
+#
+#   open      writes `campaigns/<id>/campaign.json`, refusing an id that is
+#             not `YYMMDD-HHMM-<slug>` (exit 2) and one that exists (exit 9,
+#             `conflict/campaign-exists`). The charter carries the values
+#             request 80 `### Stated and not asked` states
+#             (`codec/fixtures/prior/REQUESTS.md`): `revision`
+#             `prior-opaque:r1`, `authorisation_ref` and `objective` as given,
+#             `stop_conditions` the `--stop` values in order, `delivery_policy`
+#             the working rule "commit, then pull with rebase, then read the
+#             campaign, then push", the limits at the minimum Prior admits.
+#             The state is `running` with `reason` null and empty `sessions`
+#             and `runs` (the first stored state Prior's lifecycle cannot
+#             produce, a stated Claude-side deviation), counters and
+#             settlement at zero; `lanes`, `register`, `formation`,
+#             `baseline_hash`, `requested_outcome`, `previous_terminal` and
+#             `completion_evidence` null; `provenance.source` `created`.
+#   lanes     replaces `lanes` whole from a proposal file, the file `cut` will
+#             write: of it the key `lanes`, an array of
+#             `{"id": <lane id>, "members": [<container name>, ...]}`, every
+#             other key ignored. Each member is resolved to its record through
+#             the codec's `list` (`display` is the container name); a name no
+#             package carries is `unknown-scope/package-unknown`. A lane's
+#             `checkout_id` is the `--assign <lane>=<hex>` given for it, else
+#             null; a lane `--assign` names and the proposal does not is
+#             `unknown-scope/lane-unknown`. A proposal that is no such file is
+#             `schema-invalid/proposal-unreadable`. A package in two lanes, a
+#             lane id twice or a checkout in two lanes is the codec's finding
+#             (`schema-invalid/duplicate-lane-member`, `duplicate-lane-id`,
+#             `duplicate-lane-checkout`), exit 9.
+#   pause     from `running` alone (`conflict/campaign-not-running`): writes
+#             `paused` and `state.reason` = the text.
+#   resume    from `paused` alone (`conflict/campaign-not-paused`): writes
+#             `running` and `state.reason` null (Prior's correction to request
+#             80's question 3(a)).
+#   move      takes the package out of whichever lane names it and appends it
+#             to lane `--to`. The package is its container name; one the
+#             workbench does not list is `unknown-scope/package-unknown`, a
+#             lane that is not there `unknown-scope/lane-unknown`, no lanes at
+#             all `conflict/no-lanes`, the package already in that lane
+#             `conflict/package-already-in-lane`.
+#   reassign  sets lane `<lane>`'s `checkout_id` to `<hex>`; the same refusals
+#             for the lane, and the codec's `duplicate-lane-checkout` where
+#             another lane carries that checkout.
+#   end       from `running` or `paused` (`conflict/campaign-not-live`): writes
+#             the outcome as `state.state` and `--reason` as `state.reason`
+#             (null without it). On `completed` alone, `completion_evidence`
+#             is written: the four booleans as the user states them, each
+#             flag given being true and each absent false; `--watermark` and
+#             `--audit-ref` null unless given. Any of those six flags on
+#             another outcome is a usage error.
+#
+# Every act but `open` refuses a terminal campaign named by `--campaign`
+# (`conflict/campaign-terminal`), and a record that changed between the read
+# and the write (`conflict/revision-moved`).
+#
+# ## Output of a steering write
+#
+#   path=<workbench-relative path>   `campaigns/<id>/campaign.json`.
+#   revision=sha256:<64 hex>          The written file's revision, over its
+#                                     exact bytes, as the codec's `list` and
+#                                     `show` answer it.
+#
+# Exit 0 prints those two lines and nothing else. Exit 8 prints
+# `state=holds-package` and `held=<what the claim test found>`; exit 9 prints
+# `state=refused` and `refused=<class>/<reason>`; each puts the detail on
+# stderr. Every other code prints nothing on stdout.
+#
 # ## Exit codes
 #
-#   0  the printed answer is the answer, `state=ok`; no `held=` line included.
+#   0  the printed answer is the answer: `state=ok` on `overview`, no `held=`
+#      line included; `path=` and `revision=` on a write.
 #   1  the helper itself could not run: the compiled hooks or the codec bundle
 #      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
-#      `tar` failed where no state names the failure, or an internal error.
-#      The reason is on stderr and nothing is on stdout.
+#      `tar` failed where no state names the failure, the claim test could not
+#      be made (`bin/fusion-claimed-package` exited for a reason that is no
+#      answer), or an internal error. The reason is on stderr and nothing is
+#      on stdout.
 #   2  usage error: no sub-command or an unknown one, an unknown or repeated
 #      flag, a flag without its value, `--window` that is no whole number above
-#      zero, `--ref` that is empty or begins with a dash.
+#      zero, `--ref` that is empty or begins with a dash, a write without a
+#      required flag, an `--id` that is not `YYMMDD-HHMM-<slug>`, a checkout
+#      that is not eight lowercase hex characters, an `--outcome` outside the
+#      four, an evidence flag on an outcome other than `completed`.
 #   3  no fusion workbench above pwd.
-#   4  the workbench at the commit was not read: the codec's gate refused it by
-#      name (`legacy`, a workbench without its manifest at that commit, or
-#      `unsupported`), or the codec refused a read or gave no answer. The cause
-#      is on stderr and NOTHING is on stdout: a named failure and never an
-#      empty overview.
+#   4  the workbench was not read: the codec's gate refused it by name
+#      (`legacy`, a workbench without its manifest, or `unsupported`), or the
+#      codec refused a read or gave no answer. For `overview` that is the
+#      workbench at the commit; for a write, the one in the working tree. The
+#      cause is on stderr and NOTHING is on stdout: a named failure and never
+#      an empty overview or a half-made write.
 #   5  nothing to read against: `state=` is `no-work-tree`, `no-branch`,
-#      `no-upstream`, `upstream-unresolved` or `workbench-untracked`.
+#      `no-upstream`, `upstream-unresolved` or `workbench-untracked`
+#      (`overview`).
 #   6  the fetch did not complete, `state=fetch-failed`. git's own stderr is
-#      passed through unmodified.
+#      passed through unmodified (`overview`).
 #   7  the workbench is not inside this repository,
-#      `state=workbench-outside-repo`.
+#      `state=workbench-outside-repo` (`overview`).
+#   8  `state=holds-package`: a steering act from a checkout that holds a
+#      claimed package, or whose two claims `bin/fusion-claimed-package`
+#      refused to choose between. Nothing was written (`open`, `lanes`,
+#      `pause`, `resume`, `move`, `reassign`, `end`).
+#   9  `state=refused`: the write did not validate or the act does not apply,
+#      `refused=<class>/<reason>` says which, and nothing was written (the
+#      same seven).
 #
 # 2, 3, 5, 6 and 7 are `bin/fusion-forum`'s numbers with its meanings; 1 and 4
 # are this script's own, that script having no codec to fail and no compiled
-# half to miss.
+# half to miss; 8 and 9 are the writes' (the plan's `## API Changes`, after
+# `261109-1440-the-plans-exit-codes-for-steps-16-and-17-collide-with-the-ones-overview-already-uses.md`).
+# A caller reads `state=` and defines no code.
 #
 # ## The state vocabulary
 #
@@ -198,17 +329,22 @@
 #
 # ## What it touches
 #
-# The fetch updates the repository's remote-tracking refs, as any fetch does.
-# Nothing in the working tree is read except to find the workbench and the
-# repository's root, and nothing in it is written: `git status --porcelain` is
-# the same before and after. The one thing written is a scratch directory
-# under what `bin/fusion-tmp path` prints, removed on every way out, an
-# interrupt included. One side effect is that helper's and not this one's: on
-# the first run in a checkout that has no identifier yet, the identity helper
-# it calls mints one, as it does for every program that asks.
+# `overview`: the fetch updates the repository's remote-tracking refs, as any
+# fetch does. Nothing in the working tree is read except to find the workbench
+# and the repository's root, and nothing in it is written: `git status
+# --porcelain` is the same before and after. The one thing written is a
+# scratch directory under what `bin/fusion-tmp path` prints, removed on every
+# way out, an interrupt included. One side effect is that helper's and not
+# this one's: on the first run in a checkout that has no identifier yet, the
+# identity helper it calls mints one, as it does for every program that asks.
 #
-# It sends the codec no mutation. No cache, no index, no record: the overview
-# is recomputed per run and discarded.
+# A steering write touches one file of the working tree, the campaign record
+# it names, written whole by rename; on exit 8 and 9 it touches none. It
+# fetches nothing and commits nothing.
+#
+# No sub-command sends the codec a mutation: the codec has none for a
+# campaign, and the writes reach it through `show` and `validate` alone. No
+# cache, no index: the overview is recomputed per run and discarded.
 #
 # The work is hooks/dist/campaign.js, resolved relative to this script rather
 # than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run

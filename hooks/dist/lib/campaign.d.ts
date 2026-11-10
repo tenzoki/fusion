@@ -165,6 +165,19 @@ export declare class HelperFailure extends Error {
 }
 /** dist layout: `<plugin>/hooks/dist/lib/campaign.js` → `<plugin>/bin`. An install copy and a work tree each run their own siblings. */
 export declare function defaultBin(): string;
+export interface Ran {
+    status: number;
+    stdout: string;
+    stderr: string;
+}
+/**
+ * One program, to completion. Not `lib/git.ts`: that one carries a hook's
+ * ten-second budget and collapses every failure to null, while a fetch has no
+ * budget (`bin/fusion-forum` `## Why there is no timeout`) and the states
+ * below are told apart by exit status. Exported for `lib/campaign-write.ts`,
+ * whose claim test runs a sibling helper the same way.
+ */
+export declare function run(program: string, args: string[], cwd: string, env?: NodeJS.ProcessEnv): Ran;
 /**
  * Run `fn` with a fresh directory under what `bin/fusion-tmp path` prints,
  * and remove the directory on every way out. A scratch directory that could

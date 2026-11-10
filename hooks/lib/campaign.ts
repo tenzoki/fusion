@@ -279,7 +279,7 @@ export function defaultBin(): string {
   return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "bin");
 }
 
-interface Ran {
+export interface Ran {
   status: number;
   stdout: string;
   stderr: string;
@@ -289,9 +289,10 @@ interface Ran {
  * One program, to completion. Not `lib/git.ts`: that one carries a hook's
  * ten-second budget and collapses every failure to null, while a fetch has no
  * budget (`bin/fusion-forum` `## Why there is no timeout`) and the states
- * below are told apart by exit status.
+ * below are told apart by exit status. Exported for `lib/campaign-write.ts`,
+ * whose claim test runs a sibling helper the same way.
  */
-function run(program: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = process.env): Ran {
+export function run(program: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = process.env): Ran {
   const r = spawnSync(program, args, { cwd, env, encoding: "utf-8", maxBuffer: 512 * 1024 * 1024 });
   return { status: r.status ?? -1, stdout: r.stdout ?? "", stderr: r.error === undefined ? (r.stderr ?? "") : String(r.error) };
 }

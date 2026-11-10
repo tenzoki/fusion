@@ -60,3 +60,6 @@ Option 1, in its `show` form. It is the one route on which Prior's condition is 
 The recommendation is contingent on one point nobody has determined: that Prior's host accepts an added member on the `show` answer for a campaign. The plan names it in what a re-pin request would carry.
 
 Answered: `261108-1924-campaign-the-frame-for-work-spread-over-several-checkouts.md` `## Rulings after Prior's answer to request 80` — option 1, the codec computes the two values read-only on `show` of a campaign; ruled by user, Kai Stalmann <ks@qantr.com>, 2026-11-09.
+
+---
+Implemented: `hooks/lib/campaign-write.ts` `## One sequence serves every write` (`priorRevisions`, the one function that knows where the two values come from), `hooks/campaign.ts` (the seven write sub-commands), `bin/fusion-campaign` `## The steering writes` and `## Exit codes` (rows 8 and 9), `README-hooks.md` `## Files` (the `lib/campaign-write.ts` row), `hooks/lib/__tests__/campaign-write.test.ts` — option 1 in its `show` form: every steering write asks the codec's `show` for `prior` over the candidate in a scratch workbench, stores the two values verbatim, validates the filled candidate there and renames the file into place; nothing on the Claude side computes a hash of its own.
