@@ -11,7 +11,7 @@ Whole sentences in the user's terms (`rules/user-facing-output.md`): no `key=` t
 6. **The seven conditions**, each printed only when it holds, each in a sentence naming the thing in the user's project and what the user can do:
    - `silent=`: that lane's checkout holds nothing and has not pushed within the window, or no push of it can be read: ask that checkout, or reassign its lane.
    - `out-of-lane=`: that checkout holds a package that stands in another lane (the holder's own lane named where it has one): move the package into the holder's lane, or reassign the lane to that checkout.
-   - `in-no-lane=`: that checkout holds a package no lane of any running campaign names: move it into a lane, or leave it outside the campaign on purpose.
+   - `in-no-lane=`: that checkout holds a package no lane of any running or paused campaign names: move it into a lane, or leave it outside the campaign on purpose.
    - `waits-decision=`: the next package of that lane waits on an open decision: name the decision as the thing to answer.
    - `handoff-possible=`: work in one lane has finished that a package in another lane was waiting for: tell that lane's checkout it can start.
    - `cross-lane=`: a commit by one lane's checkout changed a file inside another lane's area: name the commit, the file and the two lanes; the user decides whether the declared area or the lane is wrong.

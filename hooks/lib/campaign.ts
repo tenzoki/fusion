@@ -537,7 +537,13 @@ export function extractAt(at: { gitRoot: string; head: string; rel: string }, en
  * The campaigns at a ref, through the codec
  * ------------------------------------------------------------------ */
 
-/** The states in which a campaign steers a checkout: its lanes are evaluated here and `sync` reads it as `mine`. */
+/**
+ * The states in which a campaign is live, THE ONE DEFINITION OF THE WORD: its
+ * lanes are evaluated here, `sync` reads it as `mine`, and a steering write
+ * without `--campaign` names it (`lib/campaign-write.ts` `campaignOf`). A
+ * `draft` or `authorised` campaign, which Prior's lifecycle writes and `open`
+ * never does, steers nobody until it runs.
+ */
 export const LIVE_STATES: ReadonlySet<string> = new Set(["running", "paused"]);
 
 /** One lane of a campaign, as far as the overview and `sync` read it. */

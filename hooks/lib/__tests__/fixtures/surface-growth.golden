@@ -28,7 +28,7 @@
 [skills bytes]
   archive/SKILL.md 26498
   cadence/SKILL.md 23482
-  campaign/SKILL.md 17982
+  campaign/SKILL.md 17870
   check/SKILL.md 32403
   cleanup/SKILL.md 6979
   commit/SKILL.md 6167
@@ -43,7 +43,7 @@
   setup/SKILL.md 16345
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 245980
+  total 245868
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
@@ -51,7 +51,7 @@
   campaign-cut.test.ts 214
   campaign-overview.test.ts 380
   campaign-sync.test.ts 269
-  campaign-write.test.ts 199
+  campaign-write.test.ts 233
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
   citation-sweep.test.ts 780
@@ -128,4 +128,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 28073
+  total 28107

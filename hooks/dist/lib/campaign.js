@@ -460,7 +460,13 @@ export function extractAt(at, entries, into) {
 /* ------------------------------------------------------------------ *
  * The campaigns at a ref, through the codec
  * ------------------------------------------------------------------ */
-/** The states in which a campaign steers a checkout: its lanes are evaluated here and `sync` reads it as `mine`. */
+/**
+ * The states in which a campaign is live, THE ONE DEFINITION OF THE WORD: its
+ * lanes are evaluated here, `sync` reads it as `mine`, and a steering write
+ * without `--campaign` names it (`lib/campaign-write.ts` `campaignOf`). A
+ * `draft` or `authorised` campaign, which Prior's lifecycle writes and `open`
+ * never does, steers nobody until it runs.
+ */
 export const LIVE_STATES = new Set(["running", "paused"]);
 /** The campaign path of `list`'s row, read as a `CampaignAtRef` where its `show` answered a state; null where it did not. */
 function campaignOf(control, id, revision) {

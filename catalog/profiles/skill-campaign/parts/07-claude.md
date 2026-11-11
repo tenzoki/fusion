@@ -1,7 +1,7 @@
 
 ## Step 6: `open`, `pause`, `resume`, `move`, `reassign`, `end`
 
-Each is one act on the campaign record in this checkout's working tree, confirmed once before it runs: say in a sentence what will be written, ask, then run. The flags are the helper's (`bin/fusion-campaign`, `## The steering writes`); `--campaign <id>` is needed only where more than one campaign is live. Each line is followed by `; echo "exit=$?"`.
+Each is one act on the campaign record in this checkout's working tree, confirmed once before it runs: say in a sentence what will be written, ask, then run. The flags are the helper's (`bin/fusion-campaign`, `## The steering writes`); `--campaign <id>` is needed only where more than one campaign is running or paused, and to name one that is neither. Each line is followed by `; echo "exit=$?"`.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-campaign" open --id "$(date +%y%m%d-%H%M)-<slug>" --objective <text> --authorisation <citation> <--stop <text>, one per stop condition>

@@ -375,9 +375,13 @@
 # `sha256:` revision moves; `pause`, `resume` and `end` move `state.revision`.
 #
 # `--campaign <id>` names the campaign on every write but `open`. Without it
-# the write names the one live campaign of the workbench (a `state.state`
-# outside `completed`, `bounded`, `failed`, `cancelled`, `archived`,
-# `discarded`); none or several is refused, the several named.
+# the write names the one live campaign of the workbench, live being what it
+# is for the overview and for `sync` above: `running` or `paused`, and no
+# other state; none or several is refused, the several named. A `draft` or
+# `authorised` campaign (Prior's states; `open` writes `running`) is named
+# with `--campaign` alone: `lanes`, `move` and `reassign` on it prepare lanes
+# that no checkout reads as its own and the overview does not evaluate until
+# the campaign runs.
 #
 #   open      writes `campaigns/<id>/campaign.json`, refusing an id that is
 #             not `YYMMDD-HHMM-<slug>` (exit 2) and one that exists (exit 9,

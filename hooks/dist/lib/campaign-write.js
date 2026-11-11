@@ -51,8 +51,14 @@
  *
  * `open` names its own. Every other act takes `--campaign <id>`, and without
  * it the one live campaign of the workbench, read through `list`: none or
- * several is a refusal naming each. Live is a `state.state` outside the
- * terminal set `TERMINAL_STATES`.
+ * several is a refusal naming each. Live is `LIVE_STATES` of
+ * `lib/campaign.ts`, `running` or `paused`, the one set the overview
+ * evaluates lanes over and `sync` reads `mine` from, so the campaign the
+ * default names is the one that steers. A `draft` or `authorised` campaign
+ * (Prior's states; `open` writes `running`) is named with `--campaign` alone:
+ * `lanes`, `move` and `reassign` prepare it, and no checkout reads its lanes
+ * until it runs. The terminal set `TERMINAL_STATES` answers a different
+ * question, which campaign no act moves.
  *
  * ## What is refused here, before the codec is asked
  *
@@ -84,7 +90,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { cpSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-import { defaultBin, HelperFailure, run, withScratch } from "./campaign.js";
+import { defaultBin, HelperFailure, LIVE_STATES, run, withScratch } from "./campaign.js";
 import { isObject, isPackageRow, listedRecords, problemOf, refusedByGate, resultOf } from "./codec-read.js";
 import { ask as askCodec } from "./record-client.js";
 import { CAMPAIGN_RECORD, CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
@@ -214,11 +220,11 @@ function campaignOf(rows, named) {
             return refused("unknown-scope", "no-campaign", `no campaign ${named} in the workbench: ${relOf(named)} is not listed`);
         return { path: row.path };
     }
-    const live = campaigns.filter((row) => !("problem" in row) && typeof row.status === "string" && !TERMINAL_STATES.has(row.status));
+    const live = campaigns.filter((row) => !("problem" in row) && typeof row.status === "string" && LIVE_STATES.has(row.status));
     if (live.length === 1)
         return { path: live[0].path };
     if (live.length === 0)
-        return refused("unknown-scope", "no-campaign", `no live campaign in the workbench (${campaigns.length} listed); open one first`);
+        return refused("unknown-scope", "no-campaign", `no live campaign in the workbench (${campaigns.length} listed, none running or paused); open one, or --campaign <id> names one that is not live`);
     return refused("unknown-scope", "several-campaigns", `${live.length} live campaigns, so --campaign <id> names the one: ${live.map((row) => row.path).sort().join(", ")}`);
 }
 /** The act applied to the stored control, or the refusal that it does not apply. `candidate` is mutated. */
@@ -247,7 +253,7 @@ function apply(act, candidate, rows) {
             state.reason = null;
             return null;
         case "end":
-            if (current !== "running" && current !== "paused")
+            if (!LIVE_STATES.has(current))
                 return refused("conflict", "campaign-not-live", `end applies to a running or paused campaign and this one stands at ${current}`);
             state.state = act.outcome;
             state.reason = act.reason;

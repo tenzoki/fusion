@@ -30,7 +30,7 @@ A pause is read the same way. On Prior a pause takes effect at once; here the wo
 
 **A commit by a checkout in no lane produces no cross-lane row.** The row compares two lanes, the committer's and the declaring one; a checkout outside every lane has no lane to compare, so its commits into a declared area are not reported. A commit that no checkout's rows name is reported as unattributed, in a note.
 
-**The lane view is evaluated for a running or paused campaign only, and only once it has lanes.** A campaign that has ended steers nobody, and a campaign whose lanes are still to be cut has nothing to be in or out of. A campaign whose record the codec refuses is named as unreadable and evaluated no further.
+**The lane view is evaluated for a running or paused campaign only, and only once it has lanes.** A campaign that has ended steers nobody, and a campaign whose lanes are still to be cut has nothing to be in or out of. A campaign whose record the codec refuses is named as unreadable and evaluated no further. Those two states are the one reading of a live campaign, for the writes as for the reads: a steering act without `--campaign` names the one running or paused campaign of the workbench, and a `draft` or `authorised` one, which Prior writes and `open` never does, is named with the flag alone and steers no checkout until it runs.
 
 ## What "next commit" has meant in practice
 

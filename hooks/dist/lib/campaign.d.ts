@@ -317,7 +317,13 @@ export declare function extractAt(at: {
     head: string;
     rel: string;
 }, entries: readonly string[], into: string): string;
-/** The states in which a campaign steers a checkout: its lanes are evaluated here and `sync` reads it as `mine`. */
+/**
+ * The states in which a campaign is live, THE ONE DEFINITION OF THE WORD: its
+ * lanes are evaluated here, `sync` reads it as `mine`, and a steering write
+ * without `--campaign` names it (`lib/campaign-write.ts` `campaignOf`). A
+ * `draft` or `authorised` campaign, which Prior's lifecycle writes and `open`
+ * never does, steers nobody until it runs.
+ */
 export declare const LIVE_STATES: ReadonlySet<string>;
 /** One lane of a campaign, as far as the overview and `sync` read it. */
 export interface CampaignLane {

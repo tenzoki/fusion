@@ -51,8 +51,14 @@
  *
  * `open` names its own. Every other act takes `--campaign <id>`, and without
  * it the one live campaign of the workbench, read through `list`: none or
- * several is a refusal naming each. Live is a `state.state` outside the
- * terminal set `TERMINAL_STATES`.
+ * several is a refusal naming each. Live is `LIVE_STATES` of
+ * `lib/campaign.ts`, `running` or `paused`, the one set the overview
+ * evaluates lanes over and `sync` reads `mine` from, so the campaign the
+ * default names is the one that steers. A `draft` or `authorised` campaign
+ * (Prior's states; `open` writes `running`) is named with `--campaign` alone:
+ * `lanes`, `move` and `reassign` prepare it, and no checkout reads its lanes
+ * until it runs. The terminal set `TERMINAL_STATES` answers a different
+ * question, which campaign no act moves.
  *
  * ## What is refused here, before the codec is asked
  *

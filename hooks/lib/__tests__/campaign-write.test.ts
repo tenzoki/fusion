@@ -4,10 +4,12 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LIVE_STATES, type CampaignAtRef, type CampaignLane } from "../campaign.js";
+import { mineOf } from "../campaign-sync.js";
 import { PLACEHOLDER_HASH, readProposal, TERMINAL_STATES } from "../campaign-write.js";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
-import { claim, createPackage, must, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { campaignFile, claim, createPackage, must, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // Drives the real `bin/fusion-campaign` writes over workbenches the kernel wrote (`helpers/json-workbench.ts`), the
 // way `fusion-claimed-package.test.ts` drives its script: every path physical, the codec reached through this tree's
@@ -15,6 +17,8 @@ import { claim, createPackage, must, withJsonProject, type JsonProject } from ".
 // `state.revision` equal the `prior` the codec answers on `show`, every written file validates, `pause` moves
 // `state.revision` and `move` moves neither value while the file's own revision moves, a claim held by the running
 // checkout refuses every write with exit 8 and a lane rule broken refuses with exit 9, nothing written either way.
+// And the one reading of a live campaign (`LIVE_STATES`, `running` or `paused`): a `draft` campaign beside a running
+// one is not what a write without `--campaign` names, exactly as `sync`'s `mineOf` does not count it.
 //
 // HOME is a directory of its own, because `bin/fusion-tmp` puts the scratch workbench under it.
 
@@ -150,6 +154,36 @@ describe("bin/fusion-campaign, the steering writes", () => {
       // With one campaign terminal, the other is again the one live campaign.
       const paused = run(p, "pause", "--reason", "now unambiguous");
       expect([paused.status, paused.value("path")], paused.stderr).toEqual([0, `campaigns/${second}/campaign.json`]);
+    });
+  }, CASE_TIMEOUT * 4);
+
+  it("a draft campaign beside a running one: a write without --campaign names the running one, as sync counts it; the draft is named with the flag", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, stems[0]);
+      const draft = "261109-2302-drafted";
+      const draftRel = `campaigns/${draft}/campaign.json`;
+      const draftBytes = (): string => readFileSync(join(p.workbench, draftRel), "utf-8");
+      landed(p, "open", "--id", ID, "--objective", "o", "--authorisation", "a");
+      campaignFile(p, draft);
+      // Two campaigns listed, one live: the draft is not counted, so no --campaign is needed.
+      for (const act of [["pause", "--reason", "the draft does not count"], ["resume"]]) {
+        const r = run(p, ...act);
+        expect([r.status, r.value("path")], r.stderr).toEqual([0, REL]);
+      }
+      // Named, the draft takes lanes, a campaign prepared before it runs; it cannot end, not being live.
+      const laned = run(p, "lanes", "--from", proposal(p, "draft.json", [{ id: "lane-1", members: [stems[0]] }]), "--assign", `lane-1=${A}`, "--campaign", draft);
+      expect([laned.status, laned.value("path")], laned.stderr).toEqual([0, draftRel]);
+      const before = draftBytes();
+      refused(p, "conflict/campaign-not-live", "end", "--outcome", "cancelled", "--campaign", draft);
+      expect(draftBytes()).toBe(before);
+      // What sync counts, by the same set: the running campaign without lanes is mine, the draft whose lane names this checkout is not.
+      const at = (id: string, state: string, lanes: CampaignLane[] | null): CampaignAtRef => ({ id, state, revision: "sha256:0", reason: null, lanes });
+      const both = [at(ID, "running", null), at(draft, "draft", [{ id: "lane-1", checkout: A, members: [pkg.id] }])];
+      expect(mineOf(both, A)).toEqual({ mine: both[0], note: null });
+      expect([...LIVE_STATES].sort()).toEqual(["paused", "running"]);
+      // With the running one ended, the draft alone is no live campaign for the default to name.
+      landed(p, "end", "--outcome", "cancelled");
+      refused(p, "unknown-scope/no-campaign", "pause", "--reason", "x");
     });
   }, CASE_TIMEOUT * 4);
 

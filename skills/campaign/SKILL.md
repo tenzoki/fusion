@@ -65,7 +65,7 @@ Whole sentences in the user's terms (`rules/user-facing-output.md`): no `key=` t
 6. **The seven conditions**, each printed only when it holds, each in a sentence naming the thing in the user's project and what the user can do:
    - `silent=`: that lane's checkout holds nothing and has not pushed within the window, or no push of it can be read: ask that checkout, or reassign its lane.
    - `out-of-lane=`: that checkout holds a package that stands in another lane (the holder's own lane named where it has one): move the package into the holder's lane, or reassign the lane to that checkout.
-   - `in-no-lane=`: that checkout holds a package no lane of any running campaign names: move it into a lane, or leave it outside the campaign on purpose.
+   - `in-no-lane=`: that checkout holds a package no lane of any running or paused campaign names: move it into a lane, or leave it outside the campaign on purpose.
    - `waits-decision=`: the next package of that lane waits on an open decision: name the decision as the thing to answer.
    - `handoff-possible=`: work in one lane has finished that a package in another lane was waiting for: tell that lane's checkout it can start.
    - `cross-lane=`: a commit by one lane's checkout changed a file inside another lane's area: name the commit, the file and the two lanes; the user decides whether the declared area or the lane is wrong.
@@ -96,7 +96,7 @@ End with the `proposal=` path: the proposal stands in that file, a second run wi
 The user names the proposal to take, the `proposal=` path of a cut they confirmed, and which checkout works which lane, each by its eight hex characters (`"$FUSION_PLUGIN_ROOT/bin/fusion-identity"` prints a checkout's own as `CHECKOUT=`; the overview's `held=` lines name the others). A lane the user assigns nobody keeps no checkout. Say in a sentence which lanes, packages and checkouts will be written and ask once before running:
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" lanes --from <proposal file> <--assign lane-<n>=<hex>, one per assigned lane> <--campaign <id>, when more than one campaign is live>; echo "exit=$?"
+"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" lanes --from <proposal file> <--assign lane-<n>=<hex>, one per assigned lane> <--campaign <id>, when more than one campaign is running or paused>; echo "exit=$?"
 ```
 
 Exit 0 prints `path=` and `revision=`: report that the lanes are written. **Then one question, with these three options and no fourth**: put it as a dialog with `AskUserQuestion` where the host renders one, else as a numbered list in the chat, in these words:
@@ -114,11 +114,11 @@ On 1, per lane member, `<control path>` its package's control path (the `path` o
 
 Report the members set, and any the codec refused by name with the `fusion-write:` line. On 2 and 3 nothing more is written. A write that printed `state=` instead of `path=`: Step 7.
 
-End with the two sentences every steering report ends with: the lanes reach a working session at the holding session's next commit, with no time given; and the record travels with your next commit and push, so until then no other checkout sees it.
+End with the two sentences Step 6 ends every steering report with.
 
 ## Step 6: `open`, `pause`, `resume`, `move`, `reassign`, `end`
 
-Each is one act on the campaign record in this checkout's working tree, confirmed once before it runs: say in a sentence what will be written, ask, then run. The flags are the helper's (`bin/fusion-campaign`, `## The steering writes`); `--campaign <id>` is needed only where more than one campaign is live. Each line is followed by `; echo "exit=$?"`.
+Each is one act on the campaign record in this checkout's working tree, confirmed once before it runs: say in a sentence what will be written, ask, then run. The flags are the helper's (`bin/fusion-campaign`, `## The steering writes`); `--campaign <id>` is needed only where more than one campaign is running or paused, and to name one that is neither. Each line is followed by `; echo "exit=$?"`.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-campaign" open --id "$(date +%y%m%d-%H%M)-<slug>" --objective <text> --authorisation <citation> <--stop <text>, one per stop condition>
