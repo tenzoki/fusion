@@ -24,10 +24,11 @@
  *     deterministic point every locked commit passes through. That emitter is
  *     bash and shares this module's schema by convention, not by import;
  *     `rules/commit-lock.md` carries its contract.
- *   - `campaign_read` — emitted by `bin/fusion-campaign sync`, once per campaign
- *     read at the fetch after each commit. That emitter is bash too and shares
- *     this module's schema by convention, as the `commit` row's does;
- *     `hooks/lib/campaign-sync.ts` carries its contract.
+ *   - `campaign_read` — emitted by `hooks/lib/campaign-sync.ts`
+ *     (`campaignReadRow`) behind `bin/fusion-campaign sync`, once per
+ *     campaign read at the fetch after each commit. That emitter is
+ *     TypeScript and imports `utcStamp` from this module for its `ts`; the
+ *     bash wrapper composes no row. That module's header carries its contract.
  *   - `session_start` — emitted by `session-start.ts` (SessionStart), once per
  *     session. See `## The session_start row` at the foot of this module for
  *     what it carries, why the model's own row is not replaced by it, and what

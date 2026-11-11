@@ -102,8 +102,6 @@ export declare function mineOf(campaigns: CampaignAtRef[], checkout: string | nu
 };
 /** Env-first (the SessionStart export), else one run of `bin/fusion-identity`; an unresolved half is null. */
 export declare function identityOf(cwd: string, bin?: string, env?: NodeJS.ProcessEnv): Identity;
-/** `ts` as the lock writes it: UTC at second resolution, no designator. */
-export declare const stamp: (ms: number) => string;
 /** The `campaign_read` row for one campaign read: the plan's field set, an unresolved value an absent key. */
 export declare function campaignReadRow(ts: string, identity: Identity, sessionId: string, campaign: CampaignAtRef): string;
 export interface Synced {

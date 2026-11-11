@@ -84,6 +84,7 @@ import { appendFileSync, existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { defaultBin, extractAt, fetchRef, HelperFailure, LIVE_STATES, mustGit, readCampaignsAt, run, withScratch } from "./campaign.js";
 import { ask as askCodec } from "./record-client.js";
+import { utcStamp } from "./orchestrator-events.js";
 import { EVENT_LOG } from "./record-change.js";
 import { SETUP_MARKER } from "./record-write.js";
 import { CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
@@ -137,8 +138,6 @@ export function identityOf(cwd, bin = defaultBin(), env = process.env) {
     const line = (key) => new RegExp(`^${key}=(.*)$`, "m").exec(out)?.[1] ?? null;
     return { person: line("PERSON"), checkout: line("CHECKOUT") };
 }
-/** `ts` as the lock writes it: UTC at second resolution, no designator. */
-export const stamp = (ms) => new Date(ms).toISOString().slice(0, 19);
 /** The `campaign_read` row for one campaign read: the plan's field set, an unresolved value an absent key. */
 export function campaignReadRow(ts, identity, sessionId, campaign) {
     const row = { ts, event: "campaign_read" };
@@ -200,7 +199,7 @@ export function sync(cwd, workbench, options = {}) {
         if (chosen.note !== null)
             notes.push(chosen.note);
         if (sessionId !== "") {
-            const ts = stamp(now());
+            const ts = utcStamp(new Date(now()));
             for (const c of read.campaigns)
                 appendFileSync(log, `${campaignReadRow(ts, identity, sessionId, c)}\n`);
         }

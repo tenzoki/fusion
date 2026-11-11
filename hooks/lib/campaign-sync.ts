@@ -86,6 +86,7 @@ import { join } from "node:path";
 import { defaultBin, extractAt, fetchRef, HelperFailure, LIVE_STATES, mustGit, readCampaignsAt, run, withScratch, type CampaignAtRef, type CampaignsRead, type FetchedRef, type NoRef, type UnreadableCampaign } from "./campaign.js";
 import { type Unread } from "./codec-read.js";
 import { ask as askCodec, type Ask } from "./record-client.js";
+import { utcStamp } from "./orchestrator-events.js";
 import { EVENT_LOG } from "./record-change.js";
 import { SETUP_MARKER } from "./record-write.js";
 import { CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
@@ -149,9 +150,6 @@ export function identityOf(cwd: string, bin: string = defaultBin(), env: NodeJS.
   const line = (key: string): string | null => new RegExp(`^${key}=(.*)$`, "m").exec(out)?.[1] ?? null;
   return { person: line("PERSON"), checkout: line("CHECKOUT") };
 }
-
-/** `ts` as the lock writes it: UTC at second resolution, no designator. */
-export const stamp = (ms: number): string => new Date(ms).toISOString().slice(0, 19);
 
 /** The `campaign_read` row for one campaign read: the plan's field set, an unresolved value an absent key. */
 export function campaignReadRow(ts: string, identity: Identity, sessionId: string, campaign: CampaignAtRef): string {
@@ -249,7 +247,7 @@ export function sync(cwd: string, workbench: string, options: SyncOptions = {}):
     if (chosen.note !== null) notes.push(chosen.note);
 
     if (sessionId !== "") {
-      const ts = stamp(now());
+      const ts = utcStamp(new Date(now()));
       for (const c of read.campaigns) appendFileSync(log, `${campaignReadRow(ts, identity, sessionId, c)}\n`);
     }
 

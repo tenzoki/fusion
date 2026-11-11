@@ -11,3 +11,5 @@ Two places call the `campaign_read` emitter bash, and the emitter duplicates `ut
 **Acceptance.** `campaign-sync.ts` imports `utcStamp` and carries no `stamp` of its own, or states in its header why it does not import; the module comment and the README row name the emitter as `hooks/lib/campaign-sync.ts` behind `bin/fusion-campaign sync` and say "bash" of the `commit` row alone; `hooks/dist/` is rebuilt in the same commit and `cd hooks && npm test` is green.
 
 **Cross-references:** `261108-2301-plan-campaign-the-frame-for-work-spread-over-several-checkouts.md` (step 17)
+---
+Resolved: `hooks/lib/campaign-sync.ts` imports `utcStamp` from `hooks/lib/orchestrator-events.ts` and its local `stamp` is gone; the module comment of `hooks/lib/orchestrator-events.ts` (`## Why a hook writes these rows at all`, the `campaign_read` bullet) and the `lib/orchestrator-events.ts` row of `README-hooks.md` `## Files` name the emitter as `hooks/lib/campaign-sync.ts` (`campaignReadRow`) behind `bin/fusion-campaign sync` and say "bash" of the `commit` row alone; `hooks/dist/` rebuilt in the same change.
