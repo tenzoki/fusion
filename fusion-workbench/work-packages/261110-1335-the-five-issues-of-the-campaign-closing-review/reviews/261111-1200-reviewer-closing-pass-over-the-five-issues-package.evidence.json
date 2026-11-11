@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "0653c5f2-4605-4fd9-880d-720da9edc1c2",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "bf4f788a6e9cb7b4fb61ef6bef2bd57fee4f063a",
+    "git_range": null
+  },
+  "brief_revision": "sha256:404c30ac99b14f7569d0a8a77442f041293ab4d23465de8761fd24991a43638b",
+  "plan_revision": null,
+  "role": {
+    "profile": "reviewer",
+    "version": "13.4.4"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261110-1335-the-five-issues-of-the-campaign-closing-review/reviews/261111-1200-reviewer-closing-pass-over-the-five-issues-package.md",
+    "sha256": "sha256:475fb95e58033ad61b8c3a43df2fc535a25080847e797f1875700034e71455f3",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-11-11T11:03:25Z",
+  "extensions": {}
+}

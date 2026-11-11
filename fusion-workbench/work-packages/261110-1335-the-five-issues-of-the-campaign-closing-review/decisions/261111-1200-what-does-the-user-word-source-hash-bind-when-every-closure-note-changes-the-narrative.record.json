@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "758ef040-c9ff-47ce-9def-681546cde817",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261110-1335-the-five-issues-of-the-campaign-closing-review/decisions/261111-1200-what-does-the-user-word-source-hash-bind-when-every-closure-note-changes-the-narrative.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

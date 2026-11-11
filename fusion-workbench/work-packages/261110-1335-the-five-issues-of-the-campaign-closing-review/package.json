@@ -3,7 +3,7 @@
   "id": "c734a53b-902e-431e-b6c2-28d7ad6b87d4",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -28,7 +28,20 @@
   "active_documents": [],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "the five closing-review issues and the sweep issue closed as fixed in seven commits; closing review verdict revise with one Low issue and one decision open for follow-on work",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "0653c5f2-4605-4fd9-880d-720da9edc1c2",
+          "revision": "sha256:84b5e66762d037d4890277f09b6f918fbb877f903fdc6b87ca82c814ffe4520d"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
