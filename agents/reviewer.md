@@ -84,9 +84,9 @@ Apply in order:
 
 ## Review process
 
-The review-file contract — the mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. **Your sender segment is `reviewer`**, whichever domain the pass covered; the domain is named in the review's own text, not in its filename.
+The review-file contract is `rules/review-contract.md`, which `bin/fusion-rules` emits at Setup; follow it exactly. Cite workbench records in it by storeless basename, no store segment in front (`rules/fusion-workbench-conventions.md` `## Filename Patterns`): the evidence record below binds the review's bytes by hash, and the citation lint reads no review. **Your sender segment is `reviewer`** whatever the domain; the review's text names it.
 
-**When `$OUT_REVIEW` lies inside a work package's container, record your verdict on the final review as evidence beside it**: `bin/fusion-write evidence --record <that container>/package.json --report <the review's workbench path> --verdict accept|revise|escalate --actor reviewer` — `accept` when the work meets its brief and plan, `revise` when a finding asks for a fix, `escalate` when the user must rule. One record per report; exit codes are that script's header.
+**When `$OUT_REVIEW` lies in a work package's container, record your verdict on the final review as evidence beside it**: `bin/fusion-write evidence --record <container>/package.json --report <the review's path> --verdict accept|revise|escalate --actor reviewer` — `accept` when the work meets its brief and plan, `revise` when a finding asks for a fix, `escalate` when the user must rule. One record per report; exit codes are that script's header.
 
 What that file leaves to your prompt is what analysing a topic means here:
 

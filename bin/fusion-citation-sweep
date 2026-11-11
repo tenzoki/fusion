@@ -61,13 +61,24 @@
 # first stdout line names it (format=). On json-control only the codec writes
 # JSON: a <path> naming a control file, the manifest or anything under
 # .json-state/ is a usage error (exit 1), a declared one is left out with a
-# line on stderr, and the census gains one `bound=<file>  <role>:<control>`
-# line per file in the write set whose bytes a record binds by hash (a plan or
-# spec a package adopted, a report an evidence record names), so guard (b)
-# names every rewrite that would leave a binding stale before --yes. Nothing is
-# refused on that ground. A legacy workbench is swept as a rewriter only, with
-# no bound= line: /fusion:migrate Step 6 runs it there, before Step 7 moves the
-# control data to JSON. The checker and plan-size still refuse legacy.
+# line on stderr, and a file whose bytes a record binds by hash (a plan or
+# spec a package adopted, a report an evidence record names) is SKIPPED, not
+# rewritten: one `bound=<file>  <role>:<control>  skipped, <n> left as
+# written` line in the census, no write in either pass, no count in files=,
+# rewrites= or repairs=, exit 0, and what the file still carries is the
+# checker's to report. Until 2026-11-11 that line was a report and the
+# rewrite went ahead: a rewrite of a bound report breaks the binding (the
+# codec reads the record as missing-evidence/report-changed) and the codec
+# admits a correction only over an unchanged report, so the rewrite was
+# unrecoverable short of deleting and re-issuing the record, which is what it
+# cost once, over this repository's own closing review (issue
+# `261110-2045-the-citation-sweep-rewrites-a-review-an-evidence-record-binds-by-hash-and-the-reviewer-wrote-store-prefixed-citations-into-one.md`).
+# The other route, the evidence operation refusing a report that carries a
+# store-prefixed citation, is not taken: it lives in codec/, whose bundle is
+# pinned by Prior, so the sweep yields. A legacy workbench is swept as a
+# rewriter only, with no bound= line: /fusion:migrate Step 6 runs it there,
+# before Step 7 moves the control data to JSON. The checker and plan-size
+# still refuse legacy.
 #
 # No other fusion pipeline or workflow runs this helper. `/fusion:cleanup` prints the
 # checker's result (bin/fusion-citation-check) and stops there; a person runs

@@ -48,8 +48,8 @@
  *                   no codec file is ever in the corpus: a `<path>` naming a
  *                   control file, the manifest or anything under
  *                   `.json-state/` is a usage error, and a declared one is
- *                   left out with a line on stderr. The census carries one
- *                   `bound=` line per bound file, below.
+ *                   left out with a line on stderr. A file a record binds by
+ *                   hash is skipped, never rewritten: one `bound=` line, below.
  *   `legacy`        swept as a rewriter only, with no `bound=` line: no
  *                   record binds a file yet. `/fusion:migrate` Step 6 sweeps
  *                   here, after the store rename and before Step 7 moves the
@@ -57,18 +57,29 @@
  *                   names, never Markdown control data. The checker and
  *                   plan-size still refuse a legacy workbench.
  *
- * A `bound=<file>  <role>:<control>[, ...]` line names each file in the write
- * set whose bytes a record binds by hash: a plan or spec in a package's
- * `active_documents`, read off `reconcile`'s references with its role, or the
- * report an evidence record names, its neighbour by name. No request beyond
- * the index's three is sent, however many records there are. Guard (b)
- * thereby names, before `--yes`, every rewrite that would leave an adoption or
- * a review's evidence stale (section 9). Nothing is refused on that ground:
- * the rewrite is revertible under guard (a), and the staleness is the codec's
- * to report. A binding whose target the index does not hold (a reference to
+ * A `bound=<file>  <role>:<control>[, ...]  skipped, <n> left as written`
+ * line names each file this run WOULD rewrite whose bytes a record binds by
+ * hash: a plan or spec in a package's `active_documents`, read off
+ * `reconcile`'s references with its role, or the report an evidence record
+ * names, its neighbour by name. No request beyond the index's three is sent,
+ * however many records there are. Such a file is left out of the write set:
+ * it is not rewritten in either pass, it is counted in neither `files=` nor
+ * `rewrites=` (nor `repairs=`), and what it still carries is
+ * `bin/fusion-citation-check`'s to report. Until 2026-11-11 the line was a
+ * report and the rewrite went ahead, on the ground that guard (a) made it
+ * revertible; it did not. A rewrite of a bound report breaks the binding (the
+ * codec reads the record as `missing-evidence/report-changed`), and a
+ * correction is admitted only over an unchanged report, so the one case in
+ * which a rewrite destroys a reading was the one case the sweep went ahead
+ * on, and the way back was deleting and re-issuing the record (issue
+ * `261110-2045-the-citation-sweep-rewrites-a-review-an-evidence-record-binds-by-hash-and-the-reviewer-wrote-store-prefixed-citations-into-one.md`).
+ * The other route that issue admits, the evidence operation refusing a report
+ * that carries a store-prefixed citation before binding it, is not taken: it
+ * lives in `codec/`, whose bundle Prior pinned by digest, so the sweep yields
+ * instead. A binding whose target the index does not hold (a reference to
  * nothing, a record the codec could not read) names no file and prints no
- * line; `bin/fusion-citation-check` reports both. Nor does a binding
- * `reconcile` found ambiguous.
+ * line, and that file is rewritten; `bin/fusion-citation-check` reports both.
+ * Nor does a binding `reconcile` found ambiguous.
  *
  * Any other answer stops the run before a line of stdout (exit 3 or 6 below).
  * None of them is an empty workbench.
@@ -295,7 +306,8 @@
  * where they sit: under the workbench outside `archive/`, under its
  * `archive/`, and outside the workbench (the declared `citations.extraPaths`
  * and any `<path>` argument), always all three and in that order — then the
- * `bound=` lines (`json-control` only, in write-set order), then
+ * `bound=` lines (`json-control` only, in corpus order: the files skipped
+ * for a binding, which no line above counts), then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * package-record=<n> package-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
@@ -344,7 +356,8 @@
  * a second run and `--repair` would not be idempotent. Every repair strictly
  * shortens the line, so the walk terminates; the pass bound is belt to that
  * brace. Output: the `format=` line, `<file>:<line>  '<from>' -> '<to>'  <class>`
- * per token, the `bound=` lines as the sweep prints them, then
+ * per token (none for a bound file, which is skipped with one `bound=` line
+ * exactly as the sweep skips it), the `bound=` lines, then
  * `files=<n> repairs=<n> date-field=<n> chained-tail=<n> doubled=<n>
  * spliced-prefix=<n> mode=<dry-run|write>`.
  *
@@ -927,8 +940,18 @@ function main(argv) {
     const scanner = createScanner(root, { exhibits: config.citations.exhibits });
     const mode = write ? "write" : "dry-run";
     const out = [`format=${read.format}`];
-    // the files this run writes, or would: the census's `bound=` lines are asked of them
+    // the files this run writes, or would
     const writeSet = [];
+    // the files it would have written but for a binding (the header's `## The format`):
+    // one `bound=` line each, nothing written, nothing counted
+    const boundLines = [];
+    const skipIfBound = (abs, n) => {
+        const by = bound.get(relative(root, abs).split(sep).join("/"));
+        if (by === undefined)
+            return false;
+        boundLines.push(`bound=${relOf(projectRoot, abs)}  ${by.join(", ")}  skipped, ${n} left as written`);
+        return true;
+    };
     if (repair) {
         const byClass = { "date-field": 0, "chained-tail": 0, doubled: 0, "spliced-prefix": 0 };
         let repairs = 0;
@@ -940,6 +963,9 @@ function main(argv) {
             const lines = readFileSync(abs, "utf-8").split("\n").map((t, i) => ({ line: i + 1, text: t }));
             const fenced = fencedContentLines(lines);
             let n = 0;
+            // this file's rows and classes, counted only once it is known not to be bound
+            const rows = [];
+            const classes = [];
             for (const l of lines) {
                 if (fenced[l.line - 1] || /^\s*>/.test(l.text))
                     continue;
@@ -953,14 +979,17 @@ function main(argv) {
                         break;
                     for (const [from, to, cls, col] of here) {
                         l.text = l.text.slice(0, col) + to + l.text.slice(col + from.length);
-                        out.push(`${rel}:${l.line}  '${from}' -> '${to}'  ${cls}`);
-                        byClass[cls]++;
+                        rows.push(`${rel}:${l.line}  '${from}' -> '${to}'  ${cls}`);
+                        classes.push(cls);
                         n++;
                     }
                 }
             }
-            if (n === 0)
+            if (n === 0 || skipIfBound(abs, n))
                 continue;
+            out.push(...rows);
+            for (const c of classes)
+                byClass[c]++;
             writeSet.push(abs);
             repairs += n;
             if (write)
@@ -997,6 +1026,8 @@ function main(argv) {
             // line number while the header promised file order (issue
             // `260901-0322_*_the-sweeps-residual-list-is-sorted-by-line-number-across-every-file-not-in-file-order.md`).
             const here = [];
+            // this file's rewritten kinds, counted only once it is known not to be bound
+            const kinds = [];
             // right to left within a line, so each splice leaves the earlier columns valid
             for (const h of [...hits].sort((a, b) => b.line - a.line || b.col - a.col)) {
                 const to = rewriteOf(scanner, h, opts.kinds);
@@ -1011,13 +1042,15 @@ function main(argv) {
                 const l = lines[h.line - 1];
                 l.text = l.text.slice(0, h.col) + to + l.text.slice(h.col + h.token.length);
                 n++;
-                if (h.kind in byKind)
-                    byKind[h.kind]++;
+                kinds.push(h.kind);
             }
             for (const [, , r] of here.sort((a, b) => a[0] - b[0] || a[1] - b[1]))
                 residual.push(r);
-            if (n === 0)
+            if (n === 0 || skipIfBound(abs, n))
                 continue;
+            for (const k of kinds)
+                if (k in byKind)
+                    byKind[k]++;
             writeSet.push(abs);
             rewrites += n;
             const share = shares[shareOf(abs)];
@@ -1035,10 +1068,6 @@ function main(argv) {
         out.push(`files=${writeSet.length} rewrites=${rewrites} residual=${residual.length} ${kinds} mode=${mode}`);
     }
     // before the summary line, which stays last: see `## The format`
-    const boundLines = writeSet.flatMap((abs) => {
-        const by = bound.get(relative(root, abs).split(sep).join("/"));
-        return by === undefined ? [] : [`bound=${relOf(projectRoot, abs)}  ${by.join(", ")}`];
-    });
     out.splice(out.length - 1, 0, ...boundLines);
     process.stdout.write(out.join("\n") + "\n");
     if (opts.write && !opts.yes) {

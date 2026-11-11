@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
 import { HOOKS_DIR, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
-import { campaignFile, createPackage, jsonWorkbenchAt, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { campaignFile, createPackage, indexOf, jsonWorkbenchAt, must, place, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // The shared build, as `fusion-citation-check.test.ts` runs it: the entry reaches the codec bundle relative to itself.
 const ENTRY = join(HOOKS_DIR, "dist", "citation-sweep.js");
@@ -575,7 +575,7 @@ const real = cp.spawnSync; cp.spawnSync = (c, a, o) => { if (String(a?.[0]).ends
 }
 
 describe("citation-sweep on a JSON-controlled workbench", () => {
-  it("names before --yes each rewrite of a plan and a spec adopted, and of a report an evidence record binds, and no unbound file, asking the codec three times", () => {
+  it("skips a plan and a spec adopted and a report an evidence record binds, one bound= line each and no count, rewrites the unbound file and the one whose binding resolved to nothing, asking the codec three times", () => {
     withJsonProject((p) => {
       const [pkg, beta] = [createPackage(p, "260101-0001-alpha"), createPackage(p, "260101-0005-beta")];
       const [evId, workbench_id] = [randomUUID(), String(must(p, { op: "inspect" }).result.id)];
@@ -597,12 +597,45 @@ describe("citation-sweep on a JSON-controlled workbench", () => {
       expect(run.status, run.stderr).toBe(0);
       expect(ops).toEqual(["inspect", "list", "reconcile"]);
       const lines = run.stdout.trim().split("\n");
-      expect([lines[0], lines.at(-1)]).toEqual(["format=json-control", "files=5 rewrites=5 residual=0 record=0 package-record=5 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run"]);
+      expect([lines[0], lines.at(-1)]).toEqual(["format=json-control", "files=2 rewrites=2 residual=0 record=0 package-record=2 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run"]);
+      expect(lines.filter((l) => / {2}rewrites=/.test(l)).map((l) => l.split("  ")[0])).toEqual([`fusion-workbench/${pkg.dir}/analyses/260101-0004-unbound.md`, `fusion-workbench/${beta.dir}/plans/260101-0007-plan.md`]);
       expect(lines.filter((l) => l.startsWith("bound="))).toEqual([
-        `bound=fusion-workbench/${plan}  plan:fusion-workbench/${pkg.path}`,
-        `bound=fusion-workbench/${spec}  spec:fusion-workbench/${pkg.path}`,
-        `bound=fusion-workbench/${report}  report:fusion-workbench/${report.replace(/\.md$/, ".evidence.json")}`,
+        `bound=fusion-workbench/${plan}  plan:fusion-workbench/${pkg.path}  skipped, 1 left as written`,
+        `bound=fusion-workbench/${spec}  spec:fusion-workbench/${pkg.path}  skipped, 1 left as written`,
+        `bound=fusion-workbench/${report}  report:fusion-workbench/${report.replace(/\.md$/, ".evidence.json")}  skipped, 1 left as written`,
       ]);
+    });
+  }, CASE_TIMEOUT);
+
+  // Issue 261110-2045: the line was a report and the rewrite went ahead, which left this repository's own closing
+  // review's record unreadable and the re-bind refused. The case binds a report, sweeps in both modes, and reads the
+  // record back through the codec; the last step rewrites the report by hand to show the binding it protects is real.
+  it("leaves a report an evidence record binds as written in --write --yes, names it bound and skipped with rewrites=0 in --dry-run, and the record still reads", () => {
+    withJsonProject((p) => {
+      const pkg = createPackage(p, "260101-0001-alpha");
+      const report = `${pkg.dir}/reviews/260101-0003-reviewer-alpha.md`;
+      const control = report.replace(/\.md$/, ".evidence.json");
+      place(p, report, CITE);
+      const [evId, workbench_id] = [randomUUID(), String(must(p, { op: "inspect" }).result.id)];
+      must(p, { op: "create", operation_id: randomUUID(), id: evId, kind: "evidence", scope: { container: pkg.dir, store: "reviews" }, payload: { schema: "fusion.evidence/v1", id: evId, workbench_id, subject: { git_tree: "0".repeat(40), git_range: null }, brief_revision: hash(p, pkg.narrative), plan_revision: null, role: { profile: "reviewer", version: "12.0.0" }, host: "claude-code", execution_policy: "claude-guided", verdict: "accept", uncertainties: [], checks: [{ id: "t", result: "pass", detail: null }], report: { path: report, sha256: hash(p, report), kind: "review" }, predecessor: null, accepted_at: "2026-09-30T12:00:00Z", extensions: {} } });
+      // guard (a) wants the workbench tracked and the corpus committed
+      git(p.root, "init", "-q");
+      git(p.root, "add", "-A");
+      git(p.root, "commit", "-q", "-m", "a bound report");
+      const before = readFileSync(join(p.workbench, report), "utf-8");
+      const boundLine = `bound=fusion-workbench/${report}  report:fusion-workbench/${control}  skipped, 1 left as written`;
+      const dry = sweep(p.root, p.workbench, "--dry-run");
+      expect(dry.status, dry.stderr).toBe(0);
+      expect(dry.stdout.trim().split("\n")).toEqual(["format=json-control", "scope=workbench files=0 rewrites=0", "scope=archive files=0 rewrites=0", "scope=extra-paths files=0 rewrites=0", boundLine, "files=0 rewrites=0 residual=0 record=0 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=dry-run"]);
+      const written = sweep(p.root, p.workbench, "--write", "--yes");
+      expect([written.status, written.stdout.includes(boundLine), last(written)], written.stderr).toEqual([0, true, "files=0 rewrites=0 residual=0 record=0 package-record=0 package-dir=0 bare-record=0 stamp-bare=0 mode=write"]);
+      expect(readFileSync(join(p.workbench, report), "utf-8")).toBe(before);
+      const kept = indexOf(p.workbench);
+      expect(kept.format === "json-control" && [kept.index.unreadable, kept.index.byControl.get(control)?.kind]).toEqual([[], "evidence"]);
+      // the same rewrite by hand: the record stops reading, which is what the skip spares
+      writeFileSync(join(p.workbench, report), before.replace(`${pkg.dir}/`, ""));
+      const broken = indexOf(p.workbench);
+      expect(broken.format === "json-control" && broken.index.unreadable.map((u) => `${u.path}  ${u.problem.class}/${u.problem.reason}`)).toEqual([`${control}  missing-evidence/report-changed`]);
     });
   }, CASE_TIMEOUT);
 

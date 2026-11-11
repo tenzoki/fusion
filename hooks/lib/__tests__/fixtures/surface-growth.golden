@@ -21,9 +21,9 @@
   orchestrator.md 97742
   policy-curator.md 79045
   requirements-designer.md 17664
-  reviewer.md 13819
+  reviewer.md 13820
   state-auditor.md 21781
-  total 326692
+  total 326693
 
 [skills bytes]
   archive/SKILL.md 26498
@@ -54,7 +54,7 @@
   campaign-write.test.ts 233
   citation-form.test.ts 360
   citation-grammar-boundaries.test.ts 255
-  citation-sweep.test.ts 780
+  citation-sweep.test.ts 813
   claude-md-weight.test.ts 209
   commit-message-path.test.ts 401
   committed-dist.test.ts 328
@@ -128,4 +128,4 @@
   window-bound.test.ts 24
   work-graph.test.ts 134
   workbench-citation-lint.test.ts 333
-  total 28107
+  total 28140
