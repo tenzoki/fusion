@@ -14,7 +14,7 @@ Exit 0 prints `path=` and `revision=`: report that the lanes are written. **Then
 > 2. No: leave every package's mode as it is.
 > 3. Stop here.
 
-On 1, per lane member, `<control path>` its package's control path (the `path` of the overview's package rows, or of the codec's `list`), `<path>` the `path=` the write printed and `<revision>` its `revision=` value:
+On 1, per lane member, `<control path>` `$OUT_PACKAGES/<container name>/package.json`, the name as the `lane=` row and the proposal file spell it, `<path>` the `path=` the write printed and `<revision>` its `revision=` value:
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-write" set-mode --record <control path> --value autonomous --source '{"kind":"user-word","ref":{"kind":"other","path":"<path>","sha256":"<revision>"}}' --actor user; echo "exit=$?"
