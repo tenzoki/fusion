@@ -26,8 +26,8 @@ One correction to the directive above: it says `v13.4.4` is tagged as part of th
 
 The brief for the Prior session was handed to the user as `/Users/kai/.fusion-tmp/114caf11/prior-session-brief-request-81.md`, outside the repository. Its paragraph on Prior's four uncommitted files overstated them: Prior's session reports they are that day's setup files.
 
-Closing review: `reviews/261112-1827-reviewer-closing-review-of-the-install-test-sweep-expectation.md`, range `ee2df82e..b6d45655`, verdict accept, no issue filed. Gap named: `ee2df82e` itself is in no review's range; it changed Markdown and workbench records only, no code or data file.
+Closing review: `261112-1827-reviewer-closing-review-of-the-install-test-sweep-expectation.md`, range `ee2df82e..b6d45655`, verdict accept, no issue filed. Gap named: `ee2df82e` itself is in no review's range; it changed Markdown and workbench records only, no code or data file.
 
 Stop conditions: none were put. No plan was bound on this item and none was held by the session; the work was two dispatches from the directive.
 
-Left open: the issue `issues/261112-0728-the-largest-store-migration-test-asserts-a-5-s-wall-clock-allowance-and-goes-red-under-the-suites-own-parallel-load.md` in this container. Prior's answer to request 81 is not part of this item; fusion records it in `REQUESTS.md` once the user names the Prior commit that holds it.
+Left open: the issue `261112-0728-the-largest-store-migration-test-asserts-a-5-s-wall-clock-allowance-and-goes-red-under-the-suites-own-parallel-load.md` in this container. Prior's answer to request 81 is not part of this item; fusion records it in `REQUESTS.md` once the user names the Prior commit that holds it.
