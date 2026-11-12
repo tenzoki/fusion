@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "cb162072-514c-4169-8e59-3bb650d063ea",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "9604c374ded86e09dd46c4f3ad913c15c08c4568",
+    "git_range": null
+  },
+  "brief_revision": "sha256:1df440b3cec6826a17f2196e75fae6ce1bdeca58be21fc5741862347b6f02f31",
+  "plan_revision": null,
+  "role": {
+    "profile": "reviewer",
+    "version": "13.5.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "accept",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261111-2330-request-81-restated-on-main-and-the-prior-session-brief/reviews/261112-1827-reviewer-closing-review-of-the-install-test-sweep-expectation.md",
+    "sha256": "sha256:cd61cf3f96eeccade742ee2b55e76348aa8d1f1f5f487d64567e9fa72dc1778e",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-11-12T17:28:18Z",
+  "extensions": {}
+}

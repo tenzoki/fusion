@@ -3,7 +3,7 @@
   "id": "7cabebaf-2e6f-4e37-ad7f-cadc9e89f2b9",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -35,7 +35,20 @@
   "active_documents": [],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Request 81 restated on main in REQUESTS.md (ee2df82e), the stale install test expectation repaired (e72f04b4), and the brief for the Prior session handed to the user",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "cb162072-514c-4169-8e59-3bb650d063ea",
+          "revision": "sha256:08e3464de64af4a910700ee474d392ad5b6f18e6e5fe2779e6202bc7796c6e3f"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
