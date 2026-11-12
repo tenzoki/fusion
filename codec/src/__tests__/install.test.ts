@@ -552,7 +552,8 @@ describe("install.sh from a tarball-shaped copy of the tree", () => {
     const sweep = installed("fusion-citation-sweep", "--dry-run");
     expect(sweep.status, sweep.stderr).toBe(0);
     const swept = sweep.stdout.trim().split("\n");
-    expect([swept[0], swept.filter((l) => l.startsWith("bound="))]).toEqual(["format=json-control", [`bound=fusion-workbench/${plan.path}  plan:fusion-workbench/${alpha.path}`]]);
+    // the adopted plan is bound by hash, so the sweep skips it and says how many citations it left (hooks/citation-sweep.ts, since ee1a4984)
+    expect([swept[0], swept.filter((l) => l.startsWith("bound="))]).toEqual(["format=json-control", [`bound=fusion-workbench/${plan.path}  plan:fusion-workbench/${alpha.path}  skipped, 1 left as written`]]);
 
     // A pair half staged: alpha's brief edited and staged, its control file moved by a claim and not.
     expect([git("add", "-A"), git("commit", "-q", "-m", "filed")]).toEqual([0, 0]);
