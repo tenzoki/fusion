@@ -9,7 +9,11 @@ import { defineConfig } from "vitest/config";
 // plan asks: it is the one suite whose red says "commit the build", not "the
 // code is wrong", and it is the slowest, so the readable output ends with it.
 // Scheduled last is not finished last under parallel workers; what it buys is
-// that every other file has started before the gate takes a worker.
+// that every other file of the pool has started before the gate takes a worker.
+//
+// Which files run is not said here: `vitest.workspace.mjs` cuts them into the
+// parallel pool and the one file that runs alone after it, and both projects
+// extend this file for what they share.
 class GateLast extends BaseSequencer {
   async sort(files) {
     const sorted = await super.sort(files);
@@ -20,7 +24,6 @@ class GateLast extends BaseSequencer {
 
 export default defineConfig({
   test: {
-    include: ["src/**/*.test.ts"],
     sequence: { sequencer: GateLast },
     // The CLI cases spawn `node` on the bundle and the gate runs esbuild over
     // a git archive extract; both are slower than the default 5 s on a loaded machine.

@@ -12,6 +12,10 @@
 // files in 952 directories, one 465 KB narrative): the freeze over it is held
 // to the strict reader's cap and to its bound, and each of its 35 chunks and
 // its verify to the client's 5 s post-wait allowance.
+//
+// That allowance is wall-clock time, so this file runs alone, after the
+// parallel pool has drained (`vitest.workspace.mjs`): the 5 s is measured on
+// an uncontended disk, as the client's margin assumes, and is not widened.
 // ---------------------------------------------------------------------------
 
 import { execFileSync } from "node:child_process";
