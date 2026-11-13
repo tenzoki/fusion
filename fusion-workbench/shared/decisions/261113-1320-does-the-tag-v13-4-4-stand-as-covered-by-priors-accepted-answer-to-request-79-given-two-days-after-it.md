@@ -39,3 +39,5 @@ The question is whether the tag, made against the rule's order, is now ruled to 
 - `v13.5.0` carries the codec `36570a7c…` and the log holds no bundle request for that version. Whether that becomes a request is a separate matter the answer section names as open.
 
 Answered: this record, option 1 — the tag `v13.4.4` stands, covered after the fact by Prior's accepted answer at `10e07d2`, the hook replay not repeated on the bundle named as its limit; the user answered "1" in chat on 2026-11-13; ruled by user, Kai Stalmann <ks@qantr.com>
+
+Implemented: `codec/fixtures/prior/REQUESTS.md` `### The tag `v13.4.4`, ruled to stand on the answer to 79` at `1f92185cc32cd002a6651ae56bc3b3a80c88b1b3` — the passage states the order as it happened, the ruling, and what the ruling does not cover
