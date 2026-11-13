@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "920c4e55-c034-4bdf-b55f-3c13772259e1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261113-0858-request-81-omits-bin-fusion-record-from-the-pinned-files-that-move-and-gives-the-wrong-cause-for-three-moved-session-responses.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}
