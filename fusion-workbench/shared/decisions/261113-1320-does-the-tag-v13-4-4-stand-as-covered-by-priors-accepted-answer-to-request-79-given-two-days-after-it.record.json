@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7680e8fa-d740-4ac5-b600-5bc84dac0cd4",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/261113-1320-does-the-tag-v13-4-4-stand-as-covered-by-priors-accepted-answer-to-request-79-given-two-days-after-it.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "answer_ref": null,
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

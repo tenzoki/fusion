@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "b6729c12-3a78-455b-8c4a-f5dff617c879",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261113-1703-request-79-carries-five-statements-that-later-state-has-overtaken-and-nothing-beside-the-request-says-so.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}
