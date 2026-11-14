@@ -53,3 +53,5 @@ The user ruled that the bundle of request 82 is built from the tag `v13.5.0` and
 ## Recommendation
 
 We recommend no option over another. Options 1 and 2 differ in what the user wants Prior to test first, the tagged release as it stands or `main` with the module's rule brought level with Prior's host, and no measurement taken here decides that. Two points bear on the choice. Under option 1 the difference in the four files has no known effect on a Prior run, and that is an inference from their being tests. Under options 1 and 3 the question whether a three-name module is a defect on a four-name host is left to Prior's answer.
+
+Answered: this record, option 1 — the candidate of request 82 is built from the tag `v13.5.0` as ruled, and request 82 states where `main` differs, the three-name module against the four-name host, and that `/fusion:campaign` cannot start in a Prior-hosted run of 13.5.0; on the recommendation of discussion `261114-1608-which-commit-request-82-candidate-built-from.md`; the user answered "1" in chat on 2026-11-14; ruled by user, Kai Stalmann <ks@qantr.com>

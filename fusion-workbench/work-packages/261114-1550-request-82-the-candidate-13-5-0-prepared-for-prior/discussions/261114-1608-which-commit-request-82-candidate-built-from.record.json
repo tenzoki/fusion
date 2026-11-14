@@ -1,0 +1,24 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "90a09f92-159c-4a3e-8c34-daba9b03c28e",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "discussion",
+  "narrative": {
+    "path": "work-packages/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior/discussions/261114-1608-which-commit-request-82-candidate-built-from.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "participants": [],
+    "outcome_refs": []
+  }
+}
