@@ -3,7 +3,7 @@
   "id": "c815e871-f028-4781-8b53-dcc6e36ec120",
   "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
   "domain": "code",
-  "status": "claimed",
+  "status": "done",
   "claim": {
     "checkout_id": "114caf11",
     "person": "Kai Stalmann <ks@qantr.com>",
@@ -44,7 +44,20 @@
   ],
   "references": [],
   "evidence": [],
-  "outcome": null,
+  "outcome": {
+    "class": "completed",
+    "reason": "Request 82 for the candidate 13.5.0 filed on main naming Prior pin commit bf6bb42 (f7c6f14e), the bundle sha256:2ba70dbe...d643 built from v13.5.0 and delivered, Prior answer to question 1 of 81 recorded (c8241452), campaign.json added to the Go copy Select (2fe7baba), two review findings corrected (7ff7b391)",
+    "evidence": [
+      {
+        "ref": {
+          "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+          "record_id": "9ee05899-f276-4cf7-93ca-3e02932bc9fe",
+          "revision": "sha256:c3a13c3aee05a49ae89bbb85b52649377d82901c182225937a65333ebbc56e45"
+        },
+        "policy": "claude-guided"
+      }
+    ]
+  },
   "provenance": {
     "source": "created",
     "legacy_fields": {}
