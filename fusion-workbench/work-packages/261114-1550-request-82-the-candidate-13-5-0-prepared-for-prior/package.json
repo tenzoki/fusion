@@ -32,7 +32,16 @@
     "path": "work-packages/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior.md"
   },
   "depends_on": [],
-  "active_documents": [],
+  "active_documents": [
+    {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "eb4e04c0-4273-4b85-84b7-3e866576a123"
+      },
+      "role": "plan",
+      "revision": "sha256:1bc8f0dfa012ba528a931aae6ee14f422a375ddeaf77d99392451300e42b00cc"
+    }
+  ],
   "references": [],
   "evidence": [],
   "outcome": null,

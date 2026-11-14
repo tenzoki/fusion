@@ -1,0 +1,60 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "eb4e04c0-4273-4b85-84b7-3e866576a123",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior/plans/261114-1656-plan-request-82-the-candidate-13-5-0-for-prior.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "in_progress",
+    "steps": [
+      {
+        "id": "1",
+        "state": "in_progress"
+      },
+      {
+        "id": "2",
+        "state": "in_progress"
+      },
+      {
+        "id": "3",
+        "state": "open"
+      },
+      {
+        "id": "4",
+        "state": "open"
+      },
+      {
+        "id": "5",
+        "state": "open"
+      },
+      {
+        "id": "6",
+        "state": "open"
+      },
+      {
+        "id": "7",
+        "state": "open"
+      }
+    ],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "c815e871-f028-4781-8b53-dcc6e36ec120"
+      },
+      "revision": "sha256:1bc8f0dfa012ba528a931aae6ee14f422a375ddeaf77d99392451300e42b00cc"
+    }
+  }
+}
