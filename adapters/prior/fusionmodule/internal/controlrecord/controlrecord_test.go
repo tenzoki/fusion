@@ -3,8 +3,10 @@ package controlrecord
 import "testing"
 
 // The rows name the cases of Prior's entryControlRecord and of
-// TestEntryServicesControlRecordSelection at Prior 52a2703, and the files
-// fusion's own hooks write under the workbench, which is what D-F1 read.
+// TestEntryServicesControlRecordSelection at Prior 52a2703, the campaign
+// rows those two gained at Prior bf6bb42 (fusion request 81, question 3),
+// and the files fusion's own hooks write under the workbench, which is what
+// D-F1 read.
 func TestSelectIsTheCodecsRule(t *testing.T) {
 	for _, row := range []struct {
 		path, record string
@@ -18,6 +20,23 @@ func TestSelectIsTheCodecsRule(t *testing.T) {
 		{"fusion-workbench/shared/reviews/x.2.evidence.json", "shared/reviews/x.2.evidence.json", true},
 		// Only the root's archive/ is archived.
 		{"fusion-workbench/x/archive/package.json", "x/archive/package.json", true},
+
+		// The fourth name, campaign.json, by the bare last segment as the
+		// host's entryControlRecord takes it, not only as
+		// campaigns/<id>/campaign.json, the form of Prior's codecShaped.
+		{"fusion-workbench/campaigns/260929-0900-parser-lanes/campaign.json", "campaigns/260929-0900-parser-lanes/campaign.json", true},
+		{"fusion-workbench/campaigns/campaign.json", "campaigns/campaign.json", true},
+		{"fusion-workbench/campaigns/260929-0900-parser-lanes/drafts/campaign.json", "campaigns/260929-0900-parser-lanes/drafts/campaign.json", true},
+		// Refused under the root's archive/, below a dot segment, and by a
+		// near name.
+		{"fusion-workbench/archive/campaigns/260929-0900-parser-lanes/campaign.json", "", false},
+		{"fusion-workbench/campaigns/.260929-0900-parser-lanes/campaign.json", "", false},
+		{"fusion-workbench/.json-state/campaigns/x/campaign.json", "", false},
+		{"fusion-workbench/campaigns/x/.campaign.json", "", false},
+		{"fusion-workbench/campaigns/x/campaign.json.bak", "", false},
+		{"fusion-workbench/campaigns/x/campaigns.json", "", false},
+		{"fusion-workbench/campaigns/x/x.campaign.json", "", false},
+		{"fusion-workbench/campaigns/x/campaign.JSON", "", false},
 
 		// What the hooks write: JSON, and no record.
 		{"fusion-workbench/.guard-state/staging-drift.json", "", false},

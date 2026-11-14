@@ -290,10 +290,11 @@ admission is the host's and is not repeated. Then, in order:
    qualified codec; the definition names that check as Prior's duty;
 5. `workbench`: one `host.workbench.v1` `read`, paged, per control record
    among the paths of `commits[].changes` and `delta` (a path under
-   `fusion-workbench/` whose last segment is `package.json` or ends
-   `.record.json` or `.evidence.json`, with no segment starting with a dot
-   and a first segment that is not `archive`: the codec's `isControlFile`
-   and `controlFiles`, Prior's `entryControlRecord`; read relative to the
+   `fusion-workbench/` whose last segment is `package.json` or
+   `campaign.json` or ends `.record.json` or `.evidence.json`, with no
+   segment starting with a dot and a first segment that is not `archive`:
+   the codec's `isControlFile` and `controlFiles`, Prior's
+   `entryControlRecord` at `bf6bb42`; read relative to the
    workbench), each under slot `record:<path>`, as an observation. A record
    is read when its last status, in commit order and then in the delta, is
    not `D`, as Prior's read admission selects on `A`, `D`, `M` and `T`

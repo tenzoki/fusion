@@ -20,13 +20,24 @@ const WorkbenchPrefix = "fusion-workbench/"
 // record and returns its path relative to the workbench, which is how the
 // host's read names it.
 //
-// It is the codec's rule (codec/src/store.ts: isControlFile for the three
+// It is the codec's rule (codec/src/store.ts: isControlFile for the four
 // names, controlFiles for the dot entries and the root's archive/), and it is
 // the rule Prior's host applies as entryControlRecord
-// (internal/fusionhost/entry_workspace.go at Prior 52a2703). The rule is
-// copied here, in Go, because no code crosses the two repositories; a change
-// on either side reaches the other only through a request. A directory named
-// archive below the root is an ordinary store directory, as in the codec.
+// (internal/fusionhost/entry_workspace.go at Prior bf6bb42, lines 288-312).
+// The rule is copied here, in Go, because no code crosses the two
+// repositories; a change on either side reaches the other only through a
+// request. A directory named archive below the root is an ordinary store
+// directory, as in the codec.
+//
+// The fourth name, campaign.json, is copied from Prior bf6bb42 (fusion
+// request 81, question 3): the bare last segment, as package.json is taken,
+// at any depth, below no dot segment and outside the root's archive/. Prior's
+// qualification harness at the same commit (codecShaped in
+// internal/qualification/fusionsurface/classify.go) takes the narrower form
+// campaigns/<id>/campaign.json, but that function classifies paths for its
+// comparison and admits no read. Select follows entryControlRecord, because
+// the module selects what the host's entry check admits: a record it did not
+// select would go unread although the host would serve it.
 func Select(changedPath string) (record string, ok bool) {
 	record, found := strings.CutPrefix(changedPath, WorkbenchPrefix)
 	if !found || !fs.ValidPath(record) || strings.ContainsAny(record, "\\:\x00\t\r\n") {
@@ -42,7 +53,7 @@ func Select(changedPath string) (record string, ok bool) {
 		return "", false
 	}
 	name := segments[len(segments)-1]
-	if name != "package.json" && !strings.HasSuffix(name, ".record.json") && !strings.HasSuffix(name, ".evidence.json") {
+	if name != "package.json" && name != "campaign.json" && !strings.HasSuffix(name, ".record.json") && !strings.HasSuffix(name, ".evidence.json") {
 		return "", false
 	}
 	return record, true
