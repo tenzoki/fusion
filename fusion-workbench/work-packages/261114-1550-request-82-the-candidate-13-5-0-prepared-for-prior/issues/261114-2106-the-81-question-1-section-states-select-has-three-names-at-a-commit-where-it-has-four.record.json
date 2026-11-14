@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "763d720c-374e-45e9-b0db-6f5d9e5f2ffd",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior/issues/261114-2106-the-81-question-1-section-states-select-has-three-names-at-a-commit-where-it-has-four.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "9ee05899-f276-4cf7-93ca-3e02932bc9fe",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "6d3b56e2b466c8c547f4d8d5045b650d677a7a9f",
+    "git_range": null
+  },
+  "brief_revision": "sha256:5c54eb4121cd55b829851f4530fd0d0fdd512a879a7dadf9472eefdb3cb2c8e6",
+  "plan_revision": "sha256:1bc8f0dfa012ba528a931aae6ee14f422a375ddeaf77d99392451300e42b00cc",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.5.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior/reviews/261114-2106-reviewer-closing-pass-over-request-82-and-the-select-fourth-name.md",
+    "sha256": "sha256:07b1d45c8bf0fd55d6ee7f9e06918fae567a8e200ec8923459649dfa0c39208e",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-11-14T20:07:44Z",
+  "extensions": {}
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "0c36583b-935e-46a5-a2b5-aeff6f8d96b7",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261114-1550-request-82-the-candidate-13-5-0-prepared-for-prior/issues/261114-2106-request-82-counts-ten-select-test-rows-where-2fe7baba-adds-eleven.md"
+  },
+  "filed_by": {
+    "actor": "reviewer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

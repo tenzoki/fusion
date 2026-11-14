@@ -17,12 +17,12 @@
   },
   "extensions": {},
   "control": {
-    "state": "answered",
+    "state": "implemented",
     "answer_ref": {
       "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
       "record_id": "a21dbfb5-bc8a-468a-a876-fdde71b452fc"
     },
-    "implementation_ref": null,
+    "implementation_ref": "f7c6f14e36044df130facc3ce6c8c8af6296b212",
     "superseded_by": null,
     "deferral": null
   }
