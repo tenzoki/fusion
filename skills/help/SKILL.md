@@ -86,7 +86,7 @@ Read `$FUSION_SRC/README.md`. Two paths:
 
 **If you installed via the marketplace:** pull the marketplace clone (caveat below), run `claude plugin update fusion@tenzoki-plugins` in a shell (add `--scope project` or `--scope local` if you installed at that scope), then restart Claude Code. That copy is separate from `~/.fusion`; `$FUSION_SRC/README.md` says how to keep only one.
 
-**Coming from 13.4.4:** 13.5.0 adds the campaign across checkouts: `/fusion:campaign` steers it, its record sits in a store at the workbench root, the orchestrator's commit step runs `bin/fusion-campaign sync`, `bin/fusion-write set-resources` declares a package's areas. Run `fusion --update` once on every checkout and restart before areas are declared or a campaign is opened; older codecs refuse both. Detail: `$FUSION_SRC/docs/campaign.md` and `$FUSION_SRC/docs/upgrading-to-v13.md`.
+**Coming from 13.4.4 or 13.5.0:** 13.5.1 changes only the Prior bundle: it reads `campaign.json` as a control file. 13.5.0 adds the campaign across checkouts: `/fusion:campaign` steers it, its record sits in a store at the workbench root, the orchestrator's commit step runs `bin/fusion-campaign sync`, `bin/fusion-write set-resources` declares a package's areas. Run `fusion --update` once on every checkout and restart before areas are declared or a campaign is opened; older codecs refuse both. Detail: `$FUSION_SRC/docs/campaign.md` and `$FUSION_SRC/docs/upgrading-to-v13.md`.
 
 **Coming from 13.4.3:** 13.4.4 needs no migration, and a Claude Code session behaves as in 13.4.3. It corrects the Prior bundle: a Prior run gets its own `tmp` check and is told to keep intermediate files in the scratch directory Prior gives it.
 
