@@ -9039,3 +9039,25 @@ At `5f7d962c` line 45 of `controlrecord.go` is the three-name test, as the secti
 - **The states.** The rows of `### Requests 64 and 67 to 82, as they stand` hold unchanged, request 82 **asked**, so the table is not restated.
 
 **This file's digest.** At `501784c1` the file is 9 004 lines, 1 575 186 bytes, `sha256:49132512568c65b0becb8f3365e269b83865a6e551530e2938dc9f39b703b787` (measured on `git show HEAD:codec/fixtures/prior/REQUESTS.md`, and the working file the same before the append), last changed by `f7c6f14e`, the commit of request 82 (`git log -1 --format=%h` over the file). **This passage moves the file again and cannot state its own digest**, as request 82 could not. The commit that carries this passage and the `shasum -a 256` of the file at it are reported to fusion's user, who names them to Prior. Fusion asks for no change to either pin file.
+
+### Request 82, the version a correction takes
+
+**This passage changes one statement of request 82: the version number a correction or refusal takes. Where request 82 differs, this passage holds.** Request 82 stays as committed at `f7c6f14e`, this file being append-only. This is not a new request. It reserves no request number, puts no question to Prior, and changes nothing Prior is asked to run. **Request 82 stands as filed.** Its bundle `sha256:2ba70dbeba8662212ef8312801da1c8103e90bfe42cf6a1ac8e34b71352ad643`, 82.1 to 82.4, the hook replay and question 1 are unaffected.
+
+**The statement.** In four places request 82 names 13.5.1 as the version a correction or refusal takes: under question 1 ("On a no"), in decision `261114-1651-…` as recorded in the request, in the sentence after that, and under **Corrected**.
+
+**Why it no longer holds.** Fusion released 13.5.1 to Claude Code on 2026-11-15, by its user's ruling and before any answer to 82. Measured with `git ls-remote origin` on 2026-11-15:
+- The tag `v13.5.1` points to `f428ecde` (`f428ecdee83d95e35228d1cb5013f09859a81ca9`).
+- `.claude-plugin/plugin.json` reads `13.5.1` at that commit.
+- The marketplace entry in `tenzoki/claude-plugins` reads `13.5.1` at `1c9b978`.
+
+The release carries `2fe7baba`, the Go copy's fourth name; `git merge-base --is-ancestor 2fe7baba f428ecde` exits 0. No Prior bundle has been built from `v13.5.1`, and none was delivered or requested.
+
+**Now.** A correction or refusal that follows Prior's answer to 82 becomes **the next free patch version** after the highest one released when the correction is made. It takes its own bundle, digest and request, and is built from a commit of `main` that carries `Select`'s fourth name. Otherwise everything stands as request 82 states it:
+- An accepted answer is recorded here and releases nothing.
+- `v13.5.0` is not touched.
+- No tag and no marketplace bump follows an answer.
+
+The version 13.5.1 is no longer one an answer to 82 can lead to.
+
+**This file's digest.** Before this passage the file is 9 041 lines, 1 583 267 bytes, `sha256:d69df373d9e7ab10c398fbd230529890f756fd08cb55457cf465383f3b61471b`, last changed by `7ff7b391`. This passage changes the file again and so cannot state its own digest. The commit that carries it, and the file's `shasum -a 256` at that commit, are reported to fusion's user, who names them to Prior. Fusion asks for no change to either pin file.
