@@ -335,9 +335,9 @@ use, and the order below is what keeps every checkout able to read it.
    store before that write, and a workbench with no campaign carries no such directory.
 3. In a workbench a Prior host also reads, declare areas and open a campaign only after Prior has
    re-pinned its codec to the bundle this release ships (`codec/dist/fusion-record.js`,
-   `sha256:36570a7c…`). That re-pin is request 81 in `codec/fixtures/prior/REQUESTS.md`: it is
-   asked and unanswered, and this note says nothing about the answer. Until it is answered, such
-   a workbench takes neither.
+   `sha256:36570a7c…`). That re-pin is request 81 in `codec/fixtures/prior/REQUESTS.md`, answered:
+   Prior moved its pin at Prior `bf6bb42`. Whether Prior runs the 13.5.0 bundle is request 82,
+   asked, and this note says nothing about the answer.
 
 **One change reaches a project with no campaign.** The orchestrator's commit step now ends with
 `bin/fusion-campaign sync` (`agents/orchestrator.md` `### Step 4 — commit`, sub-step 5a): where the
