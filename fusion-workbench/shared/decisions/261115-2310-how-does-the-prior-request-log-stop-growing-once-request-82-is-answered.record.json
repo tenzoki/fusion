@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "7d86323f-db0e-4796-a7d4-81c17a095f91",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "shared/decisions/261115-2310-how-does-the-prior-request-log-stop-growing-once-request-82-is-answered.md"
+  },
+  "filed_by": {
+    "actor": "analyst",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "7d86323f-db0e-4796-a7d4-81c17a095f91"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}

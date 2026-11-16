@@ -9061,3 +9061,40 @@ The release carries `2fe7baba`, the Go copy's fourth name; `git merge-base --is-
 The version 13.5.1 is no longer one an answer to 82 can lead to.
 
 **This file's digest.** Before this passage the file is 9 041 lines, 1 583 267 bytes, `sha256:d69df373d9e7ab10c398fbd230529890f756fd08cb55457cf465383f3b61471b`, last changed by `7ff7b391`. This passage changes the file again and so cannot state its own digest. The commit that carries it, and the file's `shasum -a 256` at that commit, are reported to fusion's user, who names them to Prior. Fusion asks for no change to either pin file.
+
+### Prior's answer to 82 at 90b5758
+
+**Read at:** Prior commit `90b5758` (`90b57587b202b28c3096a4c9975dbe456b1c6387`, 2026-11-16 11:48, "docs(design): Prior's response to request 82 on fusion 13.5.0"), parent `bf8b525` (`bf8b5252499898785c939687d1ed6df15d24b490`), the commit the answer says it was written on. The run was made from Prior `2d6130f` (`2d6130f6b928bf5b6571338b95cdacde232da894`), an ancestor of `90b5758` (`git merge-base --is-ancestor` exits 0), with its evidence at `5549f43`. The answer is `Prior: docs/design/fusion-entry-v2-request82-prior-response.md`, 387 lines, 34 072 bytes, `sha256:82502dbfd1646ed2816dc3a16bfc4be9bb28f3909d53cb7aaf95bf364db5dcec` as `git show 90b5758:<path>` piped to `shasum -a 256` and `wc -l -c` prints it; `git diff --stat bf8b525 90b5758 -- . ':!fusion-workbench'` names that file alone, 387 insertions (all measured). **`90b5758` is not pushed:** `git branch -r --contains 90b5758` in Prior's repository prints nothing (measured). Fusion's user reports Prior's backup drive missing, so the hash is a local one, to be pushed later; until then no remote holds it. Prior read fusion at `535fefe5` and request 82's section, lines 8681 to 9063, at `sha256:3e86c8d88611c8abba714d23911a2f47aa4510863ee893c4f5a8a449b0bcbf3a`; `sed -n '8681,9063p'` over `git show HEAD:codec/fixtures/prior/REQUESTS.md` prints that digest here (measured).
+
+Below, a sentence in quotation marks is Prior's, from the response at `90b5758`, cited as `R:<line>`. **Measured here** means a read-only command ran for this section on 2026-11-16, in fusion's repository at `535fefe5` (`535fefe5fbbe54ded2ef04be9b5a0de29581d71e`, the head of `main` and of `origin/main`) or over Prior's committed objects. Nothing was written in Prior's repository and its working tree was not read.
+
+**The digest holds.** The response names `sha256:2ba70dbeba8662212ef8312801da1c8103e90bfe42cf6a1ac8e34b71352ad643` at `R:9`, `R:51` and `R:384` (measured, `grep -n 2ba70dbe`), equal to the digest request 82 delivered. The answer ran the build 82 asked about.
+
+#### The verdicts
+
+| Item | Verdict | Prior's limits, quoted |
+|---|---|---|
+| 82.1 inspect, install under trust, activate | **accepted** | "No tampered payload was tried. One machine, macOS arm64" (`R:111`) |
+| 82.2 catalog, workflows, hook declaration | **accepted** | "The refusal of `campaign` is measured at one layer of three" (`R:112`) |
+| 82.3 the cases | **accepted** | "Every tool call is scripted, so no model chose an `argv` form or a `git commit`. The managed route is not run. Every kill cut ran uncontained and without hooks. The hook replay on this digest is deferred" (`R:113`) |
+| 82.4 the identity | **accepted** | "Linux hosts and `amd64` are not qualified" (`R:114`) |
+| Question 1, a three-name module on a four-name host | **accepted** | "**Accepted. The verdict is read from Prior's source, not measured.**" (`R:152`) |
+| The hook replay on this digest | **deferred** | "It waits for Prior's plan steps 107 to 110 and 76" and is reported "in a follow-up that names this digest (plan step 111)" (`R:329`, `R:334-335`) |
+
+Quoted, `R:154-156`: "Prior's host does not compare the module's reads with its own selection, and it does not rely on the two being equal. It admits a `host.workbench.v1` read when the record is in the host's selection". The verdicts are the rulings of Prior's user of 2026-11-15 and 2026-11-16 (`R:12-13`, read).
+
+**No defect in the delivery.** Quoted, `R:262-263`, under `### In the delivery (13.5.0)` (`R:260`): "**None is named.** No check of the driver failed, no hook exited non-zero, and no value differs from the request's text". So no issue is filed in fusion's workbench for this answer (`find fusion-workbench -path '*issues*' -name '26111[56]-*'` prints nothing, measured), and by request 82's `### What fusion does with the answer` the answer counts as **accepted**.
+
+#### Prior's three findings on fusion's text
+
+Quoted, `R:192`: "**Three findings on fusion's text go with this answer. They are findings, not defects**". And `R:201`: "None of the three bears on a verdict." Each is recorded here under request 82's rule for a finding on its text, re-measured at `535fefe5`. Nothing is changed for any of them by this section.
+
+- **(a) The stale sentence in `profiles/skill-help.md:97` (REQ:8967).** Prior: it ships in the bundle, and the source part changed on `main` at `eefe7a8d`. Measured here: `catalog/profiles/skill-help/parts/21-prior.md` holds "asked and unanswered" once at `v13.5.0` and at `eefe7a8d^`, and none at `eefe7a8d` (2026-11-15, "docs: request 81 named as answered, request 82 as asked, in the campaign docs and Prior's help part"), `f428ecde` or `HEAD`. Its opening now reads "**Coming from 13.4.4 or 13.5.0:** 13.5.1 reads `campaign.json` as a control file"; that opening came with `f428ecde` (`chore(release): 13.5.1`), the last commit touching the file, so the part changed twice since the tag, where Prior names `eefe7a8d` alone. The bundle keeps the stale sentence; it is fixed on `main` and in 13.5.1, not in 13.5.0.
+- **(b) The campaign hook's staging sentence (REQ:8968).** Prior: `hooks/lib/staging-drift.ts:833-834`, unchanged on `main`. Measured here: `git diff --quiet v13.5.0 HEAD -- hooks/lib/staging-drift.ts hooks/tracker.ts` exits 0, and lines 833 and 834 at `HEAD` read "If you are the orchestrator, add these paths — written out in full, absolute — to the next commit's " and "staging list. ". It stays as request 82 stated it, stated and not asked, and unfixed.
+- **(c) The addendum's patch-version rule (REQ:9056, REQ:9061).** Prior: "Holds as written. `v13.5.1` names `f428ecde`, no `v13.5.2` exists, and `2fe7baba` is an ancestor of `main`" (`R:199`). Measured here: `git ls-remote --tags origin 'v13.5.*'` lists `v13.5.0` (peeled `60639346`) and `v13.5.1` (peeled `f428ecdee83d95e35228d1cb5013f09859a81ca9`) and no other, and `git merge-base --is-ancestor 2fe7baba HEAD` exits 0. It holds, and with nothing to correct it leads nowhere.
+
+#### What follows
+
+By decision `261114-1651-…`, option 1, and `### Request 82, the version a correction takes`: the answer is accepted, so it is recorded here and **nothing else follows**: no tag, no marketplace bump, no correction version, and `v13.5.0` is not touched. The decision's `.record.json` reads `"state": "implemented"` at `HEAD` (measured). **Request 82 is answered** at Prior `90b5758`: 82.1 to 82.4 and question 1 accepted, the hook replay **deferred** to Prior's plan steps 107 to 110 and 76, and reported by Prior in a follow-up naming this digest (step 111). That replay is the one part of 82 still open with Prior. No status table is restated here; decision `261115-2310-how-does-the-prior-request-log-stop-growing-once-request-82-is-answered.md` moves the states out of this file.
+
+**This file's digest.** Before this section the file is 9 063 lines, 1 585 694 bytes, `sha256:ded3bc255a9ebece4bcc616861e8a144106ccb3a7d7ae78440c173a216421c3c` (measured on `git show HEAD:codec/fixtures/prior/REQUESTS.md`, and the working file the same before the append), last changed by `2a164617`. This section changes the file again and so cannot state its own digest. The commit that carries it, and the file's `shasum -a 256` at that commit, are reported to fusion's user, who names them to Prior. Fusion asks for no change to either pin file.
