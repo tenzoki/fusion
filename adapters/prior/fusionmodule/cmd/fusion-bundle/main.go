@@ -15,7 +15,8 @@
 // revisions.
 //
 // The install tree is every file git lists under the entries of install.sh's
-// copy loop, at the payload root in the plugin's own layout, so the helpers,
+// copy loop, less the Prior request files of bundleExcluded and
+// priorRequestsDir (only the -request file is carried), at the payload root in the plugin's own layout, so the helpers,
 // hooks and skills find under Prior the tree a Claude Code install holds
 // (decision 261023-1854, which plugin tree the bundle payload carries, option
 // 2). None of it is a manifest data file: the module never reads it. The
@@ -80,6 +81,51 @@ const identityPath = "build-identity.json"
 var installEntries = []string{
 	".claude-plugin", "agents", "skills", "rules", "hooks", "codec", "bin", "stilwerk", "templates", "docs",
 	"README.md", "README-agents.md", "README-hooks.md", "LICENSE",
+}
+
+// bundleExcluded are install-tree files a bundle never carries, and
+// priorRequestsDir is the directory of which a bundle carries only the file
+// of the request it is built for (-request), or none. STATUS.md is edited in
+// place and is never pinned or bundled; the frozen REQUESTS.md stays out
+// because a bundle carries its own request file only (decision
+// 261115-2310-how-does-the-prior-request-log-stop-growing-once-request-82-is-answered.md,
+// 1b and question 4; Prior ed81134, `## Ruling`). install.sh keeps copying
+// all of them, because no runtime code of a Claude Code install reads them.
+var bundleExcluded = []string{
+	"codec/fixtures/prior/STATUS.md",
+	"codec/fixtures/prior/REQUESTS.md",
+}
+
+const priorRequestsDir = "codec/fixtures/prior/requests/"
+
+// bundlePaths returns the listed install-tree paths a bundle carries, in
+// order: every path but bundleExcluded and the files under priorRequestsDir,
+// plus, when request is positive, the one file directly under
+// priorRequestsDir named <request zero-padded to 3>-*.md. A request that
+// matches no file or more than one refuses the build.
+func bundlePaths(paths []string, request int) ([]string, error) {
+	prefix := ""
+	if request > 0 {
+		prefix = fmt.Sprintf("%s%03d-", priorRequestsDir, request)
+	}
+	var kept, matched []string
+	for _, p := range paths {
+		if contains(bundleExcluded, p) {
+			continue
+		}
+		if !strings.HasPrefix(p, priorRequestsDir) {
+			kept = append(kept, p)
+			continue
+		}
+		if prefix != "" && strings.HasPrefix(p, prefix) && strings.HasSuffix(p, ".md") && !strings.Contains(p[len(priorRequestsDir):], "/") {
+			matched = append(matched, p)
+			kept = append(kept, p)
+		}
+	}
+	if prefix != "" && len(matched) != 1 {
+		return nil, fmt.Errorf("-request %d: want exactly one tracked file %s*.md, found %d %v", request, prefix, len(matched), matched)
+	}
+	return kept, nil
 }
 
 // hooksPath is the hook registration the manifest's lifecycle_hooks pins.
@@ -212,6 +258,8 @@ type options struct {
 	out, clone, fusionRoot, rendered, launcher, adapter string
 	fusionRevision, priorRevision                       string
 	commands                                            stringList
+	// request is the Prior request the bundle is built for; 0 when absent.
+	request int
 }
 
 func run(args []string) error {
@@ -226,11 +274,17 @@ func run(args []string) error {
 	flags.StringVar(&o.fusionRevision, "fusion-revision", "", "fusion revision the build is from")
 	flags.StringVar(&o.priorRevision, "prior-revision", "", "Prior revision the clone is at")
 	flags.Var(&o.commands, "command", "an outer build command to record in handover.json (repeatable)")
+	flags.IntVar(&o.request, "request", 0, "the Prior request the bundle is built for; its one file under "+priorRequestsDir+" is carried, no other")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
 	if flags.NArg() != 0 {
 		return errors.New("unexpected positional arguments")
+	}
+	requestSet := false
+	flags.Visit(func(f *flag.Flag) { requestSet = requestSet || f.Name == "request" })
+	if requestSet && o.request < 1 {
+		return fmt.Errorf("-request must be a positive integer, got %d", o.request)
 	}
 	for name, value := range map[string]string{"out": o.out, "clone": o.clone, "fusion-root": o.fusionRoot, "rendered": o.rendered, "launcher": o.launcher, "adapter": o.adapter} {
 		if !filepath.IsAbs(value) {
@@ -303,7 +357,7 @@ func assemble(o options) error {
 
 	// The install tree, beside the data and outside it. Every path is checked
 	// against the module's own before any is written.
-	tree, omitted, err := installTree(o.fusionRoot)
+	tree, omitted, err := installTree(o.fusionRoot, o.request)
 	if err != nil {
 		return fmt.Errorf("install tree: %w", err)
 	}
@@ -415,8 +469,9 @@ func assemble(o options) error {
 // the work tree, keeps an untracked file out by construction; a clean tree,
 // which build.sh requires, makes the index HEAD. A link (120000) is returned
 // as omitted; an unmerged entry or any other mode (a submodule) refuses the
-// build.
-func installTree(fusionRoot string) ([]treeFile, []omittedLink, error) {
+// build. The listing is narrowed by bundlePaths for request before any blob
+// is read.
+func installTree(fusionRoot string, request int) ([]treeFile, []omittedLink, error) {
 	args := append([]string{"--literal-pathspecs", "-C", fusionRoot, "ls-files", "-s", "-z", "--"}, installEntries...)
 	listing, err := gitOutput(nil, args...)
 	if err != nil {
@@ -438,6 +493,25 @@ func installTree(fusionRoot string) ([]treeFile, []omittedLink, error) {
 		}
 		entries = append(entries, entry{fields[0], fields[1], p})
 	}
+	listed := make([]string, len(entries))
+	for i, e := range entries {
+		listed[i] = e.path
+	}
+	keep, err := bundlePaths(listed, request)
+	if err != nil {
+		return nil, nil, err
+	}
+	carried := make(map[string]bool, len(keep))
+	for _, p := range keep {
+		carried[p] = true
+	}
+	kept := entries[:0]
+	for _, e := range entries {
+		if carried[e.path] {
+			kept = append(kept, e)
+		}
+	}
+	entries = kept
 	if len(entries) == 0 {
 		return nil, nil, fmt.Errorf("git lists no file under %s in %s", strings.Join(installEntries, " "), fusionRoot)
 	}

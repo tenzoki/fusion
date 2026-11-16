@@ -91,7 +91,7 @@ func gitRepo(t *testing.T) string {
 
 func TestInstallTreeReadsTheIndex(t *testing.T) {
 	root := gitRepo(t)
-	tree, omitted, err := installTree(root)
+	tree, omitted, err := installTree(root, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,6 +108,107 @@ func TestInstallTreeReadsTheIndex(t *testing.T) {
 	}
 	if !reflect.DeepEqual(omitted, []omittedLink{{"rules/link.md", "a.md"}}) {
 		t.Fatalf("omitted %v", omitted)
+	}
+}
+
+// priorListing is an install-tree listing holding the Prior request side:
+// the status file, the frozen log, three request files and a neighbour that
+// is carried.
+var priorListing = []string{
+	"bin/fusion-paths",
+	"codec/fixtures/prior/REQUESTS.md",
+	"codec/fixtures/prior/STATUS.md",
+	"codec/fixtures/prior/campaign/x/fusion.json",
+	"codec/fixtures/prior/requests/082-hook-replay.md",
+	"codec/fixtures/prior/requests/083-first.md",
+	"codec/fixtures/prior/requests/084-second.md",
+}
+
+// A bundle never carries STATUS.md or the frozen REQUESTS.md, and without
+// -request no file under requests/.
+func TestBundlePathsDropStatusLogAndRequests(t *testing.T) {
+	got, err := bundlePaths(priorListing, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"bin/fusion-paths", "codec/fixtures/prior/campaign/x/fusion.json"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("bundle paths %v, want %v", got, want)
+	}
+}
+
+// With -request the bundle carries that request's file and no other.
+func TestBundlePathsCarryOnlyTheNamedRequest(t *testing.T) {
+	got, err := bundlePaths(priorListing, 83)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"bin/fusion-paths", "codec/fixtures/prior/campaign/x/fusion.json", "codec/fixtures/prior/requests/083-first.md"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("bundle paths %v, want %v", got, want)
+	}
+}
+
+func TestBundlePathsRefuseZeroOrManyRequestFiles(t *testing.T) {
+	if _, err := bundlePaths(priorListing, 85); err == nil {
+		t.Error("-request 85 matches no file and was accepted")
+	}
+	// A file in a subdirectory or with another extension is not a match.
+	odd := append(append([]string(nil), priorListing...), "codec/fixtures/prior/requests/085-x/a.md", "codec/fixtures/prior/requests/085-x.txt")
+	if _, err := bundlePaths(odd, 85); err == nil {
+		t.Error("-request 85 matched a file in a subdirectory or a non-.md file")
+	}
+	twice := append(append([]string(nil), priorListing...), "codec/fixtures/prior/requests/083-again.md")
+	if _, err := bundlePaths(twice, 83); err == nil {
+		t.Error("-request 83 matches two files and was accepted")
+	}
+}
+
+// The filter reaches the tree installTree reads from git's index.
+func TestInstallTreeLeavesThePriorRequestSideOut(t *testing.T) {
+	root := t.TempDir()
+	for _, p := range priorListing {
+		full := filepath.Join(root, filepath.FromSlash(p))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte("body of "+p+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, args := range [][]string{{"init", "-q"}, {"add", "-A"}} {
+		if out, err := exec.Command("git", append([]string{"-C", root}, args...)...).CombinedOutput(); err != nil {
+			t.Fatalf("git %v: %v: %s", args, err, out)
+		}
+	}
+	for request, want := range map[int][]string{
+		0:  {"bin/fusion-paths", "codec/fixtures/prior/campaign/x/fusion.json"},
+		84: {"bin/fusion-paths", "codec/fixtures/prior/campaign/x/fusion.json", "codec/fixtures/prior/requests/084-second.md"},
+	} {
+		tree, _, err := installTree(root, request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var got []string
+		for _, f := range tree {
+			got = append(got, f.Path)
+		}
+		sort.Strings(got)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("request %d: tree %v, want %v", request, got, want)
+		}
+	}
+	if _, _, err := installTree(root, 85); err == nil {
+		t.Error("installTree accepted -request 85, which matches no file")
+	}
+}
+
+func TestRequestFlagMustBePositive(t *testing.T) {
+	for _, v := range []string{"0", "-3"} {
+		err := run([]string{"-request", v})
+		if err == nil || !strings.Contains(err.Error(), "-request must be a positive integer") {
+			t.Errorf("-request %s: %v", v, err)
+		}
 	}
 }
 
@@ -179,13 +280,16 @@ func TestDeclaredEventsAreTheRegisteredOnes(t *testing.T) {
 // fusion's own install tree carries what the plan names, and none of it
 // collides with the module's paths.
 func TestFusionInstallTree(t *testing.T) {
-	tree, _, err := installTree(fusionRoot(t))
+	tree, _, err := installTree(fusionRoot(t), 0)
 	if err != nil {
 		t.Fatal(err)
 	}
 	modes := map[string]os.FileMode{}
 	for _, f := range tree {
 		modes[f.Path] = f.Mode
+		if contains(bundleExcluded, f.Path) || strings.HasPrefix(f.Path, priorRequestsDir) {
+			t.Errorf("%s is in the install tree; a bundle never carries it", f.Path)
+		}
 	}
 	for p, mode := range map[string]os.FileMode{"bin/fusion-paths": 0o500, "bin/fusion-rules": 0o500, hooksPath: 0o400, "agents/orchestrator.md": 0o400, ".claude-plugin/plugin.json": 0o400, "codec/dist/fusion-record.js": 0o400, "hooks/package.json": 0o400, "codec/package.json": 0o400} {
 		if modes[p] != mode {

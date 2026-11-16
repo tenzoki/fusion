@@ -35,7 +35,10 @@
 # Environment: PRIOR_REPO (required; the Prior repository to clone, with no
 # default: unset, the script prints its usage and exits 2) and TMPDIR as
 # stage.sh reads them; FUSION_BUILD_KEEP=1 keeps the render work directory and
-# prints its path.
+# prints its path; FUSION_BUILD_REQUEST=<N> names the Prior request the bundle
+# is built for, so the bundle carries its one file under
+# codec/fixtures/prior/requests/ (unset: none; STATUS.md and the frozen
+# REQUESTS.md never), passed to the assembler as -request.
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -111,6 +114,11 @@ build() {
   outside_repos "$out"
   [ -d "$catalog_dir/node_modules" ] || die "$catalog_dir/node_modules is missing; run: cd catalog && npm ci"
   revision=$(fusion_revision)
+  request=${FUSION_BUILD_REQUEST:-}
+  case "$request" in
+    '') ;;
+    *[!0-9]*|0*) die "FUSION_BUILD_REQUEST must be a positive integer, got '$request'" ;;
+  esac
 
   work=$(mktemp -d "${TMPDIR:-/tmp}/fusion-bundle-work.XXXXXX")
   cleanup() {
@@ -126,10 +134,10 @@ build() {
   echo "build.sh: $render_cmd"
   (cd "$catalog_dir" && npm run --silent render -- prior "$work/rendered")
 
-  stage_cmd="adapters/prior/stage.sh run -- adapters/prior/build.sh _staged <out> <work>/rendered <fusion-revision>"
+  stage_cmd="adapters/prior/stage.sh run -- adapters/prior/build.sh _staged <out> <work>/rendered <fusion-revision>${request:+ (request $request)}"
   echo "build.sh: $stage_cmd"
   # Captured, then shown: a pipe into tee would hide the stage's exit code.
-  "$here/stage.sh" run -- "$here/build.sh" _staged "$out" "$work/rendered" "$revision" "$render_cmd" "$stage_cmd" > "$work/assemble.out"
+  "$here/stage.sh" run -- "$here/build.sh" _staged "$out" "$work/rendered" "$revision" "$render_cmd" "$stage_cmd" "$request" > "$work/assemble.out"
   cat "$work/assemble.out"
   digest=$(awk '$1 == "bundle_digest" { print $2 }' "$work/assemble.out")
   [ -n "$digest" ] || die "the assembler printed no bundle digest"
@@ -138,14 +146,15 @@ build() {
 }
 
 # _staged runs inside stage.sh's clone, from its root: the assembler is built
-# natively, then run with the paths the outer command resolved.
+# natively, then run with the paths the outer command resolved. An empty
+# sixth argument means no -request.
 staged() {
   [ -n "${FUSION_STAGE_CLONE:-}" ] || die "_staged runs only under stage.sh run"
-  out=$1; rendered=$2; revision=$3; render_cmd=$4; stage_cmd=$5
+  out=$1; rendered=$2; revision=$3; render_cmd=$4; stage_cmd=$5; request=$6
   tools=$(mktemp -d "${TMPDIR:-/tmp}/fusion-bundle-tools.XXXXXX")
   trap 'rm -rf "$tools"' EXIT
   go build -o "$tools/fusion-bundle" ./integrationbuild/fusionmodule/cmd/fusion-bundle
-  "$tools/fusion-bundle" -out "$out" -clone "$FUSION_STAGE_CLONE" -fusion-root "$fusion_root" -rendered "$rendered" -launcher "$here/launcher/fusion-module.sh" -adapter "$here" -fusion-revision "$revision" -prior-revision "$pin" -command "$render_cmd" -command "$stage_cmd"
+  "$tools/fusion-bundle" -out "$out" -clone "$FUSION_STAGE_CLONE" -fusion-root "$fusion_root" -rendered "$rendered" -launcher "$here/launcher/fusion-module.sh" -adapter "$here" -fusion-revision "$revision" -prior-revision "$pin" -command "$render_cmd" -command "$stage_cmd" ${request:+-request "$request"}
 }
 
 verify() {
@@ -261,7 +270,7 @@ case "$command" in
     deliver
     ;;
   _staged)
-    [ $# -eq 5 ] || usage
+    [ $# -eq 6 ] || usage
     staged "$@"
     ;;
   _verify)

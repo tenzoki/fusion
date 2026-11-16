@@ -115,7 +115,10 @@ that ran, and inventories the adapter sources, the launcher and every other
 payload file; the bundle digest covers it, so a build at any other commit
 yields another digest. The build refuses a dirty fusion tree outside
 `fusion-workbench/`; `FUSION_BUILD_ALLOW_DIRTY=1` builds anyway and marks the
-revision `<sha>+dirty`.
+revision `<sha>+dirty`. `FUSION_BUILD_REQUEST=<N>` names the Prior request
+the bundle is built for (a positive integer); `build.sh` passes it to the
+assembler as `-request <N>`, as in
+`FUSION_BUILD_REQUEST=83 adapters/prior/build.sh deliver`.
 
 After the data files the assembler copies the **install tree**: every file
 `git ls-files -s` lists under the entries of `install.sh`'s copy loop, with
@@ -135,7 +138,21 @@ fixture `codec/fixtures/legacy-v12/workbench/shared/analyses/latest-benchmark.md
 An unmerged entry or a submodule refuses the build, and so does an
 install-tree path that equals, contains or lies below a module path (a data
 file, `module.json`, `build-identity.json`, `bin/fusion-module` or a target
-binary). Node's floor is the carried `hooks/package.json` and
+binary).
+
+Three Prior request paths are left out of the install tree a bundle carries
+(`bundleExcluded` and `priorRequestsDir` in `cmd/fusion-bundle/main.go`):
+`codec/fixtures/prior/STATUS.md`, which is edited in place and never bundled,
+the frozen `codec/fixtures/prior/REQUESTS.md`, and every file under
+`codec/fixtures/prior/requests/` except the one `-request <N>` names, the
+tracked `requests/<N zero-padded to 3>-*.md`. With `-request` that file must
+match exactly once, or the build refuses; without it no request file is
+carried (decision
+`261115-2310-how-does-the-prior-request-log-stop-growing-once-request-82-is-answered.md`,
+1b and question 4). `install.sh` still copies all of them, because no runtime
+code of a Claude Code install reads them.
+
+Node's floor is the carried `hooks/package.json` and
 `codec/package.json` `engines`, `>=20.12.0`.
 
 The manifest declares the carried hooks in `lifecycle_hooks`: `path`
