@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "6412db51-000e-438f-826c-0192be2172d1",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "shared/issues/261116-1328-the-prior-bundle-ships-every-tracked-file-under-codec-so-status-md-and-the-frozen-request-log-enter-every-bundle.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}
