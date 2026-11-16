@@ -9098,3 +9098,42 @@ Quoted, `R:192`: "**Three findings on fusion's text go with this answer. They ar
 By decision `261114-1651-…`, option 1, and `### Request 82, the version a correction takes`: the answer is accepted, so it is recorded here and **nothing else follows**: no tag, no marketplace bump, no correction version, and `v13.5.0` is not touched. The decision's `.record.json` reads `"state": "implemented"` at `HEAD` (measured). **Request 82 is answered** at Prior `90b5758`: 82.1 to 82.4 and question 1 accepted, the hook replay **deferred** to Prior's plan steps 107 to 110 and 76, and reported by Prior in a follow-up naming this digest (step 111). That replay is the one part of 82 still open with Prior. No status table is restated here; decision `261115-2310-how-does-the-prior-request-log-stop-growing-once-request-82-is-answered.md` moves the states out of this file.
 
 **This file's digest.** Before this section the file is 9 063 lines, 1 585 694 bytes, `sha256:ded3bc255a9ebece4bcc616861e8a144106ccb3a7d7ae78440c173a216421c3c` (measured on `git show HEAD:codec/fixtures/prior/REQUESTS.md`, and the working file the same before the append), last changed by `2a164617`. This section changes the file again and so cannot state its own digest. The commit that carries it, and the file's `shasum -a 256` at that commit, are reported to fusion's user, who names them to Prior. Fusion asks for no change to either pin file.
+
+## The log frozen after request 82
+
+**This is the last passage of this file. Nothing is appended after it, by fusion or on Prior's behalf.** Every earlier line stays as it was committed, so every citation into the file still holds: its headings, the line numbers its passages cite, the digests it states, the bundles' copies of it and Prior's pins on it. This passage files no request, reserves no request number, puts no question to Prior and changes nothing Prior is asked to run. It is step 1 of fusion's decision `261115-2310-how-does-the-prior-request-log-stop-growing-once-request-82-is-answered.md`, option 1, which fusion's user answered on 2026-11-16 (read).
+
+**Measured** below means a read-only command ran for this passage on 2026-11-16, either in fusion's repository at `08ccda7b` (`08ccda7bfe1ce8bb9d25b873caed98a84fdfeaa2`, the head of `main` and of `origin/main`) or over Prior's committed objects. Nothing was written in Prior's repository, and its working tree was not read. A sentence in quotation marks is quoted.
+
+### Where requests go from 83 on
+
+- **`codec/fixtures/prior/STATUS.md`** has one row per request: its number, its current state, the Prior commit and bundle digest it was answered on, the file that holds it, and an optional one-line note. It is maintained in place, and its head says that it is not a log. It is cited by request number, never by line, and it is never pinned and never placed in a bundle. Rows 1 to 82 are written out in full, each pointing at the heading in this file that settles it. That ends the "as they stand" chains, whose last table here is `### Requests 64 and 67 to 82, as they stand`.
+- **`codec/fixtures/prior/requests/083-<slug>.md`**: one file per request, numbering continuing at 83, append-only once it is relayed to Prior. Prior's answer to request N and every correction to N are appended to N's file. A passage that spans several requests goes into the file of the newest one it touches, and the other requests' rows point at it.
+
+**Neither exists at this passage's commit**: `git ls-tree --name-only HEAD codec/fixtures/prior/` names neither (measured). They arrive in later commits, `STATUS.md` first and request 83 after it.
+
+### Prior's agreement at ed81134
+
+Prior agreed at `ed81134` (`ed81134e2bdd13f2d2d508c01d9f18a9d2abd014`, 2026-11-16 09:21, "docs(decision): Prior agrees to fusion's per-request files from request 83 on"), in its decision `foreign:F09-Prior:261116-0930-how-prior-answers-fusions-brief-on-the-request-log-restructure.md`. Quoted from its `## Ruling`, read with `git show ed81134:<path>`:
+
+> 1. **Prior agrees** to the structure, with request 83 the first request filed under it. Request 82, its bundle and Prior's existing pins are unaffected.
+> 2. **`requests/` works** under both spellings without change to Prior's readers. Prior leaves `STATUS.md` out of every pin, as the brief intends.
+> 3. **A future bundle carries its own request file only**, not the frozen log.
+
+So request 83 is the first request filed under the new structure. Request 82, its bundle `sha256:2ba70dbeba8662212ef8312801da1c8103e90bfe42cf6a1ac8e34b71352ad643`, the bundle's copy of this file `8ece771d…`, and Prior's two pins at `e21ef887…` are unaffected. No future bundle carries this file.
+
+**Neither `ed81134` nor `90b5758` is on Prior's remote.** In Prior's repository, `git branch -r --contains ed81134` and `git branch -r --contains 90b5758` both print nothing (measured). Fusion's user reports Prior's backup drive missing, so both are local hashes until Prior pushes them.
+
+### The correction rule from 83 on
+
+A correction gets a passage, in the file of the request it corrects, only when it changes what Prior is asked to run, check or answer, or what Prior is to do in response to an answer. Any other correction is recorded in fusion's workbench issue and in the commit message. A correction that changes only consequences on fusion's side also becomes a one-line note in that request's `STATUS.md` row, and gets no passage. Under this rule, `### Requests 81 and 82, corrected in two statements` would have had no passage, and `### Request 82, the version a correction takes` would have been a note in row 82.
+
+### Request 82, settled here
+
+Request 82 is **answered** at Prior `90b5758`, recorded in `### Prior's answer to 82 at 90b5758`: 82.1 to 82.4 and question 1 are accepted, and nothing else follows. That section is carried by `08ccda7b` (`08ccda7bfe1ce8bb9d25b873caed98a84fdfeaa2`, 2026-11-16 12:08), which is on `origin/main` (`git branch -r --contains 08ccda7b`, measured). At `08ccda7b` the file is 9 100 lines, 1 593 052 bytes, `sha256:3fe0f1d6484ca73722c2a270c83188f77b5a7090d33ed75c30eb8c962ddbfc47` (measured with `git show 08ccda7b:codec/fixtures/prior/REQUESTS.md` piped to `wc -l -c` and `shasum -a 256`). These are the commit and the digest that section said would be reported to fusion's user; they are named here as well.
+
+**The hook replay on `2ba70dbe…` is still open with Prior.** It is deferred to Prior's plan steps 107 to 110 and 76, and Prior reports it in a follow-up that names that digest (step 111), as that section quotes it. Prior's follow-up is not recorded in this file. Its state goes to row 82 of `STATUS.md`, which holds each request's current state. **Where a passage recording it goes is not ruled.** Decision `261115-2310-…` gives a request file to each request from 83 on, and to a passage spanning several requests the file of the newest one. It names no file for request 82 alone, and there is no `requests/082-…`. That is for fusion's user to decide before the follow-up is recorded.
+
+### This file's digest
+
+Before this passage the file is 9 100 lines, 1 593 052 bytes, `sha256:3fe0f1d6484ca73722c2a270c83188f77b5a7090d33ed75c30eb8c962ddbfc47`, last changed by `08ccda7b` (measured on `git show HEAD:codec/fixtures/prior/REQUESTS.md`, and the working file was the same before the append). This passage changes the file again and so cannot state its own digest. The commit that carries it, and the file's `shasum -a 256` at that commit, are reported to fusion's user, who names them to Prior. **That digest is this file's last**, and a pin on it is final. Fusion asks for no change to either pin file.
