@@ -32,10 +32,15 @@
  *                   and `tar`. An entry in no tree at the commit is left out
  *                   of the list first, because `git archive` refuses a path it
  *                   does not find.
- *   `readOverview`  `readWorkGraph` over the extract, so the gate, the row
+ *   `readPackagesAt` `readWorkGraph` over the extract, so the gate, the row
  *                   criterion and the placement of every dependency edge are
  *                   `lib/work-graph.ts`'s and none is restated here; one
- *                   `list` for the open decisions and the package rows;
+ *                   `list` for the open decisions and the package rows; the
+ *                   shared decisions' narratives for the `**Answers:**` lines.
+ *                   `laneStatesOf`, `questionsOf` and `readyOf` over it are
+ *                   what `sync` and `--since` read as well, so the rule for
+ *                   `next` and for an answer is stated once.
+ *   `readOverview`  that read, then
  *                   `readCampaignsAt` for the campaign files (`list` for the
  *                   set, `reconcile` for the findings, the three lane rules
  *                   among them, `show` per readable campaign); one `show` per
@@ -174,6 +179,7 @@
  */
 import { type Unread } from "./codec-read.js";
 import { type Ask, type Refusal } from "./record-client.js";
+import { type WorkGraphReport } from "./work-graph.js";
 import type { CutInput } from "./campaign-cut.js";
 /** The `git log` format the join reads: hash, author time, committer time, subject, tab-separated. */
 export declare const COMMIT_LISTING_FORMAT = "%H%x09%at%x09%ct%x09%s";
@@ -367,7 +373,109 @@ export type CampaignsRead = {
  * `lib/campaign-sync.ts`.
  */
 export declare function readCampaignsAt(workbench: string, ask?: Ask): CampaignsRead;
-/** What the overview extracts: the manifest and the marker, the two root stores, the event log. */
+/** The shared decisions store, workbench-relative: where an answer to a peer's question lives. */
+export declare const SHARED_DECISIONS: string;
+/** One open decision record inside a package's container: its narrative's basename and its workbench-relative path. */
+export interface OpenDecision {
+    decision: string;
+    path: string;
+}
+/** The packages of one workbench read, each fact computed once, for the lane view, the questions and the overview's rows. */
+export interface PackagesAt {
+    report: WorkGraphReport;
+    rows: Array<Record<string, unknown>>;
+    live: Set<string>;
+    containerOf: Map<string, string>;
+    statusOf: Map<string, string>;
+    /** Every claimed package's container to the checkout its claim names. */
+    holderOf: Map<string, string>;
+    facts(dir: string): PackageFacts | {
+        unread: Unread;
+    };
+    waitsOf(dir: string): string[];
+    openDecisions(dir: string): OpenDecision[];
+    /** The one shared decision whose head names `decision` in an `**Answers:**` line, or null; two are null and a note. */
+    answerOf(decision: string): string | null;
+}
+/** The label an answer record carries in its head, once, naming the question's narrative basename (decision
+ * `261119-1248-how-does-an-answer-name-the-peer-question-it-answers-and-how-does-the-peer-remember-what-it-set-aside.md`). */
+export declare const ANSWERS_LABEL = "**Answers:** ";
+/** The `**Answers:**` values of a narrative's head: every line before the first `## ` heading. */
+export declare function answersIn(narrative: string): string[];
+/**
+ * The packages of the workbench at `workbench`: `readWorkGraph` for the live
+ * nodes, one `list` for the package and decision rows, one `show` per
+ * claimed package for its holder, and the narratives of the shared decisions
+ * store for the answers. A claim naming no checkout is a failure, never a
+ * package nobody holds.
+ */
+export declare function readPackagesAt(workbench: string, notes: string[][], ask?: Ask): PackagesAt | {
+    unread: Unread;
+};
+/** One lane of a live campaign, resolved over the packages: what `lane=`, `next=`, `question=` and `ready=` read. */
+export interface LaneState {
+    campaign: string;
+    lane: string;
+    checkout: string | null;
+    /** The members resolved to containers, in lane order. */
+    containers: string[];
+    /** The containers the lane's checkout holds, anywhere in the workbench, ascending. */
+    held: string[];
+    /** The first member in lane order that is live and unheld, or null. */
+    next: string | null;
+    nextWaits: string[];
+    /** `next`'s `mode.value`, or null with `next`. */
+    nextMode: string | null;
+}
+/** The lanes of every live campaign with lanes, in campaign order then lane order; a member no package row names is a `lane-member-unknown` note. */
+export declare function laneStatesOf(campaigns: CampaignAtRef[], pk: PackagesAt, notes: string[][]): LaneState[] | {
+    unread: Unread;
+};
+/** An open decision record in a package a lane's checkout holds, or in the lane's `next`, with its answer. */
+export interface Question {
+    campaign: string;
+    lane: string;
+    checkout: string | null;
+    package: string;
+    decision: string;
+    /** The narrative's workbench-relative path. */
+    path: string;
+    answer: string | null;
+}
+/** The questions of `lanes`: per lane, its held packages then its `next`, each package's open decisions ascending. */
+export declare function questionsOf(lanes: LaneState[], pk: PackagesAt): Question[];
+/** A lane whose `next` waits for nothing. */
+export interface Ready {
+    campaign: string;
+    lane: string;
+    package: string;
+}
+export declare const readyOf: (lanes: LaneState[]) => Ready[];
+/** The questions and the ready lanes of the workbench at `workbench`, an extract: what `--since` compares against. */
+export declare function steeringAt(workbench: string, ask?: Ask): {
+    questions: Question[];
+    ready: Ready[];
+} | {
+    unread: Unread;
+};
+/**
+ * What `overview --since <sha>` compares the head against: the questions and
+ * the ready lanes at `sha`, extracted below `into`. `unknown` where `sha`
+ * names no commit, is no ancestor of the head, or its workbench did not read;
+ * nothing at all where the workbench is in no tree at `sha`, since then
+ * nothing was present.
+ */
+export declare function steeringSince(at: {
+    gitRoot: string;
+    head: string;
+    rel: string;
+}, sha: string, into: string, ask?: Ask): {
+    questions: Question[];
+    ready: Ready[];
+} | "unknown";
+/** The workbench entries the steering read needs: the manifest and the marker, the two root stores, the shared decisions. */
+export declare const STEERING_ENTRIES: readonly string[];
+/** What the overview extracts: the steering read's entries and the event log. */
 export declare const OVERVIEW_ENTRIES: readonly string[];
 /** One claimed package at the ref. */
 export interface Held {
@@ -438,6 +546,8 @@ export interface Conditions {
 export interface Overview {
     ref: string;
     head: string;
+    /** The workbench's path in a commit, which a question's path is printed under. */
+    rel: string;
     /** The head's committer time, milliseconds. */
     headTime: number;
     /** The readable campaigns at the ref, ascending by id. */
@@ -448,6 +558,12 @@ export interface Overview {
     /** One row per lane of each live campaign, in campaign order then lane order. */
     lanes: LaneRow[];
     conditions: Conditions;
+    /** The open decisions of each lane's held packages and its `next`, with their answers. */
+    questions: Question[];
+    ready: Ready[];
+    /** With `--since`: the rows present at the head and absent at that commit; null without it. */
+    newQuestions: Question[] | null;
+    newReady: Ready[] | null;
     /** One entry per degradation: a token, then its fields. */
     notes: string[][];
 }
@@ -465,6 +581,8 @@ export declare const insideArea: (path: string, areas: Iterable<string>) => bool
 export interface PackageFacts {
     checkout: string | null;
     resources: string[];
+    /** `mode.value`, `ordinary` where the control file names none. */
+    mode: string;
 }
 /** `show` of the package at `dir`, read for `PackageFacts`; the codec's `list` row carries neither. */
 export declare function packageFacts(workbench: string, dir: string, ask: Ask): PackageFacts | {
@@ -507,6 +625,15 @@ export declare function readOverview(at: {
     ask?: Ask;
     bin?: string;
 }): OverviewRead;
+/**
+ * The overview with `--since`'s rows: each question whose decision path, and
+ * each ready lane whose campaign, lane and package, the read at that commit
+ * did not hold. `unknown` counts every row as new and says so in a note.
+ */
+export declare function withSince(o: Overview, prior: {
+    questions: Question[];
+    ready: Ready[];
+} | "unknown"): Overview;
 /** Milliseconds as RFC 3339 in UTC at second resolution, the one time format the output carries. */
 export declare function rfc3339(ms: number): string;
 /** The `silent` condition: the lane has a checkout, it holds nothing, and its last push is none or older than the window. */

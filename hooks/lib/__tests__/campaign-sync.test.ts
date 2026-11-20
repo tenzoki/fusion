@@ -27,7 +27,7 @@ const lock = join(pluginRoot, "bin", "fusion-commit-lock");
 const write = join(pluginRoot, "bin", "fusion-write");
 const LOG = "fusion-workbench/orchestrator-events.jsonl";
 const ID = "261101-0900-pipeline";
-const [A, B] = ["a1a1a1a1", "b2b2b2b2"];
+const [A, B, C, D] = ["a1a1a1a1", "b2b2b2b2", "c3c3c3c3", "d4d4d4d4"];
 const tmpRoots: string[] = [];
 afterAll(() => {
   for (const dir of tmpRoots) rmSync(dir, { recursive: true, force: true });
@@ -75,6 +75,13 @@ const originLog = (origin: string): Array<Record<string, unknown>> => rows(git(o
 const sha = (root: string, rel: string): string => `sha256:${createHash("sha256").update(readFileSync(join(root, rel))).digest("hex")}`;
 const rfc3339 = (seconds: string): string => `${new Date(Number(seconds) * 1000).toISOString().slice(0, 19)}Z`;
 const member = (p: JsonProject, pkg: Package) => ({ workbench_id: must(p, { op: "inspect" }).result.id, record_id: pkg.id, display: pkg.dir.slice("work-packages/".length) });
+
+/** `set-mode autonomous` through `bin/fusion-write`, on the user's word in the package's own narrative. */
+function autonomous(p: JsonProject, pkg: Package): void {
+  const ref = { kind: "other", path: pkg.narrative, sha256: sha(p.workbench, pkg.narrative) };
+  const w = spawnSync(write, ["set-mode", "--record", pkg.path, "--value", "autonomous", "--source", JSON.stringify({ kind: "user-word", ref }), "--actor", "user"], { cwd: p.root, encoding: "utf-8", env: env() });
+  if (w.status !== 0) throw new Error(`set-mode failed: ${w.stderr}`);
+}
 
 /** A bare origin and a seeded `main`: the workbench the kernel wrote plus what `seed` adds, the log with one row, the union driver on it. */
 function world(tag: string, seed: (p: JsonProject) => void): { origin: string; project: JsonProject } {
@@ -215,8 +222,33 @@ describe("bin/fusion-campaign sync, the commit-cycle read", () => {
     // The states sync shares with overview, and sync's refusal of a flag.
     git(a, "checkout", "-q", "-b", "side");
     expect([run(a, {}, "sync").status, run(a, {}, "sync").stdout]).toEqual([5, "state=no-upstream\nbranch=side\n"]);
-    for (const args of [["sync", "--ref", "origin/main"], ["sync", "--window", "1"]]) expect([run(a, {}, ...args).status, run(a, {}, ...args).stdout], args.join(" ")).toEqual([2, ""]);
+    for (const args of [["sync", "--ref", "origin/main"], ["sync", "--window", "1"], ["sync", "--read", "--read"]]) expect([run(a, {}, ...args).status, run(a, {}, ...args).stdout], args.join(" ")).toEqual([2, ""]);
   }, CASE_TIMEOUT * 5);
+
+  it("--read: this checkout's lane, its next with that package's own mode, each question with the shared record whose head answers it; nothing written, committed or pushed", () => {
+    const [Q1, Q2, HELD] = ["261101-0006-which-parser.md", "261101-0007-which-schema.md", "261101-0010-held"];
+    const { origin } = world("read", (p) => {
+      const [held, auto, plain] = [createPackage(p, HELD), createPackage(p, "261101-0011-auto"), createPackage(p, "261101-0012-plain")];
+      claim(p, held, A);
+      autonomous(p, auto);
+      campaignFile(p, ID, { state: { state: "running" }, lanes: [{ id: "lane-1", checkout_id: A, members: [member(p, held), member(p, auto)] }, { id: "lane-2", checkout_id: B, members: [member(p, plain)] }, { id: "lane-3", checkout_id: C, members: [] }] });
+      for (const q of [Q1, Q2]) placeRecord(p.workbench, "decision-open", `${held.dir}/decisions/${q}`, "open");
+      // The answer names Q1 in its head; the other shared record only cites Q2, and names it under a body heading: no answer.
+      placeRecord(p.workbench, "decision-answered", "shared/decisions/261101-0020-answer.md", "answered", `# Answer\n\n**Answers:** ${Q1}\n`);
+      placeRecord(p.workbench, "decision-open", "shared/decisions/261101-0021-cites.md", "open", `# Cites\n\n**Cross-references:** ${Q2}\n\n## Body\n\n**Answers:** ${Q2}\n`);
+    });
+    const a = clone(origin, "read-a", A);
+    writeFileSync(join(a, "work.txt"), "work\n");
+    const head = lockCommit(a, "sid-a", "feat: a step", join(a, "work.txt"));
+    const before = [git(a, "status", "--porcelain"), readFileSync(join(a, LOG), "utf-8"), head, git(origin, "rev-parse", "main")];
+    const r = run(a, { FUSION_SESSION_ID: "sid-a" }, "sync", "--read");
+    expect(r.status, r.stderr).toBe(0);
+    expect([r.value("mine"), r.lines("lane"), r.lines("next"), r.lines("question"), r.lines("settled"), r.lines("deferred"), r.lines("pushed"), r.lines("note")]).toEqual([ID, [`${ID}\tlane-1`], ["261101-0011-auto\tautonomous\tnone"], [`${Q1}\t${HELD}\t261101-0020-answer.md`, `${Q2}\t${HELD}\tnone`], [], [], [], []]);
+    expect([git(a, "status", "--porcelain"), readFileSync(join(a, LOG), "utf-8"), git(a, "rev-parse", "HEAD"), git(origin, "rev-parse", "main")]).toEqual(before);
+    // Another lane's checkout reads its own lane, an ordinary next; an empty lane's reads next=none; one no lane names reads no lane.
+    const other = [B, C, D].map((hex) => run(clone(origin, `read-${hex}`, hex), {}, "sync", "--read")).map((x) => [x.status, x.lines("lane"), x.lines("next"), x.lines("question")]);
+    expect(other).toEqual([[0, [`${ID}\tlane-2`], ["261101-0012-plain\tordinary\tnone"], []], [0, [`${ID}\tlane-3`], ["none"], []], [0, [], [], []]]);
+  }, CASE_TIMEOUT * 6);
 
   it("a paused campaign without lanes is mine and reported with its reason; a terminal campaign naming this checkout steers nobody", () => {
     const PAUSED = "261101-0901-paused";

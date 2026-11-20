@@ -3,7 +3,7 @@
  * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
  * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
- * `reassign` and `end`, and `sync`, the commit-cycle read.
+ * `reassign` and `end`, and `sync [--read]`, the commit-cycle read.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
@@ -33,9 +33,9 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 const USAGE = [
-    "usage: fusion-campaign overview [--window <hours>] [--ref <upstream>]",
+    "usage: fusion-campaign overview [--window <hours>] [--ref <upstream>] [--since <sha>]",
     "       fusion-campaign cut --checkouts <N> [--tolerance <k>]",
-    "       fusion-campaign sync",
+    "       fusion-campaign sync [--read]",
     "       fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...",
     "       fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]",
     "       fusion-campaign pause --reason <text> [--campaign <id>]",
@@ -59,9 +59,9 @@ const STATE_EXIT = {
 };
 /** `sync`'s own two states, rows 10 and 11 of the table; `ok` is 0. */
 const SYNC_EXIT = { ok: 0, conflict: 10, rejected: 11 };
-/** `--window <hours>` and `--ref <upstream>`, each at most once, in either order; anything else is null. */
+/** `--window <hours>`, `--ref <upstream>` and `--since <sha>`, each at most once, in any order; anything else is null. */
 function parseOverview(argv) {
-    const args = { windowHours: DEFAULT_WINDOW_HOURS, ref: null };
+    const args = { windowHours: DEFAULT_WINDOW_HOURS, ref: null, since: null };
     const seen = new Set();
     for (let i = 0; i < argv.length; i += 2) {
         const [flag, value] = [argv[i], argv[i + 1]];
@@ -73,6 +73,8 @@ function parseOverview(argv) {
         // A ref beginning with a dash would be read by git as an option.
         else if (flag === "--ref" && value !== "" && !value.startsWith("-"))
             args.ref = value;
+        else if (flag === "--since" && /^[0-9a-f]{7,64}$/.test(value))
+            args.since = value;
         else
             return null;
     }
@@ -215,7 +217,12 @@ function overview(args, lib) {
         process.stdout.write(lines.join("\n") + "\n");
         return STATE_EXIT[at.state];
     }
-    const read = lib.withScratch(cwd, (scratch) => lib.readOverview(at, lib.extractAt(at, lib.OVERVIEW_ENTRIES, scratch), cwd));
+    const read = lib.withScratch(cwd, (scratch) => {
+        const o = lib.readOverview(at, lib.extractAt(at, lib.OVERVIEW_ENTRIES, scratch), cwd);
+        if (o.kind === "failed" || args.since === null)
+            return o;
+        return { kind: "overview", overview: lib.withSince(o.overview, lib.steeringSince(at, args.since, join(scratch, "since"))) };
+    });
     if (read.kind === "failed") {
         // The extract is gone by now, so the workbench is named as git names it: the commit and the path in it.
         const where = `${at.head}:${at.rel}`;
@@ -274,14 +281,14 @@ function steer(act, lib) {
     }
 }
 /** The commit-cycle read: the sequence of `lib/campaign-sync.ts`, then its page under `state=ok`, `conflict` or `rejected`. */
-function syncCycle(lib) {
+function syncCycle(readOnly, lib) {
     const cwd = process.cwd();
     const root = lib.findWorkbenchRoot(cwd);
     if (root === null) {
         say(`no fusion workbench found above ${cwd}.`);
         return 3;
     }
-    const result = lib.cycle.sync(cwd, join(root, "fusion-workbench"));
+    const result = lib.cycle.sync(cwd, join(root, "fusion-workbench"), { readOnly });
     switch (result.kind) {
         case "no-ref": {
             const lines = [`state=${result.at.state}`];
@@ -324,9 +331,9 @@ function main(argv, lib) {
         const args = parseCut(rest);
         return args === null ? usage() : cut(args, lib);
     }
-    // `sync` takes no flag: it reads the branch's upstream, the orchestrator's cycle and nobody's named ref.
+    // `sync` takes `--read` and no other flag: it reads the branch's upstream, the orchestrator's cycle and nobody's named ref.
     if (command === "sync")
-        return rest.length === 0 ? syncCycle(lib) : usage();
+        return rest.length === 0 || (rest.length === 1 && rest[0] === "--read") ? syncCycle(rest.length === 1, lib) : usage();
     if (command !== undefined && WRITES.has(command)) {
         const act = parseWrite(command, rest, lib.writes);
         return act === null ? usage() : steer(act, lib);

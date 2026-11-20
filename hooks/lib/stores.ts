@@ -52,6 +52,12 @@ export const RECORD_STORES = [
   "checkouts",
 ] as const;
 
+/** The root of the stores no item owns, beside the container store. */
+export const SHARED_ROOT = "shared";
+
+/** The decisions store, an element of `RECORD_STORES` by name: under a container, or under `SHARED_ROOT`. */
+export const DECISION_STORE: (typeof RECORD_STORES)[number] = "decisions";
+
 /**
  * Stores the tree no longer names but the working tree may still hold. The
  * two work items of the pre-container backlog store still sit under it, and a

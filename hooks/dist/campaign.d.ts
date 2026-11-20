@@ -3,7 +3,7 @@
  * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
  * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
- * `reassign` and `end`, and `sync`, the commit-cycle read.
+ * `reassign` and `end`, and `sync [--read]`, the commit-cycle read.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the

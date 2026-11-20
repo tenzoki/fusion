@@ -32,10 +32,15 @@
  *                   and `tar`. An entry in no tree at the commit is left out
  *                   of the list first, because `git archive` refuses a path it
  *                   does not find.
- *   `readOverview`  `readWorkGraph` over the extract, so the gate, the row
+ *   `readPackagesAt` `readWorkGraph` over the extract, so the gate, the row
  *                   criterion and the placement of every dependency edge are
  *                   `lib/work-graph.ts`'s and none is restated here; one
- *                   `list` for the open decisions and the package rows;
+ *                   `list` for the open decisions and the package rows; the
+ *                   shared decisions' narratives for the `**Answers:**` lines.
+ *                   `laneStatesOf`, `questionsOf` and `readyOf` over it are
+ *                   what `sync` and `--since` read as well, so the rule for
+ *                   `next` and for an answer is stated once.
+ *   `readOverview`  that read, then
  *                   `readCampaignsAt` for the campaign files (`list` for the
  *                   set, `reconcile` for the findings, the three lane rules
  *                   among them, `show` per readable campaign); one `show` per
@@ -182,8 +187,8 @@ import { parseTs } from "./events-query.js";
 import { ask as askCodec, type Ask, type Refusal } from "./record-client.js";
 import { EVENT_LOG } from "./record-change.js";
 import { SETUP_MARKER } from "./record-write.js";
-import { CAMPAIGN_RECORD, CAMPAIGN_STORE, CONTAINER_STORE, PACKAGE_CONTROL, WORKBENCH_MANIFEST, narrativeOf } from "./stores.js";
-import { readWorkGraph } from "./work-graph.js";
+import { CAMPAIGN_RECORD, CAMPAIGN_STORE, CONTAINER_STORE, DECISION_STORE, PACKAGE_CONTROL, SHARED_ROOT, WORKBENCH_MANIFEST, narrativeOf } from "./stores.js";
+import { readWorkGraph, type WorkGraphReport } from "./work-graph.js";
 import type { CutInput } from "./campaign-cut.js";
 
 /* ------------------------------------------------------------------ *
@@ -643,11 +648,239 @@ export function readCampaignsAt(workbench: string, ask: Ask = askCodec): Campaig
 }
 
 /* ------------------------------------------------------------------ *
+ * The packages, the lanes, the questions: what `overview` and `sync` share
+ * ------------------------------------------------------------------ */
+
+/** The shared decisions store, workbench-relative: where an answer to a peer's question lives. */
+export const SHARED_DECISIONS = `${SHARED_ROOT}/${DECISION_STORE}`;
+
+/** One open decision record inside a package's container: its narrative's basename and its workbench-relative path. */
+export interface OpenDecision {
+  decision: string;
+  path: string;
+}
+
+/** The packages of one workbench read, each fact computed once, for the lane view, the questions and the overview's rows. */
+export interface PackagesAt {
+  report: WorkGraphReport;
+  rows: Array<Record<string, unknown>>;
+  live: Set<string>;
+  containerOf: Map<string, string>;
+  statusOf: Map<string, string>;
+  /** Every claimed package's container to the checkout its claim names. */
+  holderOf: Map<string, string>;
+  facts(dir: string): PackageFacts | { unread: Unread };
+  waitsOf(dir: string): string[];
+  openDecisions(dir: string): OpenDecision[];
+  /** The one shared decision whose head names `decision` in an `**Answers:**` line, or null; two are null and a note. */
+  answerOf(decision: string): string | null;
+}
+
+/** The label an answer record carries in its head, once, naming the question's narrative basename (decision
+ * `261119-1248-how-does-an-answer-name-the-peer-question-it-answers-and-how-does-the-peer-remember-what-it-set-aside.md`). */
+export const ANSWERS_LABEL = "**Answers:** ";
+
+/** The `**Answers:**` values of a narrative's head: every line before the first `## ` heading. */
+export function answersIn(narrative: string): string[] {
+  const out: string[] = [];
+  for (const line of narrative.split("\n")) {
+    if (line.startsWith("## ")) break;
+    if (line.startsWith(ANSWERS_LABEL)) out.push(line.slice(ANSWERS_LABEL.length).trim());
+  }
+  return out;
+}
+
+/**
+ * The packages of the workbench at `workbench`: `readWorkGraph` for the live
+ * nodes, one `list` for the package and decision rows, one `show` per
+ * claimed package for its holder, and the narratives of the shared decisions
+ * store for the answers. A claim naming no checkout is a failure, never a
+ * package nobody holds.
+ */
+export function readPackagesAt(workbench: string, notes: string[][], ask: Ask = askCodec): PackagesAt | { unread: Unread } {
+  const graph = readWorkGraph(workbench, ask);
+  if (graph.kind === "failed") return { unread: graph };
+  const { report } = graph;
+  const listed = listedRecords(workbench, ask);
+  if ("unread" in listed) return listed;
+  const rows = listed.list.filter(isObject);
+  for (const u of report.unreadable) notes.push(["package-unreadable", u.dir, `${u.problem.class}/${u.problem.reason}`]);
+
+  const live = new Set(report.rows.map((r) => r.dir));
+  const nodeOf = new Map(report.rows.map((r) => [r.dir, r]));
+  const containerOf = new Map<string, string>();
+  const statusOf = new Map<string, string>();
+  for (const row of rows) {
+    if (!isPackageRow(row) || typeof row.id !== "string" || typeof row.path !== "string") continue;
+    const dir = basename(dirname(row.path));
+    containerOf.set(row.id, dir);
+    if (typeof row.status === "string") statusOf.set(dir, row.status);
+  }
+
+  const shown = new Map<string, PackageFacts>();
+  const facts = (dir: string): PackageFacts | { unread: Unread } => {
+    const cached = shown.get(dir);
+    if (cached !== undefined) return cached;
+    const found = packageFacts(workbench, dir, ask);
+    if (!("unread" in found)) shown.set(dir, found);
+    return found;
+  };
+  const holderOf = new Map<string, string>();
+  for (const row of report.rows) {
+    if (row.status !== "claimed") continue;
+    const s = facts(row.dir);
+    if ("unread" in s) return s;
+    if (s.checkout === null) return { unread: { cause: "unanswered", op: "show", how: "unparseable", detail: `${CONTAINER_STORE}/${row.dir}/${PACKAGE_CONTROL} reads claimed and its claim names no checkout` } };
+    holderOf.set(row.dir, s.checkout);
+  }
+
+  const openDecisions = (dir: string): OpenDecision[] => {
+    const found = new Map<string, OpenDecision>();
+    for (const row of rows) {
+      if (row.kind !== "decision" || row.status !== "open" || typeof row.path !== "string" || !row.path.startsWith(`${CONTAINER_STORE}/${dir}/`)) continue;
+      const path = narrativeOf(row.path) ?? row.path;
+      found.set(path, { decision: basename(path), path });
+    }
+    return [...found.values()].sort((a, b) => ascending(a.decision, b.decision));
+  };
+  const waitsOf = (dir: string): string[] => {
+    const edges = new Set<string>();
+    for (const id of nodeOf.get(dir)?.dependsOn ?? []) {
+      const target = containerOf.get(id);
+      if (target !== undefined && live.has(target)) edges.add(target);
+    }
+    for (const u of report.unmetEdges) if (u.from === dir) edges.add(u.to);
+    return [...[...edges].sort(ascending).map((e) => `edge:${e}`), ...openDecisions(dir).map((d) => `decision:${d.decision}`)];
+  };
+
+  // An answer is a decision record of the shared store whose head names the question: one exact line, never a cross-reference.
+  const answers = new Map<string, Set<string>>();
+  for (const row of rows) {
+    if (row.kind !== "decision" || typeof row.path !== "string" || !row.path.startsWith(`${SHARED_DECISIONS}/`)) continue;
+    const narrative = narrativeOf(row.path);
+    if (narrative === null || !existsSync(join(workbench, narrative))) continue;
+    for (const q of answersIn(readFileSync(join(workbench, narrative), "utf-8"))) answers.set(q, (answers.get(q) ?? new Set()).add(basename(narrative)));
+  }
+  for (const [q, named] of [...answers].sort(([a], [b]) => ascending(a, b))) if (named.size > 1) notes.push(["answers-several", q, [...named].sort(ascending).join(",")]);
+  const answerOf = (decision: string): string | null => {
+    const named = answers.get(decision);
+    return named !== undefined && named.size === 1 ? [...named][0] : null;
+  };
+  return { report, rows, live, containerOf, statusOf, holderOf, facts, waitsOf, openDecisions, answerOf };
+}
+
+/** One lane of a live campaign, resolved over the packages: what `lane=`, `next=`, `question=` and `ready=` read. */
+export interface LaneState {
+  campaign: string;
+  lane: string;
+  checkout: string | null;
+  /** The members resolved to containers, in lane order. */
+  containers: string[];
+  /** The containers the lane's checkout holds, anywhere in the workbench, ascending. */
+  held: string[];
+  /** The first member in lane order that is live and unheld, or null. */
+  next: string | null;
+  nextWaits: string[];
+  /** `next`'s `mode.value`, or null with `next`. */
+  nextMode: string | null;
+}
+
+/** The lanes of every live campaign with lanes, in campaign order then lane order; a member no package row names is a `lane-member-unknown` note. */
+export function laneStatesOf(campaigns: CampaignAtRef[], pk: PackagesAt, notes: string[][]): LaneState[] | { unread: Unread } {
+  const lanes: LaneState[] = [];
+  for (const c of campaigns) {
+    if (!LIVE_STATES.has(c.state) || c.lanes === null) continue;
+    for (const lane of c.lanes) {
+      const containers: string[] = [];
+      for (const id of lane.members) {
+        const dir = pk.containerOf.get(id);
+        if (dir === undefined) notes.push(["lane-member-unknown", c.id, lane.id, id]);
+        else containers.push(dir);
+      }
+      const held = lane.checkout === null ? [] : [...pk.holderOf].filter(([, h]) => h === lane.checkout).map(([dir]) => dir).sort(ascending);
+      const next = containers.find((dir) => pk.live.has(dir) && !pk.holderOf.has(dir)) ?? null;
+      let nextMode: string | null = null;
+      if (next !== null) {
+        const f = pk.facts(next);
+        if ("unread" in f) return f;
+        nextMode = f.mode;
+      }
+      lanes.push({ campaign: c.id, lane: lane.id, checkout: lane.checkout, containers, held, next, nextWaits: next === null ? [] : pk.waitsOf(next), nextMode });
+    }
+  }
+  return lanes;
+}
+
+/** An open decision record in a package a lane's checkout holds, or in the lane's `next`, with its answer. */
+export interface Question {
+  campaign: string;
+  lane: string;
+  checkout: string | null;
+  package: string;
+  decision: string;
+  /** The narrative's workbench-relative path. */
+  path: string;
+  answer: string | null;
+}
+
+/** The questions of `lanes`: per lane, its held packages then its `next`, each package's open decisions ascending. */
+export function questionsOf(lanes: LaneState[], pk: PackagesAt): Question[] {
+  const out: Question[] = [];
+  for (const l of lanes) {
+    for (const dir of [...l.held, ...(l.next === null ? [] : [l.next])]) {
+      for (const d of pk.openDecisions(dir)) out.push({ campaign: l.campaign, lane: l.lane, checkout: l.checkout, package: dir, decision: d.decision, path: d.path, answer: pk.answerOf(d.decision) });
+    }
+  }
+  return out;
+}
+
+/** A lane whose `next` waits for nothing. */
+export interface Ready {
+  campaign: string;
+  lane: string;
+  package: string;
+}
+
+export const readyOf = (lanes: LaneState[]): Ready[] => lanes.filter((l) => l.next !== null && l.nextWaits.length === 0).map((l) => ({ campaign: l.campaign, lane: l.lane, package: l.next as string }));
+
+/** The questions and the ready lanes of the workbench at `workbench`, an extract: what `--since` compares against. */
+export function steeringAt(workbench: string, ask: Ask = askCodec): { questions: Question[]; ready: Ready[] } | { unread: Unread } {
+  const campaigns = readCampaignsAt(workbench, ask);
+  if (campaigns.kind === "failed") return { unread: campaigns };
+  const notes: string[][] = [];
+  const pk = readPackagesAt(workbench, notes, ask);
+  if ("unread" in pk) return pk;
+  const lanes = laneStatesOf(campaigns.campaigns, pk, notes);
+  if ("unread" in lanes) return lanes;
+  return { questions: questionsOf(lanes, pk), ready: readyOf(lanes) };
+}
+
+/**
+ * What `overview --since <sha>` compares the head against: the questions and
+ * the ready lanes at `sha`, extracted below `into`. `unknown` where `sha`
+ * names no commit, is no ancestor of the head, or its workbench did not read;
+ * nothing at all where the workbench is in no tree at `sha`, since then
+ * nothing was present.
+ */
+export function steeringSince(at: { gitRoot: string; head: string; rel: string }, sha: string, into: string, ask: Ask = askCodec): { questions: Question[]; ready: Ready[] } | "unknown" {
+  const resolved = git(at.gitRoot, "rev-parse", "-q", "--verify", "--end-of-options", `${sha}^{commit}`);
+  if (resolved.status !== 0) return "unknown";
+  const since = resolved.stdout.trim();
+  if (git(at.gitRoot, "merge-base", "--is-ancestor", since, at.head).status !== 0) return "unknown";
+  if (mustGit(at.gitRoot, "ls-tree", "-d", "--full-tree", since, "--", at.rel).trim() === "") return { questions: [], ready: [] };
+  const read = steeringAt(extractAt({ ...at, head: since }, STEERING_ENTRIES, into), ask);
+  return "unread" in read ? "unknown" : read;
+}
+
+/** The workbench entries the steering read needs: the manifest and the marker, the two root stores, the shared decisions. */
+export const STEERING_ENTRIES: readonly string[] = [WORKBENCH_MANIFEST, SETUP_MARKER, CONTAINER_STORE, CAMPAIGN_STORE, SHARED_DECISIONS];
+
+/* ------------------------------------------------------------------ *
  * The overview
  * ------------------------------------------------------------------ */
 
-/** What the overview extracts: the manifest and the marker, the two root stores, the event log. */
-export const OVERVIEW_ENTRIES: readonly string[] = [WORKBENCH_MANIFEST, SETUP_MARKER, CONTAINER_STORE, CAMPAIGN_STORE, EVENT_LOG];
+/** What the overview extracts: the steering read's entries and the event log. */
+export const OVERVIEW_ENTRIES: readonly string[] = [...STEERING_ENTRIES, EVENT_LOG];
 
 /** One claimed package at the ref. */
 export interface Held {
@@ -692,6 +925,8 @@ export interface Conditions {
 export interface Overview {
   ref: string;
   head: string;
+  /** The workbench's path in a commit, which a question's path is printed under. */
+  rel: string;
   /** The head's committer time, milliseconds. */
   headTime: number;
   /** The readable campaigns at the ref, ascending by id. */
@@ -702,6 +937,12 @@ export interface Overview {
   /** One row per lane of each live campaign, in campaign order then lane order. */
   lanes: LaneRow[];
   conditions: Conditions;
+  /** The open decisions of each lane's held packages and its `next`, with their answers. */
+  questions: Question[];
+  ready: Ready[];
+  /** With `--since`: the rows present at the head and absent at that commit; null without it. */
+  newQuestions: Question[] | null;
+  newReady: Ready[] | null;
   /** One entry per degradation: a token, then its fields. */
   notes: string[][];
 }
@@ -733,6 +974,8 @@ export const insideArea = (path: string, areas: Iterable<string>): boolean => {
 export interface PackageFacts {
   checkout: string | null;
   resources: string[];
+  /** `mode.value`, `ordinary` where the control file names none. */
+  mode: string;
 }
 
 /** `show` of the package at `dir`, read for `PackageFacts`; the codec's `list` row carries neither. */
@@ -744,6 +987,7 @@ export function packageFacts(workbench: string, dir: string, ask: Ask): PackageF
   return {
     checkout: typeof claim.checkout_id === "string" && claim.checkout_id !== "" ? claim.checkout_id : null,
     resources: Array.isArray(control.resources) ? control.resources.filter((r): r is string => typeof r === "string") : [],
+    mode: isObject(control.mode) && typeof control.mode.value === "string" ? control.mode.value : "ordinary",
   };
 }
 
@@ -818,13 +1062,10 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
   const notes: string[][] = [];
   if (at.local) notes.push(["local-ref"]);
 
-  const graph = readWorkGraph(workbench, ask);
-  if (graph.kind === "failed") return graph;
-  const { report } = graph;
-  const listed = listedRecords(workbench, ask);
-  if ("unread" in listed) return failed(listed.unread);
-  const rows = listed.list.filter(isObject);
-  for (const u of report.unreadable) notes.push(["package-unreadable", u.dir, `${u.problem.class}/${u.problem.reason}`]);
+  const pk = readPackagesAt(workbench, notes, ask);
+  if ("unread" in pk) return failed(pk.unread);
+  const { report, live, containerOf, statusOf, holderOf } = pk;
+  const showPackage = pk.facts;
   const campaignsRead = readCampaignsAt(workbench, ask);
   if (campaignsRead.kind === "failed") return campaignsRead;
   const { campaigns, unreadable } = campaignsRead;
@@ -836,42 +1077,6 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
   else if (read.unreadable > 0) notes.push(["log-lines-unreadable", String(read.unreadable)]);
   const listing = commitListing(mustGit(at.gitRoot, "log", `--format=${COMMIT_LISTING_FORMAT}`, at.head));
   const headTime = (listing.byHash.get(at.head)?.committerTime ?? 0) * 1000;
-
-  // --- the packages: container by id, status by container, what each waits for ---
-  const live = new Set(report.rows.map((r) => r.dir));
-  const nodeOf = new Map(report.rows.map((r) => [r.dir, r]));
-  const containerOf = new Map<string, string>();
-  const statusOf = new Map<string, string>();
-  for (const row of rows) {
-    if (!isPackageRow(row) || typeof row.id !== "string" || typeof row.path !== "string") continue;
-    const dir = basename(dirname(row.path));
-    containerOf.set(row.id, dir);
-    if (typeof row.status === "string") statusOf.set(dir, row.status);
-  }
-  const waitsOf = (dir: string, dependsOn: string[]): string[] => {
-    const edges = new Set<string>();
-    for (const id of dependsOn) {
-      const target = containerOf.get(id);
-      if (target !== undefined && live.has(target)) edges.add(target);
-    }
-    for (const u of report.unmetEdges) if (u.from === dir) edges.add(u.to);
-    const decisions = new Set<string>();
-    for (const row of rows) {
-      if (row.kind !== "decision" || row.status !== "open" || typeof row.path !== "string" || !row.path.startsWith(`${CONTAINER_STORE}/${dir}/`)) continue;
-      decisions.add(basename(narrativeOf(row.path) ?? row.path));
-    }
-    return [...[...edges].sort(ascending).map((e) => `edge:${e}`), ...[...decisions].sort(ascending).map((d) => `decision:${d}`)];
-  };
-
-  // --- `show` per package, once: the claim's checkout and the declared areas ----
-  const shown = new Map<string, PackageFacts>();
-  const showPackage = (dir: string): PackageFacts | { unread: Unread } => {
-    const cached = shown.get(dir);
-    if (cached !== undefined) return cached;
-    const facts = packageFacts(workbench, dir, ask);
-    if (!("unread" in facts)) shown.set(dir, facts);
-    return facts;
-  };
 
   // --- per checkout, once: the last push and the alias, each with its notes -------
   const facts = new Map<string, { push: LastPush; alias: string | null }>();
@@ -891,19 +1096,17 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
 
   // --- one row per claimed package ----------------------------------------------
   const held: Held[] = [];
-  const holderOf = new Map<string, string>();
   for (const row of report.rows) {
-    if (row.status !== "claimed") continue;
-    const s = showPackage(row.dir);
-    if ("unread" in s) return failed(s.unread);
-    if (s.checkout === null) return failed({ cause: "unanswered", op: "show", how: "unparseable", detail: `${CONTAINER_STORE}/${row.dir}/${PACKAGE_CONTROL} reads claimed and its claim names no checkout` });
-    holderOf.set(row.dir, s.checkout);
-    const f = factsOf(s.checkout);
-    held.push({ checkout: s.checkout, alias: f.alias, package: row.dir, lastPush: f.push.time, waits: waitsOf(row.dir, row.dependsOn) });
+    const checkout = holderOf.get(row.dir);
+    if (checkout === undefined) continue;
+    const f = factsOf(checkout);
+    held.push({ checkout, alias: f.alias, package: row.dir, lastPush: f.push.time, waits: pk.waitsOf(row.dir) });
   }
   held.sort((a, b) => ascending(a.checkout, b.checkout) || ascending(a.package, b.package));
 
   // --- the lanes of each live campaign, and the conditions ------------------------
+  const states = laneStatesOf(campaigns, pk, notes);
+  if ("unread" in states) return failed(states.unread);
   const lanes: LaneRow[] = [];
   const conditions: Conditions = { outOfLane: [], inNoLane: [], waitsDecision: [], handoff: [], crossLane: [], unconfirmed: [] };
   /** Which commit of the listing each `commit` row names, the other way round: the committing checkout per hash, null where two checkouts' rows name one commit. */
@@ -931,40 +1134,32 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
     const byCheckout = new Map<string, string>();
     laneOfCheckout.set(c.id, byCheckout);
     const laneHere = new Map<string, string>();
-    const resolved: Array<CampaignLane & { containers: string[]; area: Set<string> }> = [];
-    for (const lane of c.lanes) {
-      const containers: string[] = [];
-      for (const id of lane.members) {
-        const dir = containerOf.get(id);
-        if (dir === undefined) notes.push(["lane-member-unknown", c.id, lane.id, id]);
-        else containers.push(dir);
-      }
+    const resolved: Array<LaneState & { area: Set<string> }> = [];
+    for (const lane of states.filter((l) => l.campaign === c.id)) {
       const area = new Set<string>();
-      for (const dir of containers) {
+      for (const dir of lane.containers) {
         const s = showPackage(dir);
         if ("unread" in s) return failed(s.unread);
         for (const r of s.resources) area.add(r);
       }
-      resolved.push({ ...lane, containers, area });
-      if (lane.checkout !== null) byCheckout.set(lane.checkout, lane.id);
-      for (const dir of containers) {
-        laneHere.set(dir, lane.id);
-        if (!laneOf.has(dir)) laneOf.set(dir, { campaign: c.id, lane: lane.id });
+      resolved.push({ ...lane, area });
+      if (lane.checkout !== null) byCheckout.set(lane.checkout, lane.lane);
+      for (const dir of lane.containers) {
+        laneHere.set(dir, lane.lane);
+        if (!laneOf.has(dir)) laneOf.set(dir, { campaign: c.id, lane: lane.lane });
       }
     }
 
     for (const lane of resolved) {
       const f = lane.checkout === null ? null : factsOf(lane.checkout);
-      const heldHere = lane.checkout === null ? [] : [...holderOf].filter(([, h]) => h === lane.checkout).map(([dir]) => dir).sort(ascending);
-      const next = lane.containers.find((dir) => live.has(dir) && !holderOf.has(dir)) ?? null;
-      const nextWaits = next === null ? [] : waitsOf(next, nodeOf.get(next)?.dependsOn ?? []);
-      lanes.push({ campaign: c.id, lane: lane.id, checkout: lane.checkout, alias: f?.alias ?? null, held: heldHere, next, nextWaits, lastPush: f?.push.time ?? null });
-      for (const w of nextWaits) if (w.startsWith("decision:")) conditions.waitsDecision.push({ campaign: c.id, lane: lane.id, next: next as string, decision: w.slice("decision:".length) });
+      const { next, nextWaits } = lane;
+      lanes.push({ campaign: c.id, lane: lane.lane, checkout: lane.checkout, alias: f?.alias ?? null, held: lane.held, next, nextWaits, lastPush: f?.push.time ?? null });
+      for (const w of nextWaits) if (w.startsWith("decision:")) conditions.waitsDecision.push({ campaign: c.id, lane: lane.lane, next: next as string, decision: w.slice("decision:".length) });
       if (lane.checkout !== null) {
         const own = (read?.reads ?? []).filter((r) => r.checkout === lane.checkout && r.campaign === c.id);
         if (!own.some((r) => r.revision === c.revision)) {
           const times = own.map((r) => parseTs(r.ts) ?? 0);
-          conditions.unconfirmed.push({ campaign: c.id, lane: lane.id, checkout: lane.checkout, revision: c.revision, last: times.length === 0 ? null : Math.max(...times) });
+          conditions.unconfirmed.push({ campaign: c.id, lane: lane.lane, checkout: lane.checkout, revision: c.revision, last: times.length === 0 ? null : Math.max(...times) });
         }
       }
     }
@@ -1001,7 +1196,7 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
       if (committer === undefined) continue;
       for (const path of commit.paths) {
         if (insideArea(path, committer.area)) continue;
-        for (const lane of resolved) if (lane !== committer && insideArea(path, lane.area)) conditions.crossLane.push({ hash: commit.short, path, committerLane: committer.id, declaringLane: lane.id });
+        for (const lane of resolved) if (lane !== committer && insideArea(path, lane.area)) conditions.crossLane.push({ hash: commit.short, path, committerLane: committer.lane, declaringLane: lane.lane });
       }
     }
   }
@@ -1021,7 +1216,23 @@ export function readOverview(at: { ref: string; head: string; gitRoot: string; r
   }
   conditions.handoff.sort((a, b) => ascending(a.from, b.from) || ascending(a.to, b.to) || ascending(a.toLane, b.toLane));
 
-  return { kind: "overview", overview: { ref: at.ref, head: at.head, headTime, campaigns, unreadable, held, lanes, conditions, notes } };
+  return { kind: "overview", overview: { ref: at.ref, head: at.head, rel: at.rel, headTime, campaigns, unreadable, held, lanes, conditions, questions: questionsOf(states, pk), ready: readyOf(states), newQuestions: null, newReady: null, notes } };
+}
+
+/**
+ * The overview with `--since`'s rows: each question whose decision path, and
+ * each ready lane whose campaign, lane and package, the read at that commit
+ * did not hold. `unknown` counts every row as new and says so in a note.
+ */
+export function withSince(o: Overview, prior: { questions: Question[]; ready: Ready[] } | "unknown"): Overview {
+  const readyKey = (r: Ready): string => `${r.campaign}\t${r.lane}\t${r.package}`;
+  const seen = prior === "unknown" ? { questions: new Set<string>(), ready: new Set<string>() } : { questions: new Set(prior.questions.map((q) => q.path)), ready: new Set(prior.ready.map(readyKey)) };
+  return {
+    ...o,
+    newQuestions: o.questions.filter((q) => !seen.questions.has(q.path)),
+    newReady: o.ready.filter((r) => !seen.ready.has(readyKey(r))),
+    notes: prior === "unknown" ? [...o.notes, ["since-unknown"]] : o.notes,
+  };
 }
 
 /** Milliseconds as RFC 3339 in UTC at second resolution, the one time format the output carries. */
@@ -1058,6 +1269,12 @@ export function renderOverview(o: Overview, windowHours: number, now: number): s
   for (const r of c.handoff) out.push(`handoff-possible=${[r.from, r.to, r.fromLane, r.toLane].join("\t")}`);
   for (const r of c.crossLane) out.push(`cross-lane=${[r.hash, r.path, r.committerLane, r.declaringLane].join("\t")}`);
   for (const r of c.unconfirmed) out.push(`unconfirmed=${[r.campaign, r.lane, r.checkout, r.revision, time(r.last)].join("\t")}`);
+  const question = (q: Question): string => [q.campaign, q.lane, q.checkout ?? "-", q.package, q.decision, `${o.rel}/${q.path}`, q.answer ?? "none"].join("\t");
+  const ready = (r: Ready): string => [r.campaign, r.lane, r.package].join("\t");
+  for (const q of o.questions) out.push(`question=${question(q)}`);
+  for (const r of o.ready) out.push(`ready=${ready(r)}`);
+  for (const q of o.newQuestions ?? []) out.push(`new-question=${question(q)}`);
+  for (const r of o.newReady ?? []) out.push(`new-ready=${ready(r)}`);
   for (const n of o.notes) out.push(`note=${n.join("\t")}`);
   return out.join("\n") + "\n";
 }

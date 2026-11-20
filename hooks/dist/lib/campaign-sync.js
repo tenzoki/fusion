@@ -13,13 +13,17 @@
  *
  *   1  `fetchRef` of `lib/campaign.ts`: the branch's upstream, the fetch, the
  *      commit the upstream stands at afterwards (the fetched head);
- *   2  `readCampaignsAt`: the manifest, the marker and the campaign store
- *      extracted at the fetched head and read through the codec, `list` for
+ *   2  `readCampaignsAt`: the manifest, the marker, both root stores and the
+ *      shared decisions store extracted at the fetched head (`SYNC_ENTRIES`),
+ *      the campaigns read through the codec, `list` for
  *      the set, `reconcile` for the findings (the three lane rules among
  *      them, which `list` does not carry: `codec/README.md`, "The lane
  *      rules"), `show` per readable campaign for its state, reason and lanes.
  *      No second parser reads a campaign;
- *   3  `mineOf`: which of them steers this checkout;
+ *   3  `mineOf`: which of them steers this checkout, then `laneViewOf`: its
+ *      lane, that lane's `next` with the package's own mode, and its open
+ *      questions with their answers, by `lib/campaign.ts`'s steering read.
+ *      With `readOnly` (`sync --read`) the cycle ends here, before any write;
  *   4  one `campaign_read` row per readable campaign appended to the working
  *      tree's event log, while `FUSION_SESSION_ID` is set (the `commit` row's
  *      own rule, `rules/commit-lock.md` `### The lock writes the commit event`);
@@ -82,12 +86,10 @@
  */
 import { appendFileSync, existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { defaultBin, extractAt, fetchRef, HelperFailure, LIVE_STATES, mustGit, readCampaignsAt, run, withScratch } from "./campaign.js";
+import { defaultBin, extractAt, fetchRef, HelperFailure, laneStatesOf, LIVE_STATES, mustGit, readCampaignsAt, readPackagesAt, run, STEERING_ENTRIES, withScratch } from "./campaign.js";
 import { ask as askCodec } from "./record-client.js";
 import { utcStamp } from "./orchestrator-events.js";
 import { EVENT_LOG } from "./record-change.js";
-import { SETUP_MARKER } from "./record-write.js";
-import { CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
 // The read at the fetched head, `readCampaignsAt`, and what it answers live in
 // `lib/campaign.ts` since the overview's full tier reads the same campaigns;
 // the names stay reachable from here for the callers that learned them here.
@@ -95,8 +97,8 @@ export { LIVE_STATES, readCampaignsAt };
 /* ------------------------------------------------------------------ *
  * The vocabulary
  * ------------------------------------------------------------------ */
-/** What `sync` extracts at the fetched head: the manifest, the marker and the campaign store. */
-export const SYNC_ENTRIES = [WORKBENCH_MANIFEST, SETUP_MARKER, CAMPAIGN_STORE];
+/** What `sync` extracts at the fetched head: the steering read's entries, the manifest, the marker, both root stores and the shared decisions. */
+export const SYNC_ENTRIES = STEERING_ENTRIES;
 /** The lock tag of the settling commit. */
 export const SETTLE_TAG = "campaign";
 /** The settling commit's subject: the checkout and no hash, since the rebase may replace any. */
@@ -120,6 +122,27 @@ export function mineOf(campaigns, checkout) {
     if (unlaned.length > 1)
         return { mine: null, note: ["several-campaigns-without-lanes", unlaned.map((c) => c.id).join(",")] };
     return { mine: null, note: null };
+}
+/**
+ * `bin/fusion-campaign` `## Output of \`sync\``, `lane=` to `question=`: the lane of `mine` that names
+ * `checkout`, its `next` with that package's own `mode.value`, and one
+ * question per open decision in a package this checkout holds, then in that
+ * `next`, each with the shared record that answers it.
+ */
+export function laneViewOf(workbench, mine, checkout, notes, ask) {
+    const pk = readPackagesAt(workbench, notes, ask);
+    if ("unread" in pk)
+        return pk;
+    const states = laneStatesOf(mine === null ? [] : [mine], pk, notes);
+    if ("unread" in states)
+        return states;
+    const own = checkout === null ? undefined : states.find((l) => l.checkout === checkout);
+    const dirs = checkout === null ? [] : [...pk.holderOf].filter(([, h]) => h === checkout).map(([dir]) => dir).sort(ascending);
+    if (own !== undefined && own.next !== null && !dirs.includes(own.next))
+        dirs.push(own.next);
+    const questions = dirs.flatMap((dir) => pk.openDecisions(dir).map((d) => ({ decision: d.decision, package: dir, answer: pk.answerOf(d.decision) })));
+    const next = own === undefined || own.next === null ? null : { package: own.next, mode: own.nextMode ?? "ordinary", waits: own.nextWaits };
+    return { lane: own === undefined ? null : { campaign: own.campaign, lane: own.lane, next }, questions };
 }
 /* ------------------------------------------------------------------ *
  * The identity and the row
@@ -192,12 +215,18 @@ export function sync(cwd, workbench, options = {}) {
     const log = join(workbench, EVENT_LOG);
     const logRel = `${at.rel}/${EVENT_LOG}`;
     const prepared = withScratch(cwd, (scratch) => {
-        const read = readCampaignsAt(extractAt(at, SYNC_ENTRIES, scratch), ask);
+        const extract = extractAt(at, SYNC_ENTRIES, scratch);
+        const read = readCampaignsAt(extract, ask);
         if (read.kind === "failed")
             return { ...read, head: at.head, rel: at.rel };
         const chosen = mineOf(read.campaigns, identity.checkout);
         if (chosen.note !== null)
             notes.push(chosen.note);
+        const view = laneViewOf(extract, chosen.mine, identity.checkout, notes, ask);
+        if ("unread" in view)
+            return { kind: "failed", ...view.unread, head: at.head, rel: at.rel };
+        if (options.readOnly === true)
+            return { read, mine: chosen.mine, view, settled: false, deferred: [] };
         if (sessionId !== "") {
             const ts = utcStamp(new Date(now()));
             for (const c of read.campaigns)
@@ -205,21 +234,23 @@ export function sync(cwd, workbench, options = {}) {
         }
         const dirty = dirtyPaths(at.gitRoot);
         if (dirty.length === 0)
-            return { read, mine: chosen.mine, settled: false, deferred: [] };
+            return { read, mine: chosen.mine, view, settled: false, deferred: [] };
         if (dirty.length > 1 || dirty[0] !== logRel)
-            return { read, mine: chosen.mine, settled: false, deferred: dirty };
+            return { read, mine: chosen.mine, view, settled: false, deferred: dirty };
         const message = join(scratch, "settle-message");
         writeFileSync(message, `${settleMessage(identity.checkout)}\n`, "utf-8");
         const lock = join(bin, "fusion-commit-lock");
         const committed = run(lock, ["with", SETTLE_TAG, "--", "bash", "-c", `git add ${quoted(log)} && git commit -q -F ${quoted(message)}`], cwd, env);
         if (committed.status !== 0)
             throw new HelperFailure(`the settling commit did not land: ${lock} exited ${committed.status}. ${committed.stderr.trim()}`);
-        return { read, mine: chosen.mine, settled: true, deferred: [] };
+        return { read, mine: chosen.mine, view, settled: true, deferred: [] };
     }, bin);
     if ("kind" in prepared)
         return prepared;
-    const { read, mine, settled, deferred } = prepared;
-    const base = { ref: at.ref, head: at.head, campaigns: read.campaigns, unreadable: read.unreadable, mine, settled, deferred, notes };
+    const { read, mine, view, settled, deferred } = prepared;
+    const base = { ref: at.ref, head: at.head, campaigns: read.campaigns, unreadable: read.unreadable, mine, view, settled, deferred, notes };
+    if (options.readOnly === true)
+        return { kind: "synced", state: "ok", ...base, conflicts: [], pushed: [], rejection: null };
     // --- 6 the rebase, skipped while a tracked path is deferred ----------------------------
     if (deferred.length === 0) {
         const rebased = run("git", ["rebase", "--quiet", at.ref], at.gitRoot, noPrompt(env));
@@ -257,6 +288,13 @@ export function renderSync(s) {
     for (const u of s.unreadable)
         out.push(`campaign-unreadable=${u.id}\t${u.problem.class}/${u.problem.reason}`);
     out.push(`mine=${s.mine === null ? "none" : s.mine.id}`);
+    const lane = s.view.lane;
+    if (lane !== null) {
+        out.push(`lane=${lane.campaign}\t${lane.lane}`);
+        out.push(lane.next === null ? "next=none" : `next=${[lane.next.package, lane.next.mode, lane.next.waits.length === 0 ? "none" : lane.next.waits.join(",")].join("\t")}`);
+    }
+    for (const q of s.view.questions)
+        out.push(`question=${[q.decision, q.package, q.answer ?? "none"].join("\t")}`);
     if (s.settled)
         out.push("settled=yes");
     for (const p of s.deferred)

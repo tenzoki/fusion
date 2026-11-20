@@ -10,9 +10,9 @@
 #
 # ## Usage
 #
-#   fusion-campaign overview [--window <hours>] [--ref <upstream>]
+#   fusion-campaign overview [--window <hours>] [--ref <upstream>] [--since <sha>]
 #   fusion-campaign cut --checkouts <N> [--tolerance <k>]
-#   fusion-campaign sync
+#   fusion-campaign sync [--read]
 #   fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...
 #   fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]
 #   fusion-campaign pause --reason <text> [--campaign <id>]
@@ -41,6 +41,10 @@
 #                     HEAD and a branch that tracks nothing are both readable.
 #                     Its remote is the longest configured remote name that
 #                     prefixes it; a ref no remote prefixes is a local ref.
+#   --since <sha>     A commit the caller last read, 7 to 64 lowercase hex
+#                     characters: the page then adds `new-question=` and
+#                     `new-ready=` (`## Output of \`overview\``). Anything
+#                     else is a usage error.
 #
 # ## `overview` — what it does, in order
 #
@@ -57,7 +61,7 @@
 # exit codes this script takes over unchanged.
 #
 # What is extracted is the workbench manifest and setup marker, the container
-# store, the campaign store and the event log, each as the commit holds it
+# store, the campaign store, the shared decisions store and the event log, each as the commit holds it
 # (`git archive` into a file, then `tar`); an entry in no tree at the commit is
 # left out. The store names are never spelled here: the program reads them
 # from `hooks/lib/stores.ts`, the TypeScript copy of the table `bin/fusion-stores`
@@ -130,6 +134,26 @@
 #                       The seven conditions, each printed only when it holds,
 #                       in this order; `## The lane view and the conditions`
 #                       states each rule.
+#   question=<campaign>\t<lane>\t<checkout|->\t<package>\t<decision>\t<path>\t<answer|none>
+#                       One per open decision record inside a package the
+#                       lane's checkout holds, then inside the lane's `next`,
+#                       in `lane=` order, each package's decisions ascending.
+#                       `<decision>` is the narrative's basename, `<path>` its
+#                       path in the commit (`git show <head>:<path>` reads
+#                       it), `<answer>` the answer's basename, `none` where
+#                       there is none; `## The lane view and the conditions`
+#                       states what answers a question.
+#   ready=<campaign>\t<lane>\t<package>
+#                       One per lane whose `next` waits for nothing.
+#   new-question=...    With `--since <sha>`: each `question=` row whose
+#   new-ready=...       decision path, and each `ready=` row whose campaign,
+#                       lane and package, the same read at `<sha>` did not
+#                       print, in the same shape and order. Equal heads print
+#                       none. A `<sha>` that names no commit, is no ancestor of
+#                       `head`, or whose workbench did not read prints
+#                       `note=since-unknown`, and every row counts as new; a
+#                       workbench in no tree at `<sha>` held nothing, so every
+#                       row is new without the note.
 #   note=<token>[\t<field>...]
 #                       Zero or more. A degradation that changed the answer,
 #                       stated rather than hidden; see `## The notes`.
@@ -188,6 +212,14 @@
 #                     `list` returns it. The last field is the newest such
 #                     row of any revision, so a stale confirmation is told
 #                     from none.
+#
+# A question is answered by the one decision record of the shared decisions
+# store at `head` whose head (every line before the first `## ` heading)
+# carries the line `**Answers:** <decision basename>`; one exact match, never
+# a cross-reference (decision
+# `261119-1248-how-does-an-answer-name-the-peer-question-it-answers-and-how-does-the-peer-remember-what-it-set-aside.md`).
+# Two such records answer nothing and print `note=answers-several\t<decision>\t<answers>`.
+# The same reading gives `sync`'s `question=` rows.
 #
 # ## last_push
 #
@@ -249,6 +281,12 @@
 #   local-ref
 #       The ref belongs to no remote, so no fetch was owed and the answer is as
 #       local as the ref is.
+#   answers-several\t<decision>\t<answers>
+#       Two or more shared records name that decision in their `**Answers:**`
+#       line, so its `question=` rows read `none`: nothing is picked.
+#   since-unknown
+#       `--since` named a commit the read could not compare against; every
+#       `question=` and `ready=` row is printed new.
 #
 # ## cut — the lane proposal
 #
@@ -458,8 +496,9 @@
 #
 #   1  resolve the branch and its upstream, fetch, name the fetched head, as
 #      `overview` does and under its states;
-#   2  extract the manifest, the marker and the campaign store at the fetched
-#      head and read them through the codec: `list` for the set, `reconcile`
+#   2  extract the manifest, the marker, the container store, the campaign
+#      store and the shared decisions store at the fetched head and read the
+#      campaigns through the codec: `list` for the set, `reconcile`
 #      for the findings (the three lane rules among them, which `list` alone
 #      does not carry), `show` per readable campaign. A campaign the codec
 #      reports a finding against is unreadable: outside the read, never
@@ -468,7 +507,9 @@
 #      steers nobody) the one whose lanes name this checkout's identifier,
 #      else the one whose `lanes` is null; two under either rule are none,
 #      with a `note=`. The identifier is `FUSION_CHECKOUT` where the session
-#      exported it, else `bin/fusion-identity`'s `CHECKOUT=`;
+#      exported it, else `bin/fusion-identity`'s `CHECKOUT=`; then this
+#      checkout's lane of `mine`, its `next` and its questions, read as
+#      `overview` reads them (`lane=`, `next=` and `question=` below);
 #   4  append one `campaign_read` row per readable campaign to the working
 #      tree's event log, while `FUSION_SESSION_ID` is set (the `commit` row's
 #      own rule): `{"ts","event":"campaign_read","person","checkout",
@@ -490,6 +531,12 @@
 #      the remote's refusal and a transport failure alike, is `state=rejected`
 #      with git's stderr passed through, exit 11; after a push that landed, the
 #      commits it landed are listed, oldest first, read after the rebase.
+#
+# `sync --read` runs steps 1 to 3 and nothing else: no row, no settling
+# commit, no rebase, no push, so `git status --porcelain` and the event log
+# are the same before and after. It is what a session that holds nothing, or
+# waits, reads; it prints the page below without `settled=`, `deferred=`,
+# `conflict=` and `pushed=`.
 #
 # WHY THE READ COMES BEFORE THE PULL, AND WHAT THE COMMIT ROW IS WORTH AFTER
 # THE REBASE. The tree is dirty by the event log after every locked commit, by
@@ -526,6 +573,19 @@
 #                       One per campaign the codec reports a finding against,
 #                       ascending by id.
 #   mine=<id>|none      Step 3.
+#   lane=<campaign>\t<lane id>
+#                       The lane of `mine` that names this checkout; absent
+#                       where none does, and then so is `next=`.
+#   next=<package>\t<autonomous|ordinary>\t<waits>
+#                       That lane's `next`, as `overview`'s `lane=` names it,
+#                       that package's own `mode.value`, and what it waits for
+#                       in the vocabulary of `held=`. `next=none` when the lane
+#                       has no live, unheld member left.
+#   question=<decision>\t<package>\t<answer|none>
+#                       One per open decision record inside a package this
+#                       checkout holds (ascending), then inside the lane's
+#                       `next`, with its answer as `overview`'s `question=`
+#                       reads it.
 #   settled=yes         The settling commit landed; absent where nothing was
 #                       owed or the dirty paths were deferred.
 #   deferred=<path>     One per dirty tracked path, toplevel-relative, the log
@@ -545,7 +605,9 @@
 #                       `checkout-unreadable` where no identifier resolved;
 #                       `several-campaigns-name-checkout\t<hex>\t<ids>` and
 #                       `several-campaigns-without-lanes\t<ids>`, the two
-#                       cases step 3 refuses to pick between.
+#                       cases step 3 refuses to pick between; and
+#                       `package-unreadable`, `lane-member-unknown` and
+#                       `answers-several` as on `overview`.
 #
 # ## Exit codes
 #
@@ -653,7 +715,7 @@
 # it names, written whole by rename; on exit 8 and 9 it touches none. It
 # fetches nothing and commits nothing.
 #
-# `sync` is the one sub-command that moves the repository: it appends to the
+# `sync` is the one sub-command that moves the repository, and `sync --read` does not: it appends to the
 # working tree's event log, commits that log alone under the lock, rebases
 # the branch onto its upstream and pushes it. It runs no `stash`,
 # `--autostash`, `checkout .`, `reset --hard` or `clean`, and an aborted

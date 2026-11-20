@@ -363,6 +363,45 @@ describe("silent and unreadable: a lane whose checkout holds nothing, and a camp
   }, CASE_TIMEOUT * 4);
 });
 
+describe("question=, ready= and --since: what the steering session is told", () => {
+  const ID = "261101-0900-pipeline";
+  const [ASKED, TAKE, OTHER_Q] = ["261101-0003-asked.md", "261101-0004-may-i-take.md", "261101-0006-other.md"];
+
+  it("prints each open decision of a lane's held package and its next with its answer and the ready lanes; --since prints only what the older head lacked", () => {
+    const { origin, project: p } = pushing("since");
+    const [held, next, other] = ["261101-0001-held", "261101-0002-next", "261101-0005-other"].map((s) => createPackage(p, s));
+    claim(p, held, A);
+    const id = must(p, { op: "inspect" }).result.id as string;
+    campaignFile(p, ID, { state: { state: "running" }, lanes: [{ id: "lane-1", checkout_id: A, members: [member(id, held), member(id, next)] }, { id: "lane-2", checkout_id: B, members: [member(id, other)] }] });
+    placeRecord(p.workbench, "decision-open", `${held.dir}/decisions/${ASKED}`, "open");
+    placeRecord(p.workbench, "decision-open", `${other.dir}/decisions/${OTHER_Q}`, "open");
+    commit(p.root, "seed", "2026-11-01T09:00:00Z");
+    git(p.root, "push", "-q", "origin", "main");
+    const reader = reading(origin, "since");
+    const older = git(reader, "rev-parse", "origin/main");
+    // Then: a question in lane 1's next, the answer to the first one, and lane 2's question ruled, so its next waits for nothing.
+    placeRecord(p.workbench, "decision-open", `${next.dir}/decisions/${TAKE}`, "open");
+    placeRecord(p.workbench, "decision-answered", "shared/decisions/261101-0007-answer.md", "answered", `# Answer\n\n**Answers:** ${ASKED}\n`);
+    placeRecord(p.workbench, "decision-answered", `${other.dir}/decisions/${OTHER_Q}`, "answered");
+    commit(p.root, "a question, an answer, a ruling", "2026-11-01T10:00:00Z");
+    git(p.root, "push", "-q", "origin", "main");
+
+    const q = (pkg: Package, decision: string, answer: string) => [ID, "lane-1", A, pkg.dir.slice("work-packages/".length), decision, `fusion-workbench/${pkg.dir}/decisions/${decision}`, answer].join("\t");
+    const [asked, take, ready] = [q(held, ASKED, "261101-0007-answer.md"), q(next, TAKE, "none"), `${ID}\tlane-2\t261101-0005-other`];
+    const rows = (...args: string[]) => {
+      const r = run(reader, "overview", ...args);
+      expect(r.status, r.stderr).toBe(0);
+      return [r.lines("question"), r.lines("ready"), r.lines("new-question"), r.lines("new-ready"), r.lines("note").includes("since-unknown")];
+    };
+    expect(rows()).toEqual([[asked, take], [ready], [], [], false]);
+    // The first question stood at the older head, so only the second is new; the two heads equal, nothing is.
+    expect(rows("--since", older)).toEqual([[asked, take], [ready], [take], [ready], false]);
+    expect(rows("--since", git(reader, "rev-parse", "origin/main"))).toEqual([[asked, take], [ready], [], [], false]);
+    expect(rows("--since", "0123456789abcdef0123456789abcdef01234567")).toEqual([[asked, take], [ready], [asked, take], [ready], true]);
+    expect([run(reader, "overview", "--since", "HEAD").status, run(reader, "overview", "--since", older, "--since", older).status]).toEqual([2, 2]);
+  }, CASE_TIMEOUT * 6);
+});
+
 describe("commitNamedBy: a row names one commit or none", () => {
   const listing = commitListing(["aaaa1111\t1000\t1000\tone subject", "aaaa2222\t2000\t9000\ttwice", "bbbb3333\t2030\t9500\ttwice", "cccc4444\t5000\t5000\ta\ttab"].join("\n"));
   const named = (ts: string, detail: string) => commitNamedBy({ ts, detail }, listing)?.hash ?? null;

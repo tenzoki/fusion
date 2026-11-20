@@ -13,13 +13,17 @@
  *
  *   1  `fetchRef` of `lib/campaign.ts`: the branch's upstream, the fetch, the
  *      commit the upstream stands at afterwards (the fetched head);
- *   2  `readCampaignsAt`: the manifest, the marker and the campaign store
- *      extracted at the fetched head and read through the codec, `list` for
+ *   2  `readCampaignsAt`: the manifest, the marker, both root stores and the
+ *      shared decisions store extracted at the fetched head (`SYNC_ENTRIES`),
+ *      the campaigns read through the codec, `list` for
  *      the set, `reconcile` for the findings (the three lane rules among
  *      them, which `list` does not carry: `codec/README.md`, "The lane
  *      rules"), `show` per readable campaign for its state, reason and lanes.
  *      No second parser reads a campaign;
- *   3  `mineOf`: which of them steers this checkout;
+ *   3  `mineOf`: which of them steers this checkout, then `laneViewOf`: its
+ *      lane, that lane's `next` with the package's own mode, and its open
+ *      questions with their answers, by `lib/campaign.ts`'s steering read.
+ *      With `readOnly` (`sync --read`) the cycle ends here, before any write;
  *   4  one `campaign_read` row per readable campaign appended to the working
  *      tree's event log, while `FUSION_SESSION_ID` is set (the `commit` row's
  *      own rule, `rules/commit-lock.md` `### The lock writes the commit event`);
@@ -84,7 +88,7 @@ import { LIVE_STATES, readCampaignsAt, type CampaignAtRef, type CampaignsRead, t
 import { type Unread } from "./codec-read.js";
 import { type Ask } from "./record-client.js";
 export { LIVE_STATES, readCampaignsAt, type CampaignAtRef, type CampaignsRead, type UnreadableCampaign };
-/** What `sync` extracts at the fetched head: the manifest, the marker and the campaign store. */
+/** What `sync` extracts at the fetched head: the steering read's entries, the manifest, the marker, both root stores and the shared decisions. */
 export declare const SYNC_ENTRIES: readonly string[];
 /** The lock tag of the settling commit. */
 export declare const SETTLE_TAG = "campaign";
@@ -100,6 +104,32 @@ export declare function mineOf(campaigns: CampaignAtRef[], checkout: string | nu
     mine: CampaignAtRef | null;
     note: string[] | null;
 };
+/** What `lane=`, `next=` and `question=` print: `lane` null where no lane of `mine` names this checkout. */
+export interface LaneView {
+    lane: {
+        campaign: string;
+        lane: string;
+        next: {
+            package: string;
+            mode: string;
+            waits: string[];
+        } | null;
+    } | null;
+    questions: Array<{
+        decision: string;
+        package: string;
+        answer: string | null;
+    }>;
+}
+/**
+ * `bin/fusion-campaign` `## Output of \`sync\``, `lane=` to `question=`: the lane of `mine` that names
+ * `checkout`, its `next` with that package's own `mode.value`, and one
+ * question per open decision in a package this checkout holds, then in that
+ * `next`, each with the shared record that answers it.
+ */
+export declare function laneViewOf(workbench: string, mine: CampaignAtRef | null, checkout: string | null, notes: string[][], ask: Ask): LaneView | {
+    unread: Unread;
+};
 /** Env-first (the SessionStart export), else one run of `bin/fusion-identity`; an unresolved half is null. */
 export declare function identityOf(cwd: string, bin?: string, env?: NodeJS.ProcessEnv): Identity;
 /** The `campaign_read` row for one campaign read: the plan's field set, an unresolved value an absent key. */
@@ -114,6 +144,7 @@ export interface Synced {
     campaigns: CampaignAtRef[];
     unreadable: UnreadableCampaign[];
     mine: CampaignAtRef | null;
+    view: LaneView;
     /** True when the settling commit landed. */
     settled: boolean;
     /** The dirty tracked paths, toplevel-relative, when the log was not the only one. */
@@ -140,6 +171,8 @@ export type SyncResult = Synced | {
     rel: string;
 } & Unread);
 export interface SyncOptions {
+    /** `--read`: steps 1 to 3 and the lane view, and nothing written, committed, rebased or pushed. */
+    readOnly?: boolean;
     ask?: Ask;
     bin?: string;
     env?: NodeJS.ProcessEnv;
