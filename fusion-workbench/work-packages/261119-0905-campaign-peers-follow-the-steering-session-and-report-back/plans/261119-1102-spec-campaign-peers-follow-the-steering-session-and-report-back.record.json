@@ -1,0 +1,31 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "78d181a9-7d1d-4d3e-88d2-3443a8ae9a4a",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "plan",
+  "narrative": {
+    "path": "work-packages/261119-0905-campaign-peers-follow-the-steering-session-and-report-back/plans/261119-1102-spec-campaign-peers-follow-the-steering-session-and-report-back.md"
+  },
+  "filed_by": {
+    "actor": "requirements-designer",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "steps": [],
+    "criteria": [],
+    "acceptance": {
+      "ref": {
+        "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+        "record_id": "cbcb5d09-4cbe-4ff9-b033-713de10ad062"
+      },
+      "revision": "sha256:a82186606bcc4c54399886e1d69adba302c54cd4d1851ea82661d582acee7195"
+    }
+  }
+}

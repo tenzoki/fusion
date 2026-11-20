@@ -1,0 +1,29 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "4f299b8c-57ba-4c05-831e-83a362472724",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "decision",
+  "narrative": {
+    "path": "work-packages/261119-0905-campaign-peers-follow-the-steering-session-and-report-back/decisions/261119-1248-how-does-an-answer-name-the-peer-question-it-answers-and-how-does-the-peer-remember-what-it-set-aside.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "answered",
+    "answer_ref": {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "4f299b8c-57ba-4c05-831e-83a362472724"
+    },
+    "implementation_ref": null,
+    "superseded_by": null,
+    "deferral": null
+  }
+}
