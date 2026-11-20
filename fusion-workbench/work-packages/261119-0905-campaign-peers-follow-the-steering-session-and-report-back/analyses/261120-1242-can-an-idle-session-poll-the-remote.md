@@ -166,4 +166,77 @@ None. The figures go to the user through the orchestrator, per step 1 acceptance
 - [ ] Does the expiry notice carry the `description` after compaction? Not tested.
 - [ ] Continue with `Monitor` (and re-measure (b)), or rule on `/loop` against C5?
 
-poll-possible: no
+## Run 2 (Monitor pre-allowed)
+
+The run-1 verdict line, `poll-possible: no`, was the last line of the report until this section was appended. It is replaced by the verdict line below. Everything above this heading is run 1 and is unchanged, except that run 1's log files have since been renamed. `orchestrator-start.txt` and `pusher.log` above are now `run1-orchestrator.txt` and `run1-pusher.log` in the same directory.
+
+### Setup change and evidence
+
+- The user added `"Monitor"` to `permissions.allow` in `.claude/settings.local.json` (git-ignored). The file's mtime is 2026-11-20T12:39:30Z, 14 s before the run-2 pusher started.
+- Same probe as run 1: `watch.sh` and `pusher.sh` unchanged, the same bare remote, the same `timeout_ms` and description. No probe process is running now.
+- No user input reached the session from the arm to the stop (orchestrator's record).
+
+`orchestrator-start.txt` (run 2), verbatim:
+
+```
+run2-pusher 2026-11-20T12:39:44Z
+run2-arm 2026-11-20T12:39:52Z
+run2-moved1-woke 2026-11-20T12:49:54Z
+run2-expiry1-rearm 2026-11-20T13:09:56Z
+run2-moved2-woke 2026-11-20T13:20:02Z
+run2-expiry2-woke 2026-11-20T13:40:07Z
+```
+
+`pusher.log` (run 2), verbatim:
+
+```
+start 2026-11-20T12:39:44Z pid=47577
+push1 2026-11-20T12:46:44Z eae22d53c4a44577770bc593524b7eacca8c4c29 rc=0
+push2 2026-11-20T13:17:44Z 9eb039ed9299bc631fd996aac62eada911f50942 rc=0
+exit 2026-11-20T13:17:44Z
+```
+
+`git log` of `remote.git` confirms `eae22d53` and `9eb039ed` on top of run 1's `79ba6a01`.
+
+### Timeline (UTC, 2026-11-20)
+
+| Time | Event | Source |
+|---|---|---|
+| 12:39:44 | Pusher started. | `pusher.log`, `run2-pusher` |
+| 12:39:48 | Monitor 1 event: `armed 12:39:48Z 79ba6a01`. Its baseline is run 1's last head. | notification |
+| 12:39:52 | Arm recorded. No permission prompt. | `run2-arm` |
+| 12:46:44 | push1 (`eae22d53`). | `pusher.log` |
+| 12:49:48 | Monitor 1 event: `moved 12:49:48Z eae22d53`, on the second poll after arm. | notification |
+| 12:49:54 | Idle session woke, no user input. Latency 6 s. | `run2-moved1-woke` |
+| ~13:09:48 | Expiry notice 1: "2 events delivered" (`armed` and `moved`). | notification |
+| 13:09:56 | Re-armed about 8 s after expiry, with no user input and no prompt. Monitor 2 event: `armed 13:09:56Z eae22d53`. The baseline equals the last reported head, so no move was lost across this expiry. | `run2-expiry1-rearm`, notification |
+| 13:17:44 | push2 (`9eb039ed`). | `pusher.log` |
+| 13:19:56 | Monitor 2 event: `moved 13:19:56Z 9eb039ed`, from the re-armed monitor. | notification |
+| 13:20:02 | Idle session woke, no user input. Latency 6 s. | `run2-moved2-woke` |
+| ~13:39:56 | Expiry notice 2. | notification |
+| 13:40:07 | Idle session woke and stopped the probe, as the description said. Latency about 11 s. | `run2-expiry2-woke` |
+
+From arm (12:39:48) to the final wake (13:40:07) is about 60 minutes, spanning two expiries. That is less than the plan's "about 65 minutes" only because the re-arm took 8 s instead of run 1's 16 minutes. The criterion is two expiries.
+
+### Answers on run 2
+
+| | Question | Answer | Evidence |
+|---|---|---|---|
+| (a) | A `moved` event wakes the idle session and starts a turn with no user input. | **yes** | Shown twice: `moved 12:49:48Z eae22d53` then woke at 12:49:54, and `moved 13:19:56Z 9eb039ed` then woke at 13:20:02. No user input either time. The second wake came from a monitor the session had re-armed itself. |
+| (b) | The expiry notice wakes the idle session, and the session re-arms from that notice without the user. | **yes** | Expiry 1 at about 13:09:48 was followed by the re-arm at 13:09:56 (`armed 13:09:56Z eae22d53`), about 8 s later, with no user input and no permission prompt. Expiry 2 woke the session at 13:40:07, and it stopped the probe as instructed. Run 1's 16-minute gap did not recur once the prompt was out of the way. |
+| (c) | The chain survives at least two expiries, about 65 minutes in all. | **yes** | One chain ran from 12:39:48 to 13:40:07 (about 60 minutes), through two expiries, with a self-made re-arm between them that went on to deliver a `moved`. |
+| (d) | Description survives context compaction. | **no (not shown)** | No compaction happened in run 2 either. Run 1's finding stands. |
+| (e), (f) | | unchanged | Run 1's readings stand. |
+
+### What run 2 settles, and what it leaves open
+
+- **Run 1's re-arm gap.** With `Monitor` pre-allowed, the re-arm took 8 s. This supports, but does not prove, the run-1 hypothesis that the 16 minutes was spent at a permission prompt.
+- **Which mechanism cleared the prompt is not isolated.** As read now, `.claude/settings.local.json` does not parse as strict JSON. Line 4 reads `"Monitor",.`, and a strict parser (Python `json`) stops at line 4, column 14. Run 1 also saw a switch into auto mode, and nothing records whether auto mode was still on in run 2. So the evidence cannot say whether the allow entry or the permission mode admitted `Monitor` without a prompt. The verdict holds either way, because it depends on `Monitor` running without a prompt, whatever admits it. The stray `.` is a project-local, git-ignored file and outside this report's write scope. The user should fix it so the pre-allow does not depend on how leniently the harness parses.
+- **The expiry race was not exercised.** Both pushes landed about 3 minutes before a poll, and no push fell between the last poll and a re-arm. Run 1's lost push2 still shows the race is real. The step-4 recommendation stands: compare against the last-seen head at arm time.
+- **(d) is still untested.** The re-arm instruction must not depend on the description surviving compaction until that is measured.
+
+### Condition
+
+The verdict depends on one condition: `Monitor` must be pre-allowed in the session that watches (in run 2, through `permissions.allow` in `.claude/settings.local.json`), because with a permission prompt in the way, the re-arm waits on a person, as in run 1.
+
+poll-possible: yes
