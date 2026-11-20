@@ -3,7 +3,8 @@
  * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
  * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
- * `reassign` and `end`, `sync [--read]`, the commit-cycle read, and `probe`
+ * `reassign` and `end`, `answer`, the user's answer to a peer's question,
+ * `sync [--read]`, the commit-cycle read, and `probe`
  * and `watch [--since <sha>] [--interval <seconds>]`, the poll of the
  * upstream head.
  *
@@ -50,6 +51,7 @@ const USAGE = [
     "       fusion-campaign resume [--campaign <id>]",
     "       fusion-campaign move <package> --to <lane> [--campaign <id>]",
     "       fusion-campaign reassign <lane> --checkout <hex> [--campaign <id>]",
+    "       fusion-campaign answer --question <basename> --option <text> [--note <text>]",
     "       fusion-campaign end --outcome completed|bounded|failed|cancelled [--reason <text>] [--objective-met] [--intake-closed] [--all-attempts-terminal] [--final-audit-passed] [--watermark <text>] [--audit-ref <text>] [--campaign <id>]",
     "The header of bin/fusion-campaign is the authoritative documentation.",
 ].join("\n");
@@ -215,6 +217,16 @@ function parseWrite(command, argv, writes) {
     }
     return null;
 }
+/** `--question <basename>` and `--option <text>`, required, `--note <text>`, each at most once; the option is one line, since the `Answered:` line quotes it. */
+function parseAnswer(argv, writes) {
+    const p = parseFlags(argv, ["--question", "--option", "--note"], [], [], 0);
+    const question = p?.values.get("--question")?.[0];
+    const option = p?.values.get("--option")?.[0];
+    const note = p?.values.get("--note")?.[0] ?? null;
+    if (p === null || question === undefined || option === undefined || !writes.QUESTION_BASENAME.test(question) || option.trim() === "" || option.includes("\n") || note?.trim() === "")
+        return null;
+    return { question, option, note };
+}
 /* ------------------------------------------------------------------ *
  * The two sub-command families
  * ------------------------------------------------------------------ */
@@ -281,8 +293,18 @@ function steer(act, lib) {
         return 3;
     }
     const workbench = join(root, "fusion-workbench");
-    const result = lib.writes.write(act, workbench, cwd);
+    const name = "act" in act ? act.act : "answer";
+    const result = "act" in act ? lib.writes.write(act, workbench, cwd) : lib.writes.answer(act, workbench, cwd);
     switch (result.kind) {
+        case "no-ref": {
+            const lines = [`state=${result.state}`];
+            if (result.branch !== undefined)
+                lines.push(`branch=${result.branch}`);
+            if (result.ref !== undefined)
+                lines.push(`ref=${result.ref}`);
+            process.stdout.write(lines.join("\n") + "\n");
+            return STATE_EXIT[result.state];
+        }
         case "written":
             process.stdout.write(`path=${result.path}\nrevision=${result.revision}\n`);
             return 0;
@@ -292,7 +314,7 @@ function steer(act, lib) {
             return 8;
         case "refused":
             process.stdout.write(`state=refused\nrefused=${result.refusal.class}/${result.refusal.reason}\n`);
-            say(`${act.act} was refused (${result.refusal.class}/${result.refusal.reason})${result.refusal.detail === undefined ? "" : `: ${result.refusal.detail}`}\nNothing was written.`);
+            say(`${name} was refused (${result.refusal.class}/${result.refusal.reason})${result.refusal.detail === undefined ? "" : `: ${result.refusal.detail}`}\nNothing was written.`);
             return 9;
         case "failed":
             say(`${result.cause === "legacy" ? lib.legacyLine(workbench) : lib.notReadLine(result, workbench)} Nothing was written.`);
@@ -390,6 +412,10 @@ function main(argv, lib) {
     if (command === "watch") {
         const args = parseWatch(rest);
         return args === null ? usage() : watch(args, lib);
+    }
+    if (command === "answer") {
+        const act = parseAnswer(rest, lib.writes);
+        return act === null ? usage() : steer(act, lib);
     }
     if (command !== undefined && WRITES.has(command)) {
         const act = parseWrite(command, rest, lib.writes);

@@ -3,7 +3,8 @@
  * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
  * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
- * `reassign` and `end`, `sync [--read]`, the commit-cycle read, and `probe`
+ * `reassign` and `end`, `answer`, the user's answer to a peer's question,
+ * `sync [--read]`, the commit-cycle read, and `probe`
  * and `watch [--since <sha>] [--interval <seconds>]`, the poll of the
  * upstream head.
  *

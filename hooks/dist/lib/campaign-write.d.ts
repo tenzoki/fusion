@@ -79,6 +79,23 @@
  * container name; a lane's `checkout_id` comes from `--assign <lane>=<hex>`
  * or is null.
  *
+ * ## The answer write
+ *
+ * `answer` is no campaign write and shares only the claim test with the
+ * others (plan step 5 of
+ * `261119-1248-plan-campaign-peers-follow-the-steering-session-and-report-back.md`,
+ * spec C3). It fetches the upstream and reads, through `steeringAt` of
+ * `lib/campaign.ts`, the `question=` rows the overview prints: the question
+ * must be one of them with no answer, the answer rule being that module's and
+ * no second one. A `**Answers:**` line naming the question in the working
+ * tree's shared decisions store, an answer filed and not yet pushed, refuses
+ * it as well, so an unpushed answer is never doubled into two that read as
+ * none. Then the narrative in the shared decisions store, filed through
+ * `lib/record-write.ts` `create --kind decision` as `bin/fusion-write` files
+ * one, its `Answered:` line, and `transition --to answered` citing the record
+ * itself. The question's record is never opened: the domain the answer
+ * carries is that of the asking package's control, at the ref.
+ *
  * ## What it writes and never does
  *
  * One file, `campaigns/<id>/campaign.json`, two-space indented with a final
@@ -87,6 +104,7 @@
  * sends the codec no mutation; the codec has none for a campaign. No hook
  * imports this module.
  */
+import { type NoRef } from "./campaign.js";
 import { type Unread } from "./codec-read.js";
 import { type Ask, type Refusal } from "./record-client.js";
 /** What `state.charter_hash` holds while the codec is asked for the true value: the schema's pattern, no hash. */
@@ -219,4 +237,32 @@ export declare const revisionOf: (bytes: string | Buffer) => string;
  * helper failed and no result names the failure.
  */
 export declare function write(act: Act, workbench: string, cwd: string, options?: WriteOptions): WriteResult;
+/** `answer`, parsed: the question's narrative basename, the option the user chose, the user's note or null. */
+export interface AnswerAct {
+    question: string;
+    option: string;
+    note: string | null;
+}
+/** A narrative basename as a `question=` row prints it: one path segment ending `.md`. */
+export declare const QUESTION_BASENAME: RegExp;
+export type AnswerResult = WriteResult | {
+    kind: "no-ref";
+    state: NoRef;
+    branch?: string;
+    ref?: string;
+};
+export interface AnswerOptions extends WriteOptions {
+    now?: () => Date;
+}
+/** The answer's narrative, workbench-relative: `<stamp>-answer-to-<question stem>.md` in the shared decisions store. */
+export declare function answerNarrativeOf(question: string, at: Date): string;
+/** The narrative before its `Answered:` line: the head the answer rule reads, then the option and the note quoted with the date. */
+export declare function answerText(act: AnswerAct, domain: string, person: string | null, day: string): string;
+/**
+ * `answer`: the claim test, the question at a fresh fetch, then the record
+ * filed, its `Answered:` line and its transition (the header's `## The answer
+ * write`). Throws `HelperFailure` where a step after the narrative was
+ * written did not land, naming what stands.
+ */
+export declare function answer(act: AnswerAct, workbench: string, cwd: string, options?: AnswerOptions): AnswerResult;
 export {};

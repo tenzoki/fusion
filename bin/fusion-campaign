@@ -21,6 +21,7 @@
 #   fusion-campaign resume [--campaign <id>]
 #   fusion-campaign move <package> --to <lane> [--campaign <id>]
 #   fusion-campaign reassign <lane> --checkout <hex> [--campaign <id>]
+#   fusion-campaign answer --question <basename> --option <text> [--note <text>]
 #   fusion-campaign end --outcome completed|bounded|failed|cancelled [--reason <text>]
 #                       [--objective-met] [--intake-closed] [--all-attempts-terminal] [--final-audit-passed]
 #                       [--watermark <text>] [--audit-ref <text>] [--campaign <id>]
@@ -32,8 +33,9 @@
 # (`## cut` below). `sync` is the commit-cycle read of a working session
 # (`## sync` below), `probe` and `watch` are the poll of the upstream head
 # that a waiting peer and a steering session run under a monitor (`## probe
-# and watch` below), and the seven others are the steering writes (`## The
-# steering writes` below). A sub-command this script does not know is a
+# and watch` below), and the eight others are the steering writes (`## The
+# steering writes` below), `answer` the one that files a decision record
+# rather than the campaign's. A sub-command this script does not know is a
 # usage error, never a silent no-op.
 #
 #   --window <hours>  The overview window, a whole number of hours above zero,
@@ -482,9 +484,30 @@
 # (`conflict/campaign-terminal`), and a record that changed between the read
 # and the write (`conflict/revision-moved`).
 #
+#   answer    the user's answer to a peer's question (spec C3 of
+#             `261119-1102-spec-campaign-peers-follow-the-steering-session-and-report-back.md`),
+#             and no campaign write: it runs the claim test above (exit 8),
+#             then fetches as `overview` does (exit 5, 6, 7 on its states) and
+#             requires `--question`, a narrative basename, to be a `question=`
+#             row of that read with answer `none`: none is
+#             `unknown-scope/question-unknown`, an answer at the ref, or a
+#             `**Answers:**` line naming it in the working tree's shared
+#             decisions store, `conflict/question-answered`. It writes
+#             `<stamp>-answer-to-<question stem>.md` there: the title `Answer
+#             to <basename>`, the head lines `**Domain:**` (the asking
+#             package's, at the ref), `**Filed by:** user, <PERSON=>` and
+#             `**Answers:** <basename>` exactly once, the body quoting the
+#             option and the note with the date. It files it as
+#             `bin/fusion-write create --kind decision` does, appends
+#             `Answered: this record — <option>; ruled by user, <person>` and
+#             transitions it to `answered`, the answer-ref the record itself.
+#             `--option` is one line; it is what the user chose, never the
+#             session's own pick. The question's record is not opened.
+#
 # ## Output of a steering write
 #
-#   path=<workbench-relative path>   `campaigns/<id>/campaign.json`.
+#   path=<workbench-relative path>   `campaigns/<id>/campaign.json`; for
+#                                     `answer`, the answer's `.record.json`.
 #   revision=sha256:<64 hex>          The written file's revision, over its
 #                                     exact bytes, as the codec's `list` and
 #                                     `show` answer it.
@@ -492,7 +515,8 @@
 # Exit 0 prints those two lines and nothing else. Exit 8 prints
 # `state=holds-package` and `held=<what the claim test found>`; exit 9 prints
 # `state=refused` and `refused=<class>/<reason>`; each puts the detail on
-# stderr. Every other code prints nothing on stdout.
+# stderr. `answer` on 5, 6 or 7 prints the state lines as `overview` does.
+# Every other code prints nothing on stdout.
 #
 # ## sync — the commit-cycle read, in order
 #
@@ -676,7 +700,9 @@
 #      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
 #      `tar` failed where no state names the failure, the claim test could not
 #      be made (`bin/fusion-claimed-package` exited for a reason that is no
-#      answer), or an internal error. The reason is on stderr and nothing is
+#      answer), `bin/fusion-identity` stopped, an `answer` record whose
+#      `create` or `transition` did not land (stderr names what stands and
+#      the command that finishes it), or an internal error. The reason is on stderr and nothing is
 #      on stdout.
 #   2  usage error: no sub-command or an unknown one, an unknown or repeated
 #      flag, a flag without its value, `--window` that is no whole number above
@@ -687,7 +713,8 @@
 #      that is not eight lowercase hex characters, an `--outcome` outside the
 #      four, an evidence flag on an outcome other than `completed`, an
 #      argument to `probe`, an `--interval` that is no whole number above
-#      zero.
+#      zero, an `answer` `--question` that is no `.md` basename or an
+#      `--option` that is empty or spans lines.
 #   3  no fusion workbench above pwd.
 #   4  the workbench was not read: the codec's gate refused it by name
 #      (`legacy`, a workbench without its manifest, or `unsupported`), or the
@@ -697,19 +724,19 @@
 #      failure and never an empty overview, an empty cut or a half-made write.
 #   5  nothing to read against: `state=` is `no-work-tree`, `no-branch`,
 #      `no-upstream`, `upstream-unresolved` or `workbench-untracked`
-#      (`overview`, `sync`; `probe` all but the last).
+#      (`overview`, `sync`, `answer`; `probe` all but the last).
 #   6  the fetch did not complete, `state=fetch-failed`. git's own stderr is
-#      passed through unmodified (`overview`, `sync`; `probe`, whose
-#      `ls-remote` did not complete).
+#      passed through unmodified (`overview`, `sync`, `answer`; `probe`,
+#      whose `ls-remote` did not complete).
 #   7  the workbench is not inside this repository,
-#      `state=workbench-outside-repo` (`overview`, `sync`).
+#      `state=workbench-outside-repo` (`overview`, `sync`, `answer`).
 #   8  `state=holds-package`: a steering act from a checkout that holds a
 #      claimed package, or whose two claims `bin/fusion-claimed-package`
 #      refused to choose between. Nothing was written (`open`, `lanes`,
-#      `pause`, `resume`, `move`, `reassign`, `end`).
+#      `pause`, `resume`, `move`, `reassign`, `end`, `answer`).
 #   9  `state=refused`: the write did not validate or the act does not apply,
 #      `refused=<class>/<reason>` says which, and nothing was written (the
-#      same seven).
+#      same eight; `answer` also when the codec refused its `create`).
 #  10  `state=conflict`: the rebase stopped and was aborted; the conflicting
 #      paths are the `conflict=` lines, the rows were read and settled, and
 #      nothing was pushed (`sync`).
@@ -774,7 +801,9 @@
 #
 # A steering write touches one file of the working tree, the campaign record
 # it names, written whole by rename; on exit 8 and 9 it touches none. It
-# fetches nothing and commits nothing.
+# fetches nothing and commits nothing. `answer` fetches as `overview` does and
+# writes the answer's pair in the shared decisions store and the
+# `record_change` rows `bin/fusion-write` logs; it commits nothing either.
 #
 # `probe` and `watch` touch no ref and no file of the repository: `ls-remote`
 # updates nothing. `watch` writes its pid file under what `bin/fusion-tmp
@@ -787,8 +816,10 @@
 # rebase leaves the branch where the settling commit left it. Its scratch
 # directory is removed on every way out, as `overview`'s is.
 #
-# No sub-command sends the codec a mutation: the codec has none for a
-# campaign, and the writes reach it through `show` and `validate` alone. No
+# No sub-command but `answer` sends the codec a mutation: the codec has none
+# for a campaign, and the campaign writes reach it through `show` and
+# `validate` alone; `answer` sends the `create` and `transition` of its own
+# record, as `bin/fusion-write` sends them. No
 # cache, no index: the overview is recomputed per run and discarded.
 #
 # The work is hooks/dist/campaign.js, resolved relative to this script rather

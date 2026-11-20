@@ -79,6 +79,23 @@
  * container name; a lane's `checkout_id` comes from `--assign <lane>=<hex>`
  * or is null.
  *
+ * ## The answer write
+ *
+ * `answer` is no campaign write and shares only the claim test with the
+ * others (plan step 5 of
+ * `261119-1248-plan-campaign-peers-follow-the-steering-session-and-report-back.md`,
+ * spec C3). It fetches the upstream and reads, through `steeringAt` of
+ * `lib/campaign.ts`, the `question=` rows the overview prints: the question
+ * must be one of them with no answer, the answer rule being that module's and
+ * no second one. A `**Answers:**` line naming the question in the working
+ * tree's shared decisions store, an answer filed and not yet pushed, refuses
+ * it as well, so an unpushed answer is never doubled into two that read as
+ * none. Then the narrative in the shared decisions store, filed through
+ * `lib/record-write.ts` `create --kind decision` as `bin/fusion-write` files
+ * one, its `Answered:` line, and `transition --to answered` citing the record
+ * itself. The question's record is never opened: the domain the answer
+ * carries is that of the asking package's control, at the ref.
+ *
  * ## What it writes and never does
  *
  * One file, `campaigns/<id>/campaign.json`, two-space indented with a final
@@ -89,12 +106,13 @@
  */
 
 import { createHash, randomUUID } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-import { defaultBin, HelperFailure, LIVE_STATES, run, withScratch } from "./campaign.js";
+import { ANSWERS_LABEL, answersIn, defaultBin, extractAt, fetchRef, HelperFailure, LIVE_STATES, run, SHARED_DECISIONS, steeringAt, STEERING_ENTRIES, withScratch, type NoRef } from "./campaign.js";
 import { isObject, isPackageRow, listedRecords, problemOf, refusedByGate, resultOf, type Unread } from "./codec-read.js";
 import { ask as askCodec, type Ask, type Refusal } from "./record-client.js";
-import { CAMPAIGN_RECORD, CAMPAIGN_STORE, WORKBENCH_MANIFEST } from "./stores.js";
+import { parseFlags as parseWriteFlags, write as recordWrite, type Outcome as RecordOutcome } from "./record-write.js";
+import { CAMPAIGN_RECORD, CAMPAIGN_STORE, CONTAINER_STORE, PACKAGE_CONTROL, RECORD_CONTROL_SUFFIX, WORKBENCH_MANIFEST } from "./stores.js";
 
 /* ------------------------------------------------------------------ *
  * The vocabulary
@@ -456,4 +474,146 @@ export function write(act: Act, workbench: string, cwd: string, options: WriteOp
   writeFileSync(beside, prepared.bytes, "utf-8");
   renameSync(beside, target);
   return { kind: "written", path: rel, revision: revisionOf(prepared.bytes) };
+}
+
+/* ------------------------------------------------------------------ *
+ * The answer write
+ * ------------------------------------------------------------------ */
+
+/** `answer`, parsed: the question's narrative basename, the option the user chose, the user's note or null. */
+export interface AnswerAct {
+  question: string;
+  option: string;
+  note: string | null;
+}
+
+/** A narrative basename as a `question=` row prints it: one path segment ending `.md`. */
+export const QUESTION_BASENAME = /^[A-Za-z0-9][A-Za-z0-9._-]*\.md$/;
+
+export type AnswerResult = WriteResult | { kind: "no-ref"; state: NoRef; branch?: string; ref?: string };
+
+export interface AnswerOptions extends WriteOptions {
+  now?: () => Date;
+}
+
+const two = (n: number): string => String(n).padStart(2, "0");
+const isoDay = (d: Date): string => `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}`;
+
+/** The answer's narrative, workbench-relative: `<stamp>-answer-to-<question stem>.md` in the shared decisions store. */
+export function answerNarrativeOf(question: string, at: Date): string {
+  const stamp = `${String(at.getFullYear()).slice(2)}${two(at.getMonth() + 1)}${two(at.getDate())}-${two(at.getHours())}${two(at.getMinutes())}`;
+  const topic = `answer-to-${question.replace(/\.md$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`.slice(0, 120).replace(/-+$/, "");
+  return `${SHARED_DECISIONS}/${stamp}-${topic}.md`;
+}
+
+/** The narrative before its `Answered:` line: the head the answer rule reads, then the option and the note quoted with the date. */
+export function answerText(act: AnswerAct, domain: string, person: string | null, day: string): string {
+  const quote = (text: string): string => text.split("\n").map((l) => `> ${l}`.trimEnd()).join("\n");
+  return [
+    `# Answer to ${act.question}`,
+    "",
+    "---",
+    `**Domain:** ${domain}`,
+    `**Filed by:** user${person === null ? "" : `, ${person}`}`,
+    `${ANSWERS_LABEL}${act.question}`,
+    "",
+    "---",
+    "",
+    "## Answer",
+    "",
+    `The user chose, at the steering session on ${day}:`,
+    "",
+    quote(act.option),
+    ...(act.note === null ? [] : ["", "The user's note:", "", quote(act.note)]),
+    "",
+  ].join("\n");
+}
+
+/** `PERSON=` of `bin/fusion-identity`, null where the helper printed none (its exit 4 and 5); its exit 1 stops the write. */
+function personOf(cwd: string, bin: string): { person: string | null; checkout: string | null } {
+  const helper = join(bin, "fusion-identity");
+  const r = run(helper, [], cwd);
+  if (![0, 3, 4, 5].includes(r.status)) throw new HelperFailure(`${helper} exited ${r.status}, so the answer would name nobody: ${r.stderr.trim()}`);
+  const value = (key: string): string | null => new RegExp(`^${key}=(.+)$`, "m").exec(r.stdout)?.[1] ?? null;
+  return { person: value("PERSON"), checkout: value("CHECKOUT") };
+}
+
+/** One `lib/record-write.ts` call, as `bin/fusion-write <sub> <argv>` sends it. */
+function recordCall(sub: string, argv: string[], workbench: string, who: { person: string | null; checkout: string | null }, ask: Ask): RecordOutcome {
+  const parsed = parseWriteFlags(sub, argv);
+  if ("usage" in parsed) throw new HelperFailure(`the answer's ${sub} was malformed, a fusion bug: ${parsed.usage}`);
+  const identity = { ...(who.person !== null && { person: who.person }), ...(who.checkout !== null && { checkout: who.checkout }) };
+  return recordWrite({ ...parsed.call, workbench, identity }, ask);
+}
+
+const outcomeDetail = (o: RecordOutcome): string => (o.kind === "refused" ? `${o.refusal.class}/${o.refusal.reason}` : o.kind === "landed" ? "landed" : `${o.kind}: ${o.detail}`);
+
+/**
+ * `answer`: the claim test, the question at a fresh fetch, then the record
+ * filed, its `Answered:` line and its transition (the header's `## The answer
+ * write`). Throws `HelperFailure` where a step after the narrative was
+ * written did not land, naming what stands.
+ */
+export function answer(act: AnswerAct, workbench: string, cwd: string, options: AnswerOptions = {}): AnswerResult {
+  const ask = options.ask ?? askCodec;
+  const bin = options.bin ?? defaultBin();
+  const now = (options.now ?? (() => new Date()))();
+
+  const gated = refusedByGate(workbench, ask);
+  if (gated !== null) return failed(gated);
+  const claim = claimTest(cwd, bin);
+  if (claim.kind === "holds") return { kind: "holds-package", detail: claim.detail };
+
+  // --- the question, at the ref ----------------------------------------------------
+  const at = fetchRef(cwd, workbench, null);
+  if (at.state !== "ok") return { kind: "no-ref", state: at.state, branch: at.branch, ref: at.ref };
+  const found = withScratch(cwd, (scratch): WriteResult | { domain: string } => {
+    const extract = extractAt(at, STEERING_ENTRIES, scratch);
+    const read = steeringAt(extract, ask);
+    if ("unread" in read) return failed(read.unread);
+    const rows = read.questions.filter((q) => q.decision === act.question);
+    if (rows.length === 0) return refused("unknown-scope", "question-unknown", `${act.question} is no question= row of a live campaign at ${at.ref} (${at.head})`);
+    const answered = rows.find((q) => q.answer !== null);
+    if (answered !== undefined) return refused("conflict", "question-answered", `${act.question} is answered at ${at.ref} by ${answered.answer}`);
+    const shown = resultOf(extract, { op: "show", record: { path: `${CONTAINER_STORE}/${rows[0].package}/${PACKAGE_CONTROL}` } }, ask);
+    if ("unread" in shown) return failed(shown.unread);
+    const domain = isObject(shown.result.control) ? shown.result.control.domain : null;
+    return { domain: typeof domain === "string" ? domain : "code" };
+  }, bin);
+  if ("kind" in found) return found;
+
+  // An answer filed here and not yet pushed: a second would make both read as none.
+  const store = join(workbench, SHARED_DECISIONS);
+  for (const name of existsSync(store) ? readdirSync(store).filter((n) => n.endsWith(".md")).sort() : []) {
+    if (answersIn(readFileSync(join(store, name), "utf-8")).includes(act.question)) return refused("conflict", "question-answered", `${act.question} is answered in this working tree by ${name}, not yet pushed`);
+  }
+
+  // --- the record --------------------------------------------------------------------
+  const who = personOf(cwd, bin);
+  const narrative = answerNarrativeOf(act.question, now);
+  const control = narrative.replace(/\.md$/, RECORD_CONTROL_SUFFIX);
+  if (existsSync(join(workbench, narrative))) return refused("conflict", "answer-exists", `${narrative} already exists`);
+  mkdirSync(join(workbench, SHARED_DECISIONS), { recursive: true });
+  writeFileSync(join(workbench, narrative), answerText(act, found.domain, who.person, isoDay(now)), "utf-8");
+
+  const created = recordCall("create", ["--actor", "user", "--kind", "decision", "--narrative-file", narrative, "--origin", "user-request"], workbench, who, ask);
+  if (created.kind !== "landed") {
+    // Nothing landed, so the narrative is this run's alone; an unknown outcome may have landed, and it stays.
+    if (created.kind !== "unknown") rmSync(join(workbench, narrative), { force: true });
+    if (created.kind === "refused") return { kind: "refused", refusal: created.refusal };
+    throw new HelperFailure(`create --kind decision of ${narrative} did not land (${outcomeDetail(created)})${created.kind === "unknown" ? "; the narrative stays, and bin/fusion-write's re-send learns the outcome" : ""}`);
+  }
+  const shown = resultOf(workbench, { op: "show", record: { path: control } }, ask);
+  if ("unread" in shown) return failed(shown.unread);
+  const record = isObject(shown.result.control) ? shown.result.control.id : undefined;
+  const manifest = JSON.parse(readFileSync(join(workbench, WORKBENCH_MANIFEST), "utf-8")) as Doc;
+  if (typeof record !== "string" || typeof manifest.id !== "string") throw new HelperFailure(`${control} landed and names no record id, or the manifest no workbench id; it stands at open`);
+
+  const ruling = `ruled by user${who.person === null ? "" : `, ${who.person}`}`;
+  appendFileSync(join(workbench, narrative), `\n---\nAnswered: this record — ${act.option}; ${ruling}\n`, "utf-8");
+  const ref = JSON.stringify({ workbench_id: manifest.id, record_id: record });
+  const moved = recordCall("transition", ["--actor", "user", "--record", control, "--to", "answered", "--reason", "the user answered a peer's question at the steering session", "--answer-ref", ref], workbench, who, ask);
+  const revision = moved.kind === "landed" ? moved.revisions[control] : undefined;
+  if (revision === undefined) throw new HelperFailure(`${control} was filed and its transition to answered did not land (${outcomeDetail(moved)}); it stands at open with its Answered: line, and bin/fusion-write transition --actor user --record ${control} --to answered --reason <text> --answer-ref '${ref}' finishes it`);
+  return { kind: "written", path: control, revision };
 }

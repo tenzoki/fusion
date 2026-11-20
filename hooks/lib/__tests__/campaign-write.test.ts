@@ -3,13 +3,13 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { LIVE_STATES, type CampaignAtRef, type CampaignLane } from "../campaign.js";
 import { mineOf } from "../campaign-sync.js";
 import { PLACEHOLDER_HASH, readProposal, TERMINAL_STATES } from "../campaign-write.js";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
-import { campaignFile, claim, createPackage, must, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
+import { campaignFile, claim, createPackage, must, placeRecord, withJsonProject, type JsonProject } from "./helpers/json-workbench.js";
 
 // Drives the real `bin/fusion-campaign` writes over workbenches the kernel wrote (`helpers/json-workbench.ts`), the
 // way `fusion-claimed-package.test.ts` drives its script: every path physical, the codec reached through this tree's
@@ -230,4 +230,84 @@ describe("bin/fusion-campaign, the steering writes", () => {
     expect(readProposal(at("member.json", JSON.stringify({ lanes: [{ id: "lane-1", members: [1] }] })))).toEqual({ detail: expect.stringContaining("lanes[0]") });
     expect(readProposal(join(dir, "absent.json"))).toEqual({ detail: expect.stringContaining("could not be read") });
   });
+});
+
+describe("bin/fusion-campaign answer: the user's answer to a peer's question, filed in the shared decisions store", () => {
+  // A bare origin; the peer's checkout pushes a running campaign whose lane-1 checkout holds a package with an open
+  // question; the steering checkout is a clone of it holding nothing, and answers there, at a fresh fetch.
+  const CID = "261101-0900-pipeline";
+  const ASKED = "261101-0003-may-i-take.md";
+  const git = (cwd: string, ...args: string[]): string => {
+    const r = sh("git", args, cwd);
+    if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${cwd}: ${r.stderr}`);
+    return r.stdout.trim();
+  };
+  const ident = (cwd: string, name: string): void => void [["user.name", name], ["user.email", `${name.toLowerCase()}@example.invalid`]].forEach(([k, v]) => git(cwd, "config", k, v));
+  const lines = (r: { stdout: string }, key: string): string[] => r.stdout.split("\n").filter((l) => l.startsWith(`${key}=`)).map((l) => l.slice(key.length + 1));
+
+  it("files one answer naming the question, answered and citing itself, leaves the question untouched, and is what question= then names", () => {
+    withJsonProject((p) => {
+      const origin = realpathSync(mkdtempSync(join(home, "answer-origin-")));
+      git(origin, "init", "--bare", "-q", "-b", "main");
+      git(p.root, "init", "-q", "-b", "main");
+      ident(p.root, "Ada");
+      writeFileSync(join(p.root, ".gitignore"), "fusion-workbench/.json-state/\nfusion-workbench/.checkout-id\n");
+      const [held, next] = stems.slice(0, 2).map((s) => createPackage(p, s));
+      claim(p, held, A);
+      const wid = must(p, { op: "inspect" }).result.id as string;
+      const member = (x: typeof held) => ({ workbench_id: wid, record_id: x.id, display: x.dir.slice("work-packages/".length) });
+      campaignFile(p, CID, { state: { state: "running" }, lanes: [{ id: "lane-1", checkout_id: A, members: [member(held), member(next)] }] });
+      const asked = `${held.dir}/decisions/${ASKED}`;
+      placeRecord(p.workbench, "decision-open", asked, "open", "# May I take the next package?\n");
+      git(p.root, "add", "-A");
+      git(p.root, "commit", "-q", "-m", "seed");
+      git(p.root, "push", "-q", "-u", origin, "main");
+      const steer = join(realpathSync(mkdtempSync(join(home, "answer-steer-"))), "steer");
+      git(home, "clone", "-q", origin, steer);
+      ident(steer, "Cy");
+      const s: JsonProject = { root: steer, workbench: join(steer, "fusion-workbench"), next: 900 };
+      const bytes = (): string[] => [asked, asked.replace(/\.md$/, ".record.json")].map((f) => readFileSync(join(s.workbench, f), "utf-8"));
+      const before = bytes();
+
+      const r = run(s, "answer", "--question", ASKED, "--option", "Take it now", "--note", "the parser fix comes first");
+      expect(r.status, r.stderr).toBe(0);
+      const control = r.value("path") as string;
+      expect(control).toMatch(/^shared\/decisions\/\d{6}-\d{4}-answer-to-261101-0003-may-i-take\.record\.json$/);
+      const text = readFileSync(join(s.workbench, control.replace(/\.record\.json$/, ".md")), "utf-8");
+      expect(text.split("\n").filter((l) => l.startsWith("**Answers:**"))).toEqual([`**Answers:** ${ASKED}`]);
+      expect(text).toContain("**Filed by:** user, Cy <cy@example.invalid>\n");
+      expect(text).toContain("**Domain:** code\n");
+      expect(text).toContain("> Take it now\n");
+      expect(text).toContain("> the parser fix comes first\n");
+      expect(text.trimEnd().endsWith("Answered: this record — Take it now; ruled by user, Cy <cy@example.invalid>")).toBe(true);
+      const shown = must(s, { op: "show", record: { path: control } }).result;
+      const record = shown.control as { id: string; control: Record<string, unknown> };
+      expect([record.control.state, record.control.answer_ref, shown.revision]).toEqual(["answered", { workbench_id: wid, record_id: record.id }, r.value("revision")]);
+      expect(bytes()).toEqual(before);
+      expect(scratchGone()).toEqual([]);
+
+      // Unpushed, the answer already counts; pushed, step 3's question= row names it, and it refuses a second at the ref.
+      const refusedAs = (...args: string[]) => ((x) => [x.status, x.value("state"), x.value("refused")])(run(s, "answer", ...args));
+      expect(refusedAs("--question", ASKED, "--option", "again")).toEqual([9, "refused", "conflict/question-answered"]);
+      git(steer, "add", "-A");
+      git(steer, "commit", "-q", "-m", "the answer");
+      git(steer, "push", "-q");
+      const o = run(s, "overview");
+      expect(o.status, o.stderr).toBe(0);
+      expect(lines(o, "question").map((q) => q.split("\t").slice(4).join("\t"))).toEqual([`${ASKED}\tfusion-workbench/${asked}\t${basename(control).replace(/\.record\.json$/, ".md")}`]);
+      rmSync(join(s.workbench, control.replace(/\.record\.json$/, ".md")));
+      expect(refusedAs("--question", ASKED, "--option", "again")).toEqual([9, "refused", "conflict/question-answered"]);
+      expect(refusedAs("--question", "261101-0009-never-asked.md", "--option", "x")).toEqual([9, "refused", "unknown-scope/question-unknown"]);
+      expect(bytes()).toEqual(before);
+
+      // Usage: no option, a path for a basename, a two-line option.
+      for (const args of [["--question", ASKED], ["--question", `decisions/${ASKED}`, "--option", "x"], ["--question", ASKED, "--option", "a\nb"]]) expect(run(s, "answer", ...args).status, args.join(" ")).toBe(2);
+
+      // From a checkout that holds a package: exit 8, nothing written.
+      const me = /^CHECKOUT=(.*)$/m.exec(sh(identity, [], steer).stdout)?.[1] as string;
+      claim(s, next, me);
+      const held8 = run(s, "answer", "--question", ASKED, "--option", "x");
+      expect([held8.status, held8.value("state")], held8.stderr).toEqual([8, "holds-package"]);
+    });
+  }, CASE_TIMEOUT * 8);
 });
