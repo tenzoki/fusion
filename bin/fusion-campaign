@@ -13,6 +13,8 @@
 #   fusion-campaign overview [--window <hours>] [--ref <upstream>] [--since <sha>]
 #   fusion-campaign cut --checkouts <N> [--tolerance <k>]
 #   fusion-campaign sync [--read]
+#   fusion-campaign probe
+#   fusion-campaign watch [--since <sha>] [--interval <seconds>]
 #   fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...
 #   fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]
 #   fusion-campaign pause --reason <text> [--campaign <id>]
@@ -28,7 +30,9 @@
 # the campaign files at the ref (the lane view and the seven conditions,
 # `## The lane view and the conditions` below). `cut` proposes the lanes
 # (`## cut` below). `sync` is the commit-cycle read of a working session
-# (`## sync` below), and the seven others are the steering writes (`## The
+# (`## sync` below), `probe` and `watch` are the poll of the upstream head
+# that a waiting peer and a steering session run under a monitor (`## probe
+# and watch` below), and the seven others are the steering writes (`## The
 # steering writes` below). A sub-command this script does not know is a
 # usage error, never a silent no-op.
 #
@@ -43,8 +47,11 @@
 #                     prefixes it; a ref no remote prefixes is a local ref.
 #   --since <sha>     A commit the caller last read, 7 to 64 lowercase hex
 #                     characters: the page then adds `new-question=` and
-#                     `new-ready=` (`## Output of \`overview\``). Anything
+#                     `new-ready=` (`## Output of \`overview\``). On `watch`
+#                     the head its first probe is compared against. Anything
 #                     else is a usage error.
+#   --interval <s>    `watch` only: seconds between probes, a whole number
+#                     above zero, 300 when absent.
 #
 # ## `overview` — what it does, in order
 #
@@ -609,11 +616,62 @@
 #                       `package-unreadable`, `lane-member-unknown` and
 #                       `answers-several` as on `overview`.
 #
+# ## probe and watch
+#
+# `probe` resolves the branch and its upstream as `overview` does, then asks
+# the remote once: `git ls-remote <remote> <upstream's ref on the remote>`,
+# with `GIT_TERMINAL_PROMPT=0` and a batch mode ssh. It fetches nothing,
+# extracts nothing and reads no workbench file; the workbench is looked for
+# only to stand where every sub-command stands (exit 3 without one). Its page:
+#
+#   state=<state>       `ok` at exit 0, or a state of `## The state
+#                       vocabulary` at its exit code: `no-work-tree`,
+#                       `no-branch`, `no-upstream`, `upstream-unresolved`
+#                       (the remote answered without the branch) or
+#                       `fetch-failed` (the remote could not be asked; git's
+#                       stderr is passed through).
+#   ref=<upstream>      On `ok`: the upstream as the branch names it.
+#   head=<hash>         On `ok`: the full hash the remote's branch stands at.
+#
+# Every other state prints `branch=` and `ref=` after `state=` as far as each
+# was resolved, as on `overview`.
+#
+# `watch [--since <sha>] [--interval <seconds>]` runs `probe` every interval,
+# 300 seconds by default, and never exits on its own: it ends when it is
+# killed. It prints a line only when something changed, each line the moment
+# it is known, for a monitor that reads line by line:
+#
+#   moved=<old>\t<new>  The head differs from the last one seen. The last one
+#                       seen starts as `--since`, so the FIRST probe already
+#                       prints `moved=` when the remote moved after the head
+#                       the caller last read, a push between a monitor's
+#                       expiry and its re-arm included. A `--since` the head
+#                       begins with is the same commit. Without `--since` the
+#                       first answer is the baseline and prints nothing.
+#   failed=<state>      The first failed probe of a run of failures, with the
+#                       probe's state; git's stderr once with it. The watch
+#                       keeps probing and prints nothing more until a success.
+#   recovered=<head>    The first successful probe after a `failed=`; a
+#                       `moved=` follows it where the head changed meanwhile.
+#   state=already-watching
+#                       A watch for the same `FUSION_SESSION_ID` runs in this
+#                       checkout; this one prints that line and exits 0. The
+#                       pid file is `campaign-watch-<session>.pid` under what
+#                       `bin/fusion-tmp path` prints, its liveness tested
+#                       with `kill -0`, so a watch its monitor killed leaves no
+#                       stale refusal. The file is removed when the watch
+#                       exits by a signal it can catch.
+#
+# A watch that cannot start (no workbench, no `bin/fusion-tmp path`) exits as
+# the table says before its first probe.
+#
 # ## Exit codes
 #
 #   0  the printed answer is the answer: `state=ok` on `overview`, no `held=`
 #      line included; the page of `cut` with its `proposal=` line; `path=` and
-#      `revision=` on a write; `state=ok` on `sync`, pushed or nothing to push.
+#      `revision=` on a write; `state=ok` on `sync`, pushed or nothing to push;
+#      `state=ok` on `probe`; `state=already-watching` on `watch`, which
+#      otherwise does not exit by itself.
 #   1  the helper itself could not run: the compiled hooks or the codec bundle
 #      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
 #      `tar` failed where no state names the failure, the claim test could not
@@ -627,7 +685,9 @@
 #      `--tolerance` that is no whole number from zero, a write without a
 #      required flag, an `--id` that is not `YYMMDD-HHMM-<slug>`, a checkout
 #      that is not eight lowercase hex characters, an `--outcome` outside the
-#      four, an evidence flag on an outcome other than `completed`.
+#      four, an evidence flag on an outcome other than `completed`, an
+#      argument to `probe`, an `--interval` that is no whole number above
+#      zero.
 #   3  no fusion workbench above pwd.
 #   4  the workbench was not read: the codec's gate refused it by name
 #      (`legacy`, a workbench without its manifest, or `unsupported`), or the
@@ -637,9 +697,10 @@
 #      failure and never an empty overview, an empty cut or a half-made write.
 #   5  nothing to read against: `state=` is `no-work-tree`, `no-branch`,
 #      `no-upstream`, `upstream-unresolved` or `workbench-untracked`
-#      (`overview`, `sync`).
+#      (`overview`, `sync`; `probe` all but the last).
 #   6  the fetch did not complete, `state=fetch-failed`. git's own stderr is
-#      passed through unmodified (`overview`, `sync`).
+#      passed through unmodified (`overview`, `sync`; `probe`, whose
+#      `ls-remote` did not complete).
 #   7  the workbench is not inside this repository,
 #      `state=workbench-outside-repo` (`overview`, `sync`).
 #   8  `state=holds-package`: a steering act from a checkout that holds a
@@ -681,7 +742,7 @@
 #                           another checkout wrote can arrive by fetch, and an
 #                           overview with no `held=` line would be a false
 #                           answer.
-#   fetch-failed            Exit 6.
+#   fetch-failed            Exit 6. On `probe`, the `ls-remote` failed.
 #   workbench-outside-repo  Exit 7. The workbench marker sits in an ancestor of
 #                           the repository, so the workbench has no path in a
 #                           commit.
@@ -714,6 +775,10 @@
 # A steering write touches one file of the working tree, the campaign record
 # it names, written whole by rename; on exit 8 and 9 it touches none. It
 # fetches nothing and commits nothing.
+#
+# `probe` and `watch` touch no ref and no file of the repository: `ls-remote`
+# updates nothing. `watch` writes its pid file under what `bin/fusion-tmp
+# path` prints, outside every git tree.
 #
 # `sync` is the one sub-command that moves the repository, and `sync --read` does not: it appends to the
 # working tree's event log, commits that log alone under the lock, rebases

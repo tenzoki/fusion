@@ -3,13 +3,15 @@
  * <hours>] [--ref <upstream>]`, the two tiers of the overview above the
  * checkouts, `cut --checkouts <N> [--tolerance <k>]`, the lane proposal, the
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
- * `reassign` and `end`, and `sync [--read]`, the commit-cycle read.
+ * `reassign` and `end`, `sync [--read]`, the commit-cycle read, and `probe`
+ * and `watch [--since <sha>] [--interval <seconds>]`, the poll of the
+ * upstream head.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
  * overview's computation, `lib/campaign-cut.ts` the cut's,
- * `lib/campaign-write.ts` the writes' and `lib/campaign-sync.ts` the cycle's,
- * each header the account of its mechanism. This file parses the arguments,
+ * `lib/campaign-write.ts` the writes', `lib/campaign-sync.ts` the cycle's and
+ * `lib/campaign-watch.ts` the poll's, each header the account of its mechanism. This file parses the arguments,
  * finds the workbench above the working directory, and maps what the
  * computation answers onto stdout, stderr and an exit code.
  *
@@ -21,14 +23,18 @@
  * was resolved before the read stopped, as `bin/fusion-forum` prints it; on 8
  * and 9 the `state=` line and the line that says why (`held=`, `refused=`),
  * the detail on stderr; on 10 and 11 the whole of `sync`'s page, `state=`
- * naming the stopped rebase or the push that did not land.
+ * naming the stopped rebase or the push that did not land. `watch` is the
+ * one exception: it never finishes, so each of its lines is written the
+ * moment it is known, for a monitor that reads line by line.
  *
  * ## The scratch directory survives no way out
  *
  * `withScratch` removes it in a `finally`. The whole run is synchronous, so a
  * signal handler registered here runs only after that `finally`; without a
  * handler, node's default for SIGINT ends the process at once and the extract
- * would stay behind.
+ * would stay behind. `probe` and `watch` make no scratch directory and are
+ * asynchronous; the signal handler's `process.exit` runs the `exit` handler
+ * that removes the watch's pid file.
  */
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -36,6 +42,8 @@ const USAGE = [
     "usage: fusion-campaign overview [--window <hours>] [--ref <upstream>] [--since <sha>]",
     "       fusion-campaign cut --checkouts <N> [--tolerance <k>]",
     "       fusion-campaign sync [--read]",
+    "       fusion-campaign probe",
+    "       fusion-campaign watch [--since <sha>] [--interval <seconds>]",
     "       fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...",
     "       fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]",
     "       fusion-campaign pause --reason <text> [--campaign <id>]",
@@ -90,6 +98,17 @@ function parseCut(argv) {
     if (p === null || checkouts === undefined || !/^[1-9][0-9]{0,5}$/.test(checkouts) || !/^(0|[1-9][0-9]{0,5})$/.test(tolerance))
         return null;
     return { checkouts: Number(checkouts), tolerance: Number(tolerance) };
+}
+/** The watch's interval where the caller names none: the five minutes of spec C4 and C5. */
+const DEFAULT_INTERVAL_SECONDS = 300;
+/** `--since <sha>`, as `overview` takes it, and `--interval <seconds>`, a whole number above zero; each at most once. */
+function parseWatch(argv) {
+    const p = parseFlags(argv, ["--since", "--interval"], [], [], 0);
+    const since = p?.values.get("--since")?.[0] ?? null;
+    const interval = p?.values.get("--interval")?.[0] ?? String(DEFAULT_INTERVAL_SECONDS);
+    if (p === null || (since !== null && !/^[0-9a-f]{7,64}$/.test(since)) || !/^[1-9][0-9]{0,5}$/.test(interval))
+        return null;
+    return { since, intervalSeconds: Number(interval) };
 }
 const WRITES = new Set(["open", "lanes", "pause", "resume", "move", "reassign", "end"]);
 const EVIDENCE_FLAGS = ["--objective-met", "--intake-closed", "--all-attempts-terminal", "--final-audit-passed"];
@@ -313,6 +332,38 @@ function syncCycle(readOnly, lib) {
             return SYNC_EXIT[result.state];
     }
 }
+/** One `git ls-remote` of the upstream, its page and `overview`'s exit code for its state. */
+async function probeOnce(lib) {
+    const cwd = process.cwd();
+    if (lib.findWorkbenchRoot(cwd) === null) {
+        say(`no fusion workbench found above ${cwd}.`);
+        return 3;
+    }
+    const { probed, stderr } = await lib.poll.probe(cwd);
+    if (stderr !== "")
+        process.stderr.write(stderr);
+    process.stdout.write(lib.poll.renderProbe(probed));
+    return probed.state === "ok" ? 0 : STATE_EXIT[probed.state];
+}
+/** The poll: one per session and checkout, then `watchLoop`, which does not return. */
+async function watch(args, lib) {
+    const cwd = process.cwd();
+    if (lib.findWorkbenchRoot(cwd) === null) {
+        say(`no fusion workbench found above ${cwd}.`);
+        return 3;
+    }
+    const file = lib.poll.pidFileOf(lib.tmpPath(cwd), process.env.FUSION_SESSION_ID);
+    if (lib.poll.claimWatch(file) === "already-watching") {
+        process.stdout.write("state=already-watching\n");
+        return 0;
+    }
+    return lib.poll.watchLoop(args.since, args.intervalSeconds * 1000, {
+        probe: () => lib.poll.probe(cwd),
+        emit: (line) => void process.stdout.write(`${line}\n`),
+        warn: (text) => void process.stderr.write(text),
+        sleep: (ms) => new Promise((done) => setTimeout(done, ms)),
+    });
+}
 function main(argv, lib) {
     const [command, ...rest] = argv;
     if (command === "-h" || command === "--help" || command === "help") {
@@ -334,6 +385,12 @@ function main(argv, lib) {
     // `sync` takes `--read` and no other flag: it reads the branch's upstream, the orchestrator's cycle and nobody's named ref.
     if (command === "sync")
         return rest.length === 0 || (rest.length === 1 && rest[0] === "--read") ? syncCycle(rest.length === 1, lib) : usage();
+    if (command === "probe")
+        return rest.length === 0 ? probeOnce(lib) : usage();
+    if (command === "watch") {
+        const args = parseWatch(rest);
+        return args === null ? usage() : watch(args, lib);
+    }
     if (command !== undefined && WRITES.has(command)) {
         const act = parseWrite(command, rest, lib.writes);
         return act === null ? usage() : steer(act, lib);
@@ -345,11 +402,11 @@ function main(argv, lib) {
 // of the reader. The modules are imported inside the `try` for the first of
 // those.
 try {
-    const [lib, cutter, writes, cycle, { findWorkbenchRoot }, { legacyLine, notReadLine, bundleMissing }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/campaign.js"), import("./lib/campaign-cut.js"), import("./lib/campaign-write.js"), import("./lib/campaign-sync.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
+    const [lib, cutter, writes, cycle, poll, { findWorkbenchRoot }, { legacyLine, notReadLine, bundleMissing }, { exitZeroOnStdoutEpipe }] = await Promise.all([import("./lib/campaign.js"), import("./lib/campaign-cut.js"), import("./lib/campaign-write.js"), import("./lib/campaign-sync.js"), import("./lib/campaign-watch.js"), import("./lib/workbench-root.js"), import("./lib/record-index.js"), import("./lib/fail-open.js")]);
     exitZeroOnStdoutEpipe(); // the reader may close stdout first
     for (const [signal, code] of [["SIGINT", 130], ["SIGTERM", 143], ["SIGHUP", 129]])
         process.on(signal, () => process.exit(code));
-    process.exitCode = main(process.argv.slice(2), { ...lib, cutter, writes, cycle, findWorkbenchRoot, legacyLine, notReadLine, bundleMissing });
+    process.exitCode = await main(process.argv.slice(2), { ...lib, cutter, writes, cycle, poll, findWorkbenchRoot, legacyLine, notReadLine, bundleMissing });
 }
 catch (e) {
     const known = e instanceof Error && e.name === "HelperFailure";
