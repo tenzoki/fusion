@@ -353,6 +353,25 @@ What stays unenforced:
 - **The Prior condition is procedure too.** Nothing on the Claude side reads Prior's pin, and the
   pin's state is read in `codec/fixtures/prior/REQUESTS.md` alone.
 
+## 13.6.0: campaign peers follow the steering session
+
+13.6.0 lets a campaign be steered from its centre. A peer in a lane takes its lane's next
+package itself where that package runs autonomously, sends every question it would have asked
+its own user to the steering session as a decision record, and waits for the answer. The
+steering session shows those questions, files the user's answer, and watches the remote for new
+ones. `docs/campaign.md` is the page on it.
+
+1. Run `fusion --update` on every checkout of the project and restart each session. A peer that
+   predates 13.6.0 reads only the pause from the campaign: it takes no lane handover, files no
+   question to the steering session and asks its own user as before. Nothing breaks for it, and
+   nothing it does follows the steering session.
+2. Pre-allow `Monitor` in the permissions of every checkout that steers or works a campaign.
+   Otherwise each re-arm of a watch waits on a permission prompt (`docs/campaign.md`).
+
+Nothing migrates. No record is converted, no field is added, and the codec is unchanged. The
+question and its answer are ordinary decision records whose head carries the lines `**Asked by:**`,
+`**Set aside:**` and `**Answers:**`. A project with no running campaign sees no change.
+
 ## Where to read more
 
 - `rules/fusion-workbench-conventions.md` `## Work packages`: every control field and the one
