@@ -1,7 +1,7 @@
 ---
-description: Steer a campaign over the checkouts of one project. Show which checkout holds which work package at the commit the remote stands at, when it last pushed, what the package waits for and how each lane stands, read out of a fetched ref; propose the cut of the live packages into lanes; open, pause, resume or end a campaign, move a package or reassign a lane. Use when the user asks who is working on what across checkouts, or wants to steer a campaign.
-argument-hint: "[overview [--window <hours>] | cut --checkouts <N> | lanes | open | pause | resume | move | reassign | end]"
-allowed-tools: [Bash, Read, AskUserQuestion]
+description: Steer a campaign over the checkouts of one project. Show which checkout holds which work package at the commit the remote stands at, when it last pushed, what the package waits for and how each lane stands, read out of a fetched ref; propose the cut of the live packages into lanes; open, pause, resume or end a campaign, move a package or reassign a lane; answer a peer's question; watch the remote while a campaign runs. Use when the user asks who is working on what across checkouts, or wants to steer a campaign.
+argument-hint: "[overview [--window <hours>] | cut --checkouts <N> | lanes | open | pause | resume | move | reassign | end | answer [<decision>] | stop watching]"
+allowed-tools: [Bash, Read, AskUserQuestion, Monitor, TaskStop]
 ---
 
 # Fusion campaign (the view above the checkouts)
@@ -10,7 +10,7 @@ The user invoked `/fusion:campaign`. This workflow is the steering session's vie
 
 **The mechanism is not in this body.** The fetch, the read at the commit, the `last_push` rule, the lane view and its seven conditions, the cut's rules, every steering act with its refusals, the notes, the state vocabulary and the exit codes are documented in `bin/fusion-campaign`'s own header, the authoritative text for all of it. What this body carries is the flow and the sentences the user reads.
 
-**`overview` is the sub-command when none is named** (Steps 2 and 3). The others are `cut --checkouts <N>` (Step 4), `lanes` (Step 5) and the six steering acts `open`, `pause`, `resume`, `move`, `reassign` and `end` (Steps 6 and 7). Any other word is no sub-command: say so and stop. **No sub-command here takes `--ref`**: the overview reads the branch's upstream, the cut and the acts read this checkout's tree, and `sync` is the orchestrator's commit-cycle read and is not run from here.
+**`overview` is the sub-command when none is named** (Steps 2 and 3). The others are `cut --checkouts <N>` (Step 4), `lanes` (Step 5), the steering acts `open`, `pause`, `resume`, `move`, `reassign` and `end` (Steps 6, 7), `answer` (Step 8) and `stop watching` (Step 9). Any other word is none: say so and stop. **No sub-command here takes `--ref`**: the overview reads the branch's upstream, the cut and the acts read this checkout's tree, and `sync` is the orchestrator's commit-cycle read and is not run from here.
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
@@ -72,6 +72,9 @@ Whole sentences in the user's terms (`rules/user-facing-output.md`): no `key=` t
    - `unconfirmed=`: that lane's checkout has not yet read the campaign as it now stands; it does so at its next commit. Where its last confirmation is shown and old, ask whether it is still working.
 7. **Every other `note=` line in a sentence of its own**, because each is a degradation that changed the answer: `commit-rows-unmatched` (that many newer commits of that checkout were not found on the ref, the newest at that time, so its last push may be later than shown), `no-commit-rows` (no commit of that checkout is on record at the commit), `event-log-untracked` (the project does not track its event log there, so no last push can be read for anybody), `log-lines-unreadable` (that many lines of the event log were left out), `registry-unreadable` (the name of that checkout could not be looked up), `package-unreadable` (that package's record could not be read, so if somebody holds it, it is missing above), `lane-member-unknown` (a lane names a package the workbench does not list, so it was left out of that lane), `commit-unattributed` (a commit that touched a declared area could not be attributed to a checkout, so nothing was said about it under the conditions), `campaign-first-commit-unknown` (no commit adds that campaign's record, so its commits were not checked against the lanes), `local-ref` (the ref is local, nothing was fetched, and the picture is as current as that ref).
 8. **The window.** `window_hours` is named in every sentence that depends on it, which is the silence sentence: say once which window applied.
+9. **Peer questions.** One sentence per `question=` row: the package, its checkout and the decision by name. With answer `none`, offer to answer it (Step 8); otherwise it is answered and waits for the peer to pick it up. `note=answers-several`: two records answer it, so it reads open; name them. One sentence per `ready=` row: that lane's next package waits for nothing and can start.
+
+Then Step 9, when a campaign is running.
 
 ## Step 4: `cut --checkouts <N>`
 
@@ -141,3 +144,23 @@ Read `state=`, not the exit code, and define none. Both mean that nothing was wr
 - `state=refused`, with `refused=<class>/<reason>`: say what the reason means in the user's project. `campaign-exists`: a campaign of that name is already there. `campaign-not-running`, `campaign-not-paused`, `campaign-not-live`: the act does not fit the campaign's state; name the state. `campaign-terminal`: that campaign has ended. `package-unknown`, `lane-unknown`: no such package or lane; name what was given. `no-lanes`: the lanes are not cut yet (Steps 4 and 5). `package-already-in-lane`: it stands there already. `duplicate-lane-checkout`: that checkout already works another lane. `revision-moved`: the record changed since it was read; run the overview and try again. `proposal-unreadable`: the file is no proposal. Any other: quote the line and the stderr.
 
 Exits 1, 3 and 4 as in Step 4. **exit 2** is a value outside the helper's grammar, an id that is not `YYMMDD-HHMM-<slug>`, a checkout that is not eight lowercase hex characters, an outcome outside the four, an evidence flag on another outcome, or a usage fault of this body: say which.
+
+## Step 8: `answer`
+
+`answer [<decision>]`, or the user taking up Step 3's offer. It needs the decision's `question=` row with answer `none` from an overview of this use (Step 2); with no decision named, offer the open ones. Read the record at that commit, `git show <head>:<path>` with the overview's `head=` and the row's path, and put its question and options to the user in chat, never with `AskUserQuestion`: the question in one line, the options beneath it as a numbered list in the record's words, and that a number, the option's words or anything else they write will do. Then wait. **No answer is filed without the user's choice**, and none is picked for them.
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" answer --question <decision> --option '<the option chosen, one line>' <--note '<what else the user wrote>', when they did>; echo "exit=$?"
+```
+
+Exit 0 prints `path=` and `revision=`: say the answer is filed and reaches the peer with this session's next commit and push, not before. `state=holds-package` is Step 7's. `question-unknown`: no open question of that name at the remote's commit. `question-answered`: an answer stands already; run the overview again. Exits 5 to 7 as in Step 2, the others as in Step 7.
+
+## Step 9: the watch
+
+**Every use of this command while a campaign is running turns the watch on**, after whatever else it did: arm `Monitor` on `"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" watch --since <last head= read>`, `timeout_ms` 1800000, its `description` naming the campaign and `on moved run overview --since <old>; on expiry re-arm from the last head`. Mechanism: the helper's header, `## probe and watch`. `state=already-watching`: one is armed; say nothing. `Monitor` must be pre-allowed in the user's permissions, or each re-arm waits on a prompt.
+
+- On `moved=<old>\t<new>`, run `overview --since <old>` and tell the user only its `new-question=` rows, each with the offer to answer (Step 8), and its `new-ready=` rows, in Step 3's words; with none, say nothing. `note=since-unknown`: say once that something already known may repeat. Its `head=` is now the last head.
+- On `failed=`, or an overview that exits non-zero: one sentence on what could not be checked; keep watching.
+- On every expiry re-arm from the last head.
+
+Stop it (`TaskStop`) after a `pause` or `end` in this session, on an overview that shows the campaign not running, and when the user says to stop watching. The next use of this command while it runs turns it on again.

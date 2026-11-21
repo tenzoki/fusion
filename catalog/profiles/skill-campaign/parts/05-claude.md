@@ -1,3 +1,6 @@
+9. **Peer questions.** One sentence per `question=` row: the package, its checkout and the decision by name. With answer `none`, offer to answer it (Step 8); otherwise it is answered and waits for the peer to pick it up. `note=answers-several`: two records answer it, so it reads open; name them. One sentence per `ready=` row: that lane's next package waits for nothing and can start.
+
+Then Step 9, when a campaign is running.
 
 ## Step 4: `cut --checkouts <N>`
 

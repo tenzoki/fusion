@@ -2,7 +2,7 @@ The user invoked `/fusion:campaign`. This workflow is the steering session's vie
 
 **The mechanism is not in this body.** The fetch, the read at the commit, the `last_push` rule, the lane view and its seven conditions, the cut's rules, every steering act with its refusals, the notes, the state vocabulary and the exit codes are documented in `bin/fusion-campaign`'s own header, the authoritative text for all of it. What this body carries is the flow and the sentences the user reads.
 
-**`overview` is the sub-command when none is named** (Steps 2 and 3). The others are `cut --checkouts <N>` (Step 4), `lanes` (Step 5) and the six steering acts `open`, `pause`, `resume`, `move`, `reassign` and `end` (Steps 6 and 7). Any other word is no sub-command: say so and stop. **No sub-command here takes `--ref`**: the overview reads the branch's upstream, the cut and the acts read this checkout's tree, and `sync` is the orchestrator's commit-cycle read and is not run from here.
+**`overview` is the sub-command when none is named** (Steps 2 and 3). The others are `cut --checkouts <N>` (Step 4), `lanes` (Step 5), the steering acts `open`, `pause`, `resume`, `move`, `reassign` and `end` (Steps 6, 7), `answer` (Step 8) and `stop watching` (Step 9). Any other word is none: say so and stop. **No sub-command here takes `--ref`**: the overview reads the branch's upstream, the cut and the acts read this checkout's tree, and `sync` is the orchestrator's commit-cycle read and is not run from here.
 
 Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
