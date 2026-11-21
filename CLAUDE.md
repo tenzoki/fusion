@@ -51,7 +51,7 @@ Plugin installed by `install.sh` from `tenzoki/fusion` `heads/main`; also in the
 - **SessionStart output**: `systemMessage` JSON reaches the user, plain stdout reaches the model. Detail: `README-hooks.md` `## Files`.
 - **`.gitignore`**: for shipped binaries inside excluded dirs use `dir/*` (file pattern) so `!path` exceptions work for new files. `dir/` (trailing slash) blocks all re-inclusion of files added later.
 - **The work package is the unit of work**: one directory per item, its state in `package.json`, its holder a checkout. Detail: `rules/fusion-workbench-conventions.md` `## Work packages`, which every agent already loads.
-- **The bus protocol is gone** (v3.15.0): concurrent sessions exchange work through the user. Detail: `README-agents.md` `## Migration note`.
+- **The bus protocol is gone** (v3.15.0): concurrent sessions exchange records through git. Detail: `README-agents.md` `## Migration note`.
 
 ## Release process
 
