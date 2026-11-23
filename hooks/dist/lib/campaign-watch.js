@@ -32,6 +32,43 @@
  * prints once per run of failures, so a remote that is down for an hour is
  * one line and not twelve.
  *
+ * ## The report mode
+ *
+ * `reportLoop` is the watch for a session that a background command's exit
+ * wakes (`--report steering|lane`): it prints only what the session must act
+ * on, then returns, so the exit is the wake. A probe whose head begins with
+ * the last head seen is no move. On a move, `reportRows` fetches once and
+ * extracts the old and the new head once each (`sideAt`), and computes the
+ * mode's rows from what the overview and `sync` already compute: mode
+ * `steering` the `--since` rows of `withSince` over `steeringAt`, and a
+ * campaign that was `running` at the old head and is not at the new; mode
+ * `lane` this checkout's questions by `mineOf` and `laneViewOf`, answered at
+ * the new head and not at the old, and its campaign leaving `running`. A move
+ * with no row becomes the last head in silence, so a push of this checkout's
+ * own carries no wake unless it carries a row; no record of own pushes is
+ * kept. A move whose fetch fails or whose new head does not read keeps the old
+ * last head and counts as a failed probe, so the row it carried is reported
+ * after the recovery. An old head that names no commit, is no ancestor of the
+ * new or does not read is `unknown`, as `steeringSince` has it: every row
+ * counts as new, with `note=since-unknown`, the one duplicate the mode allows.
+ *
+ * An outage is told once per session, by a state file
+ * `campaign-watch-<session>.state` beside the pid file. Every failed probe
+ * writes it or refreshes its mtime; a file older than two intervals is stale
+ * and counts as absent. A failed probe with no fresh file writes it, prints
+ * `failed=` and returns; with a fresh file it stays silent. A success removes
+ * the file and prints nothing. So a re-armed watch, a new process, stays
+ * silent in the outage its predecessor reported, and a new process, or a
+ * resumed one after the file went stale, hears of a new outage.
+ *
+ * ## The bound on the remote
+ *
+ * Every `ls-remote` is killed after `REMOTE_TIMEOUT_MS`, and so is the report
+ * mode's fetch (`fetchRef`'s `timeoutMs`): either is `fetch-failed`. Without
+ * the bound a remote that accepts the connection and never answers would
+ * silence a watch that no expiry restarts (issue
+ * `261120-2050-campaign-watch-sets-no-timeout-on-ls-remote-so-a-hanging-remote-silences-it.md`).
+ *
  * ## One watch per session and checkout
  *
  * The pid file is `campaign-watch-<session>.pid` under what `bin/fusion-tmp
@@ -41,9 +78,13 @@
  * on exit when it still names this process.
  */
 import { spawn } from "node:child_process";
-import { readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { readFileSync, renameSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { run } from "./campaign.js";
+import { extractAt, fetchRef, mustGit, readCampaignsAt, run, steeringAt, STEERING_ENTRIES, withScratch, withSince } from "./campaign.js";
+import { laneViewOf, mineOf } from "./campaign-sync.js";
+import { ask as askCodec } from "./record-client.js";
+/** How long one `ls-remote` or the report mode's fetch may take before it is killed and counts as `fetch-failed`. */
+export const REMOTE_TIMEOUT_MS = 60_000;
 /** The environment every remote call runs in: a prompt for credentials is an immediate failure. */
 const BATCH_ENV = () => ({ ...process.env, GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -oBatchMode=yes" });
 /** The branch, its upstream as `overview` prints it, and where to ask for it; or the state that stops the probe first. */
@@ -59,15 +100,26 @@ function upstreamOf(cwd) {
         return { state: "no-upstream", branch };
     return { branch, ref, remote: remote === "" ? "." : remote, remoteRef };
 }
-/** One probe. `stderr` is git's own, for the caller to pass on or to hold. */
-export async function probe(cwd) {
+/** One probe, its `ls-remote` killed after `timeoutMs`. `stderr` is git's own, for the caller to pass on or to hold. */
+export async function probe(cwd, timeoutMs = REMOTE_TIMEOUT_MS) {
     const up = upstreamOf(cwd);
     if ("state" in up)
         return { probed: up, stderr: "" };
     const { branch, ref } = up;
-    const asked = await new Promise((done) => {
+    const asked = await new Promise((resolve) => {
         const child = spawn("git", ["ls-remote", up.remote, up.remoteRef], { cwd, env: BATCH_ENV(), stdio: ["ignore", "pipe", "pipe"] });
         let [stdout, stderr] = ["", ""];
+        const done = (r) => {
+            clearTimeout(timer);
+            resolve(r);
+        };
+        // Not `close`: a transport's own child may hold the pipes open long after git itself was killed.
+        const timer = setTimeout(() => {
+            child.kill();
+            child.stdout.destroy();
+            child.stderr.destroy();
+            done({ status: -1, stdout: "", stderr: `${stderr}git ls-remote did not answer within ${timeoutMs / 1000} s and was stopped.\n` });
+        }, timeoutMs);
         child.stdout.on("data", (d) => (stdout += d.toString("utf-8")));
         child.stderr.on("data", (d) => (stderr += d.toString("utf-8")));
         child.on("error", (e) => done({ status: -1, stdout, stderr: String(e) }));
@@ -120,11 +172,142 @@ export async function watchLoop(since, intervalMs, deps) {
         await deps.sleep(intervalMs);
     }
 }
+/** The side at `sha` extracted below `into`; `unknown` where `sha` names no commit or no ancestor of the head, as `steeringSince` has it; `unread` where its campaigns did not read. */
+function sideAt(at, sha, into, ask) {
+    const resolved = run("git", ["rev-parse", "-q", "--verify", "--end-of-options", `${sha}^{commit}`], at.gitRoot);
+    if (resolved.status !== 0)
+        return "unknown";
+    const commit = resolved.stdout.trim();
+    if (run("git", ["merge-base", "--is-ancestor", commit, at.head], at.gitRoot).status !== 0)
+        return "unknown";
+    if (mustGit(at.gitRoot, "ls-tree", "-d", "--full-tree", commit, "--", at.rel).trim() === "")
+        return { workbench: null, campaigns: [] };
+    const workbench = extractAt({ ...at, head: commit }, STEERING_ENTRIES, into);
+    const read = readCampaignsAt(workbench, ask);
+    return read.kind === "failed" ? "unread" : { workbench, campaigns: read.campaigns };
+}
+/** The campaigns `running` at the old side that stand in another state at the new. */
+const leftRunning = (before, now) => now.campaigns.filter((c) => c.state !== "running" && before.campaigns.some((b) => b.id === c.id && b.state === "running"));
+/** Mode `steering`: the `new-question=` and `new-ready=` rows `overview --since` prints, and `campaign=` per campaign that left `running`. Null where the new head does not read. */
+function steeringRows(rel, now, before, ask) {
+    const read = steeringAt(now.workbench, ask);
+    if ("unread" in read)
+        return null;
+    let prior = "unknown";
+    if (before !== null && before.workbench === null)
+        prior = { questions: [], ready: [] };
+    else if (before !== null && before.workbench !== null) {
+        const old = steeringAt(before.workbench, ask);
+        if (!("unread" in old))
+            prior = old;
+    }
+    // `withSince` reads the questions, the ready lanes and the notes of an overview, and is the one rule of what is new.
+    const delta = withSince({ ...read, notes: [] }, prior);
+    // The row text is `renderOverview`'s for `new-question=` and `new-ready=`.
+    const rows = [
+        ...(delta.newQuestions ?? []).map((q) => `new-question=${[q.campaign, q.lane, q.checkout ?? "-", q.package, q.decision, `${rel}/${q.path}`, q.answer ?? "none"].join("\t")}`),
+        ...(delta.newReady ?? []).map((r) => `new-ready=${[r.campaign, r.lane, r.package].join("\t")}`),
+        ...(before === null ? [] : leftRunning(before, now).map((c) => `campaign=${c.id}\t${c.state}`)),
+    ];
+    return prior === "unknown" && rows.length > 0 ? [...rows, "note=since-unknown"] : rows;
+}
+/** Mode `lane`: `answered=` per question of this checkout answered at the new head and not at the old, and `paused=` or `campaign=` where its campaign left `running`. Null where the new head does not read. */
+function laneRows(now, before, checkout, ask) {
+    const view = (side) => laneViewOf(side.workbench, mineOf(side.campaigns, checkout).mine, checkout, [], ask);
+    const current = view(now);
+    if ("unread" in current)
+        return null;
+    const old = before === null || before.workbench === null ? null : view({ ...before, workbench: before.workbench });
+    const known = before !== null && (old === null || !("unread" in old));
+    const answered = new Set(old === null || "unread" in old ? [] : old.questions.filter((q) => q.answer !== null).map((q) => q.decision));
+    const rows = current.questions.filter((q) => q.answer !== null && !answered.has(q.decision)).map((q) => `answered=${q.decision}\t${q.answer}`);
+    const mine = before === null ? null : mineOf(before.campaigns, checkout).mine;
+    if (before !== null && mine !== null)
+        for (const c of leftRunning(before, now).filter((c) => c.id === mine.id))
+            rows.push(c.state === "paused" ? `paused=${c.id}` : `campaign=${c.id}\t${c.state}`);
+    return !known && rows.length > 0 ? [...rows, "note=since-unknown"] : rows;
+}
+/**
+ * The rows `mode` reports for the move from `since` to the head one bounded
+ * fetch lands on, with that head; or the state that makes the move a failed
+ * probe: `fetchRef`'s, or `unread` where the new head did not read.
+ */
+export function reportRows(cwd, workbench, since, mode, checkout, timeoutMs = REMOTE_TIMEOUT_MS, ask = askCodec) {
+    const at = fetchRef(cwd, workbench, null, timeoutMs);
+    if (at.state !== "ok")
+        return { failed: at.state };
+    return withScratch(cwd, (scratch) => {
+        const now = sideAt(at, at.head, join(scratch, "new"), ask);
+        if (typeof now === "string" || now.workbench === null)
+            return { failed: "unread" };
+        const old = sideAt(at, since, join(scratch, "old"), ask);
+        const before = typeof old === "string" ? null : old;
+        const current = { ...now, workbench: now.workbench };
+        const rows = mode === "steering" ? steeringRows(at.rel, current, before, ask) : laneRows(current, before, checkout, ask);
+        return rows === null ? { failed: "unread" } : { rows, head: at.head };
+    });
+}
+export function outageAt(file, intervalMs) {
+    return {
+        fresh: () => {
+            try {
+                return Date.now() - statSync(file).mtimeMs < 2 * intervalMs;
+            }
+            catch {
+                return false;
+            }
+        },
+        // The content is for a reader; only the file's presence and mtime are read.
+        mark: (state) => writeFileSync(file, `${state}\t${new Date().toISOString()}\n`),
+        clear: () => rmSync(file, { force: true }),
+    };
+}
+/** The report mode's poll: returns 0 after printing rows and `head=`, or the first `failed=` of an outage this session was not told of. */
+export async function reportLoop(since, intervalMs, deps) {
+    let seen = since;
+    for (;;) {
+        const { probed, stderr } = await deps.probe();
+        let failed = null;
+        if (probed.state !== "ok")
+            failed = probed.state;
+        // An abbreviated `--since` that the head begins with is the same commit, not a move; without one the first answer is the baseline.
+        else if (seen === null || probed.head.startsWith(seen))
+            seen = probed.head;
+        else {
+            const moved = deps.delta(seen);
+            if ("failed" in moved)
+                failed = moved.failed;
+            else if (moved.rows.length === 0)
+                seen = moved.head;
+            else {
+                deps.outage.clear();
+                for (const row of moved.rows)
+                    deps.emit(row);
+                deps.emit(`head=${moved.head}`);
+                return 0;
+            }
+        }
+        if (failed === null)
+            deps.outage.clear();
+        else if (deps.outage.fresh())
+            deps.outage.mark(failed);
+        else {
+            deps.outage.mark(failed);
+            deps.emit(`failed=${failed}`);
+            if (stderr !== "")
+                deps.warn(stderr);
+            return 0;
+        }
+        await deps.sleep(intervalMs);
+    }
+}
 /** The pid file of the watch of `session` in this checkout's directory under `bin/fusion-tmp path`. */
 export function pidFileOf(tmp, session) {
     const name = session === undefined || session === "" ? "no-session" : session.replace(/[^A-Za-z0-9._-]/g, "_");
     return join(tmp, `campaign-watch-${name}.pid`);
 }
+/** The report mode's outage file beside the pid file `pidFile`. */
+export const stateFileOf = (pidFile) => pidFile.replace(/\.pid$/, ".state");
 /** `kill -0`: alive, or alive and someone else's (EPERM). */
 function alive(pid) {
     try {

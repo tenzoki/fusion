@@ -14,7 +14,7 @@
 #   fusion-campaign cut --checkouts <N> [--tolerance <k>]
 #   fusion-campaign sync [--read]
 #   fusion-campaign probe
-#   fusion-campaign watch [--since <sha>] [--interval <seconds>]
+#   fusion-campaign watch [--report steering|lane] [--since <sha>] [--interval <seconds>]
 #   fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...
 #   fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]
 #   fusion-campaign pause --reason <text> [--campaign <id>]
@@ -32,7 +32,7 @@
 # `## The lane view and the conditions` below). `cut` proposes the lanes
 # (`## cut` below). `sync` is the commit-cycle read of a working session
 # (`## sync` below), `probe` and `watch` are the poll of the upstream head
-# that a waiting peer and a steering session run under a monitor (`## probe
+# that a waiting peer and a steering session run in the background (`## probe
 # and watch` below), and the eight others are the steering writes (`## The
 # steering writes` below), `answer` the one that files a decision record
 # rather than the campaign's. A sub-command this script does not know is a
@@ -54,6 +54,8 @@
 #                     else is a usage error.
 #   --interval <s>    `watch` only: seconds between probes, a whole number
 #                     above zero, 300 when absent.
+#   --report <mode>   `watch` only: `steering` or `lane`, the report mode
+#                     (`## probe and watch`). Anything else is a usage error.
 #
 # ## `overview` — what it does, in order
 #
@@ -660,6 +662,12 @@
 # Every other state prints `branch=` and `ref=` after `state=` as far as each
 # was resolved, as on `overview`.
 #
+# Every `ls-remote`, on `probe` and on both kinds of `watch`, is killed after
+# 60 seconds and is then `fetch-failed`, with a stderr line saying so; so is
+# the fetch of `watch --report`. `overview`, `sync` and `answer` fetch without
+# a bound. `FUSION_CAMPAIGN_TIMEOUT`, whole seconds, shortens the bound for a
+# test.
+#
 # `watch [--since <sha>] [--interval <seconds>]` runs `probe` every interval,
 # 300 seconds by default, and never exits on its own: it ends when it is
 # killed. It prints a line only when something changed, each line the moment
@@ -686,6 +694,52 @@
 #                       stale refusal. The file is removed when the watch
 #                       exits by a signal it can catch.
 #
+# `watch --report steering|lane [--since <sha>] [--interval <seconds>]` is
+# the watch for a session that the command's exit wakes. It probes as `watch`
+# does, on the same pid file, and prints only what the session must act on,
+# each line the moment it is known, then `head=` and exit 0:
+#
+#   new-question=<…>    `steering`: the `new-question=` rows `overview --since
+#   new-ready=<…>       <last head>` prints, in its fields.
+#   campaign=<id>\t<state>
+#                       `steering`: a campaign `running` at the last head and
+#                       in another state at the new. `lane`: this checkout's
+#                       campaign (`sync`'s `mine`) did so, to a state other
+#                       than `paused`.
+#   answered=<question>\t<answer>
+#                       `lane`: a `question=` row of `sync --read` whose
+#                       answer is not `none` at the new head and was `none`
+#                       or absent at the last.
+#   paused=<id>         `lane`: this checkout's campaign went from `running`
+#                       to `paused`.
+#   note=since-unknown  After the rows, where the last head names no commit,
+#                       is no ancestor of the new one or did not read: every
+#                       row then counts as new, the one duplicate report the
+#                       mode allows.
+#   head=<hash>         The head the rows were read at, the `--since` of the
+#                       next arm.
+#
+# A move with none of these rows, a push of this checkout's own included,
+# becomes the last head and prints nothing. A move whose fetch fails or whose
+# new head does not read is a failed probe, and the last head stays, so its
+# rows are reported after the recovery. Without `--since` the first answer is
+# the baseline.
+#
+#   failed=<state>      A failed probe, with its state (`unread` where a
+#                       move's new head did not read), when this session was
+#                       not yet told of the outage; git's stderr once with it;
+#                       then exit 0. Told is the state file
+#                       `campaign-watch-<session>.state` beside the pid file:
+#                       every failed probe writes it or refreshes its mtime, a
+#                       file older than two intervals counts as absent, and a
+#                       successful probe removes it and prints nothing. So a
+#                       re-armed watch stays silent in an outage its
+#                       predecessor reported, and a new process, or one
+#                       resumed after the file went stale, reports a new one.
+#
+# In report mode `state=already-watching` is the only exit with no row to act
+# on.
+#
 # A watch that cannot start (no workbench, no `bin/fusion-tmp path`) exits as
 # the table says before its first probe.
 #
@@ -695,7 +749,8 @@
 #      line included; the page of `cut` with its `proposal=` line; `path=` and
 #      `revision=` on a write; `state=ok` on `sync`, pushed or nothing to push;
 #      `state=ok` on `probe`; `state=already-watching` on `watch`, which
-#      otherwise does not exit by itself.
+#      otherwise does not exit by itself; on `watch --report`, its rows and
+#      `head=`, or `failed=`.
 #   1  the helper itself could not run: the compiled hooks or the codec bundle
 #      are missing, `bin/fusion-tmp path` gave no scratch directory, `git` or
 #      `tar` failed where no state names the failure, the claim test could not
@@ -713,7 +768,7 @@
 #      that is not eight lowercase hex characters, an `--outcome` outside the
 #      four, an evidence flag on an outcome other than `completed`, an
 #      argument to `probe`, an `--interval` that is no whole number above
-#      zero, an `answer` `--question` that is no `.md` basename or an
+#      zero, a `--report` other than `steering` or `lane`, an `answer` `--question` that is no `.md` basename or an
 #      `--option` that is empty or spans lines.
 #   3  no fusion workbench above pwd.
 #   4  the workbench was not read: the codec's gate refused it by name
@@ -807,7 +862,9 @@
 #
 # `probe` and `watch` touch no ref and no file of the repository: `ls-remote`
 # updates nothing. `watch` writes its pid file under what `bin/fusion-tmp
-# path` prints, outside every git tree.
+# path` prints, outside every git tree. `watch --report` also writes its state
+# file there, and on a move fetches as `overview` does, updating the
+# remote-tracking refs, into a scratch directory removed on every way out.
 #
 # `sync` is the one sub-command that moves the repository, and `sync --read` does not: it appends to the
 # working tree's event log, commits that log alone under the lock, rebases

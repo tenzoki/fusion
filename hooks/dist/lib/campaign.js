@@ -397,9 +397,11 @@ function remoteOf(cwd, ref) {
  * upstream; with it no branch is needed, so a detached HEAD and a branch
  * tracking nothing are both readable. `cwd` is inside the working tree and
  * `workbench` is the workbench directory found above it. git's own stderr
- * passes through on a failed fetch.
+ * passes through on a failed fetch. `timeoutMs` kills a fetch that has not
+ * finished by then, which is `fetch-failed`; only `watch --report` passes one
+ * (`lib/campaign-watch.ts`), and `overview`, `sync` and `answer` fetch unbounded.
  */
-export function fetchRef(cwd, workbench, override) {
+export function fetchRef(cwd, workbench, override, timeoutMs) {
     if (git(cwd, "rev-parse", "--is-inside-work-tree").stdout.trim() !== "true")
         return { state: "no-work-tree" };
     let ref;
@@ -421,7 +423,7 @@ export function fetchRef(cwd, workbench, override) {
     }
     if (remote !== null) {
         // Every credential prompt becomes an immediate failure; a slow transfer stays visible and interruptible.
-        const fetched = spawnSync("git", ["fetch", "--quiet", remote], { cwd, env: { ...process.env, GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -oBatchMode=yes" }, stdio: ["ignore", "ignore", "inherit"] });
+        const fetched = spawnSync("git", ["fetch", "--quiet", remote], { cwd, env: { ...process.env, GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -oBatchMode=yes" }, stdio: ["ignore", "ignore", "inherit"], timeout: timeoutMs });
         if (fetched.status !== 0)
             return { state: "fetch-failed", branch, ref };
     }

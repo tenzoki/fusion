@@ -5,8 +5,8 @@
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
  * `reassign` and `end`, `answer`, the user's answer to a peer's question,
  * `sync [--read]`, the commit-cycle read, and `probe`
- * and `watch [--since <sha>] [--interval <seconds>]`, the poll of the
- * upstream head.
+ * and `watch [--report steering|lane] [--since <sha>] [--interval <seconds>]`,
+ * the poll of the upstream head.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
@@ -25,8 +25,9 @@
  * and 9 the `state=` line and the line that says why (`held=`, `refused=`),
  * the detail on stderr; on 10 and 11 the whole of `sync`'s page, `state=`
  * naming the stopped rebase or the push that did not land. `watch` is the
- * one exception: it never finishes, so each of its lines is written the
- * moment it is known, for a monitor that reads line by line.
+ * one exception: plain, it never finishes, so each of its lines is written
+ * the moment it is known, for a monitor that reads line by line; with
+ * `--report` it writes its rows the same way and then exits 0.
  *
  * ## The scratch directory survives no way out
  *
@@ -44,7 +45,7 @@ const USAGE = [
     "       fusion-campaign cut --checkouts <N> [--tolerance <k>]",
     "       fusion-campaign sync [--read]",
     "       fusion-campaign probe",
-    "       fusion-campaign watch [--since <sha>] [--interval <seconds>]",
+    "       fusion-campaign watch [--report steering|lane] [--since <sha>] [--interval <seconds>]",
     "       fusion-campaign open --id <YYMMDD-HHMM-slug> --objective <text> --authorisation <citation> [--stop <text>]...",
     "       fusion-campaign lanes --from <proposal file> [--assign <lane>=<hex>]... [--campaign <id>]",
     "       fusion-campaign pause --reason <text> [--campaign <id>]",
@@ -103,14 +104,20 @@ function parseCut(argv) {
 }
 /** The watch's interval where the caller names none: the five minutes of spec C4 and C5. */
 const DEFAULT_INTERVAL_SECONDS = 300;
-/** `--since <sha>`, as `overview` takes it, and `--interval <seconds>`, a whole number above zero; each at most once. */
+/** `--report steering|lane`, `--since <sha>`, as `overview` takes it, and `--interval <seconds>`, a whole number above zero; each at most once. */
 function parseWatch(argv) {
-    const p = parseFlags(argv, ["--since", "--interval"], [], [], 0);
+    const p = parseFlags(argv, ["--report", "--since", "--interval"], [], [], 0);
+    const report = p?.values.get("--report")?.[0] ?? null;
     const since = p?.values.get("--since")?.[0] ?? null;
     const interval = p?.values.get("--interval")?.[0] ?? String(DEFAULT_INTERVAL_SECONDS);
-    if (p === null || (since !== null && !/^[0-9a-f]{7,64}$/.test(since)) || !/^[1-9][0-9]{0,5}$/.test(interval))
+    if (p === null || (report !== null && report !== "steering" && report !== "lane") || (since !== null && !/^[0-9a-f]{7,64}$/.test(since)) || !/^[1-9][0-9]{0,5}$/.test(interval))
         return null;
-    return { since, intervalSeconds: Number(interval) };
+    return { report, since, intervalSeconds: Number(interval) };
+}
+/** The bound on one remote call, `lib/campaign-watch.ts` `REMOTE_TIMEOUT_MS`; `FUSION_CAMPAIGN_TIMEOUT`, whole seconds, shortens it for a test. */
+function remoteTimeoutMs(lib) {
+    const given = process.env.FUSION_CAMPAIGN_TIMEOUT ?? "";
+    return /^[1-9][0-9]{0,4}$/.test(given) ? Number(given) * 1000 : lib.poll.REMOTE_TIMEOUT_MS;
 }
 const WRITES = new Set(["open", "lanes", "pause", "resume", "move", "reassign", "end"]);
 const EVIDENCE_FLAGS = ["--objective-met", "--intake-closed", "--all-attempts-terminal", "--final-audit-passed"];
@@ -361,16 +368,17 @@ async function probeOnce(lib) {
         say(`no fusion workbench found above ${cwd}.`);
         return 3;
     }
-    const { probed, stderr } = await lib.poll.probe(cwd);
+    const { probed, stderr } = await lib.poll.probe(cwd, remoteTimeoutMs(lib));
     if (stderr !== "")
         process.stderr.write(stderr);
     process.stdout.write(lib.poll.renderProbe(probed));
     return probed.state === "ok" ? 0 : STATE_EXIT[probed.state];
 }
-/** The poll: one per session and checkout, then `watchLoop`, which does not return. */
+/** The poll: one per session and checkout, then `watchLoop`, which does not return, or with `--report` `reportLoop`, which returns after a report. */
 async function watch(args, lib) {
     const cwd = process.cwd();
-    if (lib.findWorkbenchRoot(cwd) === null) {
+    const root = lib.findWorkbenchRoot(cwd);
+    if (root === null) {
         say(`no fusion workbench found above ${cwd}.`);
         return 3;
     }
@@ -379,11 +387,23 @@ async function watch(args, lib) {
         process.stdout.write("state=already-watching\n");
         return 0;
     }
-    return lib.poll.watchLoop(args.since, args.intervalSeconds * 1000, {
-        probe: () => lib.poll.probe(cwd),
+    const timeoutMs = remoteTimeoutMs(lib);
+    const intervalMs = args.intervalSeconds * 1000;
+    const deps = {
+        probe: () => lib.poll.probe(cwd, timeoutMs),
         emit: (line) => void process.stdout.write(`${line}\n`),
         warn: (text) => void process.stderr.write(text),
         sleep: (ms) => new Promise((done) => setTimeout(done, ms)),
+    };
+    if (args.report === null)
+        return lib.poll.watchLoop(args.since, intervalMs, deps);
+    const mode = args.report;
+    // The lane's questions are this checkout's, so its identifier is resolved once, before the first probe.
+    const checkout = mode === "lane" ? lib.cycle.identityOf(cwd).checkout : null;
+    return lib.poll.reportLoop(args.since, intervalMs, {
+        ...deps,
+        delta: (since) => lib.poll.reportRows(cwd, join(root, "fusion-workbench"), since, mode, checkout, timeoutMs),
+        outage: lib.poll.outageAt(lib.poll.stateFileOf(file), intervalMs),
     });
 }
 function main(argv, lib) {

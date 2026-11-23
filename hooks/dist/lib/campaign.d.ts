@@ -308,9 +308,11 @@ export type FetchedRef = {
  * upstream; with it no branch is needed, so a detached HEAD and a branch
  * tracking nothing are both readable. `cwd` is inside the working tree and
  * `workbench` is the workbench directory found above it. git's own stderr
- * passes through on a failed fetch.
+ * passes through on a failed fetch. `timeoutMs` kills a fetch that has not
+ * finished by then, which is `fetch-failed`; only `watch --report` passes one
+ * (`lib/campaign-watch.ts`), and `overview`, `sync` and `answer` fetch unbounded.
  */
-export declare function fetchRef(cwd: string, workbench: string, override: string | null): FetchedRef;
+export declare function fetchRef(cwd: string, workbench: string, override: string | null, timeoutMs?: number): FetchedRef;
 /**
  * Write `entries` of the workbench, as `at.head` holds them, below `into`,
  * and return the extracted workbench directory. An entry is a path relative

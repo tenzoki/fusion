@@ -11,6 +11,8 @@
 
 Ruled: (a), by user, 2026-11-23, at plan approval. Variant (b) is not executed.
 
+Ruled after step 1, by user, 2026-11-23: step 1 measured `background-wake: no` on (c) alone (analysis `261123-1414-can-a-background-command-wake-an-idle-session.md`). The user chose the amended reading: steps 2 to 5 proceed on the `Bash` route as written. The woken turn reads the background task's output file to learn the row, and the texts in steps 3 and 4 say so. Step 6 adds one criterion: every wake's row was read from the output file and acted on, with no wake left unread.
+
   Steps 3 and 5 and the orchestrator bound are the same under both. The variant chosen at approval is written into steps 4 and 6 by its letter; the other is not executed.
 
 ## Directive

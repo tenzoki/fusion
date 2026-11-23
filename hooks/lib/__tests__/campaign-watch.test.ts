@@ -1,10 +1,11 @@
 import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { campaignFile, claim, createPackage, jsonWorkbenchAt, must, placeRecord, type JsonProject, type Package } from "./helpers/json-workbench.js";
 
 // Drives the real `bin/fusion-campaign probe` and `watch` over a local bare origin, a watching clone and a pushing
 // clone, at `--interval 1`: no network, every path physical. Under test is plan step 4 of
@@ -12,7 +13,8 @@ import { CASE_TIMEOUT } from "./helpers/guard-harness.js";
 // one `moved=` per push, `--since` compared on the first probe (the expiry race), one `failed=` per run of failures
 // and `recovered=` after it, the pid-file refusal and its release by a kill, and `no-upstream` at exit 5. Every watch
 // a case starts is killed in `afterEach`; HOME is a directory of its own, because `bin/fusion-tmp` puts the pid file
-// under it.
+// under it. The second describe is step 2 of `261123-1000-plan-fix-the-three-trial-causes-and-retest-before-13-6-0.md`:
+// `--report steering|lane` over a workbench the kernel wrote, the outage state file, and the bound on a remote call.
 
 const script = join(pluginRoot, "bin", "fusion-campaign");
 const CHECKOUT = "e5e5e5e5";
@@ -73,8 +75,9 @@ interface Watch {
   child: ChildProcess;
   lines: string[];
 }
-function startWatch(cwd: string, session: string, ...args: string[]): Watch {
-  const child = spawn(script, ["watch", "--interval", "1", ...args], { cwd, env: env({ FUSION_SESSION_ID: session }), stdio: ["ignore", "pipe", "pipe"] });
+function startWatch(cwd: string, session: string, args: string[] = [], extra: Record<string, string> = {}): Watch {
+  const interval = args.includes("--interval") ? [] : ["--interval", "1"];
+  const child = spawn(script, ["watch", ...interval, ...args], { cwd, env: env({ FUSION_SESSION_ID: session, ...extra }), stdio: ["ignore", "pipe", "pipe"] });
   live.add(child);
   const w: Watch = { child, lines: [] };
   let buffered = "";
@@ -122,11 +125,11 @@ describe("bin/fusion-campaign probe and watch, the poll of the upstream head", (
     const { watcher, push } = world("since");
     const older = git(watcher, "rev-parse", "origin/main");
     const newer = push();
-    const w = startWatch(watcher, "sid-since", "--since", older.slice(0, 12));
+    const w = startWatch(watcher, "sid-since", ["--since", older.slice(0, 12)]);
     await until("the move", () => w.lines.length === 1, 5_000);
     expect(w.lines).toEqual([`moved=${older.slice(0, 12)}\t${newer}`]);
     // An abbreviated --since naming the head itself is no move.
-    const quiet = startWatch(watcher, "sid-since-head", "--since", newer.slice(0, 7));
+    const quiet = startWatch(watcher, "sid-since-head", ["--since", newer.slice(0, 7)]);
     await until("the claim", () => holds("sid-since-head", quiet.child));
     await sleep(2500);
     expect(quiet.lines).toEqual([]);
@@ -175,5 +178,149 @@ describe("bin/fusion-campaign probe and watch, the poll of the upstream head", (
     git(watcher, "checkout", "-q", "-b", "loose");
     const loose = spawnSync(script, ["probe"], { cwd: watcher, encoding: "utf-8", env: env() });
     expect([loose.status, loose.stdout]).toEqual([5, "state=no-upstream\nbranch=loose\n"]);
+  }, CASE_TIMEOUT);
+});
+
+const ID = "261101-0900-pipeline";
+const [A, B, C] = ["a1a1a1a1", "b2b2b2b2", "c3c3c3c3"];
+const [Q1, Q2, Q3, HELD] = ["261101-0006-which-parser.md", "261101-0007-which-schema.md", "261101-0008-which-lexer.md", "261101-0010-held"];
+
+/** A bare origin seeded through the kernel: a running campaign whose lane-1 checkout A holds HELD with Q1 open and whose lane-2 checkout B holds another package with Q2 open; and a clone per checkout. */
+function campaignWorld(tag: string): (checkout: string) => string {
+  const origin = scratch(`${tag}-origin`);
+  git(origin, "init", "--bare", "-q", "-b", "main");
+  const ident = (dir: string): void => void [["user.name", tag], ["user.email", `${tag}@example.invalid`]].forEach(([k, v]) => git(dir, "config", k, v));
+  const root = scratch(`${tag}-author`);
+  git(root, "init", "-q", "-b", "main");
+  ident(root);
+  writeFileSync(join(root, ".gitignore"), "fusion-workbench/.json-state/\nfusion-workbench/.checkout-id\n");
+  const p: JsonProject = { root, workbench: jsonWorkbenchAt(root), next: 1 };
+  const [held, other] = [createPackage(p, HELD), createPackage(p, "261101-0011-other")];
+  claim(p, held, A);
+  claim(p, other, B);
+  const member = (x: Package) => ({ workbench_id: must(p, { op: "inspect" }).result.id, record_id: x.id, display: x.dir.slice("work-packages/".length) });
+  campaignFile(p, ID, { state: { state: "running" }, lanes: [{ id: "lane-1", checkout_id: A, members: [member(held)] }, { id: "lane-2", checkout_id: B, members: [member(other)] }] });
+  placeRecord(p.workbench, "decision-open", `${held.dir}/decisions/${Q1}`, "open");
+  placeRecord(p.workbench, "decision-open", `${other.dir}/decisions/${Q2}`, "open");
+  git(root, "add", "-A");
+  git(root, "commit", "-q", "-m", "seed");
+  git(root, "push", "-q", origin, "main");
+  return (checkout) => {
+    const dir = scratch(`${tag}-${checkout}`);
+    git(dir, "clone", "-q", origin, dir);
+    ident(dir);
+    writeFileSync(join(dir, "fusion-workbench", ".checkout-id"), `${checkout}\n`);
+    return dir;
+  };
+}
+
+/** Everything in `dir` committed, rebased onto the remote and pushed; the pushed head. */
+function publish(dir: string, subject: string): string {
+  git(dir, "add", "-A");
+  git(dir, "commit", "-q", "-m", subject);
+  git(dir, "pull", "-q", "--rebase");
+  git(dir, "push", "-q");
+  return git(dir, "rev-parse", "HEAD");
+}
+const campaign = (cwd: string, ...args: string[]) => spawnSync(script, args, { cwd, encoding: "utf-8", env: env() });
+const askQ3 = (peer: string): void => placeRecord(join(peer, "fusion-workbench"), "decision-open", `work-packages/${HELD}/decisions/${Q3}`, "open");
+const newQ3 = `new-question=${ID}\tlane-1\t${A}\t${HELD}\t${Q3}\tfusion-workbench/work-packages/${HELD}/decisions/${Q3}\tnone`;
+const exited = (w: Watch): Promise<void> => until("the exit", () => w.child.exitCode !== null, 60_000);
+/** The watch has had time to probe, and to read the move to `head` in `cwd` once its fetch landed it, and has printed nothing and not exited. */
+async function quiet(w: Watch, cwd?: string, head?: string): Promise<void> {
+  if (cwd !== undefined) await until("the watch's fetch", () => git(cwd, "rev-parse", "origin/main") === head, 30_000);
+  await sleep(8000);
+  expect([w.lines, w.child.exitCode]).toEqual([[], null]);
+}
+const report = (cwd: string, session: string, mode: string, since: string, ...more: string[]): Watch => startWatch(cwd, session, ["--report", mode, "--since", since, ...more]);
+
+describe("bin/fusion-campaign watch --report: a wake only with a row to act on, an outage told once per session", () => {
+  it("steering: a new question and an ended campaign each print their row and head= and exit; a push carrying neither, its own included, prints nothing", async () => {
+    const clone = campaignWorld("steer");
+    const [peer, steer] = [clone(A), clone(C)];
+    const w = report(steer, "sid-steer", "steering", git(steer, "rev-parse", "HEAD"));
+    writeFileSync(join(steer, "e.txt"), "E\n");
+    await quiet(w, steer, publish(steer, "the steering checkout's own push"));
+    askQ3(peer);
+    const asked = publish(peer, "a question");
+    await exited(w);
+    expect([w.lines, w.child.exitCode]).toEqual([[newQ3, `head=${asked}`], 0]);
+    git(steer, "pull", "-q");
+    const again = report(steer, "sid-steer", "steering", asked);
+    expect(campaign(steer, "end", "--outcome", "cancelled", "--reason", "enough").status).toBe(0);
+    const ended = publish(steer, "end");
+    await exited(again);
+    expect(again.lines).toEqual([`campaign=${ID}\tcancelled`, `head=${ended}`]);
+  }, CASE_TIMEOUT * 6);
+
+  it("lane: an answer to this checkout's question and a pause each print and exit; an answer to another checkout's prints nothing", async () => {
+    const clone = campaignWorld("lane");
+    const [peer, steer] = [clone(A), clone(C)];
+    const w = report(peer, "sid-lane", "lane", git(peer, "rev-parse", "HEAD"));
+    expect(campaign(steer, "answer", "--question", Q2, "--option", "yes").status).toBe(0);
+    await quiet(w, peer, publish(steer, "the answer to B"));
+    const r = campaign(steer, "answer", "--question", Q1, "--option", "the old one");
+    const by = basename(/^path=(.*)$/m.exec(r.stdout)?.[1] ?? "").replace(/\.record\.json$/, ".md");
+    const answered = publish(steer, "the answer to A");
+    await exited(w);
+    expect(w.lines).toEqual([`answered=${Q1}\t${by}`, `head=${answered}`]);
+    const again = report(peer, "sid-lane", "lane", answered);
+    expect(campaign(steer, "pause", "--reason", "hold on").status).toBe(0);
+    const paused = publish(steer, "pause");
+    await exited(again);
+    expect(again.lines).toEqual([`paused=${ID}`, `head=${paused}`]);
+  }, CASE_TIMEOUT * 6);
+
+  it("outage: failed= once over two watches of one session, again for another session and after the file went stale; a success removes it and prints nothing", async () => {
+    const { origin, watcher } = world("outage");
+    const since = git(watcher, "rev-parse", "HEAD");
+    const state = pidFile("sid-out").replace(/\.pid$/, ".state");
+    const arm = (session: string): Watch => report(watcher, session, "steering", since, "--interval", "2");
+    renameSync(origin, `${origin}.gone`);
+    const first = arm("sid-out");
+    await exited(first);
+    const second = arm("sid-out");
+    await quiet(second);
+    const other = arm("sid-out-2");
+    await exited(other);
+    expect([first.lines, other.lines]).toEqual([["failed=fetch-failed"], ["failed=fetch-failed"]]);
+    await stop(second.child, "SIGTERM");
+    const old = new Date(Date.now() - 10_000);
+    utimesSync(state, old, old);
+    const stale = arm("sid-out");
+    await exited(stale);
+    expect(stale.lines).toEqual(["failed=fetch-failed"]);
+    const last = arm("sid-out");
+    await until("the claim", () => holds("sid-out", last.child));
+    renameSync(`${origin}.gone`, origin);
+    await until("the file's removal", () => !existsSync(state));
+    await quiet(last);
+  }, CASE_TIMEOUT * 4);
+
+  it("a move whose fetch fails keeps the last head, prints failed= once, and reports the question it carried after the recovery", async () => {
+    const clone = campaignWorld("delta");
+    const [peer, steer] = [clone(A), clone(C)];
+    const since = git(steer, "rev-parse", "HEAD");
+    // ls-remote and the upstream still resolve; the fetch also asks for a branch the remote does not have, and fails.
+    git(steer, "config", "--add", "remote.origin.fetch", "refs/heads/absent:refs/remotes/origin/absent");
+    askQ3(peer);
+    const asked = publish(peer, "a question");
+    const first = report(steer, "sid-delta", "steering", since, "--interval", "2");
+    await exited(first);
+    expect(first.lines).toEqual(["failed=fetch-failed"]);
+    const second = report(steer, "sid-delta", "steering", since, "--interval", "2");
+    await quiet(second);
+    git(steer, "config", "--unset", "remote.origin.fetch", "absent");
+    await exited(second);
+    expect(second.lines).toEqual([newQ3, `head=${asked}`]);
+  }, CASE_TIMEOUT * 4);
+
+  it("a remote that accepts the connection and never answers is failed=fetch-failed within the bound", async () => {
+    const { watcher } = world("hang");
+    git(watcher, "config", "remote.origin.uploadpack", "sleep 20;:");
+    const began = Date.now();
+    const w = startWatch(watcher, "sid-hang", ["--report", "steering"], { FUSION_CAMPAIGN_TIMEOUT: "2" });
+    await exited(w);
+    expect([w.lines, Date.now() - began < 10_000]).toEqual([["failed=fetch-failed"], true]);
   }, CASE_TIMEOUT);
 });

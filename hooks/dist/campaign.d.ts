@@ -5,8 +5,8 @@
  * seven steering writes `open`, `lanes`, `pause`, `resume`, `move`,
  * `reassign` and `end`, `answer`, the user's answer to a peer's question,
  * `sync [--read]`, the commit-cycle read, and `probe`
- * and `watch [--since <sha>] [--interval <seconds>]`, the poll of the
- * upstream head.
+ * and `watch [--report steering|lane] [--since <sha>] [--interval <seconds>]`,
+ * the poll of the upstream head.
  *
  * `bin/fusion-campaign`'s header is the authoritative documentation of the
  * output, the state vocabulary and the exit table; `lib/campaign.ts` is the
@@ -25,8 +25,9 @@
  * and 9 the `state=` line and the line that says why (`held=`, `refused=`),
  * the detail on stderr; on 10 and 11 the whole of `sync`'s page, `state=`
  * naming the stopped rebase or the push that did not land. `watch` is the
- * one exception: it never finishes, so each of its lines is written the
- * moment it is known, for a monitor that reads line by line.
+ * one exception: plain, it never finishes, so each of its lines is written
+ * the moment it is known, for a monitor that reads line by line; with
+ * `--report` it writes its rows the same way and then exits 0.
  *
  * ## The scratch directory survives no way out
  *
