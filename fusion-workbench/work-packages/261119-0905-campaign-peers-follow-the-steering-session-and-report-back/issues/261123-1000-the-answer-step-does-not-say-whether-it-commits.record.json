@@ -1,0 +1,23 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "a6c4ac63-a7ae-4acb-9805-4fa3e7c23fc9",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261119-0905-campaign-peers-follow-the-steering-session-and-report-back/issues/261123-1000-the-answer-step-does-not-say-whether-it-commits.md"
+  },
+  "filed_by": {
+    "actor": "implementation-planner",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "open",
+    "disposition": null
+  }
+}

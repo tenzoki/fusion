@@ -80,12 +80,14 @@ flowchart TD
   S8 --> S9[9 CLAUDE.md line]
   S6 --> S10[10 live two-checkout trial]
   S7 --> S10
+  S10 --> A[amendment 261123-1000: fixes 1-5, retest 6]
   S9 --> S11[11 release 13.6.0]
   S10 --> S11
+  A --> S11
   S11 --> S12[12 marketplace entry]
 ```
 
-Every edge is a `Dependencies:` line below, and every `Dependencies:` line is an edge.
+Every edge is a `Dependencies:` line below, and every `Dependencies:` line is an edge. The node `A` is the amendment plan `261123-1000-plan-fix-the-three-trial-causes-and-retest-before-13-6-0.md`, added on 2026-11-23 after step 10's report (`261121-1826-live-trial-two-checkouts.md`: 20 yes, 6 no, 5 n/t). Its steps carry their own anchors there, because a step is never added to a filed plan (`rules/fusion-workbench-conventions.md` `### Planning files`). **What Approve of the amendment binds:** this plan stays the package's plan and is re-adopted at its new revision (`adopt-plan` on this record). The amendment is not adopted in role `plan`, which would unbind steps 11 and 12 and this plan's stop clauses; it is cited from step 11 and from `## Where this work stops`.
 
 ## Implementation Steps
 
@@ -250,7 +252,7 @@ Every edge is a `Dependencies:` line below, and every `Dependencies:` line is an
       - The version surfaces (`plugin.json`, the marketplace entry in step 12, the `install.sh` and `README.md` pins) all read 13.6.0, and the two descriptions are read side by side.
     - Acceptance: `grep -n '13\.6\.0' .claude-plugin/plugin.json install.sh README.md skills/help/SKILL.md` shows one hit in each. The four validations above exit 0. The skills surface stays inside step 7's raise, since the help paragraph is a balanced add and drop; a red here is cut in the help paragraph, not raised.
     - Approval: **yes.** The release commit goes to `main`, and every push to `main` is what the next `fusion --update` installs.
-    - Dependencies: 9, 10
+    - Dependencies: 9, 10, and step 6 of amendment plan `261123-1000-plan-fix-the-three-trial-causes-and-retest-before-13-6-0.md` (added 2026-11-23 on the user's ruling to fix the trial's three causes and retest before the release)
     - Source: spec C6 criteria 1, 5 and 6; `README-agents.md` `## Releasing`.
 
 12. **The marketplace entry**
@@ -268,7 +270,8 @@ Every edge is a `Dependencies:` line below, and every `Dependencies:` line is an
 - Step 2's ceiling for every surface sits under its worst measured day, or the figure went to the user before any raise was written.
 - Each raise written in steps 6 and 7 is the measured remainder and is no larger than step 2's ceiling for that surface. The hook-test surface took no raise, or the user ruled on one.
 - Steps 3 to 9, 11 and 12 are `done`, and the catalog suite, the hooks suite and `claude plugin validate .` were green on the release commit.
-- Step 10's report records every C1–C5 criterion as observed yes, before the release commit.
+- Step 10's report records every C1–C5 criterion as observed yes, before the release commit. Where it did not (2026-11-22: 6 no, 5 n/t), the retest of amendment plan `261123-1000-*` step 6 records each of those rows as observed yes, before the release commit.
+- Amendment plan `261123-1000-plan-fix-the-three-trial-causes-and-retest-before-13-6-0.md` is not bound to the package, so its stop clauses are read here: every clause of its `## Where this work stops` holds, or it stopped after its step 1 with `background-wake: no` and the user ruled before step 11.
 - Before the tag `v13.6.0` is pushed: the release commit is on `origin/main`, its message carries the `bin/fusion-review-coverage --since v13.5.1` result, the marketplace entry at 13.6.0 is pushed in `tenzoki/claude-plugins`, and `skills/help/SKILL.md` carries the 13.6.0 paragraph.
 - After the tag: `261119-0851-*` is transitioned to `implemented` with the release commit's pushed hash, `261119-1248-*` is `answered` (at plan approval) and then `implemented` with the pushed hash of step 5, and `fusion --update` on this machine prints 13.6.0.
 
@@ -328,3 +331,4 @@ All of these are in `bin/fusion-campaign`, and its header is the authority for e
 - [ ] Decision `261119-1248-how-does-an-answer-name-the-peer-question-it-answers-and-how-does-the-peer-remember-what-it-set-aside.md` (open) fixes the three head labels that steps 3, 5, 6 and 7 build on. Approving this plan is the occasion to rule on it. The recommendation is option 1.
 - [ ] The spec's two review defaults stand as written in steps 6 and 7 unless the user overrides them now: a finished lane is reported and nothing is filed (C1), and the peer neither releases nor claims while a question is open (C2).
 - [ ] The path of the marketplace working clone, needed at step 12.
+- [ ] Amendment plan `261123-1000-plan-fix-the-three-trial-causes-and-retest-before-13-6-0.md` (2026-11-23) carries the fixes and the retest that step 11 now waits for. Its own head and `## Open Questions` hold the rulings it needs before execution, among them variant (a) or (b) for whether the steering acts commit and push like the answer. Approve re-adopts this plan and binds the amendment to nothing.
