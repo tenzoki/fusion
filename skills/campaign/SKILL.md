@@ -134,7 +134,7 @@ Each is one act on the campaign record in this checkout's working tree, confirme
 
 `open` takes the objective, the citation of what authorises the campaign and each stop condition from the user's words; a stop condition the user did not state is not invented. `end` on `completed` asks the user which of the four hold, the objective met, the intake closed, every attempt terminal, the final audit passed, and passes `--objective-met`, `--intake-closed`, `--all-attempts-terminal` and `--final-audit-passed` for each yes, `--watermark` and `--audit-ref` where the user names them.
 
-Exit 0 prints `path=` and `revision=`. Report the act in a sentence (the campaign is open; paused, with the reason; running again; the package stands in that lane; the lane is that checkout's; the campaign has ended with that outcome), then end every such report with two sentences: **the act reaches a working session at the holding session's next commit**, and no time is given for that; and the record travels with your next commit and push, so until then no other checkout sees it.
+Exit 0 prints `path=` and `revision=`. The confirmation covers committing it now: `Write` its message to `fusion-commit-msg-<session-id>-<act>.txt` under what `"$FUSION_PLUGIN_ROOT/bin/fusion-tmp" path` prints, run `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with campaign -- bash -c 'git reset -q && git add <absolute paths> && git commit -F <that file>'`, then `"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" sync`, which pushes. Report the act in a sentence (the campaign is open; paused, with the reason; running again; the package stands in that lane; the lane is that checkout's; the campaign has ended with that outcome), then end every such report with: **the act reaches a working session at the holding session's next commit**, and no time is given for that.
 
 ## Step 7: the two refusals of a write
 
@@ -147,20 +147,16 @@ Exits 1, 3 and 4 as in Step 4. **exit 2** is a value outside the helper's gramma
 
 ## Step 8: `answer`
 
-`answer [<decision>]`, or the user taking up Step 3's offer. It needs the decision's `question=` row with answer `none` from an overview of this use (Step 2); with no decision named, offer the open ones. Read the record at that commit, `git show <head>:<path>` with the overview's `head=` and the row's path, and put its question and options to the user in chat, never with `AskUserQuestion`: the question in one line, the options beneath it as a numbered list in the record's words, and that a number, the option's words or anything else they write will do. Then wait. **No answer is filed without the user's choice**, and none is picked for them.
+`answer [<decision>]`, or the user taking up Step 3's offer. It needs the decision's `question=` row with answer `none` from an overview of this use (Step 2), or the watch's `new-question=` row (Step 9); with no decision named, offer the open ones. Read the record at that commit, `git show <head>:<path>` with that page's `head=` and the row's path, and put its question and options to the user in chat, never with `AskUserQuestion`: the question in one line, the options beneath it as a numbered list in the record's words, and that a number, the option's words or anything else they write will do. Then wait. **No answer is filed without the user's choice**, and none is picked for them.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-campaign" answer --question <decision> --option '<the option chosen, one line>' <--note '<what else the user wrote>', when they did>; echo "exit=$?"
 ```
 
-Exit 0 prints `path=` and `revision=`: say the answer is filed and reaches the peer with this session's next commit and push, not before. `state=holds-package` is Step 7's. `question-unknown`: no open question of that name at the remote's commit. `question-answered`: an answer stands already; run the overview again. Exits 5 to 7 as in Step 2, the others as in Step 7.
+Exit 0 prints `path=` and `revision=`. The choice confirms it: commit and push the pair (`.record.json` and `.md`) as Step 6 does, and say the peer reads it within about 5 minutes if its session is open. `question-unknown`: no open question of that name at the remote's commit. `question-answered`: an answer stands already; run the overview again. Exits 5 to 7 as in Step 2, the others as in Step 7.
 
 ## Step 9: the watch
 
-**Every use of this command while a campaign is running turns the watch on**, after whatever else it did: arm `Monitor` on `"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" watch --since <last head= read>`, `timeout_ms` 1800000, its `description` naming the campaign and `on moved run overview --since <old>; on expiry re-arm from the last head`. Mechanism: the helper's header, `## probe and watch`. `state=already-watching`: one is armed; say nothing. `Monitor` must be pre-allowed in the user's permissions, or each re-arm waits on a prompt.
+**Every use of this command while a campaign is running turns the watch on**, after whatever else it did: start `"$FUSION_PLUGIN_ROOT/bin/fusion-campaign" watch --report steering --since <last head= read>` as the Bash `run_in_background` command itself, so `TaskStop` ends it. It exits only with a row to act on (the helper's header, `## probe and watch`); its notice shows no output, so read the task's output file for the row. `state=already-watching`: one runs; say nothing. `new-question=`: offer to answer it (Step 8); `new-ready=`: Step 3's words; nothing else. `failed=`: one sentence. `campaign=`: say nothing more; stop watching. Else restart it `--since` the printed `head=`. Any other wake: no text.
 
-- On `moved=<old>\t<new>`, run `overview --since <old>` and tell the user only its `new-question=` rows, each with the offer to answer (Step 8), and its `new-ready=` rows, in Step 3's words; with none, say nothing. `note=since-unknown`: say once that something already known may repeat. Its `head=` is now the last head.
-- On `failed=`, or an overview that exits non-zero: one sentence on what could not be checked; keep watching.
-- On every expiry re-arm from the last head.
-
-Stop it (`TaskStop`) after a `pause` or `end` in this session, on an overview that shows the campaign not running, and when the user says to stop watching. The next use of this command while it runs turns it on again.
+Stop it (`TaskStop`) after a `pause` or `end` in this session, and when the user says to stop watching. The next use of this command while it runs turns it on again.
