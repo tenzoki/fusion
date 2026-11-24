@@ -365,8 +365,11 @@ ones. `docs/campaign.md` is the page on it.
    predates 13.6.0 reads only the pause from the campaign: it takes no lane handover, files no
    question to the steering session and asks its own user as before. Nothing breaks for it, and
    nothing it does follows the steering session.
-2. Pre-allow `Monitor` in the permissions of every checkout that steers or works a campaign.
-   Otherwise each re-arm of a watch waits on a permission prompt (`docs/campaign.md`).
+2. Let Bash start the campaign watch without a permission prompt in every checkout that steers
+   or works a campaign. The watch runs as a Bash `run_in_background` command, exits only with
+   something to act on, and the session starts it again. A restart that waits on a prompt is a
+   watch nobody restarts. Auto mode showed no prompt; default permission mode was not measured
+   (`docs/campaign.md`).
 
 Nothing migrates. No record is converted, no field is added, and the codec is unchanged. The
 question and its answer are ordinary decision records whose head carries the lines `**Asked by:**`,
