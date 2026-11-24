@@ -32,7 +32,7 @@ Always re-copy the monitor from the installed plugin so the project's copy match
 
 If the copy fails (e.g. `$FUSION_PLUGIN_ROOT` not set), say so in the Setup-complete summary but do not block setup.
 
-**STEP 1 — Secure the brief before the expensive steps** (fusion's own record `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). The one input only the user can give comes first, so the session never makes them wait mid-Setup and a session opened without work does not pay for ceremony it will not use. Two cases, disjoint and complete: the session's first user message already carries work ("fix X", "work the item I claimed", a pasted task) → hold it as the brief candidate, ask nothing, continue. It carries none (a bare opening, a lone setup request) → ask now, one question: what to work on, with "just set up — I'll bring the brief later" as an explicit option. "Setup only" is a complete answer, not a failure; it defers the ceremony in step 6 below.
+**STEP 1 — Secure the brief before the expensive steps** (fusion's own record `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`). Two cases, disjoint and complete: the session's first user message already carries work ("fix X", "work the item I claimed", a pasted task) → hold it as the brief candidate, ask nothing, continue. It carries none (a bare opening, a lone setup request) → run step 5's campaign `sync --read`: a `lane=` row (running or paused) is the brief: ask nothing; step 5 acts on it. Without one, ask now, one question: what to work on, with "just set up — I'll bring the brief later" as an explicit option. "Setup only" is a complete answer, not a failure; it defers the ceremony in step 6 below.
 
 Remaining setup:
 
