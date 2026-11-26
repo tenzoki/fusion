@@ -11,3 +11,5 @@ The help update topic carries six install-from paragraphs against the release ru
 **Fix.** Fold to three on the next release that touches the file, or amend the rule if the two-line history needs more. Not worth a rebuild alone.
 
 **Acceptance.** The count above is 3, or `## Releasing` states the new bound.
+
+Also seen: 261126-2111 by reviewer — 13.6.0 added the 13.5.1 paragraph and dropped the 13.0.0-to-13.3.8 one, so `skills/help/SKILL.md:89-101` still carries six against "the last three".

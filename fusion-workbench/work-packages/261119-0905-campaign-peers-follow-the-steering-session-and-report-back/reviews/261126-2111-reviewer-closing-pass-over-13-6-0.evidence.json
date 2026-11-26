@@ -1,0 +1,28 @@
+{
+  "schema": "fusion.evidence/v1",
+  "id": "725e9295-9f21-4351-ad2e-487a4f3aa856",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "subject": {
+    "git_tree": "38701bb64148981ba494187ea33e373386ec6f1b",
+    "git_range": null
+  },
+  "brief_revision": "sha256:2f1e1e2a64e94ce15826e8c06192b4153b432f3bde5e5a3e079a6db15768725e",
+  "plan_revision": "sha256:8a659ca77d7d14b2639f51a59be36550c5ebea8bbb1b4e550b225d14e70c92ce",
+  "role": {
+    "profile": "reviewer",
+    "version": "13.6.0"
+  },
+  "host": "claude-code",
+  "execution_policy": "claude-guided",
+  "verdict": "revise",
+  "uncertainties": [],
+  "checks": [],
+  "report": {
+    "path": "work-packages/261119-0905-campaign-peers-follow-the-steering-session-and-report-back/reviews/261126-2111-reviewer-closing-pass-over-13-6-0.md",
+    "sha256": "sha256:993a898e28f28b0a375509c21ad09c8495c59af2874207a7291142c94b920465",
+    "kind": "review"
+  },
+  "predecessor": null,
+  "accepted_at": "2026-11-26T20:14:16Z",
+  "extensions": {}
+}
