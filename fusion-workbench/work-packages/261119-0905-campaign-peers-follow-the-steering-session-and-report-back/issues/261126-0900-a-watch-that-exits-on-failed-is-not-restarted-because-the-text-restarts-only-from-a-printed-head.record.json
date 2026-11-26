@@ -1,0 +1,26 @@
+{
+  "schema": "fusion.record/v1",
+  "id": "4ce4ce16-cefd-48a7-af27-c99dd593dc00",
+  "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+  "kind": "issue",
+  "narrative": {
+    "path": "work-packages/261119-0905-campaign-peers-follow-the-steering-session-and-report-back/issues/261126-0900-a-watch-that-exits-on-failed-is-not-restarted-because-the-text-restarts-only-from-a-printed-head.md"
+  },
+  "filed_by": {
+    "actor": "orchestrator",
+    "person": "Kai Stalmann <ks@qantr.com>"
+  },
+  "references": [],
+  "provenance": {
+    "source": "created",
+    "legacy_fields": {}
+  },
+  "extensions": {},
+  "control": {
+    "state": "closed",
+    "disposition": {
+      "kind": "fixed",
+      "reason_ref": null
+    }
+  }
+}

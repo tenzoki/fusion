@@ -18,17 +18,17 @@
   data-implementer.md 16036
   document-editor.md 13230
   implementation-planner.md 20617
-  orchestrator.md 98660
+  orchestrator.md 98661
   policy-curator.md 79045
   requirements-designer.md 17664
   reviewer.md 13820
   state-auditor.md 21781
-  total 327611
+  total 327612
 
 [skills bytes]
   archive/SKILL.md 26498
   cadence/SKILL.md 23482
-  campaign/SKILL.md 20948
+  campaign/SKILL.md 20916
   check/SKILL.md 32403
   cleanup/SKILL.md 6979
   commit/SKILL.md 6167
@@ -43,7 +43,7 @@
   setup/SKILL.md 16345
   wp-order/SKILL.md 5591
   wp/SKILL.md 6337
-  total 249038
+  total 249006
 
 [hook-tests lines]
   agent-dispatch-observation.test.ts 338
