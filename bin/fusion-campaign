@@ -726,9 +726,10 @@
 # the baseline.
 #
 #   failed=<state>      A failed probe, with its state (`unread` where a
-#                       move's new head did not read), when this session was
-#                       not yet told of the outage; git's stderr once with it;
-#                       then exit 0. Told is the state file
+#                       move's new head did not read, its read stopped on an
+#                       error included, whose message is then the stderr
+#                       line), when this session was not yet told of the
+#                       outage; git's stderr once with it; then exit 0. Told is the state file
 #                       `campaign-watch-<session>.state` beside the pid file:
 #                       every failed probe writes it or refreshes its mtime, a
 #                       file older than two intervals counts as absent, and a
@@ -737,8 +738,10 @@
 #                       predecessor reported, and a new process, or one
 #                       resumed after the file went stale, reports a new one.
 #
-# In report mode `state=already-watching` is the only exit with no row to act
-# on.
+# Of the report mode's exits at 0, `state=already-watching` is the only one
+# with no row to act on. A non-zero exit prints nothing on stdout and leaves
+# the session unwatched: 2 is a `--since` outside the grammar, 3 is no
+# workbench, and 1 is a watch that could not start.
 #
 # A watch that cannot start (no workbench, no `bin/fusion-tmp path`) exits as
 # the table says before its first probe.

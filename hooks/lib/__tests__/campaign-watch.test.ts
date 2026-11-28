@@ -315,6 +315,24 @@ describe("bin/fusion-campaign watch --report: a wake only with a row to act on, 
     expect(second.lines).toEqual([newQ3, `head=${asked}`]);
   }, CASE_TIMEOUT * 4);
 
+  it("a move whose extraction throws is failed=unread with the error on stderr, and its question is reported after a restart from the same --since", async () => {
+    const clone = campaignWorld("throw");
+    const [peer, steer] = [clone(A), clone(C)];
+    const since = git(steer, "rev-parse", "HEAD");
+    const shim = scratch("throw-shim");
+    writeFileSync(join(shim, "tar"), "#!/bin/sh\nexit 1\n", { mode: 0o755 });
+    askQ3(peer);
+    const asked = publish(peer, "a question");
+    const first = startWatch(steer, "sid-throw", ["--report", "steering", "--since", since], { PATH: `${shim}:${base.PATH ?? ""}` });
+    let err = "";
+    first.child.stderr?.on("data", (d: Buffer) => void (err += d.toString("utf-8")));
+    await exited(first);
+    expect([first.lines, first.child.exitCode, err.includes("tar")]).toEqual([["failed=unread"], 0, true]);
+    const second = report(steer, "sid-throw", "steering", since);
+    await exited(second);
+    expect(second.lines).toEqual([newQ3, `head=${asked}`]);
+  }, CASE_TIMEOUT * 4);
+
   it("a remote that accepts the connection and never answers is failed=fetch-failed within the bound", async () => {
     const { watcher } = world("hang");
     git(watcher, "config", "remote.origin.uploadpack", "sleep 20;:");

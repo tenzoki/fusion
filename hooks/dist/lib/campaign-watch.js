@@ -266,7 +266,8 @@ export function outageAt(file, intervalMs) {
 export async function reportLoop(since, intervalMs, deps) {
     let seen = since;
     for (;;) {
-        const { probed, stderr } = await deps.probe();
+        const { probed, stderr: said } = await deps.probe();
+        let stderr = said;
         let failed = null;
         if (probed.state !== "ok")
             failed = probed.state;
@@ -274,7 +275,16 @@ export async function reportLoop(since, intervalMs, deps) {
         else if (seen === null || probed.head.startsWith(seen))
             seen = probed.head;
         else {
-            const moved = deps.delta(seen);
+            let moved;
+            try {
+                moved = deps.delta(seen);
+            }
+            catch (e) {
+                // A read of the new head that stopped on an error is a head that did not read: the outage rule tells it, with the error as its stderr line.
+                const message = e instanceof Error ? e.message : String(e);
+                moved = { failed: "unread" };
+                stderr = message.endsWith("\n") ? message : `${message}\n`;
+            }
             if ("failed" in moved)
                 failed = moved.failed;
             else if (moved.rows.length === 0)

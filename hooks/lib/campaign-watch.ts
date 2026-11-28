@@ -298,13 +298,22 @@ export interface ReportDeps extends WatchDeps {
 export async function reportLoop(since: string | null, intervalMs: number, deps: ReportDeps): Promise<number> {
   let seen = since;
   for (;;) {
-    const { probed, stderr } = await deps.probe();
+    const { probed, stderr: said } = await deps.probe();
+    let stderr = said;
     let failed: string | null = null;
     if (probed.state !== "ok") failed = probed.state;
     // An abbreviated `--since` that the head begins with is the same commit, not a move; without one the first answer is the baseline.
     else if (seen === null || probed.head.startsWith(seen)) seen = probed.head;
     else {
-      const moved = deps.delta(seen);
+      let moved: ReturnType<ReportDeps["delta"]>;
+      try {
+        moved = deps.delta(seen);
+      } catch (e) {
+        // A read of the new head that stopped on an error is a head that did not read: the outage rule tells it, with the error as its stderr line.
+        const message = e instanceof Error ? e.message : String(e);
+        moved = { failed: "unread" };
+        stderr = message.endsWith("\n") ? message : `${message}\n`;
+      }
       if ("failed" in moved) failed = moved.failed;
       else if (moved.rows.length === 0) seen = moved.head;
       else {
