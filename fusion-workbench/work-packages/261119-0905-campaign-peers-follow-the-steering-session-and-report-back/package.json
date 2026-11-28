@@ -37,13 +37,18 @@
     {
       "ref": {
         "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
-        "record_id": "8cd1a2e7-ec41-4d44-a583-80ffb0fa3063"
+        "record_id": "1837aee8-d2c0-439f-949b-a30c502806c2"
       },
       "role": "plan",
-      "revision": "sha256:8a659ca77d7d14b2639f51a59be36550c5ebea8bbb1b4e550b225d14e70c92ce"
+      "revision": "sha256:5faefa6fd03c3755133787627a11f4d8f7e8bb51991e9056893923b41f3d306b"
     }
   ],
-  "references": [],
+  "references": [
+    {
+      "workbench_id": "4f7b1e34-e80b-4092-a4d3-fbb66e342c9e",
+      "record_id": "8cd1a2e7-ec41-4d44-a583-80ffb0fa3063"
+    }
+  ],
   "evidence": [],
   "outcome": null,
   "provenance": {
